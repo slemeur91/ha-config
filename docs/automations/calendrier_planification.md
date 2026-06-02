@@ -2,27 +2,6 @@
 
 [← Retour README](../../README.md)
 
-Voir aussi [Présence & Domicile](presence_domicile.md) pour `automation.chauffage_statut_journee_selon_agenda`.
-
----
-
-## `automation.notification_des_poubelles` — Notification des Poubelles
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :** Changement de `input_select.poubelles`
-
-**Fonctionnement :**
-1. Compose le message selon l'option sélectionnée.
-2. Notification vocale + SMS.
-3. Remet le sélecteur à "Aucune".
-
-**Entrées utilisées :**
-
-| Entrée | Type | Config |
-|---|---|---|
-| `input_select.poubelles` | input_select | Sortir Marron, Rentrer Marron, Sortir Jaune, Rentrer Jaune, Sortir Verte, Rentrer Verte, Aucune |
-
 ---
 
 ## `automation.planification_de_l_agenda` — Planification de l'Agenda
@@ -35,11 +14,11 @@ Voir aussi [Présence & Domicile](presence_domicile.md) pour `automation.chauffa
 - Appui sur `input_button.planification_agenda`
 
 **Fonctionnement :**
-1. Si alarme + calendrier=Absent → maintient ou bascule vers Repos.
-2. Lit le calendrier du jour, extrait les mots-clés (Absent, TéléTravail, Congé, ARTT).
-3. Positionne `input_select.calendrier`, `chauffage_action`, `calendrier_action`.
+1. Si déclenché par changement alarme + calendrier = Absent → maintient ou bascule vers Repos.
+2. Sinon → interroge le calendrier du jour, extrait les mots-clés (Absent/Vacances, TéléTravail, ARTT/Congé, jour non travaillé).
+3. Positionne `input_select.calendrier`, `chauffage_action`, `calendrier_action` selon les événements trouvés.
 4. Active/désactive les calendriers associés.
-5. Gère le mode HorsGel selon saison, température et présence.
+5. Gère le mode HorsGel selon la période de l'année (mai–oct), la température extérieure ou le mode absent.
 
 **Entrées utilisées :**
 
@@ -51,3 +30,19 @@ Voir aussi [Présence & Domicile](presence_domicile.md) pour `automation.chauffa
 | `input_boolean.chauffage_horsgel` | input_boolean | on/off |
 | `input_boolean.alarme` | input_boolean | on/off |
 | `input_button.planification_agenda` | input_button | — |
+
+---
+
+## `automation.gazpar_mise_a_jour_statistiques_journalieres` — GAZPAR – Mise à jour statistiques journalières
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- Changement de `sensor.gazpar_cheptainville_card` (nouvelles données via Gazpar2MQTT)
+
+**Conditions :** Sensor non indisponible / inconnu
+
+**Fonctionnement :**
+1. Lance `pyscript.gazpar_update` pour injecter les données de consommation gaz dans les statistiques long-terme de HA.
+
+**Entrées utilisées :** Aucune entrée helper.

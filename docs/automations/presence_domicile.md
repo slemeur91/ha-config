@@ -13,9 +13,9 @@
 
 **Fonctionnement :**
 1. **Présent** → SONOS ON, réactive volets, allume prises (hotte, four, terrasse, Apple).
-2. **Réveil** → déverrouille garage, lumières si avant l'aube, prises, machine à café, volets.
-3. **Arrivée** → déverrouille garage, lumière entrée si sombre, purificateur → passe en Présent.
-4. **Extinction/Couché** → éteint HiFi, verrouille serrures, éteint lumières/prises ; Couché → veilleuses, store pergola si armé, SONOS COUCHE.
+2. **Réveil** → déverrouille serrure garage, lumières si avant l'aube, prises, machine à café, volets.
+3. **Arrivée** → déverrouille serrure garage, lumière entrée si sombre, purificateur → passe en Présent.
+4. **Extinction/Couché** → éteint HiFi, verrouille serrures, éteint lumières/prises ; Couché → veilleuses, store pergola si alarme armée, SONOS COUCHE.
 
 **Entrées utilisées :**
 
@@ -31,12 +31,12 @@
 
 ---
 
-## `automation.gestion_de_la_presence_dans_les_pieces` — Présence dans les Pièces
+## `automation.gestion_de_la_presence_dans_les_pieces` — Gestion de la Présence dans les Pièces
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
 **Déclencheurs :**
-- Capteurs Aqara FP2 (Suite parentale, Bureau, Chambre) — avec délai 5 min
+- Capteurs Aqara FP2 (Suite parentale, Bureau, Chambre) avec délai 5 min
 
 **Fonctionnement :**
 1. Présence ON → sélectionne "Présent" dans l'input_select de la pièce.
@@ -52,28 +52,20 @@
 
 ---
 
-## `automation.planification_de_l_agenda` — Planification de l'Agenda
+## `automation.gestion_de_la_boite_aux_lettres` — Gestion de la Boîte aux Lettres
 
-**Statut :** Finalisé | **Evolution :** Aucune
+**Statut :** En production | **Evolution :** Aucune
 
 **Déclencheurs :**
-- Minuit (00:00:00)
-- Changement de `input_boolean.alarme`
-- Appui sur `input_button.planification_agenda`
+- Changement de `sensor.p100_boite_aux_lettres_device_posture`
 
 **Fonctionnement :**
-1. Si changement alarme + calendrier=Absent → maintient ou bascule vers Repos.
-2. Sinon → lit l'agenda du jour, extrait les mots-clés.
-3. Positionne `input_select.calendrier`, `chauffage_action`, `calendrier_action` selon les événements.
-4. Active/désactive le mode HorsGel selon saison, température et présence.
+1. `input_boolean.courrier_en_attente` ON → désactive le flag, compose "boîte vidée".
+2. Flag OFF → active le flag, compose "colis/courrier déposé".
+3. Envoie mail + SMS.
 
 **Entrées utilisées :**
 
 | Entrée | Type | Config |
 |---|---|---|
-| `input_select.calendrier` | input_select | Absent, TéléTravail, Travail, Repos |
-| `input_select.calendrier_action` | input_select | Absent, TéléTravail, Travail, Repos |
-| `input_select.chauffage_action` | input_select | WE, TéléTravail, Travail, Absent, Repos |
-| `input_boolean.chauffage_horsgel` | input_boolean | on/off |
-| `input_boolean.alarme` | input_boolean | on/off |
-| `input_button.planification_agenda` | input_button | — |
+| `input_boolean.courrier_en_attente` | input_boolean | on/off |

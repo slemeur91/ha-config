@@ -174,7 +174,7 @@
 
 ---
 
-## 📜 Scripts (16) — par ordre alphabétique
+## 📜 Scripts (16)
 
 [Voir la documentation complète →](docs/scripts.md)
 
@@ -199,36 +199,36 @@
 
 ---
 
-## 📦 Modules complémentaires — Add-ons (17) — par ordre alphabétique
+## 📦 Modules complémentaires — Add-ons (17)
 
 [Voir la documentation complète →](docs/addons.md)
 
 > 🏠 **Officiel HA** = dépôt officiel Home Assistant, aucune source supplémentaire à ajouter
 > 📦 **Communauté** = dépôt tiers à ajouter manuellement dans les sources d'add-ons
 
-| Add-on | Version | Rôle | Source |
-|---|---|---|---|
-| EnOcean MQTT | 3.1.0 | Passerelle EnOcean | 📦 Communauté |
-| File editor | 6.0.0 | Éditeur de fichiers | 🏠 Officiel HA |
-| Gazpar2MQTT | 0.2.5 | Données GAZPAR vers MQTT | 📦 Communauté |
-| Get HACS | 1.3.1 | Installateur HACS | 📦 Communauté |
-| Home Assistant MCP Server | 7.6.0 | Intégration IA via MCP | 📦 Communauté |
-| Home-Assistant-Matter-Hub | 2.0.45 | Pont Matter vers Alexa/Apple/Google | 📦 Communauté |
-| Homebridge | 2026-05-22 | Support HomeKit | 📦 Communauté |
-| Linky | 1.7.0 | Compteur Linky | 📦 Communauté |
-| Matter Server | 8.5.0 | Support Matter | 🏠 Officiel HA |
-| Mosquitto broker | 7.1.0 | Broker MQTT | 🏠 Officiel HA |
-| MQTT Explorer | browser-1.0.3 | Explorateur MQTT | 📦 Communauté |
-| OpenThread Border Router | 3.0.1 | Thread/Matter | 🏠 Officiel HA |
-| Studio Code Server | 6.0.1 | VSCode intégré | 📦 Communauté |
-| Terminal & SSH | 10.2.0 | Accès terminal | 🏠 Officiel HA |
-| Z-Wave JS | 1.3.0 | Réseau Z-Wave *(désactivé — remplacé par Z-Wave JS UI pour le passage des appareils sur MQTT)* | 🏠 Officiel HA |
-| Z-Wave JS UI | 7.3.0 | Interface Z-Wave JS complète + publication MQTT des appareils | 📦 Communauté |
-| Zigbee2MQTT | 2.11.0-1 | Réseau Zigbee | 📦 Communauté |
+| Add-on | Version | GitHub | Rôle | Source |
+|---|---|---|---|---|
+| EnOcean MQTT | 3.1.0 | [asera-corp/ha-enoceanmqtt](https://github.com/asera-corp/ha-enoceanmqtt) | Passerelle EnOcean | 📦 Communauté |
+| File editor | 6.0.0 | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/configurator) | Éditeur de fichiers | 🏠 Officiel HA |
+| Gazpar2MQTT | 0.2.5 | [ssenart/gazpar2mqtt](https://github.com/ssenart/gazpar2mqtt) | Données GAZPAR vers MQTT | 📦 Communauté |
+| Get HACS | 1.3.1 | [hacs/get](https://github.com/hacs/get) | Installateur HACS | 📦 Communauté |
+| Home Assistant MCP Server | 7.6.0 | [voska/hass-mcp](https://github.com/voska/hass-mcp) | Intégration IA via MCP | 📦 Communauté |
+| Home-Assistant-Matter-Hub | 2.0.45 | [t0bst4r/home-assistant-matter-hub](https://github.com/t0bst4r/home-assistant-matter-hub) | Pont Matter vers Alexa/Apple/Google | 📦 Communauté |
+| Homebridge | 2026-05-22 | [homebridge/homebridge-hassio](https://github.com/homebridge/homebridge-hassio) | Support HomeKit | 📦 Communauté |
+| Linky | 1.7.0 | [bokub/linky](https://github.com/bokub/linky) | Compteur Linky | 📦 Communauté |
+| Matter Server | 8.5.0 | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/matter_server) | Support Matter | 🏠 Officiel HA |
+| Mosquitto broker | 7.1.0 | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/mosquitto) | Broker MQTT | 🏠 Officiel HA |
+| MQTT Explorer | browser-1.0.3 | [thomasloven/hassio-mqtt-explorer](https://github.com/thomasloven/hassio-mqtt-explorer) | Explorateur MQTT | 📦 Communauté |
+| OpenThread Border Router | 3.0.1 | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/openthread_border_router) | Thread/Matter | 🏠 Officiel HA |
+| Studio Code Server | 6.0.1 | [hassio-addons/addon-vscode](https://github.com/hassio-addons/addon-vscode) | VSCode intégré | 📦 Communauté |
+| Terminal & SSH | 10.2.0 | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/ssh) | Accès terminal | 🏠 Officiel HA |
+| Z-Wave JS | 1.3.0 | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/zwave_js) | Réseau Z-Wave *(désactivé — remplacé par Z-Wave JS UI)* | 🏠 Officiel HA |
+| Z-Wave JS UI | 7.3.0 | [hassio-addons/addon-zwave-js-ui](https://github.com/hassio-addons/addon-zwave-js-ui) | Interface Z-Wave JS complète + publication MQTT | 📦 Communauté |
+| Zigbee2MQTT | 2.11.0-1 | [zigbee2mqtt/hassio-zigbee2mqtt](https://github.com/zigbee2mqtt/hassio-zigbee2mqtt) | Réseau Zigbee | 📦 Communauté |
 
 ---
 
-## 🛠️ HACS — Intégrations (19) — par ordre alphabétique
+## 🛠️ HACS — Intégrations (19)
 
 [Voir la documentation complète →](docs/hacs.md)
 
@@ -257,7 +257,7 @@
 | Xiaomi Miot | v1.1.4 | [al-one/hass-xiaomi-miot](https://github.com/al-one/hass-xiaomi-miot) | 🔧 HACS |
 | xsense | v.1.2.0 | [Jarnsen/ha-xsense-component_test](https://github.com/Jarnsen/ha-xsense-component_test) | ⚠️ Dépôt perso |
 
-### Cartes Lovelace HACS (7) — par ordre alphabétique
+### Cartes Lovelace HACS (7)
 
 | Carte | Version | GitHub | Source |
 |---|---|---|---|

@@ -14,10 +14,10 @@
 - Changement de l'indice UV ou de la condition météo journalière
 
 **Fonctionnement :**
-1. Envoie un mail au lever et au coucher du soleil.
-2. Recalcule le compteur soleil (3 critères : température > 20°C, UV > 4, condition = Ensoleillé).
-3. Active `input_boolean.volets_soleil` si ≥ 2 critères.
-4. Positionne `input_select.volets_mode` (Hiver < 7°C, Été > 23°C).
+1. Envoie un mail d'information au lever et au coucher du soleil.
+2. Recalcule en parallèle le compteur soleil (3 critères : température > 20°C, UV > 4, condition = Ensoleillé).
+3. Active `input_boolean.volets_soleil` si le compteur atteint au moins 2 critères, le désactive sinon.
+4. Positionne `input_select.volets_mode` selon la température : Hiver si < 7°C, Été si > 23°C.
 
 **Entrées utilisées :**
 
@@ -29,36 +29,18 @@
 
 ---
 
-## `automation.gestion_de_la_qualite_de_l_air` — Gestion de la Qualité de l'Air
+## `automation.gestion_de_l_activation_de_l_arrosage` — Gestion de l'activation de l'Arrosage
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
 **Déclencheurs :**
-- Capteurs PM2.5 (3 appareils), PM10, VOC, NO2
+- `input_select.arrosage` passe à "Actif"
+- `timer.arrosage_timer` se termine
 
 **Fonctionnement :**
-1. Seuils dépassés (PM2.5 > 40, PM10 > 60, VOC > 6, NO2 > 6) → allume purificateurs.
-2. Tous sous les seuils bas → éteint purificateurs, coupe switches si alarme armée.
-
-**Entrées utilisées :**
-
-| Entrée | Type | Config |
-|---|---|---|
-| `input_boolean.purification` | input_boolean | on/off |
-
----
-
-## `automation.gestion_de_l_activation_de_l_arrosage` — Gestion de l'Arrosage
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :**
-- `input_select.arrosage` → "Actif"
-- `timer.arrosage_timer` terminé
-
-**Fonctionnement :**
-1. Timer terminé → ferme vanne, remet à "Inactif", mail.
-2. Activation → vérifie pluviométrie, ouvre vanne, lance timer, mail.
+1. Timer terminé → ferme la vanne, remet le sélecteur à "Inactif", envoie un mail de confirmation.
+2. Activation → vérifie la pluviométrie (Netatmo) : arrête si précipitations > 2 mm aujourd'hui ou en cours.
+3. Sinon, ouvre la vanne, lance le timer, envoie un mail de déclenchement.
 
 **Entrées utilisées :**
 
@@ -69,14 +51,20 @@
 
 ---
 
-## `automation.gazpar_mise_a_jour_statistiques_journalieres` — GAZPAR Statistiques
+## `automation.gestion_de_la_qualite_de_l_air` — Gestion de la Qualité de l'Air
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
 **Déclencheurs :**
-- Changement de `sensor.gazpar_cheptainville_card`
+- Capteurs PM2.5 (moniteur Xiaomi, purificateur Mi Air, Dyson Salon), PM10, VOC, NO2
+- Attribut PM2.5 du moniteur Xiaomi passe sous 0 (détection indisponibilité appareil)
 
 **Fonctionnement :**
-1. Lance `pyscript.gazpar_update` pour injecter les données gaz dans les statistiques HA.
+1. Seuils dépassés (PM2.5 > 40, PM10 > 60, VOC > 6 ou NO2 > 6) → allume les purificateurs (Mi Air + Dyson Salon) s'ils sont éteints, active le flag purification.
+2. Tous les seuils en dessous des valeurs basses → éteint les purificateurs, coupe les switches physiques si alarme armée, désactive le flag.
 
-**Entrées utilisées :** Aucune entrée helper.
+**Entrées utilisées :**
+
+| Entrée | Type | Config |
+|---|---|---|
+| `input_boolean.purification` | input_boolean | on/off |
