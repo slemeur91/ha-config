@@ -6,6 +6,7 @@
 ---
 
 ## `automation.gestion_des_alertes` — Notification des Alertes
+> [📄 Voir le YAML](../../automations/notification_des_alertes.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 

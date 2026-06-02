@@ -6,6 +6,7 @@
 ---
 
 ## `automation.alarme` — Gestion de l'Alarme
+> [📄 Voir le YAML](../../automations/gestion_de_l_alarme.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
