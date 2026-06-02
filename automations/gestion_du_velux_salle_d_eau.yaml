@@ -1,0 +1,15 @@
+id: '1774471929092'
+alias: Gestion du Velux - Salle d'eau
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  Gestion du Velux - Salle d''eau'
+use_blueprint:
+  path: Volets/Gestion_des_velux.yaml
+  input:
+    velux_name: Salle d'eau
+    velux_target: cover.velux_de_la_salle_d_eau
+    velux_button: input_button.velux_salle_d_eau_fermer
+    chauffage_target: climate.chauffage_de_la_salle_d_eau_nodeid_4_climate

@@ -1,0 +1,26 @@
+id: '1777921355285'
+alias: Surveillance - Automatisations désactivées
+description: ''
+triggers:
+- at: 08:00:00
+  trigger: time
+conditions:
+- condition: template
+  value_template: '{{ states.automation | selectattr(''state'', ''eq'', ''off'') |
+    list | count > 0 }}
+
+    '
+actions:
+- variables:
+    message: 'Les automatisations suivantes sont désactivées : {% for a in states.automation
+      | selectattr(''state'', ''eq'', ''off'') %} - {{ a.name }} {% endfor %}
+
+      '
+- if:
+  - condition: template
+    value_template: '{{ message != null }}'
+  then:
+  - action: script.notification_sms
+    data:
+      message_type: Automatisations désactivées
+      message_sms: '{{ message }}'

@@ -2,9 +2,11 @@
 
 [← Retour README](../../README.md)
 
+
 ---
 
 ## `automation.gestion_du_chauffage_de_l_etage` — Chauffage de l'Étage
+> [📄 Voir le YAML](../../automations/gestion_du_chauffage_de_l_etage.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -47,6 +49,7 @@
 ---
 
 ## `automation.gestion_du_chauffage_du_rdc` — Chauffage du RDC
+> [📄 Voir le YAML](../../automations/gestion_du_chauffage_du_rdc.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 

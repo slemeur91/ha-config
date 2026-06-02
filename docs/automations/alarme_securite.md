@@ -2,6 +2,7 @@
 
 [← Retour README](../../README.md)
 
+
 ---
 
 ## `automation.alarme` — Gestion de l'Alarme
@@ -34,6 +35,7 @@
 ---
 
 ## `automation.alarme_declenchement` — Alarme Déclenchement
+> [📄 Voir le YAML](../../automations/alarme_declenchement.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -57,6 +59,7 @@
 ---
 
 ## `automation.alarme_sabotage` — Alarme Sabotage
+> [📄 Voir le YAML](../../automations/alarme_sabotage.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 

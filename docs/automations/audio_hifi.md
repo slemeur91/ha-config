@@ -2,9 +2,11 @@
 
 [← Retour README](../../README.md)
 
+
 ---
 
 ## `automation.gestion_des_sonos` — Gestion des SONOS
+> [📄 Voir le YAML](../../automations/gestion_des_sonos.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -37,6 +39,7 @@
 ---
 
 ## `automation.gestion_de_la_hifi` — Gestion de la HiFi
+> [📄 Voir le YAML](../../automations/gestion_de_la_hifi.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -66,6 +69,7 @@
 ---
 
 ## `automation.gestion_de_la_telecommande_hifi` — Télécommande HiFi (Z-Wave)
+> [📄 Voir le YAML](../../automations/gestion_de_la_telecommande_hifi.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 

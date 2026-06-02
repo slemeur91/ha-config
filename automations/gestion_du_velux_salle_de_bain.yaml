@@ -1,0 +1,16 @@
+id: '1774472003426'
+alias: Gestion du Velux - Salle de bain
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  Gestion du Velux - Salle de bain'
+use_blueprint:
+  path: Volets/Gestion_des_velux.yaml
+  input:
+    velux_name: Salle de bain
+    velux_target: cover.velux_de_la_salle_de_bain
+    temp_secondaire: sensor.detecteur_de_la_salle_de_bain_nodeid_28_temperature_air
+    velux_button: input_button.velux_salle_de_bain_fermer
+    chauffage_target: climate.chauffage_de_la_salle_de_bain_nodeid_5_climate

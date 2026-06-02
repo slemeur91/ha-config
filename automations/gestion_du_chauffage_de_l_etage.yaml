@@ -1,0 +1,706 @@
+id: '1753904612706'
+alias: Gestion du Chauffage de l'Etage
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Changement de `input_boolean.chauffage_horsgel`, `input_select.chauffage_mode_etage`,
+  `input_select.chauffage_action`
+
+  - Fin de `timer.chauffage_timer_etage`
+
+  - Changement de température courante d''un des 5 thermostats Z-Wave de l''étage
+
+  - Changement d''état des velux ou des détecteurs de portes (avec délai 5 min)
+
+
+  **Fonctionnement :**
+
+  1. Calcule en parallèle la variable `horsgel_etage` (vrai si mode HorsGel global,
+  portes/velux ouverts, ou mode Absent) et ajuste les consignes de chaque pièce selon
+  le mode (Confort / Réduit / TéléTravail).
+
+  2. Met à jour `input_boolean.chauffage_horsgel_etage` et envoie un mail si changement
+  de mode.
+
+  3. Applique la consigne calculée à chacun des 5 thermostats Z-Wave (Bureau, Chambre,
+  Suite parentale, SdE, SdB) ; si au moins un thermostat a été mis à jour, démarre
+  le timer de vérification.
+
+  4. Calcule avec hystérésis si la chaudière doit chauffer (comparaison température
+  courante vs consigne sur les 5 zones) et pilote le switch chaudière en conséquence.
+
+
+  **Entités principales :**
+
+  - `climate.chauffage_du_bureau/chambre/suite_parentale/salle_d_eau/salle_de_bain_nodeid_*`
+  : thermostats Z-Wave
+
+  - `switch.switch_de_la_chaudiere_switch` : commande chaudière
+
+  - `timer.chauffage_timer_etage` : délai de vérification
+
+  - `counter.chauffage_compteur_etage` / `counter.chauffage_compteur_etage_action`
+  : logique de décision'
+triggers:
+- trigger: state
+  entity_id:
+  - input_boolean.chauffage_horsgel
+  id: Chauffage HorsGel
+- trigger: state
+  entity_id:
+  - input_select.chauffage_mode_etage
+  id: Chauffage Mode
+- trigger: state
+  entity_id:
+  - input_select.chauffage_action
+  id: Chauffage Action
+- trigger: event
+  event_type: timer.finished
+  event_data:
+    entity_id: timer.chauffage_timer_etage
+- trigger: state
+  entity_id:
+  - climate.chauffage_du_bureau_nodeid_2_climate
+  - climate.chauffage_de_la_chambre_nodeid_6_climate
+  - climate.chauffage_de_la_suite_parentale_nodeid_3_climate
+  - climate.chauffage_de_la_salle_d_eau_nodeid_4_climate
+  - climate.chauffage_de_la_salle_de_bain_nodeid_5_climate
+  attribute: current_temperature
+- trigger: state
+  entity_id:
+  - cover.velux_de_la_chambre
+  - cover.velux_de_la_salle_de_bain
+  - cover.velux_de_la_salle_d_eau
+  - binary_sensor.do_suite_parental
+  - binary_sensor.do_bureau
+  to: null
+  for:
+    hours: 0
+    minutes: 5
+    seconds: 0
+conditions: []
+actions:
+- parallel:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.chauffage_horsgel
+        state: 'on'
+      sequence:
+      - variables:
+          horsgel_etage: true
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.chauffage_horsgel
+        state: 'off'
+      sequence:
+      - if:
+        - condition: or
+          conditions:
+          - condition: state
+            entity_id: binary_sensor.do_bureau
+            state: 'on'
+          - condition: state
+            entity_id: binary_sensor.do_suite_parental
+            state: 'on'
+          - condition: state
+            entity_id: cover.velux_de_la_chambre
+            state: open
+          - condition: state
+            entity_id: cover.velux_de_la_salle_de_bain
+            state: open
+          - condition: state
+            entity_id: cover.velux_de_la_salle_d_eau
+            state: open
+        then:
+        - variables:
+            horsgel_etage: true
+        else:
+        - choose:
+          - conditions:
+            - condition: state
+              entity_id: input_select.chauffage_action
+              state: Repos
+            sequence:
+            - variables:
+                horsgel_etage: false
+          - conditions:
+            - condition: state
+              entity_id: input_select.chauffage_action
+              state: TéléTravail
+            sequence:
+            - variables:
+                horsgel_etage: false
+          - conditions:
+            - condition: state
+              entity_id: input_select.chauffage_action
+              state: Travail
+            sequence:
+            - variables:
+                horsgel_etage: false
+          - conditions:
+            - condition: state
+              entity_id: input_select.chauffage_action
+              state: Absent
+            sequence:
+            - variables:
+                horsgel_etage: true
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.chauffage_mode_etage
+        state: Confort
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{ states(''input_number.chauffage_consigne_confort_chambre_etage'')
+            }}'
+        target:
+          entity_id:
+          - input_number.chauffage_chambre
+          - input_number.chauffage_suiteparentale
+      - if:
+        - condition: state
+          entity_id: input_select.chauffage_action
+          state: TéléTravail
+        then:
+        - action: input_number.set_value
+          metadata: {}
+          data:
+            value: '{{ states(''input_number.chauffage_consigne_confort_etage'') }}'
+          target:
+            entity_id:
+            - input_number.chauffage_bureau
+        else:
+        - action: input_number.set_value
+          metadata: {}
+          data:
+            value: '{{ states(''input_number.chauffage_consigne_confort_chambre_etage'')
+              }}'
+          target:
+            entity_id:
+            - input_number.chauffage_bureau
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{ states(''input_number.chauffage_consigne_sdb_etage'') }}'
+        target:
+          entity_id:
+          - input_number.chauffage_sdb
+          - input_number.chauffage_sde
+    - conditions:
+      - condition: state
+        entity_id: input_select.chauffage_mode_etage
+        state: Réduit
+      sequence:
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{ states(''input_number.chauffage_consigne_reduit_chambre_etage'')
+            }}'
+        target:
+          entity_id:
+          - input_number.chauffage_chambre
+          - input_number.chauffage_suiteparentale
+      - if:
+        - condition: and
+          conditions:
+          - condition: state
+            entity_id: input_select.chauffage_action
+            state: TéléTravail
+          - condition: time
+            after: 08:00:00
+            before: '19:00:00'
+        then:
+        - action: input_number.set_value
+          metadata: {}
+          data:
+            value: '{{ states(''input_number.chauffage_consigne_confort_etage'') }}'
+          target:
+            entity_id:
+            - input_number.chauffage_bureau
+        else:
+        - action: input_number.set_value
+          metadata: {}
+          data:
+            value: '{{ states(''input_number.chauffage_consigne_reduit_chambre_etage'')
+              }}'
+          target:
+            entity_id:
+            - input_number.chauffage_bureau
+      - action: input_number.set_value
+        metadata: {}
+        data:
+          value: '{{ states(''input_number.chauffage_consigne_reduit_etage'') }}'
+        target:
+          entity_id:
+          - input_number.chauffage_sdb
+          - input_number.chauffage_sde
+- choose:
+  - conditions:
+    - condition: and
+      conditions:
+      - condition: template
+        value_template: '{{ horsgel_etage == false }}'
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: input_boolean.chauffage_horsgel_etage
+          state: 'on'
+        - condition: trigger
+          id:
+          - Chauffage Mode
+    sequence:
+    - action: input_boolean.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: input_boolean.chauffage_horsgel_etage
+    - action: script.notification_mail
+      data:
+        message_type: Chauffage Etage
+        message_mail: '{{ states(''input_select.chauffage_mode_etage'') }}'
+  - conditions:
+    - condition: and
+      conditions:
+      - condition: template
+        value_template: '{{ horsgel_etage == true }}'
+      - condition: state
+        entity_id: input_boolean.chauffage_horsgel_etage
+        state: 'off'
+    sequence:
+    - action: input_boolean.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: input_boolean.chauffage_horsgel_etage
+    - action: script.notification_mail
+      data:
+        message_type: Chauffage Etage
+        message_mail: HorsGel
+- sequence:
+  - action: counter.reset
+    metadata: {}
+    data: {}
+    target:
+      entity_id: counter.chauffage_compteur_etage
+  - parallel:
+    - sequence:
+      - if:
+        - condition: state
+          entity_id: input_boolean.chauffage_horsgel_etage
+          state:
+          - 'on'
+        then:
+        - variables:
+            consigne: '{{ states(''input_number.chauffage_consigne_horsgel_etage'')
+              }}'
+        else:
+        - variables:
+            consigne: '{{ states(''input_number.chauffage_bureau'') }}'
+      - if:
+        - condition: or
+          conditions:
+          - condition: template
+            value_template: '{{ state_attr(''climate.chauffage_du_bureau_nodeid_2_climate'',
+              ''temperature'') == None }}'
+          - condition: template
+            value_template: '{{ state_attr(''climate.chauffage_du_bureau_nodeid_2_climate'',
+              ''temperature'') | float(0) != consigne | float }}'
+        then:
+        - if:
+          - condition: state
+            entity_id: climate.chauffage_du_bureau_nodeid_2_climate
+            state: 'off'
+          then:
+          - action: climate.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id: climate.chauffage_du_bureau_nodeid_2_climate
+        - action: climate.set_temperature
+          metadata: {}
+          data:
+            temperature: '{{ consigne }}'
+          target:
+            entity_id: climate.chauffage_du_bureau_nodeid_2_climate
+        - action: counter.increment
+          metadata: {}
+          data: {}
+          target:
+            entity_id: counter.chauffage_compteur_etage
+    - sequence:
+      - if:
+        - condition: state
+          entity_id: input_boolean.chauffage_horsgel_etage
+          state:
+          - 'on'
+        then:
+        - variables:
+            consigne: '{{ states(''input_number.chauffage_consigne_horsgel_etage'')
+              }}'
+        else:
+        - variables:
+            consigne: '{{ states(''input_number.chauffage_chambre'') }}'
+      - if:
+        - condition: or
+          conditions:
+          - condition: template
+            value_template: '{{ state_attr(''climate.chauffage_de_la_chambre_nodeid_6_climate'',
+              ''temperature'') == None }}'
+          - condition: template
+            value_template: '{{ state_attr(''climate.chauffage_de_la_chambre_nodeid_6_climate'',
+              ''temperature'') | float(0) != consigne | float }}'
+        then:
+        - if:
+          - condition: state
+            entity_id: climate.chauffage_de_la_chambre_nodeid_6_climate
+            state: 'off'
+          then:
+          - action: climate.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id: climate.chauffage_de_la_chambre_nodeid_6_climate
+        - action: climate.set_temperature
+          metadata: {}
+          data:
+            temperature: '{{ consigne }}'
+          target:
+            entity_id:
+            - climate.chauffage_de_la_chambre_nodeid_6_climate
+        - action: counter.increment
+          metadata: {}
+          data: {}
+          target:
+            entity_id: counter.chauffage_compteur_etage
+    - sequence:
+      - if:
+        - condition: state
+          entity_id: input_boolean.chauffage_horsgel_etage
+          state:
+          - 'on'
+        then:
+        - variables:
+            consigne: '{{ states(''input_number.chauffage_consigne_horsgel_etage'')
+              }}'
+        else:
+        - variables:
+            consigne: '{{ states(''input_number.chauffage_suiteparentale'') }}'
+      - if:
+        - condition: or
+          conditions:
+          - condition: template
+            value_template: '{{ state_attr(''climate.chauffage_de_la_suite_parentale_nodeid_3_climate'',
+              ''temperature'') == None }}'
+          - condition: template
+            value_template: '{{ state_attr(''climate.chauffage_de_la_suite_parentale_nodeid_3_climate'',
+              ''temperature'') | float(0) != consigne | float }}'
+        then:
+        - if:
+          - condition: state
+            entity_id: climate.chauffage_de_la_suite_parentale_nodeid_3_climate
+            state: 'off'
+          then:
+          - action: climate.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id: climate.chauffage_de_la_suite_parentale_nodeid_3_climate
+        - action: climate.set_temperature
+          metadata: {}
+          data:
+            temperature: '{{ consigne }}'
+          target:
+            entity_id:
+            - climate.chauffage_de_la_suite_parentale_nodeid_3_climate
+        - action: counter.increment
+          metadata: {}
+          data: {}
+          target:
+            entity_id: counter.chauffage_compteur_etage
+    - sequence:
+      - if:
+        - condition: state
+          entity_id: input_boolean.chauffage_horsgel_etage
+          state:
+          - 'on'
+        then:
+        - variables:
+            consigne: '{{ states(''input_number.chauffage_consigne_horsgel_etage'')
+              }}'
+        else:
+        - variables:
+            consigne: '{{ states(''input_number.chauffage_sde'') }}'
+      - if:
+        - condition: or
+          conditions:
+          - condition: template
+            value_template: '{{ state_attr(''climate.chauffage_de_la_salle_d_eau_nodeid_4_climate'',
+              ''temperature'') == None }}'
+          - condition: template
+            value_template: '{{ state_attr(''climate.chauffage_de_la_salle_d_eau_nodeid_4_climate'',
+              ''temperature'') | float(0) != consigne | float }}'
+        then:
+        - if:
+          - condition: state
+            entity_id: climate.chauffage_de_la_salle_d_eau_nodeid_4_climate
+            state: 'off'
+          then:
+          - action: climate.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id: climate.chauffage_de_la_salle_d_eau_nodeid_4_climate
+        - action: climate.set_temperature
+          metadata: {}
+          data:
+            temperature: '{{ consigne }}'
+          target:
+            entity_id:
+            - climate.chauffage_de_la_salle_d_eau_nodeid_4_climate
+        - action: counter.increment
+          metadata: {}
+          data: {}
+          target:
+            entity_id: counter.chauffage_compteur_etage
+    - sequence:
+      - if:
+        - condition: state
+          entity_id: input_boolean.chauffage_horsgel_etage
+          state:
+          - 'on'
+        then:
+        - variables:
+            consigne: '{{ states(''input_number.chauffage_consigne_horsgel_etage'')
+              }}'
+        else:
+        - variables:
+            consigne: '{{ states(''input_number.chauffage_sdb'') }}'
+      - if:
+        - condition: or
+          conditions:
+          - condition: template
+            value_template: '{{ state_attr(''climate.chauffage_de_la_salle_de_bain_nodeid_5_climate'',
+              ''temperature'') == None }}'
+          - condition: template
+            value_template: '{{ state_attr(''climate.chauffage_de_la_salle_de_bain_nodeid_5_climate'',
+              ''temperature'') | float(0) != consigne | float }}'
+        then:
+        - if:
+          - condition: state
+            entity_id: climate.chauffage_de_la_salle_de_bain_nodeid_5_climate
+            state: 'off'
+          then:
+          - action: climate.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id: climate.chauffage_de_la_salle_de_bain_nodeid_5_climate
+        - action: climate.set_temperature
+          metadata: {}
+          data:
+            temperature: '{{ consigne }}'
+          target:
+            entity_id:
+            - climate.chauffage_de_la_salle_de_bain_nodeid_5_climate
+        - action: counter.increment
+          metadata: {}
+          data: {}
+          target:
+            entity_id: counter.chauffage_compteur_etage
+  - if:
+    - condition: numeric_state
+      entity_id: counter.chauffage_compteur_etage
+      above: 0
+    then:
+    - action: timer.cancel
+      metadata: {}
+      data: {}
+      target:
+        entity_id: timer.chauffage_timer_etage
+    - action: timer.start
+      metadata: {}
+      data: {}
+      target:
+        entity_id: timer.chauffage_timer_etage
+    else:
+    - action: timer.finish
+      metadata: {}
+      data: {}
+      target:
+        entity_id: timer.chauffage_timer_etage
+- sequence:
+  - variables:
+      Chauffage_hytersis: 0.3
+  - action: counter.reset
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - counter.chauffage_compteur_etage_action
+  - parallel:
+    - if:
+      - condition: template
+        value_template: '{{ state_attr(''climate.chauffage_du_bureau_nodeid_2_climate'',
+          ''current_temperature'') | float(0) + Chauffage_hytersis | float < state_attr(''climate.chauffage_du_bureau_nodeid_2_climate'',
+          ''temperature'') | float(0) }}'
+      then:
+      - action: counter.increment
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - counter.chauffage_compteur_etage_action
+    - if:
+      - condition: template
+        value_template: '{{ state_attr(''climate.chauffage_de_la_chambre_nodeid_6_climate'',
+          ''current_temperature'') | float(0) + Chauffage_hytersis | float < state_attr(''climate.chauffage_de_la_chambre_nodeid_6_climate'',
+          ''temperature'') | float(0) }}'
+      then:
+      - action: counter.increment
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - counter.chauffage_compteur_etage_action
+    - if:
+      - condition: template
+        value_template: '{{ state_attr(''climate.chauffage_de_la_suite_parentale_nodeid_3_climate'',
+          ''current_temperature'') | float(0) + Chauffage_hytersis | float < state_attr(''climate.chauffage_de_la_suite_parentale_nodeid_3_climate'',
+          ''temperature'') | float(0) }}'
+      then:
+      - action: counter.increment
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - counter.chauffage_compteur_etage_action
+    - if:
+      - condition: template
+        value_template: '{{ state_attr(''climate.chauffage_de_la_salle_d_eau_nodeid_4_climate'',
+          ''current_temperature'') | float(0) + Chauffage_hytersis | float < state_attr(''climate.chauffage_de_la_salle_d_eau_nodeid_4_climate'',
+          ''temperature'') | float(0) }}'
+      then:
+      - action: counter.increment
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - counter.chauffage_compteur_etage_action
+    - if:
+      - condition: template
+        value_template: '{{ state_attr(''climate.chauffage_de_la_salle_de_bain_nodeid_5_climate'',
+          ''current_temperature'') | float(0) + Chauffage_hytersis | float < state_attr(''climate.chauffage_de_la_salle_de_bain_nodeid_5_climate'',
+          ''temperature'') | float(0) }}'
+      then:
+      - action: counter.increment
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - counter.chauffage_compteur_etage_action
+  - action: counter.reset
+    metadata: {}
+    data: {}
+    target:
+      entity_id: counter.chauffage_compteur_etage
+  - parallel:
+    - if:
+      - condition: template
+        value_template: '{{ state_attr(''climate.chauffage_du_bureau_nodeid_2_climate'',
+          ''current_temperature'') | float(0) < state_attr(''climate.chauffage_du_bureau_nodeid_2_climate'',
+          ''temperature'') | float(0) }}'
+      then:
+      - action: counter.increment
+        metadata: {}
+        data: {}
+        target:
+          entity_id: counter.chauffage_compteur_etage
+    - if:
+      - condition: template
+        value_template: '{{ state_attr(''climate.chauffage_de_la_chambre_nodeid_6_climate'',
+          ''current_temperature'') | float(0) < state_attr(''climate.chauffage_de_la_chambre_nodeid_6_climate'',
+          ''temperature'') | float(0) }}'
+      then:
+      - action: counter.increment
+        metadata: {}
+        data: {}
+        target:
+          entity_id: counter.chauffage_compteur_etage
+    - if:
+      - condition: template
+        value_template: '{{ state_attr(''climate.chauffage_de_la_suite_parentale_nodeid_3_climate'',
+          ''current_temperature'') | float(0) < state_attr(''climate.chauffage_de_la_suite_parentale_nodeid_3_climate'',
+          ''temperature'') | float(0) }}'
+      then:
+      - action: counter.increment
+        metadata: {}
+        data: {}
+        target:
+          entity_id: counter.chauffage_compteur_etage
+    - if:
+      - condition: template
+        value_template: '{{ state_attr(''climate.chauffage_de_la_salle_d_eau_nodeid_4_climate'',
+          ''current_temperature'') | float(0) < state_attr(''climate.chauffage_de_la_salle_d_eau_nodeid_4_climate'',
+          ''temperature'') | float(0) }}'
+      then:
+      - action: counter.increment
+        metadata: {}
+        data: {}
+        target:
+          entity_id: counter.chauffage_compteur_etage
+    - if:
+      - condition: template
+        value_template: '{{ state_attr(''climate.chauffage_de_la_salle_de_bain_nodeid_5_climate'',
+          ''current_temperature'') | float(0) < state_attr(''climate.chauffage_de_la_salle_de_bain_nodeid_5_climate'',
+          ''temperature'') | float(0) }}'
+      then:
+      - action: counter.increment
+        metadata: {}
+        data: {}
+        target:
+          entity_id: counter.chauffage_compteur_etage
+  - choose:
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: numeric_state
+          entity_id: counter.chauffage_compteur_etage_action
+          above: 0
+        - condition: numeric_state
+          entity_id: counter.chauffage_compteur_etage
+          above: 1
+      sequence:
+      - if:
+        - condition: state
+          entity_id: switch.switch_de_la_chaudiere_switch
+          state: 'off'
+        then:
+        - action: switch.turn_on
+          metadata: {}
+          data: {}
+          target:
+            entity_id: switch.switch_de_la_chaudiere_switch
+    - conditions:
+      - condition: numeric_state
+        entity_id: counter.chauffage_compteur_etage
+        below: 1
+      sequence:
+      - if:
+        - condition: state
+          entity_id: switch.switch_de_la_chaudiere_switch
+          state: 'on'
+        then:
+        - action: switch.turn_off
+          metadata: {}
+          data: {}
+          target:
+            entity_id: switch.switch_de_la_chaudiere_switch
+mode: queued
+max: 10

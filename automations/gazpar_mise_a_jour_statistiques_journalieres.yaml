@@ -1,0 +1,48 @@
+id: '1777633740328'
+alias: GAZPAR – Mise à jour statistiques journalières
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Changement de `sensor.gazpar_cheptainville_card` (nouvelles données reçues via
+  gazpar2mqtt)
+
+
+  **Conditions :**
+
+  - Sensor non indisponible / inconnu
+
+
+  **Fonctionnement :**
+
+  1. Lance le script pyscript `gazpar_update` pour injecter les dernières données
+  de consommation gaz dans les statistiques long-terme de HA.
+
+
+  **Entités principales :**
+
+  - `sensor.gazpar_cheptainville_card` : données brutes GAZPAR
+
+  - `pyscript.gazpar_update` : injection statistiques'
+triggers:
+- entity_id: sensor.gazpar_cheptainville_card
+  trigger: state
+conditions:
+- condition: not
+  conditions:
+  - condition: state
+    entity_id: sensor.gazpar_cheptainville_card
+    state:
+    - unavailable
+    - unknown
+actions:
+- action: pyscript.gazpar_import_all
+  data: {}
+  enabled: false
+- action: pyscript.gazpar_update
+  data: {}
+mode: single
+max_exceeded: silent

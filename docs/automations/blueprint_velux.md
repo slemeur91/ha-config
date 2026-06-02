@@ -2,7 +2,8 @@
 
 [← Retour README](../../README.md)
 
-Blueprint : `Volets/Gestion_des_velux.yaml`
+
+Blueprint : [`blueprints/Gestion_des_velux.yaml`](../../blueprints/Gestion_des_velux.yaml)
 
 ---
 
@@ -32,6 +33,7 @@ Contrôle intelligent d'un Velux selon la présence, les alertes météo et la p
 ## Instances configurées
 
 ### Velux Chambre
+> [📄 Voir le YAML](../../automations/gestion_du_velux_chambre.yaml)
 - **Velux cible :** `cover.velux_de_la_chambre`
 - **Chauffage associé :** `climate.chauffage_de_la_chambre_nodeid_6_climate`
 - **Sonde secondaire :** `sensor.netatmo_chambre_temperature`
@@ -41,6 +43,7 @@ Contrôle intelligent d'un Velux selon la présence, les alertes météo et la p
 ---
 
 ### Velux Salle d'eau
+> [📄 Voir le YAML](../../automations/gestion_du_velux_salle_d_eau.yaml)
 - **Velux cible :** `cover.velux_de_la_salle_d_eau`
 - **Chauffage associé :** `climate.chauffage_de_la_salle_d_eau_nodeid_4_climate`
 - **Sonde secondaire :** *(optionnel)*
@@ -50,6 +53,7 @@ Contrôle intelligent d'un Velux selon la présence, les alertes météo et la p
 ---
 
 ### Velux Salle de bain
+> [📄 Voir le YAML](../../automations/gestion_du_velux_salle_de_bain.yaml)
 - **Velux cible :** `cover.velux_de_la_salle_de_bain`
 - **Chauffage associé :** `climate.chauffage_de_la_salle_de_bain_nodeid_5_climate`
 - **Sonde secondaire :** *(optionnel)*

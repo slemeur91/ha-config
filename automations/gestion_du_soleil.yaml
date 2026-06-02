@@ -1,0 +1,158 @@
+id: '1752852726505'
+alias: Gestion du Soleil
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Lever et coucher du soleil
+
+  - Température extérieure franchit un seuil (< 7°C ou > 20°C)
+
+  - Changement de l''indice UV ou de la condition météo journalière
+
+
+  **Fonctionnement :**
+
+  1. Envoie un mail d''information au lever et au coucher du soleil.
+
+  2. Recalcule en parallèle le compteur soleil (3 critères : température > 20°C, UV
+  > 4, condition = Ensoleillé).
+
+  3. Active `input_boolean.volets_soleil` si le compteur atteint au moins 2 critères,
+  le désactive sinon.
+
+  4. Positionne `input_select.volets_mode` selon la température : Hiver si < 7°C,
+  Été si > 23°C.
+
+
+  **Entités principales :**
+
+  - `counter.compteur_soleil` : accumulation des critères soleil
+
+  - `input_boolean.volets_soleil` : activation du mode protection solaire
+
+  - `input_select.volets_mode` : mode Été / Hiver des volets'
+triggers:
+- trigger: sun
+  event: sunrise
+  offset: 0
+  id: Levé du Soleil
+- trigger: sun
+  event: sunset
+  offset: 0
+  id: Couché du Soleil
+- trigger: numeric_state
+  entity_id:
+  - sensor.netatmo_exterieur_temperature
+  below: 7
+- trigger: numeric_state
+  entity_id:
+  - sensor.netatmo_exterieur_temperature
+  above: 20
+- trigger: state
+  entity_id:
+  - sensor.cheptainville_daily_original_condition
+- trigger: state
+  entity_id:
+  - sensor.cheptainville_uv
+conditions: []
+actions:
+- choose:
+  - conditions:
+    - condition: trigger
+      id:
+      - Levé du Soleil
+    sequence:
+    - action: script.notification_mail
+      data:
+        message_type: Information
+        message_mail: Levé du soleil
+  - conditions:
+    - condition: trigger
+      id:
+      - Couché du Soleil
+    sequence:
+    - action: script.notification_mail
+      data:
+        message_type: Information
+        message_mail: Couché du soleil
+- sequence:
+  - action: counter.reset
+    metadata: {}
+    data: {}
+    target:
+      entity_id: counter.compteur_soleil
+  - parallel:
+    - if:
+      - condition: numeric_state
+        entity_id: sensor.netatmo_exterieur_temperature
+        above: 20
+      then:
+      - action: counter.increment
+        metadata: {}
+        data: {}
+        target:
+          entity_id: counter.compteur_soleil
+    - if:
+      - condition: numeric_state
+        entity_id: sensor.cheptainville_uv
+        above: 4
+      then:
+      - action: counter.increment
+        metadata: {}
+        data: {}
+        target:
+          entity_id: counter.compteur_soleil
+    - if:
+      - condition: state
+        entity_id: sensor.cheptainville_daily_original_condition
+        state: Ensoleillé
+      then:
+      - action: counter.increment
+        metadata: {}
+        data: {}
+        target:
+          entity_id: counter.compteur_soleil
+  - if:
+    - condition: numeric_state
+      entity_id: counter.compteur_soleil
+      above: 1
+    then:
+    - action: input_boolean.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: input_boolean.volets_soleil
+    else:
+    - action: input_boolean.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: input_boolean.volets_soleil
+- choose:
+  - conditions:
+    - condition: numeric_state
+      entity_id: sensor.netatmo_exterieur_temperature
+      below: 7
+    sequence:
+    - action: input_select.select_option
+      metadata: {}
+      data:
+        option: Hiver
+      target:
+        entity_id: input_select.volets_mode
+  - conditions:
+    - condition: numeric_state
+      entity_id: sensor.netatmo_exterieur_temperature
+      above: 23
+    sequence:
+    - action: input_select.select_option
+      metadata: {}
+      data:
+        option: Eté
+      target:
+        entity_id: input_select.volets_mode
+mode: restart

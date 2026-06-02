@@ -1,0 +1,70 @@
+notification_snapshot:
+  alias: Notification Snapshot
+  description: '**Statut :** Finalisé
+
+    **Evolution :** Aucune
+
+
+    **Rôle :** Capture les images de 6 caméras et les envoie par mail en cas d''alerte.
+
+
+    **Fonctionnement :**
+
+    1. Prend en parallèle un snapshot des caméras 1, 2, 3, 4, 6 et du portier.
+
+    2. Envoie un mail avec toutes les images en pièces jointes.'
+  sequence:
+  - parallel:
+    - action: camera.snapshot
+      target:
+        entity_id:
+        - camera.slm_camera1
+      data:
+        filename: /config/www/Snapshots/camera1.jpg
+    - action: camera.snapshot
+      target:
+        entity_id:
+        - camera.slm_camera2
+      data:
+        filename: /config/www/Snapshots/camera2.jpg
+    - action: camera.snapshot
+      target:
+        entity_id:
+        - camera.slm_camera3
+      data:
+        filename: /config/www/Snapshots/camera3.jpg
+    - action: camera.snapshot
+      target:
+        entity_id:
+        - camera.slm_camera4
+      data:
+        filename: /config/www/Snapshots/camera4.jpg
+    - action: camera.snapshot
+      target:
+        entity_id:
+        - camera.slm_camera6
+      data:
+        filename: /config/www/Snapshots/camera6.jpg
+    - action: camera.snapshot
+      target:
+        entity_id:
+        - camera.slm_portier
+      data:
+        filename: /config/www/Snapshots/portier.jpg
+  - action: notify.email
+    metadata: {}
+    data:
+      title: '[HA] Alerte
+
+        '
+      target: votre-email@domaine.fr
+      data:
+        images:
+        - /config/www/Snapshots/camera1.jpg
+        - /config/www/Snapshots/camera2.jpg
+        - /config/www/Snapshots/camera3.jpg
+        - /config/www/Snapshots/camera4.jpg
+        - /config/www/Snapshots/camera6.jpg
+        - /config/www/Snapshots/portier.jpg
+      message: 'Snapshots des caméra :'
+  mode: restart

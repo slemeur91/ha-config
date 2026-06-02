@@ -2,9 +2,11 @@
 
 [← Retour README](../../README.md)
 
+
 ---
 
 ## `automation.notification_appareils_en_batterie_faible` — Notification Batterie Faible
+> [📄 Voir le YAML](../../automations/notification_appareils_en_batterie_faible.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -21,6 +23,7 @@
 ---
 
 ## `automation.notification_appareils_en_batterie_faible_hebdomadaire` — Vérification Hebdomadaire Batteries
+> [📄 Voir le YAML](../../automations/notification_appareils_en_batterie_faible_hebdomadaire.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -34,6 +37,7 @@
 ---
 
 ## `automation.notification_de_batterie_remplacee` — Batterie Remplacée
+> [📄 Voir le YAML](../../automations/notification_de_batterie_remplacee.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 

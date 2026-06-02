@@ -1,0 +1,251 @@
+id: '1765043655391'
+alias: Maintien des Prises et Appareils allumés
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Plusieurs switches critiques restent éteints 30 secondes (réfrigérateur, multimédia,
+  informatique, cellier, routeur 4G, ventilateur informatique, ZappitiNAS)
+
+  - Changement d''état du purificateur ou du ventilateur salon
+
+  - Changement du device tracker ZappitiNAS
+
+
+  **Fonctionnement :**
+
+  1. Après 5 secondes de délai, vérifie en parallèle chaque appareil.
+
+  2. Rallume automatiquement tout switch critique qui serait éteint (protection coupures
+  accidentelles).
+
+  3. Si ZappitiNAS ne répond plus depuis 2 min alors que le switch est allumé → force
+  le Wake-on-LAN via `switch.zappitinas`.
+
+  4. Active/désactive l''intégration du purificateur selon l''état de sa multiprise.
+
+  5. Active/désactive l''intégration du ventilateur (Dyson) selon l''état de son switch.
+
+
+  **Entités principales :**
+
+  - `switch.prise_du_refrigerateur_switch` / `prise_du_multimedia_switch` / `prise_de_l_informatique`
+  : prises critiques
+
+  - `switch.zappitinas` : Wake-on-LAN NAS
+
+  - `device_tracker.zappitinas_zappitinas` : supervision réseau NAS'
+triggers:
+- trigger: state
+  entity_id:
+  - switch.prise_du_refrigerateur_switch
+  to:
+  - 'off'
+  for:
+    hours: 0
+    minutes: 0
+    seconds: 30
+- trigger: state
+  entity_id:
+  - switch.prise_du_multimedia_switch
+  to:
+  - 'off'
+  for:
+    hours: 0
+    minutes: 0
+    seconds: 30
+- trigger: state
+  entity_id:
+  - switch.prise_de_l_informatique
+  to:
+  - 'off'
+  for:
+    hours: 0
+    minutes: 0
+    seconds: 30
+- trigger: state
+  entity_id:
+  - switch.prise_du_cellier_nodeid_24_switch
+  to:
+  - 'off'
+  for:
+    hours: 0
+    minutes: 0
+    seconds: 30
+- trigger: state
+  entity_id:
+  - switch.1_routeur_4g
+  to: null
+  for:
+    hours: 0
+    minutes: 0
+    seconds: 30
+- trigger: state
+  entity_id:
+  - switch.4_ventilateur
+  to: null
+- trigger: state
+  entity_id:
+  - switch.3_zappitinas
+  to: null
+  for:
+    hours: 0
+    minutes: 0
+    seconds: 30
+- trigger: state
+  entity_id:
+  - device_tracker.zappitinas_zappitinas
+  to: null
+- trigger: state
+  entity_id:
+  - switch.multiprise_du_salon_droite_2_purificateur
+  id: Purificateur
+  to: null
+  for:
+    hours: 0
+    minutes: 0
+    seconds: 30
+- trigger: state
+  entity_id:
+  - switch.2_ventilateur
+  id: Ventilateur
+  to: null
+  for:
+    hours: 0
+    minutes: 0
+    seconds: 30
+conditions: []
+actions:
+- delay:
+    hours: 0
+    minutes: 0
+    seconds: 5
+    milliseconds: 0
+- parallel:
+  - if:
+    - condition: state
+      entity_id: switch.prise_du_refrigerateur_switch
+      state: 'off'
+    then:
+    - action: switch.turn_on
+      data: {}
+      target:
+        entity_id: switch.prise_du_refrigerateur_switch
+  - if:
+    - condition: state
+      entity_id: switch.prise_du_multimedia_switch
+      state: 'off'
+    then:
+    - action: switch.turn_on
+      data: {}
+      target:
+        entity_id: switch.prise_du_multimedia_switch
+  - if:
+    - condition: state
+      entity_id: switch.prise_de_l_informatique
+      state: 'off'
+    then:
+    - action: switch.turn_on
+      data: {}
+      target:
+        entity_id: switch.prise_de_l_informatique
+  - if:
+    - condition: state
+      entity_id: switch.prise_du_cellier_nodeid_24_switch
+      state: 'off'
+    then:
+    - action: switch.turn_on
+      data: {}
+      target:
+        entity_id: switch.prise_du_cellier_nodeid_24_switch
+  - if:
+    - condition: state
+      entity_id: switch.1_routeur_4g
+      state: 'off'
+    then:
+    - action: switch.turn_on
+      data: {}
+      target:
+        entity_id:
+        - switch.1_routeur_4g
+  - if:
+    - condition: state
+      entity_id: switch.4_ventilateur
+      state: 'off'
+    then:
+    - action: switch.turn_on
+      data: {}
+      target:
+        entity_id:
+        - switch.4_ventilateur
+  - if:
+    - condition: state
+      entity_id: switch.3_zappitinas
+      state: 'off'
+    then:
+    - action: switch.turn_on
+      data: {}
+      target:
+        entity_id:
+        - switch.3_zappitinas
+  - if:
+    - condition: and
+      conditions:
+      - condition: state
+        entity_id: device_tracker.zappitinas_zappitinas
+        state:
+        - not_home
+        for:
+          hours: 0
+          minutes: 2
+          seconds: 0
+      - condition: state
+        entity_id: switch.3_zappitinas
+        state:
+        - 'on'
+    then:
+    - action: switch.turn_on
+      data: {}
+      target:
+        entity_id: switch.zappitinas
+  - if:
+    - condition: trigger
+      id:
+      - Purificateur
+    then:
+    - if:
+      - condition: state
+        entity_id: switch.multiprise_du_salon_droite_2_purificateur
+        state: 'on'
+      then:
+      - action: homeassistant.enable_device
+        data:
+          device_id:
+          - 968f63218de9f0eaf53c7d2a548c33bb
+      else:
+      - action: homeassistant.disable_device
+        data:
+          device_id:
+          - 968f63218de9f0eaf53c7d2a548c33bb
+  - if:
+    - condition: trigger
+      id:
+      - Ventilateur
+    then:
+    - if:
+      - condition: state
+        entity_id: switch.2_ventilateur
+        state: 'on'
+      then:
+      - action: homeassistant.enable_config_entry
+        data:
+          config_entry_id: VOTRE_CONFIG_ENTRY_ID
+      else:
+      - action: homeassistant.disable_config_entry
+        data:
+          config_entry_id: VOTRE_CONFIG_ENTRY_ID
+mode: queued
+max: 10

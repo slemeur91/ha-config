@@ -1,0 +1,31 @@
+notification_mail:
+  alias: Notification Mail
+  description: '**Statut :** Finalisé
+
+    **Evolution :** Aucune
+
+
+    **Rôle :** Envoie un mail de notification.
+
+
+    **Paramètres :**
+
+    - `message_type` : type du message (Information, Alerte, Chauffage, etc.)
+
+    - `message_mail` : contenu du message
+
+
+    **Fonctionnement :**
+
+    1. Envoie un mail via `notify.email` avec le type en objet et le message en corps.'
+  sequence:
+  - action: notify.email
+    metadata: {}
+    data:
+      message: '{{ message_mail }}'
+      title: '[HA] {{ message_type }}
+
+        '
+      target: votre-email@domaine.fr
+  mode: queued
+  max: 10

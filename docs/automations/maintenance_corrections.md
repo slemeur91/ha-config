@@ -2,9 +2,11 @@
 
 [← Retour README](../../README.md)
 
+
 ---
 
 ## `automation.corrections_du_klf200_pour_les_velux` — Corrections KLF200
+> [📄 Voir le YAML](../../automations/corrections_du_klf200_pour_les_velux.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -24,6 +26,7 @@
 ---
 
 ## `automation.maintien_des_prises_et_appareils_allumes` — Maintien des Prises et Appareils allumés
+> [📄 Voir le YAML](../../automations/maintien_des_prises_et_appareils_allumes.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -42,6 +45,7 @@
 ---
 
 ## `automation.corrections_des_appareils_ecoflow` — Corrections EcoFlow
+> [📄 Voir le YAML](../../automations/corrections_des_appareils_ecoflow.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -59,6 +63,7 @@
 ---
 
 ## `automation.gestion_du_poele_et_de_la_climatisation` — Poêle & Climatisation
+> [📄 Voir le YAML](../../automations/gestion_du_poele_et_de_la_climatisation.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -86,6 +91,7 @@
 ---
 
 ## `automation.correction_tuya` — Correction Tuya
+> [📄 Voir le YAML](../../automations/correction_tuya.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 

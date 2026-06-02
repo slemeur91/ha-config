@@ -2,6 +2,7 @@
 
 [← Retour README](../../README.md)
 
+
 ---
 
 ## `automation.gestion_des_alertes` — Notification des Alertes
@@ -36,6 +37,7 @@
 ---
 
 ## `automation.notification_de_l_horloge` — Notification de l'Horloge
+> [📄 Voir le YAML](../../automations/notification_de_l_horloge.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -53,6 +55,7 @@
 ---
 
 ## `automation.notification_des_poubelles` — Notification des Poubelles
+> [📄 Voir le YAML](../../automations/notification_des_poubelles.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -73,6 +76,7 @@
 ---
 
 ## `automation.gestion_de_la_temperature_du_refrigerateur` — Température Réfrigérateur
+> [📄 Voir le YAML](../../automations/gestion_de_la_temperature_du_refrigerateur.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 

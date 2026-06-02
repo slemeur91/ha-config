@@ -1,0 +1,384 @@
+id: '1753353867582'
+alias: Gestion de la HiFi
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Changement de `input_select.hifi_action` (ON / SOURCE / OFF)
+
+  - Appui sur `input_button.hifi`
+
+
+  **Fonctionnement :**
+
+  1. Action OFF → notification vocale, extinction en parallèle (télécommande Sony,
+  ampli Rotel, Apple TV, Zappiti si allumé), gestion SONOS selon contexte (alarme
+  armée ou heure).
+
+  2. Action ON → vérifie les conditions horaires et de présence ; si iPhone présent,
+  sélectionne la source BluRay et passe en SOURCE ; sinon attend 1 min et réessaie.
+
+  3. Action SOURCE → arrête ou configure les SONOS, notification vocale, allume en
+  parallèle (télécommande Sony, source Rotel selon sélection, TV HDMI3, Apple TV,
+  lumière salon si après coucher du soleil).
+
+
+  **Entités principales :**
+
+  - `input_select.hifi` : état courant de la HiFi
+
+  - `input_select.hifi_action` : commande entrante
+
+  - `input_select.hifi_source` : source active (Zappiti / BluRay / slm-media4)
+
+  - `remote.sony_kd_55a1` : télécommande TV Sony
+
+  - `button.rotel_*` : commandes ampli Rotel'
+triggers:
+- trigger: state
+  entity_id:
+  - input_select.hifi_action
+- trigger: state
+  entity_id:
+  - input_button.hifi
+conditions: []
+actions:
+- choose:
+  - conditions:
+    - condition: state
+      entity_id: input_select.hifi_action
+      state: 'OFF'
+    sequence:
+    - action: script.notification_vocale
+      data:
+        message_vocal: Extinction de la HiFi
+      continue_on_error: true
+    - parallel:
+      - type: turn_off
+        device_id: aad16acc2eac3cac734f776ecc1aa5f0
+        entity_id: 51e582f62e60e454477c970081af563b
+        domain: remote
+      - action: button.press
+        metadata: {}
+        data: {}
+        target:
+          entity_id: button.tv_off
+        enabled: false
+      - action: button.press
+        metadata: {}
+        data: {}
+        target:
+          entity_id: button.rotel_off
+      - action: media_player.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: media_player.apple_tv_du_salon
+        continue_on_error: true
+      - if:
+        - condition: state
+          entity_id: binary_sensor.slm_zappiti
+          state:
+          - 'on'
+        then:
+        - action: button.press
+          metadata: {}
+          data: {}
+          target:
+            entity_id:
+            - button.zappiti_on_off
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 5
+        milliseconds: 0
+      enabled: false
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: alarm_control_panel.alarme
+          state: armed_away
+        sequence:
+        - if:
+          - condition: state
+            entity_id: input_select.sonos_action
+            state: 'OFF'
+          then:
+          - action: automation.trigger
+            metadata: {}
+            data:
+              skip_condition: true
+            target:
+              entity_id:
+              - automation.gestion_des_sonos
+          else:
+          - action: input_select.select_option
+            metadata: {}
+            data:
+              option: 'OFF'
+            target:
+              entity_id: input_select.sonos_action
+      - conditions:
+        - condition: and
+          conditions:
+          - condition: state
+            entity_id: alarm_control_panel.alarme
+            state: disarmed
+          - condition: time
+            before: '22:30:00'
+            after: 05:30:00
+        sequence:
+        - if:
+          - condition: state
+            entity_id: input_select.sonos
+            state: 'ON'
+          then:
+          - action: automation.trigger
+            metadata: {}
+            data:
+              skip_condition: true
+            target:
+              entity_id:
+              - automation.gestion_des_sonos
+          else:
+          - action: input_select.select_option
+            metadata: {}
+            data:
+              option: 'ON'
+            target:
+              entity_id: input_select.sonos_action
+    - action: input_select.select_option
+      metadata: {}
+      data:
+        option: 'OFF'
+      target:
+        entity_id: input_select.hifi
+  - conditions:
+    - condition: state
+      entity_id: input_select.hifi_action
+      state: 'ON'
+    sequence:
+    - choose:
+      - conditions:
+        - condition: time
+          before: '10:30:00'
+        sequence:
+        - stop: Fin normal
+      - conditions:
+        - condition: and
+          conditions:
+          - condition: state
+            entity_id: input_select.presence_salon
+            state: Présent
+          - condition: time
+            before: '10:30:00'
+            after: '23:30:00'
+        sequence:
+        - stop: Fin normal
+      - conditions:
+        - condition: and
+          conditions:
+          - condition: state
+            entity_id: input_select.presence_bureau
+            state: Présent
+          - condition: time
+            before: 05:30:00
+            after: '23:30:00'
+        sequence:
+        - stop: Fin normal
+    - if:
+      - condition: state
+        entity_id: device_tracker.iphone_de_sylvain_le_meur
+        state: home
+      then:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: BluRay
+        target:
+          entity_id: input_select.hifi_source
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: SOURCE
+        target:
+          entity_id: input_select.hifi_action
+      else:
+      - delay:
+          hours: 0
+          minutes: 1
+          seconds: 0
+          milliseconds: 0
+      - if:
+        - condition: state
+          entity_id: device_tracker.iphone_de_sylvain_le_meur
+          state: home
+        then:
+        - action: input_select.select_option
+          metadata: {}
+          data:
+            option: BluRay
+          target:
+            entity_id: input_select.hifi_source
+        - action: input_select.select_option
+          metadata: {}
+          data:
+            option: SOURCE
+          target:
+            entity_id: input_select.hifi_action
+  - conditions:
+    - condition: state
+      entity_id: input_select.hifi_action
+      state: SOURCE
+    sequence:
+    - if:
+      - condition: state
+        entity_id: input_select.sonos
+        state: 'OFF'
+      then:
+      - action: automation.trigger
+        metadata: {}
+        data:
+          skip_condition: true
+        target:
+          entity_id:
+          - automation.gestion_des_sonos
+      else:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: 'OFF'
+        target:
+          entity_id: input_select.sonos_action
+    - action: script.notification_vocale
+      data:
+        message_vocal: Allumage de la HiFi sur {{ states('input_select.hifi_source')
+          }}
+    - action: automation.trigger
+      metadata: {}
+      data:
+        skip_condition: true
+      target:
+        entity_id:
+        - automation.gestion_des_sonos
+    - parallel:
+      - type: turn_on
+        device_id: aad16acc2eac3cac734f776ecc1aa5f0
+        entity_id: 51e582f62e60e454477c970081af563b
+        domain: remote
+      - action: button.press
+        metadata: {}
+        data: {}
+        target:
+          entity_id: button.tv_on
+        enabled: false
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: input_select.hifi_source
+            state: Zappiti
+          sequence:
+          - if:
+            - condition: state
+              entity_id: binary_sensor.slm_zappiti
+              state:
+              - 'off'
+            then:
+            - action: button.press
+              metadata: {}
+              data: {}
+              target:
+                entity_id:
+                - button.zappiti_on_off
+          - action: button.press
+            metadata: {}
+            data: {}
+            target:
+              entity_id: button.rotel_video1
+        - conditions:
+          - condition: state
+            entity_id: input_select.hifi_source
+            state: BluRay
+          sequence:
+          - action: button.press
+            metadata: {}
+            data: {}
+            target:
+              entity_id: button.rotel_video2
+        - conditions:
+          - condition: state
+            entity_id: input_select.hifi_source
+            state: slm-media4
+          sequence:
+          - if:
+            - condition: state
+              entity_id: device_tracker.slm_disk4
+              state: not_home
+            then:
+            - device_id: c4f5da7a25a696aded68a29ffb5b8006
+              domain: button
+              entity_id: b48a534b28e5acce4f156e482734427e
+              type: press
+          - action: button.press
+            metadata: {}
+            data: {}
+            target:
+              entity_id: button.rotel_video3
+      - action: button.press
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - button.tv_hdmi3
+      - action: media_player.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: media_player.apple_tv_du_salon
+        enabled: false
+        continue_on_error: true
+      - sequence:
+        - action: homeassistant.reload_config_entry
+          metadata: {}
+          data: {}
+          target:
+            entity_id: remote.apple_tv_du_salon
+        - delay:
+            hours: 0
+            minutes: 0
+            seconds: 3
+            milliseconds: 0
+        - action: homeassistant.update_entity
+          metadata: {}
+          data:
+            entity_id:
+            - media_player.apple_tv_du_salon
+          enabled: false
+        - action: media_player.turn_on
+          continue_on_error: true
+          metadata: {}
+          data: {}
+          target:
+            entity_id: media_player.apple_tv_du_salon
+        continue_on_error: true
+      - if:
+        - condition: sun
+          after: sunset
+          after_offset: '-1800'
+        then:
+        - action: light.turn_on
+          metadata: {}
+          data: {}
+          target:
+            entity_id: light.lumiere_du_salon
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: '{{ states(''input_select.hifi_source'') }}'
+        target:
+          entity_id: input_select.hifi
+mode: queued
+max: 10

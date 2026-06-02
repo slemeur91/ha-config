@@ -1,0 +1,17 @@
+id: '1774379090273'
+alias: Gestion du Volet - Salle d'eau
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  Gestion du Volet - Salle d''eau'
+use_blueprint:
+  path: Volets/Gestion_des_volets.yaml
+  input:
+    volet_name: Salle d'eau
+    volet_target: cover.volet_de_la_salle_d_eau
+    door_sensor: cover.velux_de_la_salle_d_eau
+    presence_entite: input_select.presence_suite_parentale
+    sensor_soleil: binary_sensor.volet_salle_d_eau_soleil
+    volet_timer: timer.volet_salle_d_eau_timer

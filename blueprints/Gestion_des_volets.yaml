@@ -1,0 +1,246 @@
+blueprint:
+  name: "Gestion du Volet - "  # Nom dynamique avec le nom du volet
+  description: |
+    **Pilote les volets selon le mode domicile, météo, soleil et présence.**
+    **Entités requises (doivent exister avant utilisation) :**
+    - `input_select.domicile` → Occupation du domicile (Présent/Nuit/Vacances).
+    - `input_select.volets_mode` → Mode chaud/froid (Été/Hiver).
+    - `input_boolean.volets_soleil` → Activation du mode soleil.
+    - `sensor.sun_next_dawn` → Prochaine aube.
+    - `sensor.sun_next_dusk` → Prochain crépuscule.
+    - `sensor.91_weather_alert` → Alerte météo (ex: "Rouge").
+
+    **Fonctionnalités intégrées :**
+    1. **Gestion multi-mode** (Été/Hiver, Présence, Météo, Soleil).
+    2. **Détection de porte ouverte** (stoppe les actions si porte ouverte).
+    3. **Position 30 optionnelle** (activable/désactivable via un input).
+    4. **Timer de dérogation** (annule les actions si le volet est bloqué).
+
+  domain: automation
+  input:
+    # --- Configuration du volet ---
+    volet_name:
+      name: "Nom du volet"
+      description: "Nom pour identifier le volet (ex: Cuisine, Chambre)."
+      selector:
+        text:
+    volet_target:
+      name: "Entité du volet (cover)"
+      description: "Entité du volet à contrôler (ex: `cover.volet_chambre`)."
+      selector:
+        entity:
+          domain: cover
+    sensor_soleil:
+      name: Nom du sensor_soleil
+      description: "Le sensor_soleil du volet."
+      selector:
+        entity:
+          domain: binary_sensor    
+    volet_timer:
+      name: Nom du volet_timer
+      description: "Le volet_timer du volet."
+      selector:
+        entity:
+          domain: timer    
+    door_sensor:
+      name: "Capteur de porte"
+      description: "Stoppe les actions si la porte est ouverte."
+      default: []
+      selector:
+        entity:
+          domain:
+            - binary_sensor
+            - cover
+          multiple: false
+    presence_entite:
+      name: "Entité présence (optionnel)"
+      description: "Entité pour détecter la présence (ex: `input_select.presence_chambre`)."
+      default: []
+      selector:
+        entity:
+          domain: input_select
+    use_position_30:
+      name: "Activer la position 30 (optionnel)"
+      description: "Si désactivé, le volet sera soit ouvert, soit fermé (pas de position intermédiaire)."
+      default: false
+      selector:
+        boolean:
+
+# --- Variables dynamiques (catégorie "Volets") ---
+variables:
+  volet_name_var: !input volet_name
+  # Génération des entités dans la catégorie "Volets"
+  volet_attendu: "input_select.volet_{{ volet_name_var | slugify }}_attendu"
+  volet_derogation: "input_boolean.volet_{{ volet_name_var | slugify }}_derogation"
+  volet_target_var: !input volet_target
+  sensor_soleil_var: !input sensor_soleil
+  weather_alert: "sensor.91_weather_alert"
+  door_sensor_input: !input door_sensor
+  presence_entite_input: !input presence_entite
+  use_position_30_var: !input use_position_30
+
+# --- Mode de déclenchement ---
+mode: restart
+max_exceeded: silent
+
+# --- Triggers (fusion des 3 automations) ---
+trigger:
+  # --- Déclencheurs principaux ---
+  - platform: state
+    entity_id:
+      - input_select.domicile
+      - input_select.volets_mode
+      - sensor.sun_next_dawn
+      - sensor.sun_next_dusk
+      - sensor.91_weather_alert
+      - input_boolean.volets_soleil
+      - !input door_sensor
+    id: "update_position"
+  - platform: state
+    entity_id:
+      - !input sensor_soleil
+    from: null
+    id: "update_position"
+  - platform: state
+    entity_id:
+      - !input presence_entite
+    to:
+      - "off"
+      - "Absent"
+    id: "update_position"
+  - platform: state
+    entity_id: !input volet_target
+    attribute: current_position
+    for: "00:01:00"
+    id: "volet_mouvement"
+  - platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: !input volet_timer
+    id: "volet_timer_finished"
+  - platform: state
+    entity_id: input_button.volets_reactivation
+    id: "reactivation"
+
+# --- Actions ---
+action:
+#  - service: system_log.write
+#    data:
+#      message: "Blueprint : {{ is_state(door_sensor_input, 'off') or is_state(door_sensor_input, 'closed') }} / {{ is_state(volet_derogation, 'off') }} / {{ presence_entite_input == [] or states(presence_entite_input) in ['off', 'Absent', 'unknown', 'unavailable'] }}"
+#      level: warning
+  - choose:
+      # --- 1. Gestion du timer de dérogation ---
+      - conditions:
+          - condition: trigger
+            id: "volet_timer_finished"
+        sequence:
+          - service: input_boolean.turn_off
+            target:
+              entity_id: "{{ volet_derogation }}"
+ 
+      # --- 2. Détection de mouvement du volet ---
+      - conditions:
+          - condition: trigger
+            id: "volet_mouvement"
+        sequence:
+          - variables:
+              pos_attendue: "{{ states(volet_attendu) }}"
+#              pos_reelle: "{{ state_attr('!input volet_target', 'current_position') | int(0) }}"
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: |
+                      {{ (pos_attendue == 'Ouvert' and state_attr(volet_target_var, 'current_position') | int(0) < 95) or
+                         (pos_attendue == 'Fermé' and state_attr(volet_target_var, 'current_position') | int(0) > 5) or
+                         (pos_attendue == '30' and (state_attr(volet_target_var, 'current_position') | int(0) < 25 or state_attr(volet_target_var, 'current_position') | int(0) > 35)) }}
+                sequence:
+                  - service: input_boolean.turn_on
+                    target:
+                      entity_id: "{{ volet_derogation }}"
+                  - service: timer.start
+                    target:
+                      entity_id: !input volet_timer
+            default:
+              - service: input_boolean.turn_off
+                target:
+                  entity_id: "{{ volet_derogation }}"
+              - service: timer.cancel
+                target:
+                  entity_id: !input volet_timer
+
+      # --- 3. Calcul de la position attendue ---
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.id not in ['volet_mouvement', 'volet_timer_finished'] }}"
+        sequence:
+          # --- Réinitialisation si porte ouverte ou réactivation ---
+          - if:
+              - condition: or
+                conditions:
+                  - condition: trigger
+                    id: "update_position"
+                  - condition: trigger
+                    id: "reactivation"
+            then:
+              - service: input_boolean.turn_off
+                target:
+                  entity_id: "{{ volet_derogation }}"
+              - service: timer.cancel
+                target:
+                  entity_id: !input volet_timer
+
+          # --- Calcul de la position ---
+          - service: input_select.select_option
+            target:
+              entity_id: "{{ volet_attendu }}"
+            data:
+              option: >-
+                {% if is_state(weather_alert, 'Rouge') or is_state('input_select.domicile', 'Vacances') %}Fermé
+                {% elif as_timestamp(states('sensor.sun_next_midnight')) > as_timestamp(states('sensor.sun_next_dawn')) or as_timestamp(states('sensor.sun_next_midnight')) < as_timestamp(states('sensor.sun_next_dusk')) %}Fermé
+                {% elif volet_name_var == 'Bureau' and is_state('input_select.domicile', 'Présent') and is_state('input_select.calendrier', 'TéléTravail') %}Ouvert
+                {% elif is_state('input_select.volets_mode', 'Eté') %}
+                  {% if is_state(sensor_soleil_var, 'on') %}
+                    {% if is_state('input_boolean.volets_soleil', 'on') and (not is_state('input_select.domicile', 'Présent') or not use_position_30_var) %}Fermé
+                    {% else %}Ouvert
+                    {% endif %}
+                  {% elif not is_state('input_select.domicile', 'Nuit') %}Ouvert
+                  {% else %}Fermé
+                  {% endif %}
+                {% elif is_state('input_select.volets_mode', 'Hiver') %}
+                  {% if is_state(sensor_soleil_var, 'on') and not is_state('input_select.domicile', 'Nuit') %}Ouvert
+                  {% elif is_state('input_select.domicile', 'Présent') and use_position_30_var %}Ouvert
+                  {% else %}Fermé
+                  {% endif %}
+                {% else %}Fermé
+                {% endif %}
+
+          - if:
+              - condition: and
+                conditions:
+                  - condition: template
+                    value_template: "{{ states(door_sensor_input) in ['off', 'closed'] }}"
+                  - condition: template
+                    value_template: "{{ is_state(volet_derogation, 'off') }}"
+                  - condition: template
+                    value_template: "{{ is_state(volet_attendu, 'Fermé') or (is_state('alarm_control_panel.alarme', 'disarmed') and (is_state('input_boolean.seul_a_la_maison', 'on') or presence_entite_input == [] or states(presence_entite_input) in ['off', 'Absent'])) }}"
+            then:
+              - variables:
+                  cible: "{{ states(volet_attendu) }}"
+              - choose:
+                  - conditions: "{{ cible == 'Ouvert' }}"
+                    sequence:
+                      - service: cover.open_cover
+                        target:
+                          entity_id: !input volet_target
+                  - conditions: "{{ cible == 'Fermé' }}"
+                    sequence:
+                      - service: cover.close_cover
+                        target:
+                          entity_id: !input volet_target
+                  - conditions: "{{ cible == 30 }}"
+                    sequence:
+                      - service: cover.set_cover_position
+                        data:
+                          position: 30
+                        target:
+                          entity_id: !input volet_target

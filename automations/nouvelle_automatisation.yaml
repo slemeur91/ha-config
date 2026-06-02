@@ -1,0 +1,59 @@
+id: '1753209708759'
+alias: Nouvelle automatisation
+description: ''
+triggers:
+- trigger: calendar
+  entity_id: calendar.agenda_permanent
+  event: start
+  offset: 0:0:0
+- trigger: calendar
+  entity_id: calendar.agenda_permanent
+  event: end
+  offset: 0:0:0
+conditions:
+- condition: state
+  entity_id: calendar.agenda_permanent
+  state: Arrosage
+actions:
+- choose:
+  - conditions:
+    - condition: state
+      entity_id: calendar.agenda_permanent
+      state: 'on'
+    sequence:
+    - if:
+      - condition: template
+        value_template: '{{ states(''sensor.salon_pluviometre_precipitation'') > 2
+          or states(''sensor.salon_pluviometre_precipitation_aujourd_hui'') > 2 }}'
+      then:
+      - stop: Fin normal
+    - action: input_text.set_value
+      metadata: {}
+      data:
+        value: 'ON'
+      target:
+        entity_id: input_text.arrosage_status
+    - action: notify.email
+      metadata: {}
+      data:
+        message: Déclenchement de l'arrosage.
+        title: '[HA] Information'
+        target: votre-email@domaine.fr
+  - conditions:
+    - condition: state
+      entity_id: calendar.agenda_permanent
+      state: 'off'
+    sequence:
+    - action: input_text.set_value
+      metadata: {}
+      data:
+        value: 'OFF'
+      target:
+        entity_id: input_text.arrosage_status
+    - action: notify.email
+      metadata: {}
+      data:
+        message: Arret de l'arrosage.
+        title: '[HA] Information'
+        target: votre-email@domaine.fr
+mode: single

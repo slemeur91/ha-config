@@ -1,0 +1,17 @@
+id: '1774352772832'
+alias: Gestion du Volet - Chambre
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  Gestion du Volet - Chambre'
+use_blueprint:
+  path: Volets/Gestion_des_volets.yaml
+  input:
+    volet_name: Chambre
+    volet_target: cover.volet_de_la_chambre
+    door_sensor: cover.velux_de_la_chambre
+    presence_entite: input_select.presence_chambre
+    sensor_soleil: binary_sensor.volet_chambre_soleil
+    volet_timer: timer.volet_chambre_timer

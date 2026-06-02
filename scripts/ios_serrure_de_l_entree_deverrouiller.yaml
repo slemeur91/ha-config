@@ -1,0 +1,19 @@
+ios_serrure_de_l_entree_deverrouiller:
+  alias: iOS - Serrure de l'Entrée déverrouiller
+  description: '**Statut :** Finalisé
+
+    **Evolution :** Aucune
+
+
+    **Rôle :** Action rapide iOS pour déverrouiller la serrure Nuki de l''entrée.
+
+
+    **Fonctionnement :**
+
+    1. Appelle `lock.unlock` sur `lock.serrure_de_l_entree`.'
+  sequence:
+  - action: lock.unlock
+    data: {}
+    target:
+      entity_id: lock.serrure_de_l_entree
+  mode: restart

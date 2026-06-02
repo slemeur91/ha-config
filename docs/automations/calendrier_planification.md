@@ -2,9 +2,11 @@
 
 [← Retour README](../../README.md)
 
+
 ---
 
 ## `automation.planification_de_l_agenda` — Planification de l'Agenda
+> [📄 Voir le YAML](../../automations/planification_de_l_agenda.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -34,6 +36,7 @@
 ---
 
 ## `automation.gazpar_mise_a_jour_statistiques_journalieres` — GAZPAR – Mise à jour statistiques journalières
+> [📄 Voir le YAML](../../automations/gazpar_mise_a_jour_statistiques_journalieres.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 

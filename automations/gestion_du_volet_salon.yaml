@@ -1,0 +1,18 @@
+id: '1774353234980'
+alias: Gestion du Volet - Salon
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  Gestion du Volet - Salon'
+use_blueprint:
+  path: Volets/Gestion_des_volets.yaml
+  input:
+    volet_name: Salon
+    volet_target: cover.volet_du_salon_nodeid_32_position
+    door_sensor: binary_sensor.do_salon
+    presence_entite: input_select.presence_salon
+    sensor_soleil: binary_sensor.volet_salon_soleil
+    volet_timer: timer.volet_salon_timer
+    use_position_30: true

@@ -2,9 +2,11 @@
 
 [← Retour README](../../README.md)
 
+
 ---
 
 ## `automation.gestion_du_bouton_hue_central_droit` — Bouton Hue Central Droit
+> [📄 Voir le YAML](../../automations/gestion_du_bouton_hue_central_droit.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -28,6 +30,7 @@
 ---
 
 ## `automation.gestion_du_bouton_hue_central_gauche` — Bouton Hue Central Gauche
+> [📄 Voir le YAML](../../automations/gestion_du_bouton_hue_central_gauche.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -40,6 +43,7 @@
 ---
 
 ## `automation.gestion_du_bouton_hue_de_l_entree` — Bouton Hue de l'Entrée
+> [📄 Voir le YAML](../../automations/gestion_du_bouton_hue_de_l_entree.yaml)
 
 **Statut :** Finalisé | **Evolution :** En cours d'affectation
 
@@ -52,6 +56,7 @@
 ---
 
 ## `automation.gestion_du_bouton_hue_de_l_etage` — Bouton Hue de l'Étage
+> [📄 Voir le YAML](../../automations/gestion_du_bouton_hue_de_l_etage.yaml)
 
 **Statut :** Finalisé | **Evolution :** En cours d'affectation
 
@@ -64,6 +69,7 @@
 ---
 
 ## `automation.gestion_de_la_lumiere_du_garage` — Lumière du Garage
+> [📄 Voir le YAML](../../automations/gestion_de_la_lumiere_du_garage.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 

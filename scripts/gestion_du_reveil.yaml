@@ -1,0 +1,45 @@
+gestion_du_reveil:
+  alias: Gestion du Réveil
+  description: '**Statut :** Finalisé
+
+    **Evolution :** Aucune
+
+
+    **Rôle :** Déclenche le réveil musical SONOS et envoie un mail de confirmation.
+
+
+    **Fonctionnement :**
+
+    1. Si `input_select.sonos_action` est déjà en REVEIL → déclenche directement l''automation
+    SONOS.
+
+    2. Sinon → positionne l''action sur REVEIL (ce qui déclenchera l''automation via
+    trigger).
+
+    3. Envoie un mail d''information "Réveil".'
+  sequence:
+  - if:
+    - condition: state
+      entity_id: input_select.sonos_action
+      state:
+      - REVEIL
+    then:
+    - action: automation.trigger
+      metadata: {}
+      data:
+        skip_condition: true
+      target:
+        entity_id:
+        - automation.gestion_des_sonos
+    else:
+    - action: input_select.select_option
+      metadata: {}
+      data:
+        option: REVEIL
+      target:
+        entity_id: input_select.sonos_action
+  - action: script.notification_mail
+    data:
+      message_type: Information
+      message_mail: Réveil
+  mode: restart

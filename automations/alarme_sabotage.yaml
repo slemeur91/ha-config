@@ -1,0 +1,149 @@
+id: '1774208218417'
+alias: Alarme Sabotage
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - `binary_sensor.boitier` passe à ON (sabotage boîtier alarme)
+
+  - Fin de `timer.alarme_sabotage`
+
+
+  **Fonctionnement :**
+
+  1. Déclenchement → remet le compteur à zéro, envoie SMS + mail + vocal, démarre
+  l''enregistrement caméras 1/2/4, envoie les snapshots.
+
+  2. Timer terminé → incrémente le compteur, envoie nouveaux snapshots, relance le
+  timer.
+
+  3. Si compteur > 8 ou alarme revenue en armé → notifications de fin, arrête l''enregistrement
+  si mode nuit.
+
+
+  **Entités principales :**
+
+  - `counter.compteur_sabotage` : comptage des cycles (max 10 min)
+
+  - `timer.alarme_sabotage` : rythme des notifications'
+triggers:
+- trigger: state
+  entity_id:
+  - binary_sensor.boitier
+  to:
+  - 'on'
+  id: Sabotage
+  from:
+  - 'off'
+- trigger: event
+  event_type: timer.finished
+  event_data:
+    entity_id: timer.alarme_sabotage
+  id: Timer
+conditions: []
+actions:
+- choose:
+  - conditions:
+    - condition: trigger
+      id:
+      - Sabotage
+    sequence:
+    - action: counter.reset
+      metadata: {}
+      data: {}
+      target:
+        entity_id: counter.compteur_sabotage
+    - parallel:
+      - action: script.notification_vocale
+        data: {}
+      - action: script.notification_mail
+        data:
+          message_type: Alerte
+          message_mail: Sabotage de l'alarme
+      - action: script.notification_sms
+        data:
+          message_type: Alerte
+          message_sms: Sabotage de l'alarme
+    - action: pyscript.surveillance_station_recording
+      data:
+        actionRecord: start
+        camerasNum:
+        - 1
+        - 2
+        - 4
+    - action: select.select_option
+      metadata: {}
+      data:
+        option: always
+      target:
+        entity_id:
+        - select.slm_camera1_mode_enregistrement
+        - select.slm_camera2_mode_enregistrement
+        - select.slm_camera4_mode_enregistrement
+    - action: script.notification_snapshot
+      data: {}
+  - conditions:
+    - condition: or
+      conditions:
+      - condition: numeric_state
+        entity_id: counter.compteur_sabotage
+        above: 8
+      - condition: state
+        entity_id: alarm_control_panel.alarme
+        state:
+        - armed_away
+        - armed_night
+    sequence:
+    - action: script.notification_snapshot
+      data: {}
+    - parallel:
+      - action: script.notification_vocale
+        data: {}
+      - action: script.notification_mail
+        data:
+          message_type: Alerte
+          message_mail: Fin de l'alerte du sabotage de l'alarme
+      - action: script.notification_sms
+        data:
+          message_type: Alerte
+          message_sms: Fin de l'alerte du sabotage de l'alarme
+    - if:
+      - condition: state
+        entity_id: alarm_control_panel.alarme
+        state: armed_night
+      then:
+      - action: pyscript.surveillance_station_recording
+        data:
+          actionRecord: stop
+          camerasNum:
+          - 1
+          - 2
+          - 4
+      - action: select.select_option
+        metadata: {}
+        data:
+          option: never
+        target:
+          entity_id:
+          - select.slm_camera1_mode_enregistrement
+          - select.slm_camera2_mode_enregistrement
+          - select.slm_camera4_mode_enregistrement
+  default:
+  - action: counter.increment
+    metadata: {}
+    data: {}
+    target:
+      entity_id: counter.compteur_sabotage
+  - action: script.notification_snapshot
+    data: {}
+  - action: timer.start
+    metadata: {}
+    data:
+      duration: '1'
+    target:
+      entity_id:
+      - timer.alarme_sabotage
+mode: restart

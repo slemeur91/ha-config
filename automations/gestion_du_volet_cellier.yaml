@@ -1,0 +1,17 @@
+id: '1774350012570'
+alias: Gestion du Volet - Cellier
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  Gestion du Volet - Cellier'
+use_blueprint:
+  path: Volets/Gestion_des_volets.yaml
+  input:
+    volet_name: Cellier
+    volet_target: cover.volet_du_cellier_nodeid_31_position
+    door_sensor: binary_sensor.do_vitre_cellier
+    sensor_soleil: binary_sensor.volet_cellier_soleil
+    volet_timer: timer.volet_cellier_timer
+    presence_entite: input_select.presence

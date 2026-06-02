@@ -1,0 +1,42 @@
+id: '1777724517169'
+alias: 📬 Dépôt courrier — P100 unique
+description: ''
+triggers:
+- trigger: state
+  entity_id:
+  - sensor.p100_boite_aux_lettres_orientation
+  to:
+  - 'on'
+conditions:
+- condition: template
+  value_template: '{{ (now() - states.sensor.p100_boite_aux_lettres_orientation.last_changed).total_seconds()
+    < 3 }}
+
+    '
+actions:
+- delay:
+    seconds: 4
+- condition: template
+  value_template: '{{ (now() - states.sensor.p100_boite_aux_lettres_orientation.last_changed).total_seconds()
+    > 3 }}
+
+    '
+- action: input_boolean.turn_on
+  target:
+    entity_id: input_boolean.courrier_en_attente
+  data: {}
+- variables:
+    message_courrier: Du courrier vient d'être déposé
+- if:
+  - condition: template
+    value_template: '{{ message_courrier != null }}'
+  then:
+  - action: script.notification_vocale
+    data:
+      message_vocal: '{{ message_courrier }}'
+  - action: script.notification_sms
+    data:
+      message_type: Boite aux lettres
+      message_sms: '{{ message_courrier }}'
+mode: single
+max_exceeded: silent

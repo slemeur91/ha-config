@@ -1,0 +1,257 @@
+id: '1753429767760'
+alias: Gestion de la Télécommande HiFi
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Changement d''état des capteurs de scène de la télécommande Z-Wave (boutons 1
+  à 4)
+
+
+  **Fonctionnement :**
+
+  1. Bouton 1 appui court (valeur 0) → sélectionne la source BluRay et déclenche la
+  HiFi en mode SOURCE.
+
+  2. Bouton 2 appui court → lance les SONOS en mode ON.
+
+  3. Bouton 3 appui court → éteint la HiFi (action OFF).
+
+  4. Bouton 4 appui court → éteint les SONOS (action OFF).
+
+  (Les valeurs 1, 2, 3 de chaque bouton ne sont pas encore affectées.)
+
+
+  **Entités principales :**
+
+  - `sensor.telecommande_du_salon_nodeid_21_scene_state_scene_00*` : capteurs scène
+  Z-Wave
+
+  - `input_select.hifi_action` / `input_select.sonos_action` : coordination AV'
+triggers:
+- trigger: state
+  entity_id:
+  - sensor.telecommande_du_salon_nodeid_21_scene_state_scene_001
+  id: Bouton 1
+- trigger: state
+  entity_id:
+  - sensor.telecommande_du_salon_nodeid_21_scene_state_scene_002
+  id: Bouton 2
+- trigger: state
+  entity_id:
+  - sensor.telecommande_du_salon_nodeid_21_scene_state_scene_003
+  id: Bouton 3
+- trigger: state
+  entity_id:
+  - sensor.telecommande_du_salon_nodeid_21_scene_state_scene_004
+  id: Bouton 4
+conditions: []
+actions:
+- choose:
+  - conditions:
+    - condition: trigger
+      id:
+      - Bouton 1
+    sequence:
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_001
+          state: 0
+          attribute: value
+        sequence:
+        - action: input_select.select_option
+          metadata: {}
+          data:
+            option: BluRay
+          target:
+            entity_id: input_select.hifi_source
+        - if:
+          - condition: state
+            entity_id: input_select.hifi_action
+            state: SOURCE
+          then:
+          - action: automation.trigger
+            metadata: {}
+            data:
+              skip_condition: true
+            target:
+              entity_id:
+              - automation.gestion_de_la_hifi
+          else:
+          - action: input_select.select_option
+            metadata: {}
+            data:
+              option: SOURCE
+            target:
+              entity_id: input_select.hifi_action
+      - conditions:
+        - condition: state
+          entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_001
+          state: 1
+          attribute: value
+        sequence: []
+      - conditions:
+        - condition: state
+          entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_001
+          state: 2
+          attribute: value
+        sequence: []
+      - conditions:
+        - condition: state
+          entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_001
+          state: 3
+          attribute: value
+        sequence: []
+  - conditions:
+    - condition: trigger
+      id:
+      - Bouton 2
+    sequence:
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_002
+          state: 0
+          attribute: value
+        sequence:
+        - if:
+          - condition: state
+            entity_id: input_select.sonos_action
+            state: 'ON'
+          then:
+          - action: automation.trigger
+            metadata: {}
+            data:
+              skip_condition: true
+            target:
+              entity_id:
+              - automation.gestion_des_sonos
+          else:
+          - action: input_select.select_option
+            metadata: {}
+            data:
+              option: 'ON'
+            target:
+              entity_id: input_select.sonos_action
+      - conditions:
+        - condition: state
+          entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_002
+          state: 1
+          attribute: value
+        sequence: []
+      - conditions:
+        - condition: state
+          entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_002
+          state: 2
+          attribute: value
+        sequence: []
+      - conditions:
+        - condition: state
+          entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_002
+          state: 3
+          attribute: value
+        sequence: []
+  - conditions:
+    - condition: trigger
+      id:
+      - Bouton 3
+    sequence:
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_003
+          state: 0
+          attribute: value
+        sequence:
+        - if:
+          - condition: state
+            entity_id: input_select.hifi_action
+            state: 'OFF'
+          then:
+          - action: automation.trigger
+            metadata: {}
+            data:
+              skip_condition: true
+            target:
+              entity_id:
+              - automation.gestion_de_la_hifi
+          else:
+          - action: input_select.select_option
+            metadata: {}
+            data:
+              option: 'OFF'
+            target:
+              entity_id:
+              - input_select.hifi_action
+      - conditions:
+        - condition: state
+          entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_003
+          state: 1
+          attribute: value
+        sequence: []
+      - conditions:
+        - condition: state
+          entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_003
+          state: 2
+          attribute: value
+        sequence: []
+      - conditions:
+        - condition: state
+          entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_003
+          state: 3
+          attribute: value
+        sequence: []
+  - conditions:
+    - condition: trigger
+      id:
+      - Bouton 4
+    sequence:
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_004
+          state: 0
+          attribute: value
+        sequence:
+        - if:
+          - condition: state
+            entity_id: input_select.sonos_action
+            state: 'OFF'
+          then:
+          - action: automation.trigger
+            metadata: {}
+            data:
+              skip_condition: true
+            target:
+              entity_id:
+              - automation.gestion_des_sonos
+          else:
+          - action: input_select.select_option
+            metadata: {}
+            data:
+              option: 'OFF'
+            target:
+              entity_id: input_select.sonos_action
+      - conditions:
+        - condition: state
+          entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_004
+          state: 1
+          attribute: value
+        sequence: []
+      - conditions:
+        - condition: state
+          entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_004
+          state: 2
+          attribute: value
+        sequence: []
+      - conditions:
+        - condition: state
+          entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_004
+          state: 3
+          attribute: value
+        sequence: []
+mode: restart

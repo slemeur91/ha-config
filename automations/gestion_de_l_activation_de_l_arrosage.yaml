@@ -1,0 +1,101 @@
+id: '1753345992066'
+alias: Gestion de l'activation de l'Arrosage
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - `input_select.arrosage` passe à "Actif"
+
+  - `timer.arrosage_timer` se termine
+
+
+  **Fonctionnement :**
+
+  1. Si le timer se termine → ferme la vanne d''arrosage, remet le sélecteur à "Inactif",
+  envoie un mail de confirmation.
+
+  2. Si l''arrosage est activé → vérifie la pluviométrie (Netatmo) : arrête si précipitations
+  > 2mm aujourd''hui ou en cours.
+
+  3. Sinon, ouvre la vanne, lance le timer, envoie un mail de déclenchement.
+
+
+  **Entités principales :**
+
+  - `valve.arrosage` : vanne d''arrosage
+
+  - `timer.arrosage_timer` : durée d''arrosage
+
+  - `sensor.netatmo_pluviometre_precipitation` : contrôle anti-pluie'
+triggers:
+- trigger: state
+  entity_id:
+  - input_select.arrosage
+  to: Actif
+- trigger: event
+  event_type: timer.finished
+  event_data:
+    entity_id: timer.arrosage_timer
+  id: Timer
+conditions: []
+actions:
+- choose:
+  - conditions:
+    - condition: trigger
+      id:
+      - Timer
+    sequence:
+    - action: valve.close_valve
+      continue_on_error: true
+      data: {}
+      target:
+        entity_id: valve.arrosage
+    - action: input_select.select_option
+      metadata: {}
+      data:
+        option: Inactif
+      target:
+        entity_id: input_select.arrosage
+    - action: script.notification_mail
+      data:
+        message_type: Information
+        message_mail: Arret de l'arrosage
+  - conditions:
+    - condition: state
+      entity_id: input_select.arrosage
+      state: Actif
+    sequence:
+    - if:
+      - condition: or
+        conditions:
+        - condition: numeric_state
+          entity_id: sensor.netatmo_pluviometre_precipitation
+          above: 2
+        - condition: numeric_state
+          entity_id: sensor.netatmo_pluviometre_precipitation_aujourd_hui
+          above: 2
+      then:
+      - stop: Fin normal
+    - action: valve.open_valve
+      continue_on_error: true
+      data: {}
+      target:
+        entity_id: valve.arrosage
+    - action: timer.cancel
+      metadata: {}
+      data: {}
+      target:
+        entity_id: timer.arrosage_timer
+    - action: timer.start
+      metadata: {}
+      data: {}
+      target:
+        entity_id: timer.arrosage_timer
+    - action: script.notification_mail
+      data:
+        message_type: Information
+        message_mail: Déclenchement de l'arrosage
+mode: restart

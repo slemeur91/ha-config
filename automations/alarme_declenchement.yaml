@@ -1,0 +1,160 @@
+id: '1774207864170'
+alias: Alarme Déclenchement
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Alarme déclenchée (`alarm_control_panel.alarme` → triggered)
+
+  - Détection de mouvement ou ouverture porte/fenêtre
+
+  - Fin de `timer.alarme_declenchement`
+
+
+  **Fonctionnement :**
+
+  1. Déclenchement initial → remet le compteur à zéro, envoie SMS + mail + vocal,
+  démarre l''enregistrement caméras 1/2/4, envoie les snapshots.
+
+  2. Timer terminé → incrémente le compteur, envoie de nouveaux snapshots, relance
+  le timer (répétition toutes les minutes).
+
+  3. Si compteur > 8 ou alarme revenue en armé → envoie snapshot final + notifications
+  de fin d''alerte, arrête l''enregistrement si mode nuit.
+
+
+  **Entités principales :**
+
+  - `counter.compteur_alarme` : comptage des cycles d''alerte (max 10 min)
+
+  - `timer.alarme_declenchement` : rythme des notifications
+
+  - `script.notification_snapshot` : captures caméras'
+triggers:
+- trigger: state
+  entity_id:
+  - alarm_control_panel.alarme
+  to: triggered
+  id: Déclenchement
+- trigger: state
+  entity_id:
+  - binary_sensor.porte_ou_fenetre
+  to: 'on'
+  id: Déclenchement
+- trigger: state
+  entity_id:
+  - binary_sensor.mouvement_detecte
+  to: 'on'
+  id: Déclenchement
+- trigger: event
+  event_type: timer.finished
+  event_data:
+    entity_id: timer.alarme_declenchement
+  id: Timer
+conditions: []
+actions:
+- choose:
+  - conditions:
+    - condition: trigger
+      id:
+      - Déclenchement
+    sequence:
+    - action: counter.reset
+      metadata: {}
+      data: {}
+      target:
+        entity_id: counter.compteur_alarme
+    - parallel:
+      - action: script.notification_vocale
+        data: {}
+      - action: script.notification_mail
+        data:
+          message_type: Alerte
+          message_mail: Déclenchement de l'alarme
+      - action: script.notification_sms
+        data:
+          message_type: Alerte
+          message_sms: Déclenchement de l'alarme
+    - action: pyscript.surveillance_station_recording
+      data:
+        actionRecord: start
+        camerasNum:
+        - 1
+        - 2
+        - 4
+    - action: select.select_option
+      metadata: {}
+      data:
+        option: always
+      target:
+        entity_id:
+        - select.slm_camera1_mode_enregistrement
+        - select.slm_camera2_mode_enregistrement
+        - select.slm_camera4_mode_enregistrement
+    - action: script.notification_snapshot
+      data: {}
+  - conditions:
+    - condition: or
+      conditions:
+      - condition: numeric_state
+        entity_id: counter.compteur_alarme
+        above: 8
+      - condition: state
+        entity_id: alarm_control_panel.alarme
+        state:
+        - armed_away
+        - armed_night
+    sequence:
+    - action: script.notification_snapshot
+      data: {}
+    - parallel:
+      - action: script.notification_vocale
+        data: {}
+      - action: script.notification_mail
+        data:
+          message_type: Alerte
+          message_mail: Fin de l'alerte du déclenchement de l'alarme
+      - action: script.notification_sms
+        data:
+          message_type: Alerte
+          message_sms: Fin de l'alerte du déclenchement de l'alarme
+    - if:
+      - condition: state
+        entity_id: alarm_control_panel.alarme
+        state: armed_night
+      then:
+      - action: pyscript.surveillance_station_recording
+        data:
+          actionRecord: stop
+          camerasNum:
+          - 1
+          - 2
+          - 4
+      - action: select.select_option
+        metadata: {}
+        data:
+          option: never
+        target:
+          entity_id:
+          - select.slm_camera1_mode_enregistrement
+          - select.slm_camera2_mode_enregistrement
+          - select.slm_camera4_mode_enregistrement
+  default:
+  - action: counter.increment
+    metadata: {}
+    data: {}
+    target:
+      entity_id: counter.compteur_alarme
+  - action: script.notification_snapshot
+    data: {}
+  - action: timer.start
+    metadata: {}
+    data:
+      duration: '1'
+    target:
+      entity_id:
+      - timer.alarme_declenchement
+mode: restart

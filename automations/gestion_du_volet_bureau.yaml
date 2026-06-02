@@ -1,0 +1,17 @@
+id: '1774359931537'
+alias: Gestion du Volet - Bureau
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  Gestion du Volet - Bureau'
+use_blueprint:
+  path: Volets/Gestion_des_volets.yaml
+  input:
+    volet_name: Bureau
+    volet_target: cover.volet_du_bureau_nodeid_36_position
+    door_sensor: binary_sensor.do_bureau
+    presence_entite: input_select.presence_bureau
+    sensor_soleil: binary_sensor.volet_bureau_soleil
+    volet_timer: timer.volet_bureau_timer

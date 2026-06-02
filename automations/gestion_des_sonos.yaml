@@ -1,0 +1,513 @@
+id: '1753350458546'
+alias: Gestion des SONOS
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Changement de `input_select.sonos_action` (ON / OFF / COUCHE / REVEIL)
+
+  - Fin de `timer.sonos_timer`
+
+  - Appui sur `input_button.sonos`
+
+
+  **Fonctionnement :**
+
+  1. Annule le timer sonos si actif en début d''exécution.
+
+  2. Timer terminé → bascule sur l''action différée (`input_select.sonos_delay_action`)
+  si état COUCHE ou REVEIL.
+
+  3. Action ON → dégroupage si nécessaire, réglage volumes, lancement radio salon
+  (+ garage si TéléTravail), état = ON.
+
+  4. Action OFF → arrêt musique selon contexte (ON/COUCHE/REVEIL/OFF), démute toutes
+  les enceintes, état = OFF.
+
+  5. Guard iPhone absent → court-circuite les actions COUCHE et REVEIL si le téléphone
+  n''est pas détecté à la maison.
+
+  6. Action COUCHE → volumes, jointure suite parentale + salle d''eau, radio suite
+  parentale, timer 90 min.
+
+  7. Action REVEIL → volumes, jointure salon + suite + salle d''eau, radio salon (+
+  garage si TéléTravail), timer variable (80 min TéléTravail / 135 min autres jours).
+
+
+  **Entités principales :**
+
+  - `input_select.sonos` : état courant (ON/COUCHE/REVEIL/OFF)
+
+  - `input_select.sonos_action` : commande entrante
+
+  - `input_select.sonos_delay_action` : action différée post-timer
+
+  - `timer.sonos_timer` : extinction automatique
+
+  - `device_tracker.iphone_de_sylvain_le_meur` : guard présence'
+triggers:
+- entity_id:
+  - input_select.sonos_action
+  trigger: state
+- event_type: timer.finished
+  event_data:
+    entity_id: timer.sonos_timer
+  id: Sonos_Timer
+  trigger: event
+- entity_id:
+  - input_button.sonos
+  trigger: state
+conditions: []
+actions:
+- if:
+  - condition: state
+    entity_id: timer.sonos_timer
+    state: active
+  then:
+  - action: timer.cancel
+    data: {}
+    target:
+      entity_id: timer.sonos_timer
+- choose:
+  - conditions:
+    - condition: trigger
+      id:
+      - Sonos_Timer
+    sequence:
+    - if:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: input_select.sonos
+          state: COUCHE
+        - condition: state
+          entity_id: input_select.sonos
+          state: REVEIL
+      then:
+      - action: input_select.select_option
+        data:
+          option: '{{ states(''input_select.sonos_delay_action'') }}'
+        target:
+          entity_id: input_select.sonos_action
+  - conditions:
+    - condition: state
+      entity_id: input_select.sonos_action
+      state: 'ON'
+    sequence:
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: input_select.sonos
+          state: REVEIL
+        sequence:
+        - action: media_player.unjoin
+          continue_on_error: true
+          data: {}
+          target:
+            entity_id:
+            - media_player.salon
+            - media_player.salle_d_eau
+            - media_player.suite_parentale
+        - action: media_player.volume_mute
+          continue_on_error: true
+          data:
+            is_volume_muted: false
+          target:
+            entity_id:
+            - media_player.salle_d_eau
+            - media_player.suite_parentale
+      - conditions:
+        - condition: state
+          entity_id: input_select.sonos
+          state: COUCHE
+        sequence:
+        - action: media_player.unjoin
+          continue_on_error: true
+          data: {}
+          target:
+            entity_id:
+            - media_player.salle_d_eau
+            - media_player.suite_parentale
+        - action: media_player.media_stop
+          data: {}
+          target:
+            entity_id: media_player.suite_parentale
+        - action: media_player.volume_mute
+          continue_on_error: true
+          data:
+            is_volume_muted: false
+          target:
+            entity_id:
+            - media_player.salle_d_eau
+            - media_player.suite_parentale
+    - action: media_player.volume_set
+      data:
+        volume_level: '{{ states(''input_number.volume_sonos_base'') | float - 0.04
+          }}'
+      target:
+        entity_id: media_player.garage
+    - action: media_player.volume_set
+      data:
+        volume_level: '{{ states(''input_number.volume_sonos_base'') | float + 0.01
+          }}'
+      target:
+        entity_id: media_player.salon
+    - action: media_player.volume_mute
+      data:
+        is_volume_muted: false
+      target:
+        entity_id:
+        - media_player.garage
+        - media_player.salon
+    - action: script.sonos_radio_sur_le_salon
+      data: {}
+    - if:
+      - condition: state
+        state: TéléTravail
+        entity_id: input_select.calendrier
+      then:
+      - action: script.sonos_radio_sur_le_garage
+        data: {}
+    - action: input_select.select_option
+      data:
+        option: 'ON'
+      target:
+        entity_id: input_select.sonos
+  - conditions:
+    - condition: state
+      entity_id: input_select.sonos_action
+      state: 'OFF'
+    sequence:
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: input_select.sonos
+          state: 'ON'
+        sequence:
+        - if:
+          - condition: or
+            conditions:
+            - condition: state
+              entity_id: input_select.calendrier
+              state: TéléTravail
+            - condition: media_player.is_playing
+              target:
+                entity_id: media_player.garage
+              options: {}
+          then:
+          - action: media_player.media_stop
+            data: {}
+            target:
+              entity_id: media_player.garage
+        - action: media_player.media_stop
+          data: {}
+          target:
+            entity_id: media_player.salon
+        - action: media_player.unjoin
+          continue_on_error: true
+          data: {}
+          target:
+            entity_id:
+            - media_player.salle_d_eau
+            - media_player.suite_parentale
+            - media_player.salon
+      - conditions:
+        - condition: state
+          entity_id: input_select.sonos
+          state: COUCHE
+        sequence:
+        - if:
+          - condition: or
+            conditions:
+            - condition: state
+              entity_id: input_select.calendrier
+              state: TéléTravail
+            - condition: media_player.is_playing
+              target:
+                entity_id: media_player.garage
+              options: {}
+          then:
+          - action: media_player.media_stop
+            data: {}
+            target:
+              entity_id: media_player.garage
+        - action: media_player.media_stop
+          data: {}
+          target:
+            entity_id: media_player.suite_parentale
+        - action: media_player.unjoin
+          continue_on_error: true
+          data: {}
+          target:
+            entity_id:
+            - media_player.suite_parentale
+            - media_player.salle_d_eau
+      - conditions:
+        - condition: state
+          entity_id: input_select.sonos
+          state: REVEIL
+        sequence:
+        - if:
+          - condition: or
+            conditions:
+            - condition: state
+              entity_id: input_select.calendrier
+              state: TéléTravail
+            - condition: media_player.is_playing
+              target:
+                entity_id: media_player.garage
+              options: {}
+          then:
+          - action: media_player.media_stop
+            continue_on_error: true
+            data: {}
+            target:
+              entity_id: media_player.garage
+        - action: media_player.media_stop
+          continue_on_error: true
+          data: {}
+          target:
+            entity_id: media_player.salon
+        - action: media_player.unjoin
+          continue_on_error: true
+          data: {}
+          target:
+            entity_id:
+            - media_player.salle_d_eau
+            - media_player.suite_parentale
+            - media_player.salon
+      - conditions:
+        - condition: state
+          entity_id: input_select.sonos
+          state: 'OFF'
+        sequence:
+        - if:
+          - condition: state
+            state: TéléTravail
+            entity_id: input_select.calendrier
+          then:
+          - action: media_player.media_stop
+            continue_on_error: true
+            data: {}
+            target:
+              entity_id: media_player.garage
+        - action: media_player.media_stop
+          data: {}
+          target:
+            entity_id: media_player.salon
+    - action: media_player.volume_mute
+      continue_on_error: true
+      data:
+        is_volume_muted: false
+      target:
+        entity_id:
+        - media_player.salle_d_eau
+        - media_player.salle_de_bain
+        - media_player.suite_parentale
+        - media_player.garage
+        - media_player.salon
+    - action: input_select.select_option
+      data:
+        option: 'OFF'
+      target:
+        entity_id: input_select.sonos
+  - conditions:
+    - condition: state
+      entity_id: device_tracker.iphone_de_sylvain_le_meur
+      state: not_home
+    sequence: []
+  - conditions:
+    - condition: state
+      entity_id: input_select.sonos_action
+      state: COUCHE
+    sequence:
+    - if:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: input_select.sonos
+          state: REVEIL
+        - condition: state
+          entity_id: input_select.sonos
+          state: 'ON'
+      then:
+      - if:
+        - condition: state
+          entity_id: input_select.sonos
+          state: REVEIL
+        then:
+        - action: media_player.unjoin
+          continue_on_error: true
+          data: {}
+          target:
+            entity_id:
+            - media_player.salle_d_eau
+            - media_player.suite_parentale
+            - media_player.salon
+      - action: media_player.media_stop
+        data: {}
+        target:
+          entity_id: media_player.salon
+      - action: media_player.volume_mute
+        continue_on_error: true
+        data:
+          is_volume_muted: false
+        target:
+          entity_id:
+          - media_player.salon
+    - action: media_player.volume_set
+      data:
+        volume_level: '{{ states(''input_number.volume_sonos_base'') | float }}'
+      target:
+        entity_id:
+        - media_player.salle_d_eau
+        - media_player.suite_parentale
+    - action: media_player.volume_mute
+      continue_on_error: true
+      data:
+        is_volume_muted: false
+      target:
+        entity_id:
+        - media_player.salle_d_eau
+        - media_player.suite_parentale
+    - action: media_player.join
+      continue_on_error: true
+      data:
+        group_members:
+        - media_player.salle_d_eau
+      target:
+        entity_id: media_player.suite_parentale
+    - action: script.sonos_radio_sur_la_suite_parentale
+      data: {}
+    - action: input_select.select_option
+      data:
+        option: COUCHE
+      target:
+        entity_id: input_select.sonos
+    - action: input_select.select_option
+      data:
+        option: 'OFF'
+      target:
+        entity_id: input_select.sonos_delay_action
+    - action: timer.start
+      data:
+        duration: '5400'
+      target:
+        entity_id: timer.sonos_timer
+  - conditions:
+    - condition: state
+      entity_id: input_select.sonos_action
+      state: REVEIL
+    sequence:
+    - if:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: input_select.sonos
+          state: REVEIL
+      then:
+      - if:
+        - condition: state
+          entity_id: input_select.sonos
+          state:
+          - COUCHE
+        then:
+        - action: media_player.media_stop
+          continue_on_error: true
+          data: {}
+          target:
+            entity_id:
+            - media_player.suite_parentale
+        - action: media_player.unjoin
+          continue_on_error: true
+          data: {}
+          target:
+            entity_id:
+            - media_player.suite_parentale
+            - media_player.salle_d_eau
+      - action: media_player.volume_set
+        data:
+          volume_level: '{{ states(''input_number.volume_sonos_base'') | float - 0.04}}'
+        target:
+          entity_id: media_player.garage
+      - action: media_player.volume_set
+        data:
+          volume_level: '{{ states(''input_number.volume_sonos_base'') | float }}'
+        target:
+          entity_id:
+          - media_player.salle_d_eau
+          - media_player.salle_de_bain
+      - action: media_player.volume_set
+        data:
+          volume_level: '{{ states(''input_number.volume_sonos_base'') | float + 0.01
+            }}'
+        target:
+          entity_id:
+          - media_player.suite_parentale
+          - media_player.salon
+      - action: media_player.volume_mute
+        continue_on_error: true
+        data:
+          is_volume_muted: false
+        target:
+          entity_id:
+          - media_player.salle_d_eau
+          - media_player.salle_de_bain
+          - media_player.suite_parentale
+          - media_player.garage
+          - media_player.salon
+      - action: media_player.join
+        continue_on_error: true
+        data:
+          group_members:
+          - media_player.suite_parentale
+          - media_player.salle_d_eau
+        target:
+          entity_id: media_player.salon
+      - action: script.sonos_radio_sur_le_salon
+        data: {}
+      - if:
+        - condition: state
+          entity_id: input_select.calendrier
+          state: TéléTravail
+        then:
+        - action: script.sonos_radio_sur_le_garage
+          data: {}
+        else:
+        - action: media_player.volume_mute
+          data:
+            is_volume_muted: false
+          target:
+            entity_id: media_player.garage
+    - action: input_select.select_option
+      data:
+        option: REVEIL
+      target:
+        entity_id: input_select.sonos
+    - action: input_select.select_option
+      data:
+        option: 'ON'
+      target:
+        entity_id:
+        - input_select.sonos_delay_action
+    - if:
+      - condition: state
+        entity_id: input_select.calendrier
+        state: TéléTravail
+      then:
+      - action: timer.start
+        data:
+          duration: '4800'
+        target:
+          entity_id: timer.sonos_timer
+      else:
+      - action: timer.start
+        data:
+          duration: '8100'
+        target:
+          entity_id: timer.sonos_timer
+mode: queued
+max: 10

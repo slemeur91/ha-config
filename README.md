@@ -1,7 +1,6 @@
 # 🏠 Configuration Home Assistant
 
 > Documentation de ma configuration Home Assistant, partagée pour aider la communauté.
-> Les informations personnelles (emails, IP, tokens) ont été anonymisées.
 
 ## 📊 Vue d'ensemble
 
@@ -55,6 +54,7 @@
 ---
 
 ## 🤖 Automations (46 actives)
+
 
 | Catégorie | Nb | Fichier détail |
 |---|---|---|
@@ -174,6 +174,16 @@
 
 ---
 
+## ⚙️ Configuration principale
+
+[Voir la documentation complète →](docs/configuration.md)
+
+| Section | Détail |
+|---|---|
+| Notifications SMTP (email) | Serveur SMTP local, `notify.email`, port 25 |
+
+---
+
 ## 📜 Scripts (16)
 
 [Voir la documentation complète →](docs/scripts.md)
@@ -273,10 +283,10 @@
 
 ## 📐 Blueprints
 
-| Blueprint | Instances | Fichier |
-|---|---|---|
-| [Gestion des Velux](docs/automations/blueprint_velux.md) | 3 | Fermeture selon présence, météo, protection thermique |
-| [Gestion des Volets](docs/automations/blueprint_volets.md) | 9 | Pilotage intelligent selon mode, météo, soleil, présence |
+| Blueprint | Instances | Description | Source YAML |
+|---|---|---|---|
+| [Gestion des Velux](docs/automations/blueprint_velux.md) | 3 | Fermeture selon présence, météo, protection thermique | [YAML](blueprints/Gestion_des_velux.yaml) |
+| [Gestion des Volets](docs/automations/blueprint_volets.md) | 9 | Pilotage intelligent selon mode, météo, soleil, présence | [YAML](blueprints/Gestion_des_volets.yaml) |
 
 ---
 

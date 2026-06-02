@@ -1,0 +1,182 @@
+blueprint:
+  name: "Gestion du Velux - "
+  description: Contrôle intelligent d'un Velux selon la présence, le soleil, les alertes météo et la température.
+  domain: automation
+  input:
+    velux_name:
+      name: Nom du Velux
+      description: "Entrez le nom (ex: suite_parentale). Utilisé pour générer les entités."
+      selector:
+        text:
+    # Entités cibles
+    velux_target:
+      name: Velux
+      description: Le velux à piloter.
+      selector:
+        entity:
+          domain: cover    
+    # Entités cibles
+    chauffage_target:
+      name: Chauffage
+      description: Le chauffage de la pièce.
+      selector:
+        entity:
+          domain: climate    
+    # Entités bouton
+    velux_button:
+      name: Nom du bouton
+      description: Le bouton pour ferme le velux.
+      selector:
+        entity:
+          domain: input_button    
+    # Températures
+    temp_secondaire:
+      name: "Température Intérieure Secondaire (optionnel)"
+      description: "Optionnel : seconde sonde de température."
+      default: [] # Permet de laisser vide
+      selector:
+        entity:
+          domain: sensor
+    # Champ rendu optionnel
+    presence_entite:
+      name: "Entité présence (optionnel)"
+      description: "Entité pour détecter la présence (ex: `input_select.presence_chambre`)."
+      default: []
+      selector:
+        entity:
+          domain: input_select
+
+# Section Variables pour composer et figer les données techniques
+variables:
+  # Récupération du nom saisi
+  velux_name_var: !input velux_name
+  velux_target_var: !input velux_target
+  chauffage_target_var: !input chauffage_target
+  # Detecteur de presence  
+  presence_entite_var: !input presence_entite
+  temp_secondaire_var: !input temp_secondaire
+
+mode: queued
+max: 10
+
+# --- Triggers (fusion des 3 automations) ---
+trigger:
+  # Déclencheurs principaux
+  - platform: state
+    entity_id:
+      - input_select.domicile
+      - input_select.volets_mode
+      - sensor.91_weather_alert
+
+#  - platform: state
+#    entity_id:
+#      - sensor.sun_next_dawn
+#      - sensor.sun_next_dusk
+#    id: "Aube/Crépuscule"
+
+  # Boutons de fermeture manuels
+  - platform: state
+    entity_id: !input velux_button
+    id: "Fermer"
+
+  - platform: state
+    entity_id: input_button.volets_reactivation
+    id: "Réactivation"
+
+  # Triggers température simples — la logique de comparaison est dans l'action
+  - platform: state
+    entity_id: sensor.netatmo_exterieur_temperature
+    id: "Température"
+
+  - platform: state
+    entity_id: !input chauffage_target
+    attribute: current_temperature
+    id: "Température"
+
+  - platform: state
+    entity_id: !input temp_secondaire
+    id: "Température"
+
+action:
+#  - service: system_log.write
+#    data:
+#      message: "Blueprint Velux : {{ trigger.id }} / {{ velux_name_var }}"
+#      level: warning
+  - choose:
+      # Action manuelle ou réactivation
+      - conditions:
+          - condition: trigger
+            id:
+              - "Fermer"
+              - "Réactivation"
+        sequence:
+          - if:
+              - condition: and
+                conditions:
+                  - condition: template
+                    value_template: "{{ presence_entite_var == [] or is_state(presence_entite_var, 'Absent') }}"
+                  - condition: template
+                    value_template: "{{ not is_state(velux_target_var, 'closed') }}"
+            then:
+              - action: cover.close_cover
+                target:
+                  entity_id: !input velux_target
+
+      # Alerte Rouge
+      - conditions:
+          - condition: state
+            entity_id: sensor.91_weather_alert
+            state: Rouge
+        sequence:
+          - action: input_button.press
+            target:
+              entity_id: !input velux_button
+
+      # Vacances
+      - conditions:
+          - condition: template
+            value_template: "{{ states('input_select.domicile') in ['Vacances', 'Absent'] }}"
+        sequence:
+          - action: input_button.press
+            target:
+              entity_id: !input velux_button
+
+      # Nuit (Logique Soleil)
+      - conditions:
+          - condition: trigger
+            id: "Aube/Crépuscule"
+          - condition: or
+            conditions:
+              - condition: template
+                value_template: >-
+                  {{ as_timestamp(states('sensor.sun_next_midnight')) >
+                  as_timestamp(states('sensor.sun_next_dawn')) }}
+              - condition: template
+                value_template: >-
+                  {{ as_timestamp(states('sensor.sun_next_midnight')) <
+                  as_timestamp(states('sensor.sun_next_dusk')) }}
+        sequence:
+          - action: input_button.press
+            target:
+              entity_id: !input velux_button
+
+      # Protection Thermique — trigger simple + conditions template dans l'action
+      # Les variables du blueprint (velux_target_var, temp_secondaire_var) sont bien résolues ici
+      - conditions:
+          - condition: trigger
+            id: "Température"
+          - condition: template
+            value_template: >-
+              {% set ext = states('sensor.netatmo_exterieur_temperature') | float(0) %}
+              {% set int1 = state_attr(chauffage_target_var, 'current_temperature') | float(0) %}
+              {% set int2 = states(temp_secondaire_var) | float(0) if temp_secondaire_var not in [none, '', []] else none %}
+              {{ ext > int1
+                 or (int2 is not none and ext > int2)
+                 or int1 < 19.5
+                 or (int2 is not none and int2 < 19.5) }}
+        sequence:
+          - action: input_button.press
+            target:
+              entity_id: !input velux_button
+
+    default: []

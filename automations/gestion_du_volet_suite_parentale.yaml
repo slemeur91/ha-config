@@ -1,0 +1,17 @@
+id: '1774353100119'
+alias: Gestion du Volet - Suite parentale
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  Gestion du Volet - Suite parentale'
+use_blueprint:
+  path: Volets/Gestion_des_volets.yaml
+  input:
+    volet_name: Suite parentale
+    volet_target: cover.volet_de_la_suite_parentale_nodeid_35_position
+    door_sensor: binary_sensor.do_suite_parental
+    presence_entite: input_select.presence_suite_parentale
+    sensor_soleil: binary_sensor.volet_suite_parentale_soleil
+    volet_timer: timer.volet_suite_parentale_timer

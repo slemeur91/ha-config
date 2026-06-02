@@ -2,9 +2,11 @@
 
 [← Retour README](../../README.md)
 
+
 ---
 
 ## `automation.gestion_du_domicile_en_fonction_de_la_presence` — Gestion du Domicile en fonction de la Présence
+> [📄 Voir le YAML](../../automations/gestion_du_domicile_en_fonction_de_la_presence.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -32,6 +34,7 @@
 ---
 
 ## `automation.gestion_de_la_presence_dans_les_pieces` — Gestion de la Présence dans les Pièces
+> [📄 Voir le YAML](../../automations/gestion_de_la_presence_dans_les_pieces.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -53,6 +56,7 @@
 ---
 
 ## `automation.gestion_de_la_boite_aux_lettres` — Gestion de la Boîte aux Lettres
+> [📄 Voir le YAML](../../automations/gestion_de_la_boite_aux_lettres.yaml)
 
 **Statut :** En production | **Evolution :** Aucune
 

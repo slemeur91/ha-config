@@ -1,0 +1,273 @@
+id: '1774207723770'
+alias: Gestion de l'Alarme
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - `alarm_control_panel.alarme` passe de désarmé à armé (absent ou nuit) — id: Activation
+
+  - `alarm_control_panel.alarme` passe d''armé à désarmé — id: Désactivation
+
+  - Appui sur les boutons `input_button.alarme_activee` / `input_button.alarme_desactivee`
+
+
+  **Fonctionnement :**
+
+  1. Activation (absent) → met le domicile en Absent ou Vacances, démarre l''enregistrement
+  caméras 1/2/4, active le flag `input_boolean.alarme`.
+
+  2. Activation (nuit) → met le domicile en Nuit, arrête l''enregistrement caméras
+  1/2/4 (mode présent), active le flag.
+
+  3. Désactivation → met le domicile en Présent, arrête l''enregistrement caméras
+  1/2/4, désactive le flag.
+
+  4. Dans tous les cas → réactive les volets, lance l''enregistrement caméras 3/5/6/7,
+  met à jour `input_select.presence_action` selon le nouvel état du domicile.
+
+
+  **Entités principales :**
+
+  - `alarm_control_panel.alarme` : centrale d''alarme Somfy Protexial
+
+  - `input_boolean.alarme` / `input_select.domicile` : flags d''état
+
+  - `select.slm_camera*_mode_enregistrement` : mode enregistrement caméras'
+triggers:
+- trigger: state
+  entity_id:
+  - alarm_control_panel.alarme
+  to:
+  - armed_away
+  - armed_night
+  from:
+  - disarmed
+  id: Activation
+- trigger: state
+  entity_id:
+  - alarm_control_panel.alarme
+  to:
+  - disarmed
+  from:
+  - armed_away
+  - armed_night
+  id: Désactivation
+- trigger: state
+  entity_id:
+  - input_button.alarme_desactivee
+  id: Désactivation
+- trigger: state
+  entity_id:
+  - input_button.alarme_activee
+  id: BoutonActivation
+conditions: []
+actions:
+- choose:
+  - conditions:
+    - condition: trigger
+      id:
+      - BoutonActivation
+      - Activation
+    sequence:
+    - if:
+      - condition: state
+        entity_id: input_boolean.alarme
+        state: 'off'
+      then:
+      - if:
+        - condition: or
+          conditions:
+          - condition: state
+            entity_id: alarm_control_panel.alarme
+            state: armed_away
+          - condition: trigger
+            id:
+            - BoutonActivation
+        then:
+        - if:
+          - condition: state
+            entity_id: input_select.calendrier
+            state: Absent
+          then:
+          - action: input_select.select_option
+            metadata: {}
+            data:
+              option: Vacances
+            target:
+              entity_id:
+              - input_select.domicile
+          else:
+          - action: input_select.select_option
+            metadata: {}
+            data:
+              option: Absent
+            target:
+              entity_id: input_select.domicile
+        - action: pyscript.surveillance_station_recording
+          data:
+            actionRecord: start
+            camerasNum:
+            - 1
+            - 2
+            - 4
+        - action: select.select_option
+          metadata: {}
+          data:
+            option: always
+          target:
+            entity_id:
+            - select.slm_camera1_mode_enregistrement
+            - select.slm_camera2_mode_enregistrement
+            - select.slm_camera4_mode_enregistrement
+        else:
+        - action: input_select.select_option
+          metadata: {}
+          data:
+            option: Nuit
+          target:
+            entity_id:
+            - input_select.domicile
+        - action: pyscript.surveillance_station_recording
+          data:
+            actionRecord: stop
+            camerasNum:
+            - 1
+            - 2
+            - 4
+        - action: select.select_option
+          metadata: {}
+          data:
+            option: never
+          target:
+            entity_id:
+            - select.slm_camera1_mode_enregistrement
+            - select.slm_camera2_mode_enregistrement
+            - select.slm_camera4_mode_enregistrement
+      - action: input_boolean.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.alarme
+  - conditions:
+    - condition: trigger
+      id:
+      - Désactivation
+    sequence:
+    - if:
+      - condition: state
+        entity_id: input_boolean.alarme
+        state: 'on'
+      then:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Présent
+        target:
+          entity_id: input_select.domicile
+      - action: pyscript.surveillance_station_recording
+        data:
+          actionRecord: stop
+          camerasNum:
+          - 1
+          - 2
+          - 4
+      - action: select.select_option
+        metadata: {}
+        data:
+          option: never
+        target:
+          entity_id:
+          - select.slm_camera1_mode_enregistrement
+          - select.slm_camera2_mode_enregistrement
+          - select.slm_camera4_mode_enregistrement
+      - action: input_boolean.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.alarme
+- action: button.press
+  metadata: {}
+  data: {}
+  target:
+    entity_id: input_button.volets_reactivation
+- action: pyscript.surveillance_station_recording
+  data:
+    actionRecord: start
+    camerasNum:
+    - 3
+    - 6
+    - 7
+- action: select.select_option
+  metadata: {}
+  data:
+    option: always
+  target:
+    entity_id:
+    - select.slm_camera3_mode_enregistrement
+    - select.slm_camera5_mode_enregistrement
+    - select.slm_camera6_mode_enregistrement
+    - select.slm_camera7_mode_enregistrement
+- choose:
+  - conditions:
+    - condition: state
+      entity_id: input_select.domicile
+      state: Nuit
+    sequence:
+    - action: input_select.select_option
+      metadata: {}
+      data:
+        option: Couché
+      target:
+        entity_id: input_select.presence_action
+  - conditions:
+    - condition: state
+      entity_id: input_select.domicile
+      state:
+      - Absent
+      - Vacances
+    sequence:
+    - action: input_select.select_option
+      metadata: {}
+      data:
+        option: Extinction
+      target:
+        entity_id: input_select.presence_action
+  - conditions:
+    - condition: state
+      entity_id: input_select.domicile
+      state: Présent
+    sequence:
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: input_select.presence_action
+          state: Couché
+        sequence:
+        - action: input_select.select_option
+          metadata: {}
+          data:
+            option: Réveil
+          target:
+            entity_id: input_select.presence_action
+      - conditions:
+        - condition: state
+          entity_id: input_select.presence_action
+          state: Extinction
+        sequence:
+        - action: input_select.select_option
+          metadata: {}
+          data:
+            option: Arrivée
+          target:
+            entity_id: input_select.presence_action
+      default:
+      - action: input_select.select_option
+        metadata: {}
+        data:
+          option: Présent
+        target:
+          entity_id: input_select.presence_action
+mode: restart

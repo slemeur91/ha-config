@@ -1,0 +1,92 @@
+id: '1765226109570'
+alias: Corrections des Appareils EcoFlow
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - `sensor.powerstream_6231_status` ou `sensor.ecoflow_status` passe à "assume_offline"
+
+  - Lever du soleil
+
+
+  **Fonctionnement :**
+
+  1. Attend 5 secondes.
+
+  2. Si le PowerStream est offline ET que le soleil est levé → désactive puis réactive
+  l''intégration (cycle 15 secondes).
+
+  3. Si l''EcoFlow Delta Max est offline → désactive puis réactive l''intégration
+  (cycle 15 secondes).
+
+
+  **Entités principales :**
+
+  - `sensor.powerstream_6231_status` / `sensor.ecoflow_status` : état des appareils
+  EcoFlow'
+triggers:
+- trigger: state
+  entity_id:
+  - sensor.powerstream_6231_status
+  to: assume_offline
+- trigger: state
+  entity_id:
+  - sensor.ecoflow_status
+  to: assume_offline
+- trigger: sun
+  event: sunrise
+  offset: 0
+conditions: []
+actions:
+- delay:
+    hours: 0
+    minutes: 0
+    seconds: 5
+    milliseconds: 0
+- parallel:
+  - if:
+    - condition: and
+      conditions:
+      - condition: sun
+        before: sunset
+        after: sunrise
+      - condition: state
+        entity_id: sensor.powerstream_6231_status
+        state: assume_offline
+    then:
+    - action: homeassistant.disable_device
+      data:
+        device_id:
+        - aa808cc2fd0ee20d570da17614c83006
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 15
+        milliseconds: 0
+    - action: homeassistant.enable_device
+      data:
+        device_id:
+        - aa808cc2fd0ee20d570da17614c83006
+  - if:
+    - condition: state
+      entity_id: sensor.ecoflow_status
+      state: assume_offline
+    then:
+    - action: homeassistant.disable_device
+      data:
+        device_id:
+        - 375e224e3dd5fe962a0cacefccab586b
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 15
+        milliseconds: 0
+    - action: homeassistant.enable_device
+      data:
+        device_id:
+        - 375e224e3dd5fe962a0cacefccab586b
+mode: queued
+max: 10

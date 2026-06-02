@@ -1,0 +1,18 @@
+id: '1774368219981'
+alias: Gestion du Volet - Séjour
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  Gestion du Volet - Séjour'
+use_blueprint:
+  path: Volets/Gestion_des_volets.yaml
+  input:
+    volet_name: Séjour
+    volet_target: cover.volet_du_sejour_nodeid_33_position
+    door_sensor: binary_sensor.do_sejour
+    presence_entite: input_select.presence_salon
+    use_position_30: true
+    sensor_soleil: binary_sensor.volet_sejour_soleil
+    volet_timer: timer.volet_sejour_timer

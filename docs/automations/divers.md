@@ -2,9 +2,11 @@
 
 [← Retour README](../../README.md)
 
+
 ---
 
 ## `automation.gazpar_mise_a_jour_statistiques_journalieres` — GAZPAR – Mise à jour statistiques journalières
+> [📄 Voir le YAML](../../automations/gazpar_mise_a_jour_statistiques_journalieres.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -21,6 +23,7 @@
 ---
 
 ## `automation.gestion_de_la_boite_aux_lettres` — Gestion de la Boîte aux Lettres
+> [📄 Voir le YAML](../../automations/gestion_de_la_boite_aux_lettres.yaml)
 
 **Statut :** En production | **Evolution :** Aucune
 
@@ -41,6 +44,7 @@
 ---
 
 ## `automation.correction_tuya` — Correction Tuya
+> [📄 Voir le YAML](../../automations/correction_tuya.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -56,6 +60,7 @@
 ---
 
 ## `automation.notification_appareils_en_batterie_faible_mail_hebdomadaire` — Notification Mail Hebdomadaire Batteries
+> [📄 Voir le YAML](../../automations/notification_appareils_en_batterie_faible_mail_hebdomadaire.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 

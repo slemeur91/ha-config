@@ -1,0 +1,178 @@
+id: '1754661039294'
+alias: Gestion de la Qualité de l'Air
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Changement des capteurs PM2.5 (Xiaomi moniteur, purificateur Mi Air, Dyson Salon),
+  PM10, VOC et NO2
+
+  - Attribut PM2.5 du moniteur Xiaomi passe sous 0 (détection indisponibilité)
+
+
+  **Fonctionnement :**
+
+  1. Si seuils de pollution dépassés (PM2.5 > 40, PM10 > 60, VOC > 6 ou NO2 > 6) →
+  allume les purificateurs (Mi Air + Dyson Salon) s''ils sont éteints, active le flag
+  purification.
+
+  2. Si tous les seuils sont en dessous des valeurs basses (PM2.5 < 35, PM10 < 45,
+  VOC < 4, NO2 < 4) → éteint les purificateurs, coupe les switches physiques si alarme
+  armée, désactive le flag purification.
+
+
+  **Entités principales :**
+
+  - `fan.zhimi_m1_6186_air_purifier` / `fan.salon` : purificateurs Mi Air et Dyson
+
+  - `input_boolean.purification` : flag état purification
+
+  - `sensor.salon_volatile_organic_compounds_index` / `sensor.salon_nitrogen_dioxide_index`
+  : qualité air Dyson'
+triggers:
+- entity_id: sensor.zhimi_v1_5052_pm25_density
+  above: 0
+  trigger: numeric_state
+- entity_id: sensor.zhimi_m1_6186_pm25_density
+  above: 0
+  trigger: numeric_state
+- entity_id: sensor.salon_pm_2_5
+  above: 0
+  trigger: numeric_state
+- entity_id: sensor.salon_pm_10
+  above: 0
+  trigger: numeric_state
+- entity_id: sensor.salon_volatile_organic_compounds_index
+  above: 0
+  trigger: numeric_state
+- entity_id: sensor.salon_nitrogen_dioxide_index
+  above: 0
+  trigger: numeric_state
+conditions: []
+actions:
+- choose:
+  - conditions:
+    - condition: or
+      conditions:
+      - condition: numeric_state
+        entity_id: sensor.zhimi_v1_5052_pm25_density
+        above: 40
+      - condition: numeric_state
+        entity_id: sensor.zhimi_m1_6186_pm25_density
+        above: 40
+      - condition: numeric_state
+        entity_id: sensor.salon_pm_2_5
+        above: 40
+      - condition: numeric_state
+        entity_id: sensor.salon_pm_10
+        above: 60
+      - condition: numeric_state
+        entity_id: sensor.salon_volatile_organic_compounds_index
+        above: 6
+      - condition: numeric_state
+        entity_id: sensor.salon_nitrogen_dioxide_index
+        above: 6
+    sequence:
+    - parallel:
+      - if:
+        - condition: state
+          entity_id: fan.zhimi_m1_6186_air_purifier
+          state: 'off'
+        then:
+        - action: fan.turn_on
+          continue_on_error: true
+          data: {}
+          target:
+            entity_id: fan.zhimi_m1_6186_air_purifier
+      - if:
+        - condition: state
+          entity_id: fan.salon
+          state: 'off'
+        then:
+        - action: fan.turn_on
+          continue_on_error: true
+          data: {}
+          target:
+            entity_id: fan.salon
+    - action: input_boolean.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: input_boolean.purification
+  - conditions:
+    - condition: and
+      conditions:
+      - condition: or
+        conditions:
+        - condition: numeric_state
+          entity_id: sensor.zhimi_v1_5052_pm25_density
+          below: 35
+        - condition: state
+          entity_id: sensor.zhimi_v1_5052_pm25_density
+          state:
+          - unavailable
+      - condition: numeric_state
+        entity_id: sensor.zhimi_m1_6186_pm25_density
+        below: 35
+      - condition: numeric_state
+        entity_id: sensor.salon_pm_2_5
+        below: 35
+      - condition: numeric_state
+        entity_id: sensor.salon_pm_10
+        below: 45
+      - condition: numeric_state
+        entity_id: sensor.salon_volatile_organic_compounds_index
+        below: 4
+      - condition: numeric_state
+        entity_id: sensor.salon_nitrogen_dioxide_index
+        below: 4
+    sequence:
+    - parallel:
+      - if:
+        - condition: state
+          entity_id: fan.zhimi_m1_6186_air_purifier
+          state: 'on'
+        then:
+        - action: fan.turn_off
+          continue_on_error: true
+          data: {}
+          target:
+            entity_id: fan.zhimi_m1_6186_air_purifier
+      - if:
+        - condition: state
+          entity_id: fan.salon
+          state: 'on'
+        then:
+        - action: fan.turn_off
+          continue_on_error: true
+          data: {}
+          target:
+            entity_id: fan.salon
+    - if:
+      - condition: and
+        conditions:
+        - condition: state
+          entity_id: input_boolean.alarme
+          state:
+          - 'on'
+        - condition: state
+          entity_id: input_boolean.purification
+          state: 'on'
+      then:
+      - action: switch.turn_off
+        continue_on_error: true
+        data: {}
+        target:
+          entity_id:
+          - switch.multiprise_du_salon_droite_2_purificateur
+          - switch.2_ventilateur
+    - action: input_boolean.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: input_boolean.purification
+mode: parallel
+max: 10

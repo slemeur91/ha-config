@@ -2,7 +2,8 @@
 
 [← Retour README](../../README.md)
 
-Blueprint : `Volets/Gestion_des_volets.yaml`
+
+Blueprint : [`blueprints/Gestion_des_volets.yaml`](../../blueprints/Gestion_des_volets.yaml)
 
 ---
 
@@ -34,6 +35,7 @@ Pilote les volets selon le mode domicile, la météo, le soleil et la présence.
 ## Instances configurées
 
 ### Volet Cellier (`automation.gestion_du_volet_cellier`)
+> [📄 Voir le YAML](../../automations/gestion_du_volet_cellier.yaml)
 - **Volet cible :** `cover.volet_du_cellier_nodeid_31_position`
 - **Capteur soleil :** `binary_sensor.volet_cellier_soleil`
 - **Présence :** *(aucune)*

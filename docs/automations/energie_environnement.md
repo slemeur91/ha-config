@@ -2,9 +2,11 @@
 
 [← Retour README](../../README.md)
 
+
 ---
 
 ## `automation.gestion_du_soleil` — Gestion du Soleil
+> [📄 Voir le YAML](../../automations/gestion_du_soleil.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -30,6 +32,7 @@
 ---
 
 ## `automation.gestion_de_l_activation_de_l_arrosage` — Gestion de l'activation de l'Arrosage
+> [📄 Voir le YAML](../../automations/gestion_de_l_activation_de_l_arrosage.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -52,6 +55,7 @@
 ---
 
 ## `automation.gestion_de_la_qualite_de_l_air` — Gestion de la Qualité de l'Air
+> [📄 Voir le YAML](../../automations/gestion_de_la_qualite_de_l_air.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 

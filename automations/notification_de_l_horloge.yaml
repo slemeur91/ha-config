@@ -1,0 +1,73 @@
+id: '1752859713178'
+alias: Notification de l'Horloge
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Toutes les heures pile (time_pattern)
+
+
+  **Conditions :**
+
+  - Après 10h30 seulement
+
+
+  **Fonctionnement :**
+
+  1. Compose un message vocal adapté à l''heure (midi, minuit, 1h, 21h ; sinon formule
+  générique).
+
+  2. Lance `script.notification_vocale` avec le message.
+
+
+  **Entités principales :**
+
+  - `script.notification_vocale` : diffusion du message sur les enceintes SONOS actives'
+triggers:
+- trigger: time_pattern
+  hours: '*'
+  minutes: '00'
+  seconds: '00'
+conditions:
+- condition: time
+  after: '10:30:00'
+actions:
+- choose:
+  - conditions:
+    - condition: time
+      after: '23:45:00'
+      before: 00:15:00
+    sequence:
+    - variables:
+        message_vocal: Il est minuit
+  - conditions:
+    - condition: time
+      after: '11:45:00'
+      before: '12:15:00'
+    sequence:
+    - variables:
+        message_vocal: Il est midi
+  - conditions:
+    - condition: time
+      after: '12:45:00'
+      before: '13:15:00'
+    sequence:
+    - variables:
+        message_vocal: Il est une heure
+  - conditions:
+    - condition: time
+      after: '20:45:00'
+      before: '21:15:00'
+    sequence:
+    - variables:
+        message_vocal: Il est vingt et une heure
+  default:
+  - variables:
+      message_vocal: Il est {{ now().hour }} heure
+- action: script.notification_vocale
+  data:
+    message_vocal: '{{ message_vocal }}'
+mode: restart

@@ -1,0 +1,17 @@
+id: '1774471640620'
+alias: Gestion du Velux - Chambre
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  Gestion du Velux - Chambre'
+use_blueprint:
+  path: Volets/Gestion_des_velux.yaml
+  input:
+    velux_name: Chambre
+    velux_target: cover.velux_de_la_chambre
+    temp_secondaire: sensor.netatmo_chambre_temperature
+    presence_entite: input_select.presence_chambre
+    velux_button: input_button.velux_chambre_fermer
+    chauffage_target: climate.chauffage_de_la_chambre_nodeid_6_climate
