@@ -15,6 +15,7 @@
 | EnOcean | **3** | ✅ Local | [→ Détail](appareils/enocean.md) |
 | WiFi / IP | **52** | ✅ Local + ☁️ Cloud | [→ Détail](appareils/wifi.md) |
 | Thread / Matter | **1** | ✅ Local | [→ Détail](appareils/matter.md) |
+| Autres (Somfy, RF, Remote HA…) | **21** | ✅ Local | [→ Autres appareils](#autres-appareils--par-intégration) |
 
 ---
 
@@ -84,7 +85,7 @@ Ces appareils utilisent des protocoles spécifiques documentés avec leur intég
 
 ### Compteurs & Mesure (4 appareils)
 
-| Nb | Fabricant | Modèle | Description | Localisation | Intégration | Mode |
+| Nb | Fabricant | Modèle | Description | Intégration | Mode |
 |---|---|---|---|---|---|
 | 1 | Enedis | Linky | Compteur électrique intelligent | 📦 Add-on [Linky](https://github.com/bokub/linky) | ☁️ Cloud |
 | 1 | GrDF | GAZPAR | Compteur gaz communicant | 📦 Add-on [Gazpar2MQTT](https://github.com/ssenart/gazpar2mqtt) | ☁️ Cloud |

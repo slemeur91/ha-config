@@ -209,8 +209,8 @@
 | Studio Code Server | — | [hassio-addons/addon-vscode](https://github.com/hassio-addons/addon-vscode) | VSCode intégré | 📦 Communauté |
 | Terminal & SSH | — | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/ssh) | Accès terminal | 🏠 Officiel HA |
 | Z-Wave JS | — | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/zwave_js) | Réseau Z-Wave *(désactivé — remplacé par Z-Wave JS UI)* | 🏠 Officiel HA |
-| Z-Wave JS UI | 13 | [hassio-addons/addon-zwave-js-ui](https://github.com/hassio-addons/addon-zwave-js-ui) | Interface Z-Wave JS complète + publication MQTT | 📦 Communauté |
-| Zigbee2MQTT | 3 | [zigbee2mqtt/hassio-zigbee2mqtt](https://github.com/zigbee2mqtt/hassio-zigbee2mqtt) | Réseau Zigbee | 📦 Communauté |
+| Z-Wave JS UI | 25 | [hassio-addons/addon-zwave-js-ui](https://github.com/hassio-addons/addon-zwave-js-ui) | Interface Z-Wave JS complète + publication MQTT | 📦 Communauté |
+| Zigbee2MQTT | 22 | [zigbee2mqtt/hassio-zigbee2mqtt](https://github.com/zigbee2mqtt/hassio-zigbee2mqtt) | Réseau Zigbee | 📦 Communauté |
 
 ---
 
