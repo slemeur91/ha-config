@@ -6,14 +6,14 @@
 
 ## Intégrations (19)
 
-### Alexa Media Player `v5.15.4`
+### Alexa Media Player
 > [GitHub](https://github.com/alandtse/alexa_media_player) — `domain: alexa_media`
 
 Contrôle des appareils Amazon Alexa via l'API non officielle.
 
 ---
 
-### Atmo France `V2.1.3`
+### Atmo France
 > [GitHub](https://github.com/sebcaps/atmofrance) — `domain: atmofrance`
 
 Qualité de l'air pour les villes françaises depuis Atmo France.
@@ -23,7 +23,7 @@ Qualité de l'air pour les villes françaises depuis Atmo France.
 
 ---
 
-### Battery Notes `3.4.6`
+### Battery Notes
 > [GitHub](https://github.com/andrew-codechimp/HA-Battery-Notes) — `domain: battery_notes`
 
 Suivi des types et dates de remplacement des batteries.
@@ -32,7 +32,7 @@ Suivi des types et dates de remplacement des batteries.
 
 ---
 
-### Dyson Local `v1.7.0`
+### Dyson Local
 > [GitHub](https://github.com/libdyson-wg/ha-dyson) — `domain: dyson_local`
 
 Intégration locale (sans cloud) des appareils Dyson.
@@ -43,7 +43,7 @@ Intégration locale (sans cloud) des appareils Dyson.
 
 ---
 
-### Ecodevices RT2 `v2.2.10`
+### Ecodevices RT2
 > [GitHub](https://github.com/pcourbin/ecodevices_rt2) — `domain: ecodevices_rt2`
 
 Intégration pour le module de mesure GCE Ecodevices RT2.
@@ -54,7 +54,7 @@ Intégration pour le module de mesure GCE Ecodevices RT2.
 
 ---
 
-### EcoFlow Cloud `v1.1.7`
+### EcoFlow Cloud
 > [GitHub](https://github.com/snell-evan-itt/hassio-ecoflow-cloud-US) — `domain: ecoflow_cloud`
 
 Intégration cloud pour les appareils EcoFlow (batterie DELTA Max + PowerStream).
@@ -63,14 +63,14 @@ Intégration cloud pour les appareils EcoFlow (batterie DELTA Max + PowerStream)
 
 ---
 
-### HACS `2.0.5`
+### HACS
 > [GitHub](https://github.com/hacs/integration) — `domain: hacs`
 
 Home Assistant Community Store — gestionnaire de contenu communautaire.
 
 ---
 
-### Local Agenda `v1.0.3`
+### Local Agenda
 > [GitHub](https://github.com/slemeur91/local_agenda) — `domain: local_agenda`
 
 Intégration de calendriers locaux enrichis pour la planification de l'agenda domotique.
@@ -84,7 +84,7 @@ Intégration de calendriers locaux enrichis pour la planification de l'agenda do
 
 ---
 
-### Micronova Agua IOT `1.1.2`
+### Micronova Agua IOT
 > [GitHub](https://github.com/vincentwolsink/home_assistant_micronova_agua_iot) — `domain: aguaiot`
 
 Contrôle des poêles à granulés connectés via la plateforme Agua IOT.
@@ -93,21 +93,21 @@ Contrôle des poêles à granulés connectés via la plateforme Agua IOT.
 
 ---
 
-### My EcoWatt by RTE `0.9.6`
+### My EcoWatt by RTE
 > [GitHub](https://github.com/kamaradclimber/rte-ecowatt) — `domain: rte_ecowatt`
 
 Données EcoWatt de RTE (signaux de sobriété électrique).
 
 ---
 
-### Orange Livebox `2.5.3`
+### Orange Livebox
 > [GitHub](https://github.com/cyr-ius/hass-livebox-component) — `domain: livebox`
 
 Supervision de la Livebox Orange (état WAN, appareils connectés).
 
 ---
 
-### pyscript `2.0.1`
+### pyscript
 > [GitHub](https://github.com/custom-components/pyscript) — `domain: pyscript`
 
 Scripts Python avancés dans Home Assistant.
@@ -118,7 +118,7 @@ Scripts Python avancés dans Home Assistant.
 
 ---
 
-### Remote Home-Assistant `4.6`
+### Remote Home-Assistant
 > [GitHub](https://github.com/custom-components/remote_homeassistant) — `domain: remote_homeassistant`
 
 Liaison entre deux instances Home Assistant.
@@ -128,7 +128,7 @@ Liaison entre deux instances Home Assistant.
 
 ---
 
-### RfPlayer `v1.3.0`
+### RfPlayer
 > [GitHub](https://github.com/gce-electronics/HA_RFPlayer) — `domain: rfplayer`
 
 Intégration du module GCE Electronics RFPlayer (réception/émission RF 433/868 MHz).
@@ -137,7 +137,7 @@ Intégration du module GCE Electronics RFPlayer (réception/émission RF 433/868
 
 ---
 
-### Somfy Protexial `2.0.4`
+### Somfy Protexial
 > [GitHub](https://github.com/AuroreVgn/somfy-protexial) — `domain: somfy_protexial`
 
 Intégration de la centrale d'alarme Somfy Protexial/Protexiom.
@@ -148,7 +148,7 @@ Intégration de la centrale d'alarme Somfy Protexial/Protexiom.
 
 ---
 
-### Spook `v4.0.1`
+### Spook
 > [GitHub](https://github.com/frenck/spook) — `domain: spook`
 
 Boîte à outils avancée pour Home Assistant (services supplémentaires, détection entités orphelines).
@@ -157,7 +157,7 @@ Boîte à outils avancée pour Home Assistant (services supplémentaires, détec
 
 ---
 
-### Vacances Scolaires `2.1.9`
+### Vacances Scolaires
 > [GitHub](https://github.com/Master13011/vacances-scolaire-HA) — `domain: vacances_scolaires`
 
 Calendrier des vacances scolaires françaises.
@@ -167,7 +167,7 @@ Calendrier des vacances scolaires françaises.
 
 ---
 
-### Xiaomi Miot `v1.1.4`
+### Xiaomi Miot
 > [GitHub](https://github.com/al-one/hass-xiaomi-miot) — `domain: xiaomi_miot`
 
 Intégration de tous les appareils Xiaomi/Mi via le protocole MiOT.
@@ -178,7 +178,7 @@ Intégration de tous les appareils Xiaomi/Mi via le protocole MiOT.
 
 ---
 
-### xsense `v.1.2.0`
+### xsense
 > [GitHub](https://github.com/Jarnsen/ha-xsense-component_test) — `domain: xsense`
 
 Intégration des appareils X-Sense (station de sécurité SBS50, détecteurs de fumée/CO).
@@ -187,37 +187,37 @@ Intégration des appareils X-Sense (station de sécurité SBS50, détecteurs de 
 
 ## Cartes Lovelace (7)
 
-### apexcharts-card `v2.2.3`
+### apexcharts-card
 > [GitHub](https://github.com/RomRider/apexcharts-card)
 
 Graphiques avancés basés sur ApexCharts. Utilisé pour les graphiques de consommation énergie.
 
-### Battery State Card `v4.2.0`
+### Battery State Card
 > [GitHub](https://github.com/maxwroc/battery-state-card)
 
 Tableau de bord des niveaux de batteries de tous les appareils.
 
-### card-mod `v4.2.1`
+### card-mod
 > [GitHub](https://github.com/thomasloven/lovelace-card-mod)
 
 Permet d'ajouter du CSS personnalisé à n'importe quelle carte Lovelace.
 
-### Custom-ui `20240118`
+### Custom-ui
 > [GitHub](https://github.com/Mariusthvdb/custom-ui)
 
 Templates et couleurs d'icônes personnalisés dans l'interface HA.
 
-### expander-card `7.1.2`
+### expander-card
 > [GitHub](https://github.com/MelleD/lovelace-expander-card)
 
 Carte extensible/rétractable pour organiser les dashboards.
 
-### GrDF Gazpar card `1.3.11`
+### GrDF Gazpar card
 > [GitHub](https://github.com/ssenart/lovelace-gazpar-card)
 
 Carte dédiée à l'affichage des données GAZPAR (consommation gaz).
 
-### Waze Travel Time Card `038f2a8`
+### Waze Travel Time Card
 > [GitHub](https://github.com/r-renato/ha-card-waze-travel-time)
 
 Affiche le temps de trajet calculé par Waze.

@@ -216,25 +216,25 @@
 > 🏠 **Officiel HA** = dépôt officiel Home Assistant, aucune source supplémentaire à ajouter
 > 📦 **Communauté** = dépôt tiers à ajouter manuellement dans les sources d'add-ons
 
-| Add-on | Version | GitHub | Rôle | Source |
-|---|---|---|---|---|
-| EnOcean MQTT | 3.1.0 | [asera-corp/ha-enoceanmqtt](https://github.com/asera-corp/ha-enoceanmqtt) | Passerelle EnOcean | 📦 Communauté |
-| File editor | 6.0.0 | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/configurator) | Éditeur de fichiers | 🏠 Officiel HA |
-| Gazpar2MQTT | 0.2.5 | [ssenart/gazpar2mqtt](https://github.com/ssenart/gazpar2mqtt) | Données GAZPAR vers MQTT | 📦 Communauté |
-| Get HACS | 1.3.1 | [hacs/get](https://github.com/hacs/get) | Installateur HACS | 📦 Communauté |
-| Home Assistant MCP Server | 7.6.0 | [voska/hass-mcp](https://github.com/voska/hass-mcp) | Intégration IA via MCP | 📦 Communauté |
-| Home-Assistant-Matter-Hub | 2.0.45 | [t0bst4r/home-assistant-matter-hub](https://github.com/t0bst4r/home-assistant-matter-hub) | Pont Matter vers Alexa/Apple/Google | 📦 Communauté |
-| Homebridge | 2026-05-22 | [homebridge/homebridge-hassio](https://github.com/homebridge/homebridge-hassio) | Support HomeKit | 📦 Communauté |
-| Linky | 1.7.0 | [bokub/linky](https://github.com/bokub/linky) | Compteur Linky | 📦 Communauté |
-| Matter Server | 8.5.0 | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/matter_server) | Support Matter | 🏠 Officiel HA |
-| Mosquitto broker | 7.1.0 | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/mosquitto) | Broker MQTT | 🏠 Officiel HA |
-| MQTT Explorer | browser-1.0.3 | [thomasloven/hassio-mqtt-explorer](https://github.com/thomasloven/hassio-mqtt-explorer) | Explorateur MQTT | 📦 Communauté |
-| OpenThread Border Router | 3.0.1 | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/openthread_border_router) | Thread/Matter | 🏠 Officiel HA |
-| Studio Code Server | 6.0.1 | [hassio-addons/addon-vscode](https://github.com/hassio-addons/addon-vscode) | VSCode intégré | 📦 Communauté |
-| Terminal & SSH | 10.2.0 | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/ssh) | Accès terminal | 🏠 Officiel HA |
-| Z-Wave JS | 1.3.0 | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/zwave_js) | Réseau Z-Wave *(désactivé — remplacé par Z-Wave JS UI)* | 🏠 Officiel HA |
-| Z-Wave JS UI | 7.3.0 | [hassio-addons/addon-zwave-js-ui](https://github.com/hassio-addons/addon-zwave-js-ui) | Interface Z-Wave JS complète + publication MQTT | 📦 Communauté |
-| Zigbee2MQTT | 2.11.0-1 | [zigbee2mqtt/hassio-zigbee2mqtt](https://github.com/zigbee2mqtt/hassio-zigbee2mqtt) | Réseau Zigbee | 📦 Communauté |
+| Add-on | GitHub | Rôle | Source |
+|---|---|---|---|
+| EnOcean MQTT | [asera-corp/ha-enoceanmqtt](https://github.com/asera-corp/ha-enoceanmqtt) | Passerelle EnOcean | 📦 Communauté |
+| File editor | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/configurator) | Éditeur de fichiers | 🏠 Officiel HA |
+| Gazpar2MQTT | [ssenart/gazpar2mqtt](https://github.com/ssenart/gazpar2mqtt) | Données GAZPAR vers MQTT | 📦 Communauté |
+| Get HACS | [hacs/get](https://github.com/hacs/get) | Installateur HACS | 📦 Communauté |
+| Home Assistant MCP Server | [voska/hass-mcp](https://github.com/voska/hass-mcp) | Intégration IA via MCP | 📦 Communauté |
+| Home-Assistant-Matter-Hub | [t0bst4r/home-assistant-matter-hub](https://github.com/t0bst4r/home-assistant-matter-hub) | Pont Matter vers Alexa/Apple/Google | 📦 Communauté |
+| Homebridge | [homebridge/homebridge-hassio](https://github.com/homebridge/homebridge-hassio) | Support HomeKit | 📦 Communauté |
+| Linky | [bokub/linky](https://github.com/bokub/linky) | Compteur Linky | 📦 Communauté |
+| Matter Server | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/matter_server) | Support Matter | 🏠 Officiel HA |
+| Mosquitto broker | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/mosquitto) | Broker MQTT | 🏠 Officiel HA |
+| MQTT Explorer | [thomasloven/hassio-mqtt-explorer](https://github.com/thomasloven/hassio-mqtt-explorer) | Explorateur MQTT | 📦 Communauté |
+| OpenThread Border Router | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/openthread_border_router) | Thread/Matter | 🏠 Officiel HA |
+| Studio Code Server | [hassio-addons/addon-vscode](https://github.com/hassio-addons/addon-vscode) | VSCode intégré | 📦 Communauté |
+| Terminal & SSH | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/ssh) | Accès terminal | 🏠 Officiel HA |
+| Z-Wave JS | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/zwave_js) | Réseau Z-Wave *(désactivé — remplacé par Z-Wave JS UI)* | 🏠 Officiel HA |
+| Z-Wave JS UI | [hassio-addons/addon-zwave-js-ui](https://github.com/hassio-addons/addon-zwave-js-ui) | Interface Z-Wave JS complète + publication MQTT | 📦 Communauté |
+| Zigbee2MQTT | [zigbee2mqtt/hassio-zigbee2mqtt](https://github.com/zigbee2mqtt/hassio-zigbee2mqtt) | Réseau Zigbee | 📦 Communauté |
 
 ---
 
@@ -245,48 +245,58 @@
 > 🔧 **HACS** = disponible dans le catalogue HACS standard, sans dépôt personnalisé
 > ⚠️ **Dépôt perso** = dépôt GitHub personnel à ajouter manuellement dans HACS
 
-| Intégration | Version | GitHub | Source |
-|---|---|---|---|
-| Alexa Media Player | v5.15.4 | [alandtse/alexa_media_player](https://github.com/alandtse/alexa_media_player) | 🔧 HACS |
-| Atmo France | V2.1.3 | [sebcaps/atmofrance](https://github.com/sebcaps/atmofrance) | 🔧 HACS |
-| Battery Notes | 3.4.6 | [andrew-codechimp/HA-Battery-Notes](https://github.com/andrew-codechimp/HA-Battery-Notes) | 🔧 HACS |
-| Dyson Local | v1.7.0 | [libdyson-wg/ha-dyson](https://github.com/libdyson-wg/ha-dyson) | 🔧 HACS |
-| Ecodevices RT2 | v2.2.10 | [pcourbin/ecodevices_rt2](https://github.com/pcourbin/ecodevices_rt2) | 🔧 HACS |
-| EcoFlow Cloud | v1.1.7 | [snell-evan-itt/hassio-ecoflow-cloud-US](https://github.com/snell-evan-itt/hassio-ecoflow-cloud-US) | 🔧 HACS |
-| HACS | 2.0.5 | [hacs/integration](https://github.com/hacs/integration) | 🔧 HACS |
-| Local Agenda | v1.0.3 | [slemeur91/local_agenda](https://github.com/slemeur91/local_agenda) | ⚠️ Dépôt perso |
-| Micronova Agua IOT | 1.1.2 | [vincentwolsink/home_assistant_micronova_agua_iot](https://github.com/vincentwolsink/home_assistant_micronova_agua_iot) | 🔧 HACS |
-| My EcoWatt by RTE | 0.9.6 | [kamaradclimber/rte-ecowatt](https://github.com/kamaradclimber/rte-ecowatt) | 🔧 HACS |
-| Orange Livebox | 2.5.3 | [cyr-ius/hass-livebox-component](https://github.com/cyr-ius/hass-livebox-component) | 🔧 HACS |
-| pyscript | 2.0.1 | [custom-components/pyscript](https://github.com/custom-components/pyscript) | 🔧 HACS |
-| Remote Home-Assistant | 4.6 | [custom-components/remote_homeassistant](https://github.com/custom-components/remote_homeassistant) | 🔧 HACS |
-| RfPlayer | v1.3.0 | [gce-electronics/HA_RFPlayer](https://github.com/gce-electronics/HA_RFPlayer) | ⚠️ Dépôt perso |
-| Somfy Protexial | 2.0.4 | [AuroreVgn/somfy-protexial](https://github.com/AuroreVgn/somfy-protexial) | ⚠️ Dépôt perso |
-| Spook | v4.0.1 | [frenck/spook](https://github.com/frenck/spook) | 🔧 HACS |
-| Vacances Scolaires | 2.1.9 | [Master13011/vacances-scolaire-HA](https://github.com/Master13011/vacances-scolaire-HA) | 🔧 HACS |
-| Xiaomi Miot | v1.1.4 | [al-one/hass-xiaomi-miot](https://github.com/al-one/hass-xiaomi-miot) | 🔧 HACS |
-| xsense | v.1.2.0 | [Jarnsen/ha-xsense-component_test](https://github.com/Jarnsen/ha-xsense-component_test) | ⚠️ Dépôt perso |
+| Intégration | GitHub | Source |
+|---|---|---|
+| Alexa Media Player | [alandtse/alexa_media_player](https://github.com/alandtse/alexa_media_player) | 🔧 HACS |
+| Atmo France | [sebcaps/atmofrance](https://github.com/sebcaps/atmofrance) | 🔧 HACS |
+| Battery Notes | [andrew-codechimp/HA-Battery-Notes](https://github.com/andrew-codechimp/HA-Battery-Notes) | 🔧 HACS |
+| Dyson Local | [libdyson-wg/ha-dyson](https://github.com/libdyson-wg/ha-dyson) | 🔧 HACS |
+| Ecodevices RT2 | [pcourbin/ecodevices_rt2](https://github.com/pcourbin/ecodevices_rt2) | 🔧 HACS |
+| EcoFlow Cloud | [snell-evan-itt/hassio-ecoflow-cloud-US](https://github.com/snell-evan-itt/hassio-ecoflow-cloud-US) | 🔧 HACS |
+| HACS | [hacs/integration](https://github.com/hacs/integration) | 🔧 HACS |
+| Local Agenda | [slemeur91/local_agenda](https://github.com/slemeur91/local_agenda) | ⚠️ Dépôt perso |
+| Micronova Agua IOT | [vincentwolsink/home_assistant_micronova_agua_iot](https://github.com/vincentwolsink/home_assistant_micronova_agua_iot) | 🔧 HACS |
+| My EcoWatt by RTE | [kamaradclimber/rte-ecowatt](https://github.com/kamaradclimber/rte-ecowatt) | 🔧 HACS |
+| Orange Livebox | [cyr-ius/hass-livebox-component](https://github.com/cyr-ius/hass-livebox-component) | 🔧 HACS |
+| pyscript | [custom-components/pyscript](https://github.com/custom-components/pyscript) | 🔧 HACS |
+| Remote Home-Assistant | [custom-components/remote_homeassistant](https://github.com/custom-components/remote_homeassistant) | 🔧 HACS |
+| RfPlayer | [gce-electronics/HA_RFPlayer](https://github.com/gce-electronics/HA_RFPlayer) | ⚠️ Dépôt perso |
+| Somfy Protexial | [AuroreVgn/somfy-protexial](https://github.com/AuroreVgn/somfy-protexial) | ⚠️ Dépôt perso |
+| Spook | [frenck/spook](https://github.com/frenck/spook) | 🔧 HACS |
+| Vacances Scolaires | [Master13011/vacances-scolaire-HA](https://github.com/Master13011/vacances-scolaire-HA) | 🔧 HACS |
+| Xiaomi Miot | [al-one/hass-xiaomi-miot](https://github.com/al-one/hass-xiaomi-miot) | 🔧 HACS |
+| xsense | [Jarnsen/ha-xsense-component_test](https://github.com/Jarnsen/ha-xsense-component_test) | ⚠️ Dépôt perso |
 
 ### Cartes Lovelace HACS (7)
 
-| Carte | Version | GitHub | Source |
-|---|---|---|---|
-| apexcharts-card | v2.2.3 | [RomRider/apexcharts-card](https://github.com/RomRider/apexcharts-card) | 🔧 HACS |
-| Battery State Card | v4.2.0 | [maxwroc/battery-state-card](https://github.com/maxwroc/battery-state-card) | 🔧 HACS |
-| card-mod | v4.2.1 | [thomasloven/lovelace-card-mod](https://github.com/thomasloven/lovelace-card-mod) | 🔧 HACS |
-| Custom-ui | 20240118 | [Mariusthvdb/custom-ui](https://github.com/Mariusthvdb/custom-ui) | 🔧 HACS |
-| expander-card | 7.1.2 | [MelleD/lovelace-expander-card](https://github.com/MelleD/lovelace-expander-card) | 🔧 HACS |
-| GrDF Gazpar card | 1.3.11 | [ssenart/lovelace-gazpar-card](https://github.com/ssenart/lovelace-gazpar-card) | ⚠️ Dépôt perso |
-| Waze Travel Time Card | 038f2a8 | [r-renato/ha-card-waze-travel-time](https://github.com/r-renato/ha-card-waze-travel-time) | 🔧 HACS |
+| Carte | GitHub | Source |
+|---|---|---|
+| apexcharts-card | [RomRider/apexcharts-card](https://github.com/RomRider/apexcharts-card) | 🔧 HACS |
+| Battery State Card | [maxwroc/battery-state-card](https://github.com/maxwroc/battery-state-card) | 🔧 HACS |
+| card-mod | [thomasloven/lovelace-card-mod](https://github.com/thomasloven/lovelace-card-mod) | 🔧 HACS |
+| Custom-ui | [Mariusthvdb/custom-ui](https://github.com/Mariusthvdb/custom-ui) | 🔧 HACS |
+| expander-card | [MelleD/lovelace-expander-card](https://github.com/MelleD/lovelace-expander-card) | 🔧 HACS |
+| GrDF Gazpar card | [ssenart/lovelace-gazpar-card](https://github.com/ssenart/lovelace-gazpar-card) | ⚠️ Dépôt perso |
+| Waze Travel Time Card | [r-renato/ha-card-waze-travel-time](https://github.com/r-renato/ha-card-waze-travel-time) | 🔧 HACS |
 
 ---
 
 ## 📐 Blueprints
 
-| Blueprint | Instances | Description | Source YAML |
-|---|---|---|---|
-| [Gestion des Velux](docs/automations/blueprint_velux.md) | 3 | Fermeture selon présence, météo, protection thermique | [YAML](blueprints/Gestion_des_velux.yaml) |
-| [Gestion des Volets](docs/automations/blueprint_volets.md) | 9 | Pilotage intelligent selon mode, météo, soleil, présence | [YAML](blueprints/Gestion_des_volets.yaml) |
+| Blueprint | Instances | Description |
+|---|---|---|
+| [Gestion des Velux](docs/automations/blueprint_velux.md) | 3 | Fermeture selon présence, météo, protection thermique |
+| [Gestion des Volets](docs/automations/blueprint_volets.md) | 9 | Pilotage intelligent selon mode, météo, soleil, présence |
+
+### Points d'attention lors de la création de blueprints
+
+Deux limitations importantes rencontrées lors du développement :
+
+**Les triggers ne peuvent pas utiliser les variables de la section `variables:`**
+Les variables déclarées dans la section `variables:` du blueprint ne sont pas encore évaluées au moment où les triggers sont définis. Il faut donc utiliser directement les `!input` dans les triggers, ou des entités statiques.
+
+**L'accès aux inputs dans les templates**
+Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être capturés au préalable dans la section `variables:` pour être accessibles. Un accès direct à `!input` dans un template imbriqué peut échouer selon le contexte d'évaluation.
 
 ---
 

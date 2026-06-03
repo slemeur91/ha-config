@@ -19,6 +19,53 @@
 | Nb | Fabricant | Modèle | Description | Pièces |
 |---|---|---|---|---|
 | 5 | Fibargroup | FGT001 Thermostatic Valve | Tête thermostatique Z-Wave | Bureau, Chambre, Suite parentale, Salle d'eau, Salle de bain |
+### ⚠️ Capteur de température FGT001 — Contournement MQTT
+
+Le paramètre `[2-112-0-3-1] Temperature Sensor` ne remonte plus via zwavejs2mqtt pour les vannes FGT001. Pour contourner ce problème, le capteur est recréé manuellement via MQTT Discovery.
+
+**Configuration MQTT Discovery à publier** (topic : `homeassistant/binary_sensor/nodeID_2_temperature_sensor/config`) :
+
+```json
+{
+    "payload_on": "1",
+    "payload_off": "0",
+    "value_template": "{{ value_json.value | string }}",
+    "device_class": "problem",
+    "state_topic": "zwave/nodeID_2/112/0/3/1",
+    "availability": [
+        {
+            "payload_available": "true",
+            "payload_not_available": "false",
+            "topic": "zwave/nodeID_2/status",
+            "value_template": "{{'true' if value_json.value else 'false'}}"
+        },
+        {
+            "topic": "zwave/_CLIENTS/ZWAVE_GATEWAY-Mosquitto/status",
+            "value_template": "{{'online' if value_json.value else 'offline'}}"
+        },
+        {
+            "payload_available": "true",
+            "payload_not_available": "false",
+            "topic": "zwave/driver/status"
+        }
+    ],
+    "availability_mode": "all",
+    "json_attributes_topic": "zwave/nodeID_2/112/0/3/1",
+    "device": {
+        "identifiers": ["zwavejs2mqtt_0xee883d6d_node2"],
+        "manufacturer": "Fibargroup",
+        "model": "Thermostatic Valve (FGT001)",
+        "name": "nodeID_2",
+        "sw_version": "4.7"
+    },
+    "name": "nodeID_2_temperature_sensor",
+    "unique_id": "zwavejs2mqtt_0xee883d6d_2-112-0-3-1"
+}
+```
+
+> ℹ️ Adapter `nodeID_2` au numéro de nœud correspondant pour chaque vanne. Publier via MQTT Explorer sur le topic ci-dessus avec **Retain = true**.
+
+
 | 1 | Fibaro | FGFS-101 Flood Sensor | Détecteur d'eau Z-Wave | Salle de bain |
 | 1 | Fibaro | FGFS-101 Flood Sensor | Détecteur d'eau Z-Wave | Cuisine |
 | 1 | Fibaro | FGFS-101 Flood Sensor | Détecteur d'eau Z-Wave | Cellier |
