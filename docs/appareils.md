@@ -10,11 +10,24 @@
 
 | Technologie | Appareils | Mode | Détail |
 |---|---|---|---|
-| Z-Wave | **13** | ✅ Local | [→ Détail](appareils/zwave.md) |
+| Z-Wave | **23** | ✅ Local | [→ Détail](appareils/zwave.md) |
 | Zigbee | **14** | ✅ Local | [→ Détail](appareils/zigbee.md) |
 | EnOcean | **3** | ✅ Local | [→ Détail](appareils/enocean.md) |
-| WiFi / IP | **55** | ✅ Local + ☁️ Cloud | [→ Détail](appareils/wifi.md) |
-| Thread / Matter | — | ✅ Local | Infrastructure en place (aucun appareil Matter direct) |
+| WiFi / IP | **54** | ✅ Local + ☁️ Cloud | [→ Détail](appareils/wifi.md) |
+| Thread / Matter | **1** | ✅ Local | [→ Détail](#thread--matter) |
+
+---
+
+## Thread / Matter (1 appareil)
+
+> 🏠 **Natif HA** via add-ons Matter Server + Home-Assistant-Matter-Hub
+> Infrastructure Thread/Matter en place (OpenThread Border Router)
+
+| Nb | Fabricant | Modèle | Description | Intégration |
+|---|---|---|---|---|
+| 1 | EcoFlow | Smart Plug | Prise connectée Matter | 🏠 Natif HA (Matter) |
+
+> ℹ️ L'EcoFlow Smart Plug est géré en Matter natif, distinct des autres appareils EcoFlow Cloud.
 
 ---
 

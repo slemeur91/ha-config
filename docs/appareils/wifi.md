@@ -1,4 +1,4 @@
-# WiFi / IP (55 appareils)
+# WiFi / IP (54 appareils)
 
 [← Retour Appareils](../appareils.md)
 
@@ -70,7 +70,7 @@
 
 ---
 
-## Cloud ☁️ (16 appareils)
+## Cloud ☁️ (15 appareils)
 
 ### Météo & Capteurs
 
@@ -87,7 +87,6 @@
 |---|---|---|---|---|---|
 | 1 | EcoFlow | DELTA Max | Batterie de stockage | — | 🔧 HACS |
 | 1 | EcoFlow | PowerStream | Micro-onduleur solaire | — | 🔧 HACS |
-| 1 | EcoFlow | Smart Plug | Prise connectée | — | 🔧 HACS |
 
 ### Assistants & Sécurité
 
