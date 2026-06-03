@@ -18,7 +18,7 @@
 
 | Technologie | Appareils | Mode | Détail |
 |---|---|---|---|
-| Z-Wave | **24** | ✅ Local | [→ Détail](docs/appareils/zwave.md) |
+| Z-Wave | **25** | ✅ Local | [→ Détail](docs/appareils/zwave.md) |
 | Zigbee | **37** | ✅ Local | [→ Détail](docs/appareils/zigbee.md) |
 | EnOcean | **3** | ✅ Local | [→ Détail](docs/appareils/enocean.md) |
 | WiFi / IP | **52** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/wifi.md) |

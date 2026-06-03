@@ -5,8 +5,8 @@
 > 🏠 **Natif HA** via add-ons Matter Server + Home-Assistant-Matter-Hub
 > Infrastructure : OpenThread Border Router actif
 
-| Nb | Fabricant | Modèle | Description | Intégration |
-|---|---|---|---|---|
-| 1 | EcoFlow | Smart Plug | Prise connectée Matter | 🏠 Natif HA (Matter) |
+| Nb | Fabricant | Modèle | Description | Localisation | Intégration |
+|---|---|---|---|---|---|
+| 1 | EcoFlow | Smart Plug | Prise connectée Matter | Réseau | 🏠 Natif HA (Matter) |
 
 > ℹ️ L'EcoFlow Smart Plug est géré en Matter natif, distinct des autres appareils EcoFlow Cloud (DELTA Max, PowerStream).

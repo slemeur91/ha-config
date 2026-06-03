@@ -1,4 +1,4 @@
-# Z-Wave (24 appareils)
+# Z-Wave (25 appareils)
 
 [← Retour Appareils](../appareils.md)
 
@@ -11,7 +11,7 @@
 | 5 | Fibargroup | FGT001 Thermostatic Valve | Tête thermostatique | Bureau, Chambre, Suite parentale, Salle d'eau, Salle de bain |
 | 3 | Fibargroup | FGFS101 Flood Sensor | Détecteur d'eau | Salle de bain, Cuisine, Cellier |
 | 2 | Fibargroup | FGMS001 Motion Sensor | Capteur température/luminosité | Armoire de brassage, Grenier |
-| 1 | Fibargroup | FGWPE/F-101 Metered Wall Plug Switch | Prise connectée avec mesure | Salon (Canapé gauche) |
+| 2 | Fibargroup | FGWPE/F-101 Metered Wall Plug Switch | Prise connectée avec mesure | Salon (Canapé gauche, Canapé droite) |
 | 1 | Fibargroup | FGWP102 Metered Wall Plug Switch | Prise connectée avec mesure | Cellier |
 | 1 | ID-RF | CRC-3100 Octan Remote Control | Télécommande Z-Wave 8 boutons | Salon |
 | 1 | UFairy G.R. Tech | DMWV1 Water Main Shut-Off | Vanne d'arrivée d'eau | Cellier |

@@ -10,7 +10,7 @@
 
 | Technologie | Appareils | Mode | Détail |
 |---|---|---|---|
-| Z-Wave | **24** | ✅ Local | [→ Détail](appareils/zwave.md) |
+| Z-Wave | **25** | ✅ Local | [→ Détail](appareils/zwave.md) |
 | Zigbee | **37** | ✅ Local | [→ Détail](appareils/zigbee.md) |
 | EnOcean | **3** | ✅ Local | [→ Détail](appareils/enocean.md) |
 | WiFi / IP | **52** | ✅ Local + ☁️ Cloud | [→ Détail](appareils/wifi.md) |
@@ -23,9 +23,9 @@
 > 🏠 **Natif HA** via add-ons Matter Server + Home-Assistant-Matter-Hub
 > Infrastructure Thread/Matter en place (OpenThread Border Router)
 
-| Nb | Fabricant | Modèle | Description | Intégration |
+| Nb | Fabricant | Modèle | Description | Localisation | Intégration |
 |---|---|---|---|---|
-| 1 | EcoFlow | Smart Plug | Prise connectée Matter | 🏠 Natif HA (Matter) |
+| 1 | EcoFlow | Smart Plug | Prise connectée Matter | Réseau | 🏠 Natif HA (Matter) |
 
 > ℹ️ L'EcoFlow Smart Plug est géré en Matter natif, distinct des autres appareils EcoFlow Cloud.
 
@@ -84,7 +84,7 @@ Ces appareils utilisent des protocoles spécifiques documentés avec leur intég
 
 ### Compteurs & Mesure (4 appareils)
 
-| Nb | Fabricant | Modèle | Description | Intégration | Mode |
+| Nb | Fabricant | Modèle | Description | Localisation | Intégration | Mode |
 |---|---|---|---|---|---|
 | 1 | Enedis | Linky | Compteur électrique intelligent | 📦 Add-on [Linky](https://github.com/bokub/linky) | ☁️ Cloud |
 | 1 | GrDF | GAZPAR | Compteur gaz communicant | 📦 Add-on [Gazpar2MQTT](https://github.com/ssenart/gazpar2mqtt) | ☁️ Cloud |
