@@ -1,8 +1,8 @@
-# WiFi / IP (54 appareils)
+# WiFi / IP (52 appareils)
 
 [← Retour Appareils](../appareils.md)
 
-## Local ✅ (39 appareils)
+## Local ✅ (37 appareils)
 
 ### Audio
 
@@ -57,7 +57,6 @@
 
 | Nb | Fabricant | Modèle | Description | Localisation | Intégration |
 |---|---|---|---|---|---|
-| 1 | Shelly | Multiprise (4 prises + USB) | Multiprise connectée avec mesure | — | 🏠 Natif HA |
 | 6 | — | Multiprise 4 prises + 2 USB | Multiprises avec mesure individuelle | Suite parentale, Salon G/D, Garage, Informatique, Bureau | 🏠 Natif HA |
 | 1 | GCE Electronics | EcoDevices RT2 | Mesure consommation multi-circuits | Armoire de brassage | 🔧 HACS |
 
@@ -96,4 +95,3 @@
 | 1 | Sure Petcare | SureFlap Microchip Pet Door | Chatière connectée | — | 🏠 Natif HA |
 | 1 | X-Sense | SBS50 | Station de base alarme incendie/CO | — | 🔧 HACS Communauté |
 | 3 | X-Sense | XS01-WX / SC06-W | Détecteurs de fumée/CO | Séjour, Cellier, Étage | 🔧 HACS Communauté |
-| 1 | TP-Link | Tapo P100 | Capteur de posture (boîte aux lettres) | Entrée | 🏠 Natif HA |

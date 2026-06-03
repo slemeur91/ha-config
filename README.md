@@ -18,11 +18,11 @@
 
 | Technologie | Appareils | Mode | Détail |
 |---|---|---|---|
-| Z-Wave | **23** | ✅ Local | [→ Détail](docs/appareils/zwave.md) |
-| Zigbee | **14** | ✅ Local | [→ Détail](docs/appareils/zigbee.md) |
+| Z-Wave | **24** | ✅ Local | [→ Détail](docs/appareils/zwave.md) |
+| Zigbee | **37** | ✅ Local | [→ Détail](docs/appareils/zigbee.md) |
 | EnOcean | **3** | ✅ Local | [→ Détail](docs/appareils/enocean.md) |
-| WiFi / IP | **54** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/wifi.md) |
-| Thread / Matter | **1** | ✅ Local | EcoFlow Smart Plug |
+| WiFi / IP | **52** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/wifi.md) |
+| Thread / Matter | **1** | ✅ Local | [→ Détail](docs/appareils/matter.md) |
 | Autres (Somfy, RF, Remote HA…) | **21** | ✅ Local | [→ Détail](docs/appareils.md) |
 
 > [Détail complet des appareils →](docs/appareils.md)
@@ -198,7 +198,7 @@
 | File editor | — | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/configurator) | Éditeur de fichiers | 🏠 Officiel HA |
 | Gazpar2MQTT | 1 | [ssenart/gazpar2mqtt](https://github.com/ssenart/gazpar2mqtt) | Données GAZPAR vers MQTT | 📦 Communauté |
 | Get HACS | — | [hacs/get](https://github.com/hacs/get) | Installateur HACS | 📦 Communauté |
-| Home Assistant MCP Server | [voska/hass-mcp](https://github.com/voska/hass-mcp) | Intégration IA via MCP | — | 📦 Communauté |
+| Home Assistant MCP Server | — | [voska/hass-mcp](https://github.com/voska/hass-mcp) | Intégration IA via MCP | 📦 Communauté |
 | Home-Assistant-Matter-Hub | — | [t0bst4r/home-assistant-matter-hub](https://github.com/t0bst4r/home-assistant-matter-hub) | Pont Matter vers Alexa/Apple/Google | 📦 Communauté |
 | Homebridge | — | [homebridge/homebridge-hassio](https://github.com/homebridge/homebridge-hassio) | Support HomeKit | 📦 Communauté |
 | Linky | 1 | [bokub/linky](https://github.com/bokub/linky) | Compteur Linky | 📦 Communauté |

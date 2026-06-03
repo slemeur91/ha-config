@@ -1,4 +1,4 @@
-# Z-Wave (23 appareils)
+# Z-Wave (24 appareils)
 
 [← Retour Appareils](../appareils.md)
 
@@ -9,14 +9,14 @@
 |---|---|---|---|---|
 | 1 | AEON Labs | ZW090 Z-Stick Gen5 | Contrôleur USB Z-Wave | Armoire de brassage |
 | 5 | Fibargroup | FGT001 Thermostatic Valve | Tête thermostatique | Bureau, Chambre, Suite parentale, Salle d'eau, Salle de bain |
-| 3 | Fibargroup | FGFS-101 Flood Sensor | Détecteur d'eau | Salle de bain, Cuisine, Cellier |
-| 2 | Fibargroup | FGMS001 Motion Sensor | Détecteur de mouvement | Armoire de brassage, Grenier |
-| 2 | Fibargroup | FGWPE/F-101 Metered Wall Plug Switch | Prise connectée avec mesure | — |
+| 3 | Fibargroup | FGFS101 Flood Sensor | Détecteur d'eau | Salle de bain, Cuisine, Cellier |
+| 2 | Fibargroup | FGMS001 Motion Sensor | Capteur température/luminosité | Armoire de brassage, Grenier |
+| 1 | Fibargroup | FGWPE/F-101 Metered Wall Plug Switch | Prise connectée avec mesure | Salon (Canapé gauche) |
 | 1 | Fibargroup | FGWP102 Metered Wall Plug Switch | Prise connectée avec mesure | Cellier |
-| 1 | ID-RF | CRC-3100 Octan Remote Control | Télécommande Z-Wave 8 boutons | — |
-| 1 | UFairy G.R. Tech | DMWV1 Water Main Shut-Off | Vanne d'arrivée d'eau | Réseau |
-| 6 | Qubino | ZMNHCD Flush Shutter | Module volet roulant encastré | Bureau, Cellier, Chambre, Cuisine, Salon, Séjour |
-| 1 | — | Z-Wave Valve | Vanne motorisée | Arrosage |
+| 1 | ID-RF | CRC-3100 Octan Remote Control | Télécommande Z-Wave 8 boutons | Salon |
+| 1 | UFairy G.R. Tech | DMWV1 Water Main Shut-Off | Vanne d'arrivée d'eau | Cellier |
+| 6 | Qubino | ZMNHCD Flush Shutter | Module volet roulant encastré | Bureau, Cellier, Cuisine, Salon, Séjour, Suite parentale |
+| 3 | Qubino | ZMNHSD DIN Rail Dimmer | Variateur d'éclairage sur rail DIN | Garage, Entrée, Terrasse |
 
 ---
 
