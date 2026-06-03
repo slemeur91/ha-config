@@ -16,38 +16,14 @@
 
 ### 🔌 Appareils par technologie
 
-| Technologie | Nb | Mode | Intégration |
+| Technologie | Appareils | Mode | Détail |
 |---|---|---|---|
-| Z-Wave | 13 | ✅ Local | 🏠 Natif HA (Z-Wave JS UI via MQTT) |
-| EnOcean | 3 | ✅ Local | 📦 Add-on Apps |
-| Zigbee — Aqara | 3 | ✅ Local | 📦 Add-on Apps (Zigbee2MQTT) |
-| Zigbee — Philips Hue | 11 | ✅ Local | 🏠 Natif HA (Hue Bridge) |
-| Schneider Odace (via Remote HA) | 4 | ✅ Local | 🔧 HACS |
-| Somfy io-homecontrol (volets/velux) | 14 | ✅ Local | 🏠 Natif HA (KLF200) |
-| Somfy RTS (porte garage via RFPlayer) | 1 | ✅ Local | 🔧 HACS ⚠️ Dépôt perso |
-| Somfy Protexial (alarme) | 1 | ✅ Local | 🔧 HACS ⚠️ Dépôt perso |
-| SONOS WiFi | 5 | ✅ Local | 🏠 Natif HA |
-| Daikin WiFi | 4 | ✅ Local | 🏠 Natif HA |
-| Nuki Bluetooth/WiFi | 2 | ✅ Local | 🏠 Natif HA |
-| Broadlink WiFi (télécommandes IR/RF) | 2 | ✅ Local | 🏠 Natif HA |
-| Xiaomi MIoT WiFi (qualité d'air) | 2 | ✅ Local | 🔧 HACS |
-| Xiaomi miio WiFi (aspirateurs) | 2 | ✅ Local | 🏠 Natif HA |
-| Dyson WiFi (purificateur) | 1 | ✅ Local | 🔧 HACS |
-| GCE EcoDevices RT2 (mesure conso) | 1 | ✅ Local | 🔧 HACS |
-| GCE RFPlayer (RF 433/868 MHz) | 1 | ✅ Local | 🔧 HACS ⚠️ Dépôt perso |
-| Sony Bravia WiFi | 1 | ✅ Local | 🏠 Natif HA |
-| Apple TV | 1 | ✅ Local | 🏠 Natif HA |
-| Synology NAS | 2 | ✅ Local | 🏠 Natif HA |
-| Caméras IP (UniFi Protect) | 8 | ✅ Local | 🏠 Natif HA |
-| Husqvarna Automower | 1 | ✅ Local | 🏠 Natif HA |
-| Multiprises WiFi/MQTT | 7 | ✅ Local | 🏠 Natif HA |
-| TP-Link Tapo | 1 | ✅ Local | 🏠 Natif HA |
-| Netatmo (météo/température) | 7 | ☁️ Cloud | 🏠 Natif HA |
-| EcoFlow (batterie/onduleur) | 3 | ☁️ Cloud | 🔧 HACS |
-| Amazon Echo | 1 | ☁️ Cloud | 🔧 HACS |
-| Sure Petcare (chatière) | 1 | ☁️ Cloud | 🏠 Natif HA |
-| X-Sense (détecteurs incendie/CO) | 4 | ☁️ Cloud | 🔧 HACS ⚠️ Dépôt perso |
-| Linky / GAZPAR (compteurs) | 2 | ☁️ Cloud | 📦 Add-on Apps |
+| Z-Wave | **13** | ✅ Local | [→ Détail](docs/appareils/zwave.md) |
+| Zigbee | **14** | ✅ Local | [→ Détail](docs/appareils/zigbee.md) |
+| EnOcean | **3** | ✅ Local | [→ Détail](docs/appareils/enocean.md) |
+| WiFi / IP | **55** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/wifi.md) |
+| Thread / Matter | — | ✅ Local | Infrastructure en place |
+| Autres (Somfy, RF, Remote HA…) | **21** | ✅ Local | [→ Détail](docs/appareils.md) |
 
 > [Détail complet des appareils →](docs/appareils.md)
 
@@ -216,25 +192,25 @@
 > 🏠 **Officiel HA** = dépôt officiel Home Assistant, aucune source supplémentaire à ajouter
 > 📦 **Communauté** = dépôt tiers à ajouter manuellement dans les sources d'add-ons
 
-| Add-on | GitHub | Rôle | Source |
-|---|---|---|---|
-| EnOcean MQTT | [asera-corp/ha-enoceanmqtt](https://github.com/asera-corp/ha-enoceanmqtt) | Passerelle EnOcean | 📦 Communauté |
-| File editor | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/configurator) | Éditeur de fichiers | 🏠 Officiel HA |
-| Gazpar2MQTT | [ssenart/gazpar2mqtt](https://github.com/ssenart/gazpar2mqtt) | Données GAZPAR vers MQTT | 📦 Communauté |
-| Get HACS | [hacs/get](https://github.com/hacs/get) | Installateur HACS | 📦 Communauté |
-| Home Assistant MCP Server | [voska/hass-mcp](https://github.com/voska/hass-mcp) | Intégration IA via MCP | 📦 Communauté |
-| Home-Assistant-Matter-Hub | [t0bst4r/home-assistant-matter-hub](https://github.com/t0bst4r/home-assistant-matter-hub) | Pont Matter vers Alexa/Apple/Google | 📦 Communauté |
-| Homebridge | [homebridge/homebridge-hassio](https://github.com/homebridge/homebridge-hassio) | Support HomeKit | 📦 Communauté |
-| Linky | [bokub/linky](https://github.com/bokub/linky) | Compteur Linky | 📦 Communauté |
-| Matter Server | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/matter_server) | Support Matter | 🏠 Officiel HA |
-| Mosquitto broker | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/mosquitto) | Broker MQTT | 🏠 Officiel HA |
-| MQTT Explorer | [thomasloven/hassio-mqtt-explorer](https://github.com/thomasloven/hassio-mqtt-explorer) | Explorateur MQTT | 📦 Communauté |
-| OpenThread Border Router | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/openthread_border_router) | Thread/Matter | 🏠 Officiel HA |
-| Studio Code Server | [hassio-addons/addon-vscode](https://github.com/hassio-addons/addon-vscode) | VSCode intégré | 📦 Communauté |
-| Terminal & SSH | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/ssh) | Accès terminal | 🏠 Officiel HA |
-| Z-Wave JS | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/zwave_js) | Réseau Z-Wave *(désactivé — remplacé par Z-Wave JS UI)* | 🏠 Officiel HA |
-| Z-Wave JS UI | [hassio-addons/addon-zwave-js-ui](https://github.com/hassio-addons/addon-zwave-js-ui) | Interface Z-Wave JS complète + publication MQTT | 📦 Communauté |
-| Zigbee2MQTT | [zigbee2mqtt/hassio-zigbee2mqtt](https://github.com/zigbee2mqtt/hassio-zigbee2mqtt) | Réseau Zigbee | 📦 Communauté |
+| Add-on | GitHub | Rôle | Appareils | Source |
+|---|---|---|---|---|
+| EnOcean MQTT | [asera-corp/ha-enoceanmqtt](https://github.com/asera-corp/ha-enoceanmqtt) | Passerelle EnOcean | 3 | 📦 Communauté |
+| File editor | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/configurator) | Éditeur de fichiers | — | 🏠 Officiel HA |
+| Gazpar2MQTT | [ssenart/gazpar2mqtt](https://github.com/ssenart/gazpar2mqtt) | Données GAZPAR vers MQTT | 1 | 📦 Communauté |
+| Get HACS | [hacs/get](https://github.com/hacs/get) | Installateur HACS | — | 📦 Communauté |
+| Home Assistant MCP Server | [voska/hass-mcp](https://github.com/voska/hass-mcp) | Intégration IA via MCP | — | 📦 Communauté |
+| Home-Assistant-Matter-Hub | [t0bst4r/home-assistant-matter-hub](https://github.com/t0bst4r/home-assistant-matter-hub) | Pont Matter vers Alexa/Apple/Google | — | 📦 Communauté |
+| Homebridge | [homebridge/homebridge-hassio](https://github.com/homebridge/homebridge-hassio) | Support HomeKit | — | 📦 Communauté |
+| Linky | [bokub/linky](https://github.com/bokub/linky) | Compteur Linky | 1 | 📦 Communauté |
+| Matter Server | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/matter_server) | Support Matter | — | 🏠 Officiel HA |
+| Mosquitto broker | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/mosquitto) | Broker MQTT | — | 🏠 Officiel HA |
+| MQTT Explorer | [thomasloven/hassio-mqtt-explorer](https://github.com/thomasloven/hassio-mqtt-explorer) | Explorateur MQTT | — | 📦 Communauté |
+| OpenThread Border Router | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/openthread_border_router) | Thread/Matter | — | 🏠 Officiel HA |
+| Studio Code Server | [hassio-addons/addon-vscode](https://github.com/hassio-addons/addon-vscode) | VSCode intégré | — | 📦 Communauté |
+| Terminal & SSH | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/ssh) | Accès terminal | — | 🏠 Officiel HA |
+| Z-Wave JS | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/zwave_js) | Réseau Z-Wave *(désactivé — remplacé par Z-Wave JS UI)* | — | 🏠 Officiel HA |
+| Z-Wave JS UI | [hassio-addons/addon-zwave-js-ui](https://github.com/hassio-addons/addon-zwave-js-ui) | Interface Z-Wave JS complète + publication MQTT | 13 | 📦 Communauté |
+| Zigbee2MQTT | [zigbee2mqtt/hassio-zigbee2mqtt](https://github.com/zigbee2mqtt/hassio-zigbee2mqtt) | Réseau Zigbee | 3 | 📦 Communauté |
 
 ---
 
@@ -245,39 +221,39 @@
 > 🔧 **HACS** = disponible dans le catalogue HACS standard, sans dépôt personnalisé
 > ⚠️ **Dépôt perso** = dépôt GitHub personnel à ajouter manuellement dans HACS
 
-| Intégration | GitHub | Source |
-|---|---|---|
-| Alexa Media Player | [alandtse/alexa_media_player](https://github.com/alandtse/alexa_media_player) | 🔧 HACS |
-| Atmo France | [sebcaps/atmofrance](https://github.com/sebcaps/atmofrance) | 🔧 HACS |
-| Battery Notes | [andrew-codechimp/HA-Battery-Notes](https://github.com/andrew-codechimp/HA-Battery-Notes) | 🔧 HACS |
-| Dyson Local | [libdyson-wg/ha-dyson](https://github.com/libdyson-wg/ha-dyson) | 🔧 HACS |
-| Ecodevices RT2 | [pcourbin/ecodevices_rt2](https://github.com/pcourbin/ecodevices_rt2) | 🔧 HACS |
-| EcoFlow Cloud | [snell-evan-itt/hassio-ecoflow-cloud-US](https://github.com/snell-evan-itt/hassio-ecoflow-cloud-US) | 🔧 HACS |
-| HACS | [hacs/integration](https://github.com/hacs/integration) | 🔧 HACS |
-| Local Agenda | [slemeur91/local_agenda](https://github.com/slemeur91/local_agenda) | ⚠️ Dépôt perso |
-| Micronova Agua IOT | [vincentwolsink/home_assistant_micronova_agua_iot](https://github.com/vincentwolsink/home_assistant_micronova_agua_iot) | 🔧 HACS |
-| My EcoWatt by RTE | [kamaradclimber/rte-ecowatt](https://github.com/kamaradclimber/rte-ecowatt) | 🔧 HACS |
-| Orange Livebox | [cyr-ius/hass-livebox-component](https://github.com/cyr-ius/hass-livebox-component) | 🔧 HACS |
-| pyscript | [custom-components/pyscript](https://github.com/custom-components/pyscript) | 🔧 HACS |
-| Remote Home-Assistant | [custom-components/remote_homeassistant](https://github.com/custom-components/remote_homeassistant) | 🔧 HACS |
-| RfPlayer | [gce-electronics/HA_RFPlayer](https://github.com/gce-electronics/HA_RFPlayer) | ⚠️ Dépôt perso |
-| Somfy Protexial | [AuroreVgn/somfy-protexial](https://github.com/AuroreVgn/somfy-protexial) | ⚠️ Dépôt perso |
-| Spook | [frenck/spook](https://github.com/frenck/spook) | 🔧 HACS |
-| Vacances Scolaires | [Master13011/vacances-scolaire-HA](https://github.com/Master13011/vacances-scolaire-HA) | 🔧 HACS |
-| Xiaomi Miot | [al-one/hass-xiaomi-miot](https://github.com/al-one/hass-xiaomi-miot) | 🔧 HACS |
-| xsense | [Jarnsen/ha-xsense-component_test](https://github.com/Jarnsen/ha-xsense-component_test) | ⚠️ Dépôt perso |
+| Intégration | GitHub | Appareils | Source |
+|---|---|---|---|
+| Alexa Media Player | [alandtse/alexa_media_player](https://github.com/alandtse/alexa_media_player) | 1 | 🔧 HACS |
+| Atmo France | [sebcaps/atmofrance](https://github.com/sebcaps/atmofrance) | — | 🔧 HACS |
+| Battery Notes | [andrew-codechimp/HA-Battery-Notes](https://github.com/andrew-codechimp/HA-Battery-Notes) | — | 🔧 HACS |
+| Dyson Local | [libdyson-wg/ha-dyson](https://github.com/libdyson-wg/ha-dyson) | 1 | 🔧 HACS |
+| Ecodevices RT2 | [pcourbin/ecodevices_rt2](https://github.com/pcourbin/ecodevices_rt2) | 1 | 🔧 HACS |
+| EcoFlow Cloud | [snell-evan-itt/hassio-ecoflow-cloud-US](https://github.com/snell-evan-itt/hassio-ecoflow-cloud-US) | 3 | 🔧 HACS |
+| HACS | [hacs/integration](https://github.com/hacs/integration) | — | 🔧 HACS |
+| Local Agenda | [slemeur91/local_agenda](https://github.com/slemeur91/local_agenda) | — | ⚠️ Dépôt perso |
+| Micronova Agua IOT | [vincentwolsink/home_assistant_micronova_agua_iot](https://github.com/vincentwolsink/home_assistant_micronova_agua_iot) | — | 🔧 HACS |
+| My EcoWatt by RTE | [kamaradclimber/rte-ecowatt](https://github.com/kamaradclimber/rte-ecowatt) | — | 🔧 HACS |
+| Orange Livebox | [cyr-ius/hass-livebox-component](https://github.com/cyr-ius/hass-livebox-component) | 1 | 🔧 HACS |
+| pyscript | [custom-components/pyscript](https://github.com/custom-components/pyscript) | — | 🔧 HACS |
+| Remote Home-Assistant | [custom-components/remote_homeassistant](https://github.com/custom-components/remote_homeassistant) | 4 | 🔧 HACS |
+| RfPlayer | [gce-electronics/HA_RFPlayer](https://github.com/gce-electronics/HA_RFPlayer) | 2 | 🔧 HACS Communauté |
+| Somfy Protexial | [AuroreVgn/somfy-protexial](https://github.com/AuroreVgn/somfy-protexial) | 1 | 🔧 HACS Communauté |
+| Spook | [frenck/spook](https://github.com/frenck/spook) | — | 🔧 HACS |
+| Vacances Scolaires | [Master13011/vacances-scolaire-HA](https://github.com/Master13011/vacances-scolaire-HA) | — | 🔧 HACS |
+| Xiaomi Miot | [al-one/hass-xiaomi-miot](https://github.com/al-one/hass-xiaomi-miot) | 2 | 🔧 HACS |
+| xsense | [Jarnsen/ha-xsense-component_test](https://github.com/Jarnsen/ha-xsense-component_test) | 4 | 🔧 HACS Communauté |
 
 ### Cartes Lovelace HACS (7)
 
-| Carte | GitHub | Source |
-|---|---|---|
-| apexcharts-card | [RomRider/apexcharts-card](https://github.com/RomRider/apexcharts-card) | 🔧 HACS |
-| Battery State Card | [maxwroc/battery-state-card](https://github.com/maxwroc/battery-state-card) | 🔧 HACS |
-| card-mod | [thomasloven/lovelace-card-mod](https://github.com/thomasloven/lovelace-card-mod) | 🔧 HACS |
-| Custom-ui | [Mariusthvdb/custom-ui](https://github.com/Mariusthvdb/custom-ui) | 🔧 HACS |
-| expander-card | [MelleD/lovelace-expander-card](https://github.com/MelleD/lovelace-expander-card) | 🔧 HACS |
-| GrDF Gazpar card | [ssenart/lovelace-gazpar-card](https://github.com/ssenart/lovelace-gazpar-card) | ⚠️ Dépôt perso |
-| Waze Travel Time Card | [r-renato/ha-card-waze-travel-time](https://github.com/r-renato/ha-card-waze-travel-time) | 🔧 HACS |
+| Carte | GitHub | — | Source |
+|---|---|---|---|
+| apexcharts-card | [RomRider/apexcharts-card](https://github.com/RomRider/apexcharts-card) | — | 🔧 HACS |
+| Battery State Card | [maxwroc/battery-state-card](https://github.com/maxwroc/battery-state-card) | — | 🔧 HACS |
+| card-mod | [thomasloven/lovelace-card-mod](https://github.com/thomasloven/lovelace-card-mod) | — | 🔧 HACS |
+| Custom-ui | [Mariusthvdb/custom-ui](https://github.com/Mariusthvdb/custom-ui) | — | 🔧 HACS |
+| expander-card | [MelleD/lovelace-expander-card](https://github.com/MelleD/lovelace-expander-card) | — | 🔧 HACS |
+| GrDF Gazpar card | [ssenart/lovelace-gazpar-card](https://github.com/ssenart/lovelace-gazpar-card) | — | 🔧 HACS Communauté |
+| Waze Travel Time Card | [r-renato/ha-card-waze-travel-time](https://github.com/r-renato/ha-card-waze-travel-time) | — | 🔧 HACS |
 
 ---
 
