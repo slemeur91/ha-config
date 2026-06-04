@@ -201,7 +201,7 @@
 
 ## Présence — Aqara FP2 (3 appareils)
 
-> 🏠 **Natif HA** — Intégration : **HomeKit** — [Documentation](https://www.home-assistant.io/integrations/homekit_controller/)
+> 🏠 **Natif HA** — Intégration : **Appareil HomeKit** — [Documentation](https://www.home-assistant.io/integrations/homekit_controller/)
 > Les capteurs FP2 sont appairés directement via le protocole HomeKit.
 
 | Nb | Fabricant | Modèle | Description | Localisation | Documentation |
