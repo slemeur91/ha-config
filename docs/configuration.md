@@ -4,23 +4,6 @@
 
 ---
 
-## 🐛 Débogage — Logger
-
-Configuration à activer temporairement dans `configuration.yaml` pour le diagnostic.
-
-```yaml
-logger:
-  default: info
-  logs:
-    custom_components.somfy_protexial: debug
-    custom_components.local_agenda: debug
-#    components.husqvarna_automower_ble: debug
-    homeassistant.components.apple_tv: debug
-    pyatv: debug
-```
-
----
-
 ## 📧 Notifications — SMTP (email)
 
 Déclaré dans `configuration.yaml` sous la clé `notify`.
@@ -43,5 +26,22 @@ notify:
 **Utilisation :** Le service `notify.email` est appelé par les scripts `notification_mail` et `notification_snapshot` pour envoyer des alertes, des récapitulatifs batteries, et des captures caméras.
 
 **Serveur :** SMTP local auto-hébergé (NAS Synology), sans chiffrement (port 25, réseau interne).
+
+---
+
+## 🐛 Débogage — Logger
+
+Configuration à activer temporairement dans `configuration.yaml` pour le diagnostic.
+
+```yaml
+logger:
+  default: info
+  logs:
+    custom_components.somfy_protexial: debug
+    custom_components.local_agenda: debug
+#    components.husqvarna_automower_ble: debug
+    homeassistant.components.apple_tv: debug
+    pyatv: debug
+```
 
 ---

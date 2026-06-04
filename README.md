@@ -20,7 +20,7 @@
 
 ---
 
-### ⚙️ Configuration principale (1)
+### ⚙️ Configuration principale (2)
 
 [Voir la documentation complète →](docs/configuration.md)
 
