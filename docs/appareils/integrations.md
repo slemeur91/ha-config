@@ -37,7 +37,8 @@
 |---|---|---|---|---|---|
 | 1 | Sony | KD-55A1 (OLED 55") | Salon | 🔌 Ethernet (RJ45) | Bravia TV |
 | 1 | Apple | Apple TV | Salon | 🔌 Ethernet (RJ45) | Apple TV |
-| 2 | Broadlink | RM4 Pro | Salon (×2) | 📶 WiFi | Broadlink |
+| 1 | Broadlink | RM4 Pro | Salon | 📶 WiFi | Broadlink |
+| 1 | Broadlink | RM4 Pro | Suite parentale | 📶 WiFi | Broadlink |
 
 ---
 
@@ -108,7 +109,7 @@
 ### GCE EcoDevices RT2 (22 appareils de mesure)
 
 > 🔧 **HACS** — Intégration : **Ecodevices RT2** — [GitHub](https://github.com/pcourbin/ecodevices_rt2)
-> 🔌 Ethernet (RJ45) — IP locale
+> 🔌 Ethernet (RJ45)
 
 | Nb | Type | Description |
 |---|---|---|
@@ -260,7 +261,7 @@
 ### Somfy Protexial — Alarme (1 appareil)
 
 > 🔧 **HACS Communauté** — Intégration : **Somfy Protexial** — [GitHub](https://github.com/AuroreVgn/somfy-protexial)
-> 🔌 Connexion physique Ethernet (RJ45)
+> 🔌 Ethernet (RJ45)
 
 | Nb | Modèle | Description |
 |---|---|---|
