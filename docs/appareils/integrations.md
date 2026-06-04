@@ -204,9 +204,9 @@
 > 🏠 **Natif HA** — Intégration : **HomeKit** — [Documentation](https://www.home-assistant.io/integrations/homekit_controller/)
 > Les capteurs FP2 sont appairés directement via le protocole HomeKit (pas via Zigbee2MQTT).
 
-| Nb | Fabricant | Modèle | Description | Pièces |
-|---|---|---|---|---|
-| 3 | Aqara | FP2 Presence Sensor | Capteur de présence radar mmWave | Bureau, Chambre, Suite parentale |
+| Nb | Fabricant | Modèle | Description | Pièces | Documentation |
+|---|---|---|---|---|---|
+| 3 | Aqara | FP2 Presence Sensor | Capteur de présence radar mmWave | Bureau, Chambre, Suite parentale | [📄 Manuel](https://www.aqara.com/en/product/presence-sensor-fp2/) |
 
 ---
 

@@ -5,18 +5,18 @@
 > 🏠 **Natif HA** via add-on Z-Wave JS UI — [Documentation](https://www.home-assistant.io/integrations/zwave_js/)
 > Flux : Z-Wave JS UI (zwavejs2mqtt) → Mosquitto MQTT → HA
 
-| Nb | Fabricant | Modèle | Description | Pièces |
-|---|---|---|---|---|
-| 1 | AEON Labs | ZW090 Z-Stick Gen5 | Contrôleur USB Z-Wave | Armoire de brassage |
-| 5 | Fibargroup | FGT001 Thermostatic Valve | Tête thermostatique | Bureau, Chambre, Suite parentale, Salle d'eau, Salle de bain |
-| 3 | Fibargroup | FGFS101 Flood Sensor | Détecteur d'eau | Salle de bain, Cuisine, Cellier |
-| 2 | Fibargroup | FGMS001 Motion Sensor | Capteur température/luminosité | Armoire de brassage, Grenier |
-| 2 | Fibargroup | FGWPE/F-101 Metered Wall Plug Switch | Prise connectée avec mesure | Salon (Canapé gauche, Canapé droite) |
-| 1 | Fibargroup | FGWP102 Metered Wall Plug Switch | Prise connectée avec mesure | Cellier |
-| 1 | ID-RF | CRC-3100 Octan Remote Control | Télécommande Z-Wave 8 boutons | Salon |
-| 1 | UFairy G.R. Tech | DMWV1 Water Main Shut-Off | Vanne d'arrivée d'eau | Cellier |
-| 6 | Qubino | ZMNHCD Flush Shutter | Module volet roulant encastré | Bureau, Cellier, Cuisine, Salon, Séjour, Suite parentale |
-| 3 | Qubino | ZMNHSD DIN Rail Dimmer | Variateur d'éclairage sur rail DIN | Garage, Entrée, Terrasse |
+| Nb | Fabricant | Modèle | Description | Pièces | Documentation |
+|---|---|---|---|---|---|
+| 1 | AEON Labs | ZW090 Z-Stick Gen5 | Contrôleur USB Z-Wave | Armoire de brassage | [Manuel](https://aeotec.com/z-wave-usb-stick/) |
+| 5 | Fibargroup | FGT001 Thermostatic Valve | Tête thermostatique | Bureau, Chambre, Suite parentale, Salle d'eau, Salle de bain | [📄 Manuel PDF](../hardware/FGT-001-S-v1.4-web.pdf) |
+| 3 | Fibargroup | FGFS101 Flood Sensor | Détecteur d'eau | Salle de bain, Cuisine, Cellier | [📄 Manuel PDF](../hardware/FGFS-101-FR-A-v1.00.pdf) |
+| 2 | Fibargroup | FGMS001 Motion Sensor | Capteur température/luminosité | Armoire de brassage, Grenier | [📄 Manuel PDF](../hardware/FGMS-001-FR-A-v1.01.pdf) |
+| 2 | Fibargroup | FGWPE/F-101 Metered Wall Plug Switch | Prise connectée avec mesure | Salon (Canapé gauche, Canapé droite) | [📄 Manuel PDF](../hardware/FGWPx-102-FR-A-v1.00.pdf) |
+| 1 | Fibargroup | FGWP102 Metered Wall Plug Switch | Prise connectée avec mesure | Cellier | [📄 Manuel PDF](../hardware/FGWPx-102-FR-A-v1.00.pdf) |
+| 1 | ID-RF (NodOn) | CRC-3100 Octan Remote Control | Télécommande Z-Wave 8 boutons | Salon | [📄 Manuel FR PDF](../hardware/NodOn-CRC-3-1-xx-UserGuide-150609-FR-online.pdf) |
+| 1 | UFairy G.R. Tech | DMWV1 Water Main Shut-Off | Vanne d'arrivée d'eau | Cellier | [📄 Manuel PDF](https://www.007systems.com/uploads/2/1/1/9/21192470/dome-z-wave-plus-water-main-shut-off-dmwv1-advanced-manual_1.pdf) |
+| 6 | Qubino | ZMNHCD Flush Shutter | Module volet roulant encastré | Bureau, Cellier, Cuisine, Salon, Séjour, Suite parentale | [📄 Manuel EN (Qubino)](https://qubino.com/wp-content/uploads/2019/04/Qubino_Flush-Shutter-PLUS-extended-manual_eng_2.5.pdf) / [FR en ligne (ManualsLib)](https://www.manualslib.com/manual/1405546/Qubino-Zmnhcd1.html) |
+| 3 | Qubino | ZMNHSD DIN Rail Dimmer | Variateur d'éclairage sur rail DIN | Garage, Entrée, Terrasse | [📄 Manuel PDF](https://qubino.com/material/fabdis/ZMNHSD1/Qubino_DIN%20Dimmer_manual_2.0_multi.pdf) |
 
 ---
 

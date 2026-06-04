@@ -6,7 +6,7 @@
 
 | Élément | Valeur |
 |---|---|
-| Version HA | 2026.5.4 |
+| Version HA | 2026.6.0 |
 | Entités totales | 2 156 |
 | Domaines | 43 |
 | Zones / Pièces | 23 |

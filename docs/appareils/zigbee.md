@@ -4,7 +4,7 @@
 
 ---
 
-## Via Zigbee2MQTT (via Add-on Apps) — 23 appareils
+## Via Zigbee2MQTT (via Add-on Apps) — 20 appareils
 
 > 📦 **Add-on Apps** — Zigbee2MQTT → Mosquitto MQTT → HA
 
@@ -25,9 +25,9 @@
 
 ### Aqara — Capteur multi-état (1 appareil)
 
-| Nb | Fabricant | Modèle | Description | Localisation |
-|---|---|---|---|---|
-| 1 | Aqara | P100 Multi-state sensor | Capteur boîte aux lettres (posture/contact) | Extérieur |
+| Nb | Fabricant | Modèle | Description | Localisation | Documentation |
+|---|---|---|---|---|---|
+| 1 | Aqara | P100 Multi-state sensor | Capteur boîte aux lettres (posture/contact) | Extérieur | [📄 Manuel FR](../hardware/Multi-State_Sensor_P100_User_Manual_FR.pdf) |
 
 ### Capteurs divers (2 appareils)
 
