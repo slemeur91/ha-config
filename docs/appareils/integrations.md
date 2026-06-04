@@ -31,7 +31,7 @@
 
 ## Multimédia
 
-> Intégration : **Bravia TV** (Sony) + **Apple TV** — 🏠 Natif HA
+> 🏠 **Natif HA** — Intégration : **Bravia TV** (Sony) + **Apple TV**
 
 | Nb | Fabricant | Modèle | Localisation | Connexion | Intégration |
 |---|---|---|---|---|---|
