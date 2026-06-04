@@ -13,7 +13,7 @@
 
 ## Appareils
 
-| Nb | Fabricant | Modèle | Description | Pièces | Documentation |
+| Nb | Fabricant | Modèle | Description | Localisation | Documentation |
 |---|---|---|---|---|---|
 | 1 | — | EnOcean Switch (UBID1506/1507) | Contacteur chaudière étage | Réseau | [📄 Manuel](../hardware/microModule%20EnOcean%20UBID1506%20et%201507.pdf) |
 | 1 | — | EnOcean Smart Plug | Prise connectée avec mesure | Multimédia | — |

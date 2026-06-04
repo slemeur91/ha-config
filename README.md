@@ -25,29 +25,26 @@
 | WiFi / IP | **86** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/integrations.md) |
 | Thread / Matter | **1** | ✅ Local | [→ Détail](docs/appareils/matter.md) |
 | Intégrations (Somfy KLF200, Protexial, RF…) | **21** | ✅ Local | [→ Détail](docs/appareils/integrations.md) |
-| **Total** | **157** | | |
-
-> [Détail complet →](docs/appareils/integrations.md)
 
 ---
 
 ## 🤖 Automations (46 actives)
 
 
-| Catégorie | Nb | Fichier détail |
+| Catégorie | Nb | Détail |
 |---|---|---|
-| Alarme & Sécurité | 3 | [Voir →](docs/automations/alarme_securite.md) |
-| Alertes & Notifications | 4 | [Voir →](docs/automations/alertes_notifications.md) |
-| Audio / HiFi | 3 | [Voir →](docs/automations/audio_hifi.md) |
-| Batteries | 4 | [Voir →](docs/automations/batteries.md) |
-| Calendrier & Planification | 2 | [Voir →](docs/automations/calendrier_planification.md) |
-| Chauffage | 2 | [Voir →](docs/automations/chauffage.md) |
-| Énergie & Environnement | 3 | [Voir →](docs/automations/energie_environnement.md) |
-| Lumières | 5 | [Voir →](docs/automations/lumieres.md) |
-| Maintenance & Corrections | 5 | [Voir →](docs/automations/maintenance_corrections.md) |
-| Présence & Domicile | 3 | [Voir →](docs/automations/presence_domicile.md) |
-| Velux (blueprint) | 3 | [Voir →](docs/automations/blueprint_velux.md) |
-| Volets (blueprint) | 9 | [Voir →](docs/automations/blueprint_volets.md) |
+| Alarme & Sécurité | 3 | [→ Détail](docs/automations/alarme_securite.md) |
+| Alertes & Notifications | 4 | [→ Détail](docs/automations/alertes_notifications.md) |
+| Audio / HiFi | 3 | [→ Détail](docs/automations/audio_hifi.md) |
+| Batteries | 4 | [→ Détail](docs/automations/batteries.md) |
+| Calendrier & Planification | 2 | [→ Détail](docs/automations/calendrier_planification.md) |
+| Chauffage | 2 | [→ Détail](docs/automations/chauffage.md) |
+| Énergie & Environnement | 3 | [→ Détail](docs/automations/energie_environnement.md) |
+| Lumières | 5 | [→ Détail](docs/automations/lumieres.md) |
+| Maintenance & Corrections | 5 | [→ Détail](docs/automations/maintenance_corrections.md) |
+| Présence & Domicile | 3 | [→ Détail](docs/automations/presence_domicile.md) |
+| Velux (blueprint) | 3 | [→ Détail](docs/automations/blueprint_velux.md) |
+| Volets (blueprint) | 9 | [→ Détail](docs/automations/blueprint_volets.md) |
 
 ### Résumé des automations actives
 
@@ -250,11 +247,11 @@
 | Carte | — | GitHub | Source |
 |---|---|---|---|
 | apexcharts-card | — | [RomRider/apexcharts-card](https://github.com/RomRider/apexcharts-card) | 🔧 HACS |
-| Battery State Card | — | [maxwroc/battery-state-card](https://github.com/maxwroc/battery-state-card) | 🔧 HACS |
-| card-mod | — | [thomasloven/lovelace-card-mod](https://github.com/thomasloven/lovelace-card-mod) | 🔧 HACS |
+| Battery State Card | 1 | [maxwroc/battery-state-card](https://github.com/maxwroc/battery-state-card) | 🔧 HACS |
+| card-mod | 1 | [thomasloven/lovelace-card-mod](https://github.com/thomasloven/lovelace-card-mod) | 🔧 HACS |
 | Custom-ui | — | [Mariusthvdb/custom-ui](https://github.com/Mariusthvdb/custom-ui) | 🔧 HACS |
 | expander-card | — | [MelleD/lovelace-expander-card](https://github.com/MelleD/lovelace-expander-card) | 🔧 HACS |
-| GrDF Gazpar card | — | [ssenart/lovelace-gazpar-card](https://github.com/ssenart/lovelace-gazpar-card) | 🔧 HACS Communauté |
+| GrDF Gazpar card | 1 | [ssenart/lovelace-gazpar-card](https://github.com/ssenart/lovelace-gazpar-card) | 🔧 HACS Communauté |
 | Waze Travel Time Card | — | [r-renato/ha-card-waze-travel-time](https://github.com/r-renato/ha-card-waze-travel-time) | 🔧 HACS |
 
 ---

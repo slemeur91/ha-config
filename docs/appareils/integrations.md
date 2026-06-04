@@ -8,7 +8,7 @@
 
 > 🏠 **Natif HA** — Intégration : **Sonos** — [Documentation](https://www.home-assistant.io/integrations/sonos/)
 
-| Nb | Modèle | Pièce HA | Connexion |
+| Nb | Modèle | Localisation | Connexion |
 |---|---|---|---|
 | 3 | Sonos One | Salle de bain, Séjour (×2 groupés), Salle d'eau | 🔌 Ethernet (RJ45) |
 | 1 | Sonos Beam | Suite parentale | 🔌 Ethernet (RJ45) |
@@ -22,7 +22,7 @@
 
 > 🏠 **Natif HA** — Intégration : **Daikin** — [Documentation](https://www.home-assistant.io/integrations/daikin/)
 
-| Nb | Modèle | Pièce | Connexion |
+| Nb | Modèle | Localisation | Connexion |
 |---|---|---|---|
 | 3 | À compléter | Bureau, Chambre, Suite parentale | 📶 WiFi |
 | 1 | À compléter (modèle spécifique) | Séjour | 📶 WiFi |
@@ -33,7 +33,7 @@
 
 > Intégration : **Bravia TV** (Sony) + **Apple TV** — 🏠 Natif HA
 
-| Nb | Fabricant | Modèle | Pièce | Connexion | Intégration |
+| Nb | Fabricant | Modèle | Localisation | Connexion | Intégration |
 |---|---|---|---|---|---|
 | 1 | Sony | KD-55A1 (OLED 55") | Salon | 🔌 Ethernet (RJ45) | Bravia TV |
 | 1 | Apple | Apple TV | Salon | 🔌 Ethernet (RJ45) | Apple TV |
@@ -43,7 +43,7 @@
 
 ## Qualité de l'air & Purification (4 appareils)
 
-| Nb | Fabricant | Modèle | Pièce | Connexion | Intégration |
+| Nb | Fabricant | Modèle | Localisation | Connexion | Intégration |
 |---|---|---|---|---|---|
 | 1 | Xiaomi | 米家PM2.5 (zhimi.airmonitor.v1) | Salon | 📶 WiFi | 🔧 HACS — Xiaomi Miot |
 | 1 | Xiaomi | Mi Air Purifier (zhimi.airpurifier.m1) | Salon | 📶 WiFi | 🔧 HACS — Xiaomi Miot |
@@ -54,7 +54,7 @@
 
 ## Robots & Automatismes (3 appareils)
 
-| Nb | Fabricant | Modèle | Pièce | Connexion | Intégration |
+| Nb | Fabricant | Modèle | Localisation | Connexion | Intégration |
 |---|---|---|---|---|---|
 | 2 | Roborock | Mi Robot Vacuum (rockrobo.vacuum.v1) | Étage, Bas | 📶 WiFi | 🏠 Natif HA (Xiaomi Miio) |
 | 1 | Husqvarna | Automower | Jardin | 📶 WiFi | 🏠 Natif HA |
@@ -178,7 +178,7 @@
 
 > ℹ️ Les modèles et regroupements seront complétés ultérieurement.
 
-| Nb | Fabricant | Modèle | Nom HA / Description | Pièce | Documentation |
+| Nb | Fabricant | Modèle | Nom HA / Description | Localisation | Documentation |
 |---|---|---|---|---|---|
 | 1 | Signify | Hue Tento ambiance panel | Lumière du Bureau | Bureau | — |
 | 1 | Signify | Hue Tento color panel | Lumière de la Chambre | Chambre | — |
@@ -203,7 +203,7 @@
 > 🏠 **Natif HA** — Intégration : **HomeKit** — [Documentation](https://www.home-assistant.io/integrations/homekit_controller/)
 > Les capteurs FP2 sont appairés directement via le protocole HomeKit (pas via Zigbee2MQTT).
 
-| Nb | Fabricant | Modèle | Description | Pièces | Documentation |
+| Nb | Fabricant | Modèle | Description | Localisation | Documentation |
 |---|---|---|---|---|---|
 | 3 | Aqara | FP2 Presence Sensor | Capteur de présence radar mmWave | Bureau, Chambre, Suite parentale | [📄 Manuel](https://www.aqara.com/en/product/presence-sensor-fp2/) |
 
@@ -214,7 +214,7 @@
 > 🔧 **HACS** — Intégration : **Alexa Media Player**
 > ☁️ Cloud
 
-| Nb | Fabricant | Modèle | Pièce |
+| Nb | Fabricant | Modèle | Localisation |
 |---|---|---|---|
 | 1 | Amazon | Echo Show | Cuisine |
 

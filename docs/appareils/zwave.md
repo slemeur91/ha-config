@@ -5,7 +5,7 @@
 > 🏠 **Natif HA** via add-on Z-Wave JS UI — [Documentation](https://www.home-assistant.io/integrations/zwave_js/)
 > Flux : Z-Wave JS UI (zwavejs2mqtt) → Mosquitto MQTT → HA
 
-| Nb | Fabricant | Modèle | Description | Pièces | Documentation |
+| Nb | Fabricant | Modèle | Description | Localisation | Documentation |
 |---|---|---|---|---|---|
 | 1 | AEON Labs | ZW090 Z-Stick Gen5 | Contrôleur USB Z-Wave | Armoire de brassage | [Manuel](https://aeotec.com/z-wave-usb-stick/) |
 | 5 | Fibargroup | FGT001 Thermostatic Valve | Tête thermostatique | Bureau, Chambre, Suite parentale, Salle d'eau, Salle de bain | [📄 Manuel PDF](../hardware/FGT-001-S-v1.4-web.pdf) |
