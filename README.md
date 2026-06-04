@@ -220,39 +220,39 @@
 > 🔧 **HACS** = disponible dans le catalogue HACS standard, sans dépôt personnalisé
 > ⚠️ **Dépôt perso** = dépôt GitHub personnel à ajouter manuellement dans HACS
 
-| Intégration | Appareils | GitHub | Source |
-|---|---|---|---|
-| Alexa Media Player | 1 | [alandtse/alexa_media_player](https://github.com/alandtse/alexa_media_player) | 🔧 HACS |
-| Atmo France | — | [sebcaps/atmofrance](https://github.com/sebcaps/atmofrance) | 🔧 HACS |
-| Battery Notes | — | [andrew-codechimp/HA-Battery-Notes](https://github.com/andrew-codechimp/HA-Battery-Notes) | 🔧 HACS |
-| Dyson Local | 1 | [libdyson-wg/ha-dyson](https://github.com/libdyson-wg/ha-dyson) | 🔧 HACS |
-| Ecodevices RT2 | 1 | [pcourbin/ecodevices_rt2](https://github.com/pcourbin/ecodevices_rt2) | 🔧 HACS |
-| EcoFlow Cloud | 3 | [snell-evan-itt/hassio-ecoflow-cloud-US](https://github.com/snell-evan-itt/hassio-ecoflow-cloud-US) | 🔧 HACS |
-| HACS | — | [hacs/integration](https://github.com/hacs/integration) | 🔧 HACS |
-| Local Agenda | — | [slemeur91/local_agenda](https://github.com/slemeur91/local_agenda) | ⚠️ Dépôt perso |
-| Micronova Agua IOT | — | [vincentwolsink/home_assistant_micronova_agua_iot](https://github.com/vincentwolsink/home_assistant_micronova_agua_iot) | 🔧 HACS |
-| My EcoWatt by RTE | — | [kamaradclimber/rte-ecowatt](https://github.com/kamaradclimber/rte-ecowatt) | 🔧 HACS |
-| Orange Livebox | 1 | [cyr-ius/hass-livebox-component](https://github.com/cyr-ius/hass-livebox-component) | 🔧 HACS |
-| pyscript | — | [custom-components/pyscript](https://github.com/custom-components/pyscript) | 🔧 HACS |
-| Remote Home-Assistant | 4 | [custom-components/remote_homeassistant](https://github.com/custom-components/remote_homeassistant) | 🔧 HACS |
-| RfPlayer | 2 | [gce-electronics/HA_RFPlayer](https://github.com/gce-electronics/HA_RFPlayer) | 🔧 HACS Communauté |
-| Somfy Protexial | 1 | [AuroreVgn/somfy-protexial](https://github.com/AuroreVgn/somfy-protexial) | 🔧 HACS Communauté |
-| Spook | — | [frenck/spook](https://github.com/frenck/spook) | 🔧 HACS |
-| Vacances Scolaires | — | [Master13011/vacances-scolaire-HA](https://github.com/Master13011/vacances-scolaire-HA) | 🔧 HACS |
-| Xiaomi Miot | 2 | [al-one/hass-xiaomi-miot](https://github.com/al-one/hass-xiaomi-miot) | 🔧 HACS |
-| xsense | 4 | [Jarnsen/ha-xsense-component_test](https://github.com/Jarnsen/ha-xsense-component_test) | 🔧 HACS Communauté |
+| Intégration | Appareils | Rôle | GitHub | Source |
+|---|---|---|---|---|
+| Alexa Media Player | 1 | Contrôle des appareils Amazon Alexa | [alandtse/alexa_media_player](https://github.com/alandtse/alexa_media_player) | 🔧 HACS |
+| Atmo France | — | Qualité de l'air des villes françaises (Atmo) | [sebcaps/atmofrance](https://github.com/sebcaps/atmofrance) | 🔧 HACS |
+| Battery Notes | — | Suivi des types et dates de remplacement de piles | [andrew-codechimp/HA-Battery-Notes](https://github.com/andrew-codechimp/HA-Battery-Notes) | 🔧 HACS |
+| Dyson Local | 1 | Intégration locale (sans cloud) des appareils Dyson | [libdyson-wg/ha-dyson](https://github.com/libdyson-wg/ha-dyson) | 🔧 HACS |
+| Ecodevices RT2 | 1 | Mesure de consommation multi-circuits (GCE) | [pcourbin/ecodevices_rt2](https://github.com/pcourbin/ecodevices_rt2) | 🔧 HACS |
+| EcoFlow Cloud | 3 | Appareils EcoFlow (batterie DELTA Max, PowerStream) | [snell-evan-itt/hassio-ecoflow-cloud-US](https://github.com/snell-evan-itt/hassio-ecoflow-cloud-US) | 🔧 HACS |
+| HACS | — | Gestionnaire de contenu communautaire HA | [hacs/integration](https://github.com/hacs/integration) | 🔧 HACS |
+| Local Agenda | — | Calendriers locaux enrichis pour la planification domotique | [slemeur91/local_agenda](https://github.com/slemeur91/local_agenda) | ⚠️ Dépôt perso |
+| Micronova Agua IOT | — | Contrôle des poêles à granulés via Agua IOT *(désactivé)* | [vincentwolsink/home_assistant_micronova_agua_iot](https://github.com/vincentwolsink/home_assistant_micronova_agua_iot) | 🔧 HACS |
+| My EcoWatt by RTE | — | Signaux de sobriété électrique RTE | [kamaradclimber/rte-ecowatt](https://github.com/kamaradclimber/rte-ecowatt) | 🔧 HACS |
+| Orange Livebox | 1 | Supervision de la Livebox Orange | [cyr-ius/hass-livebox-component](https://github.com/cyr-ius/hass-livebox-component) | 🔧 HACS |
+| pyscript | — | Scripts Python avancés dans HA | [custom-components/pyscript](https://github.com/custom-components/pyscript) | 🔧 HACS |
+| Remote Home-Assistant | 4 | Liaison entre deux instances Home Assistant | [custom-components/remote_homeassistant](https://github.com/custom-components/remote_homeassistant) | 🔧 HACS |
+| RfPlayer | 2 | Récepteur/émetteur RF 433/868 MHz (GCE RFPlayer) | [gce-electronics/HA_RFPlayer](https://github.com/gce-electronics/HA_RFPlayer) | 🔧 HACS Communauté |
+| Somfy Protexial | 1 | Centrale d'alarme Somfy Protexial | [AuroreVgn/somfy-protexial](https://github.com/AuroreVgn/somfy-protexial) | 🔧 HACS Communauté |
+| Spook | — | Services supplémentaires et détection d'entités orphelines | [frenck/spook](https://github.com/frenck/spook) | 🔧 HACS |
+| Vacances Scolaires | — | Calendrier des vacances scolaires françaises (zone C) | [Master13011/vacances-scolaire-HA](https://github.com/Master13011/vacances-scolaire-HA) | 🔧 HACS |
+| Xiaomi Miot | 2 | Appareils Xiaomi via protocole MIoT local | [al-one/hass-xiaomi-miot](https://github.com/al-one/hass-xiaomi-miot) | 🔧 HACS |
+| xsense | 4 | Détecteurs de fumée/CO X-Sense (cloud) | [Jarnsen/ha-xsense-component_test](https://github.com/Jarnsen/ha-xsense-component_test) | 🔧 HACS Communauté |
 
 ### Cartes Lovelace HACS (7)
 
-| Carte | — | GitHub | Source |
-|---|---|---|---|
-| apexcharts-card | — | [RomRider/apexcharts-card](https://github.com/RomRider/apexcharts-card) | 🔧 HACS |
-| Battery State Card | 1 | [maxwroc/battery-state-card](https://github.com/maxwroc/battery-state-card) | 🔧 HACS |
-| card-mod | 1 | [thomasloven/lovelace-card-mod](https://github.com/thomasloven/lovelace-card-mod) | 🔧 HACS |
-| Custom-ui | — | [Mariusthvdb/custom-ui](https://github.com/Mariusthvdb/custom-ui) | 🔧 HACS |
-| expander-card | — | [MelleD/lovelace-expander-card](https://github.com/MelleD/lovelace-expander-card) | 🔧 HACS |
-| GrDF Gazpar card | 1 | [ssenart/lovelace-gazpar-card](https://github.com/ssenart/lovelace-gazpar-card) | 🔧 HACS Communauté |
-| Waze Travel Time Card | — | [r-renato/ha-card-waze-travel-time](https://github.com/r-renato/ha-card-waze-travel-time) | 🔧 HACS |
+| Carte | Appareils | Rôle | GitHub | Source |
+|---|---|---|---|---|
+| apexcharts-card | — | Graphiques avancés (consommation énergie) | [RomRider/apexcharts-card](https://github.com/RomRider/apexcharts-card) | 🔧 HACS |
+| Battery State Card | 1 | Tableau de bord des niveaux de batteries | [maxwroc/battery-state-card](https://github.com/maxwroc/battery-state-card) | 🔧 HACS |
+| card-mod | 1 | CSS personnalisé sur n'importe quelle carte Lovelace | [thomasloven/lovelace-card-mod](https://github.com/thomasloven/lovelace-card-mod) | 🔧 HACS |
+| Custom-ui | — | Templates et couleurs d'icônes personnalisés | [Mariusthvdb/custom-ui](https://github.com/Mariusthvdb/custom-ui) | 🔧 HACS |
+| expander-card | — | Carte extensible/rétractable pour les dashboards | [MelleD/lovelace-expander-card](https://github.com/MelleD/lovelace-expander-card) | 🔧 HACS |
+| GrDF Gazpar card | 1 | Affichage des données de consommation GAZPAR | [ssenart/lovelace-gazpar-card](https://github.com/ssenart/lovelace-gazpar-card) | 🔧 HACS Communauté |
+| Waze Travel Time Card | — | Temps de trajet calculé par Waze | [r-renato/ha-card-waze-travel-time](https://github.com/r-renato/ha-card-waze-travel-time) | 🔧 HACS |
 
 ---
 
