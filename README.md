@@ -23,9 +23,9 @@
 | EnOcean | **3** | ✅ Local | [→ Détail](docs/appareils/enocean.md) |
 | WiFi / IP | **52** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/integrations.md) |
 | Thread / Matter | **1** | ✅ Local | [→ Détail](docs/appareils/matter.md) |
-| Autres (Somfy, RF, Remote HA…) | **21** | ✅ Local | [→ Détail](docs/appareils.md) |
+| Intégrations (Somfy KLF200, Protexial, RF…) | **21** | ✅ Local | [→ Détail](docs/appareils/integrations.md) |
 
-> [Détail complet des appareils →](docs/appareils.md)
+> [Détail complet →](docs/appareils/integrations.md)
 
 ---
 
@@ -278,7 +278,7 @@ Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être captu
 
 ## 🔌 Appareils connectés
 
-[Voir la documentation complète →](docs/appareils.md)
+[Voir la documentation complète →](docs/appareils/integrations.md)
 
 ---
 

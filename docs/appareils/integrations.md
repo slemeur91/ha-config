@@ -41,13 +41,14 @@
 
 ---
 
-## Qualité de l'air & Purification (3 appareils)
+## Qualité de l'air & Purification (4 appareils)
 
 | Nb | Fabricant | Modèle | Pièce | Connexion | Intégration |
 |---|---|---|---|---|---|
 | 1 | Xiaomi | 米家PM2.5 (zhimi.airmonitor.v1) | Salon | 📶 WiFi | 🔧 HACS — Xiaomi Miot |
 | 1 | Xiaomi | Mi Air Purifier (zhimi.airpurifier.m1) | Salon | 📶 WiFi | 🔧 HACS — Xiaomi Miot |
-| 2 | Dyson | Pure Cool (527) | Salon, Bureau | 📶 WiFi | 🔧 HACS — Dyson Local |
+| 1 | Dyson | Pure Cool (527) | Purificateur/ventilateur | Salon | 📶 WiFi | 🔧 HACS — Dyson Local |
+| 1 | Dyson | Pure Cool | Purificateur/ventilateur | Bureau | 📶 WiFi | 🔧 HACS — Dyson Local |
 
 ---
 
@@ -87,7 +88,7 @@
 ## Énergie — EcoFlow (2 appareils cloud)
 
 > 🔧 **HACS Communauté** — Intégration : **EcoFlow Cloud**
-> ☁️ Cloud — ⚠️ Erreur connue : incompatibilité paho-mqtt, mise à jour requise.
+> ☁️ Cloud
 > ℹ️ L'EcoFlow Smart Plug est géré en Matter — voir [matter.md](matter.md)
 
 | Nb | Modèle | Description | Localisation |
@@ -106,21 +107,17 @@
 | 1 | Enedis | Linky | 📦 Add-on [Linky](https://github.com/bokub/linky) | ☁️ Cloud |
 | 1 | GrDF | GAZPAR | 📦 Add-on [Gazpar2MQTT](https://github.com/ssenart/gazpar2mqtt) | ☁️ Cloud |
 
-### GCE EcoDevices RT2 (20 appareils de mesure)
+### GCE EcoDevices RT2 (22 appareils de mesure)
 
 > 🔧 **HACS** — Intégration : **Ecodevices RT2** — [GitHub](https://github.com/pcourbin/ecodevices_rt2)
 > 🔌 Ethernet (RJ45) — IP locale
 
-Mesure de consommation et de production multi-circuits, dont :
-
-| Capteur type | Description |
-|---|---|
-| Compteur eau froide | Via entrée impulsion EcoDevices RT2 |
-| Compteur eau chaude | Via entrée impulsion EcoDevices RT2 |
-| Consommation électrique | Par circuit (réfrigérateur, chaudière, chauffe-eau…) |
-| Production solaire | Compteur de production photovoltaïque |
-
-> ℹ️ 20 entités de mesure au total exposées par l'intégration.
+| Nb | Type | Description |
+|---|---|---|
+| 1 | Compteur eau froide | Via entrée impulsion EcoDevices RT2 |
+| 1 | Compteur eau chaude | Via entrée impulsion EcoDevices RT2 |
+| 1 | Production solaire | Compteur de production photovoltaïque |
+| 19 | Consommation électrique | Par circuit (réfrigérateur, chaudière, chauffe-eau…) |
 
 ---
 
@@ -230,10 +227,11 @@ Mesure de consommation et de production multi-circuits, dont :
 
 ---
 
-### Schneider Odace — via Remote HA (4 appareils)
+### Schneider Odace SFSP — via Remote HA (4 appareils)
 
-> 🔧 **HACS** — Intégration : **Remote Home-Assistant** — [GitHub](https://github.com/custom-components/remote_homeassistant)
-> 🔵 Bluetooth — Via instance HA secondaire
+> 🔵 Bluetooth
+> Intégration personnelle : **Odace SFSP** — [GitHub slemeur91/odace_sfsp](https://github.com/slemeur91/odace_sfsp) sur l'instance HA secondaire
+> Remontée dans cette instance via 🔧 **HACS** — **Remote Home-Assistant** — [GitHub](https://github.com/custom-components/remote_homeassistant)
 
 | Nb | Modèle | Description | Localisation |
 |---|---|---|---|

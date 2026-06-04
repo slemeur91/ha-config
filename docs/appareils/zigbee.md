@@ -61,18 +61,13 @@
 
 > 📦 **Add-on Apps** — Zigbee2MQTT → Mosquitto MQTT → HA
 
-### Prises et multiprises (13 appareils)
+### Prises et multiprises (14 appareils)
 
 | Nb | Fabricant | Modèle | Nom HA | Pièce |
 |---|---|---|---|---|
 | 12 | Schneider Electric | Zigbee smart socket with power meter | Prise du Bureau, Salle de bain, Télévision, Cafetière, Jus d'orange, Hotte, Salle d'eau, Poêle, Chambre, Entrée, Garage, Informatique | Bureau, SdB, Suite parentale, Cuisine (×3), SdE, Séjour, Chambre, Entrée, Garage, Réseau |
 | 1 | UseeLink | 4 gang switch with USB | Multiprise du Salon droite | Salon |
-
-### Multiprises Zigbee (1 appareil)
-
-| Nb | Fabricant | Modèle | Nom HA |
-|---|---|---|---|
-| 1 | Shelly | Power strip 4 Gen4 | Multiprises Shelly |
+| 1 | Shelly | Power strip 4 Gen4 | Multiprises Shelly | — |
 
 ### Contacteurs DIN (3 appareils)
 
