@@ -301,7 +301,7 @@
 > Intégration personnelle : **Odace SFSP** — [GitHub slemeur91/odace_sfsp](https://github.com/slemeur91/odace_sfsp) sur l'instance HA secondaire
 > Remontée dans cette instance via 🔧 **HACS** — **Remote Home-Assistant** — [GitHub](https://github.com/custom-components/remote_homeassistant)
 
-| Nb | Modèle | Description | Localisation |
-|---|---|---|---|
-| 2 | Schneider Odace SFSP | Armoire de toilette connectée | Salle de bain, Salle d'eau |
-| 2 | Schneider Odace SFSP | Plafonnier connecté | Salle de bain, Salle d'eau |
+| Nb | Modèle | Description | Localisation | Documentation |
+|---|---|---|---|---|
+| 2 | Schneider Odace SFSP | Armoire de toilette connectée | Salle de bain, Salle d'eau | [📄 Manuel](../hardware/GDE33208-0026Sept19.pdf) · [📄 Notice DCL](../hardware/notice_DCL.pdf) |
+| 2 | Schneider Odace SFSP | Plafonnier connecté | Salle de bain, Salle d'eau | [📄 Manuel](../hardware/GDE33208-0026Sept19.pdf) · [📄 Notice DCL](../hardware/notice_DCL.pdf) |
