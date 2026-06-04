@@ -20,7 +20,7 @@ Accès SSH à Home Assistant.
 
 ### Z-Wave JS
 Contrôle du réseau Z-Wave via Z-Wave JS.
-- Gère les modules Z-Wave (thermostats Fibaro FGT001, détecteurs, volets).
+- ⚠️ **Désactivé automatiquement** par Z-Wave JS UI lors de l'installation de ce dernier. Z-Wave JS UI prend en charge toutes ses fonctions avec en plus la publication MQTT.
 
 ### OpenThread Border Router
 Routeur de bordure OpenThread pour Thread/Matter.

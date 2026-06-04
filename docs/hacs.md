@@ -197,10 +197,86 @@ Graphiques avancés basés sur ApexCharts. Utilisé pour les graphiques de conso
 
 Tableau de bord des niveaux de batteries de tous les appareils.
 
+**Configuration utilisée :**
+```yaml
+type: custom:battery-state-card
+secondary_info: >-
+  {attributes.battery_type_and_quantity} remplacé/chargé
+  {attributes.battery_last_replaced|reltime()}
+round: 0
+entities:
+  - sensor.chauffage_de_la_chambre_battery_plus
+  - sensor.chauffage_de_la_chambre_nodeid_6_battery_level_2_battery_plus
+  - sensor.chauffage_de_la_salle_d_eau_battery_plus
+  - sensor.chauffage_de_la_salle_d_eau_nodeid_4_battery_level_2_battery_plus
+  - sensor.chauffage_de_la_salle_de_bain_battery_plus
+  - sensor.chauffage_de_la_salle_de_bain_nodeid_5_battery_level_2_battery_plus
+  - sensor.chauffage_de_la_suite_parentale_battery_plus
+  - sensor.chauffage_de_la_suite_parentale_nodeid_3_battery_level_2_battery_plus
+  - sensor.chauffage_du_bureau_battery_plus
+  - sensor.chauffage_du_bureau_nodeid_2_battery_level_2_battery_plus
+filter:
+  include:
+    - name: entity_id
+      value: "*_battery_plus"
+bulk_rename:
+  - from: " Batterie+"
+    to: ""
+sort:
+  by: state
+collapse: 60
+```
+
 ### card-mod
 > [GitHub](https://github.com/thomasloven/lovelace-card-mod)
 
 Permet d'ajouter du CSS personnalisé à n'importe quelle carte Lovelace.
+
+**Configuration utilisée — carte stock de piles :**
+```yaml
+type: vertical-stack
+cards:
+  - type: custom:mod-card
+    card_mod:
+      style: |
+        ha-markdown {
+          text-align: center;
+          font-family: monospace;
+          font-size: 14px;
+        }
+    card:
+      type: markdown
+      title: Stock de piles nécessaire
+      content: >-
+        {% set items = states.sensor
+            | selectattr('entity_id','search','_battery_type$')
+            | selectattr('attributes.battery_type','defined')
+            | list %}
+        {% set low_items = states.binary_sensor
+            | selectattr('entity_id','search','_battery_plus_low$')
+            | selectattr('state','equalto','on')
+            | list %}
+        {% set types = items | map(attribute='attributes.battery_type') | unique
+        | sort %}
+        {% set ns = namespace(out='') %} {% set ns.out = ns.out + "\n| **Type de
+        pile** | **Appareils** | **Piles totales** | **Appareils faibles** |
+        **Piles faibles** |\n" %} {% set ns.out = ns.out +
+        "|:---:|:---:|:---:|:---:|:---:|\n" %}
+        {% for t in types %}
+          {% set group = items | selectattr('attributes.battery_type','equalto', t) | list %}
+          {% set cells = group
+              | map(attribute='attributes.battery_quantity')
+              | map('default', 1, true) | map('int') | sum %}
+          {% set low_group = low_items | selectattr('attributes.battery_type','equalto', t) | list %}
+          {% set low_cells = low_group
+              | map(attribute='attributes.battery_quantity')
+              | map('default', 1, true) | map('int') | sum %}
+          {% set ns.out = ns.out
+              + "| " ~ t ~ " | " ~ (group|count) ~ " | " ~ cells ~ " | "
+              ~ (low_group|count) ~ " | " ~ low_cells ~ " |\n" %}
+        {% endfor %}
+        {{ ns.out }}
+```
 
 ### Custom-ui
 > [GitHub](https://github.com/Mariusthvdb/custom-ui)
@@ -216,6 +292,18 @@ Carte extensible/rétractable pour organiser les dashboards.
 > [GitHub](https://github.com/ssenart/lovelace-gazpar-card)
 
 Carte dédiée à l'affichage des données GAZPAR (consommation gaz).
+
+**Configuration utilisée :**
+```yaml
+type: custom:gazpar-card
+entity: sensor.gazpar_cheptainville_card
+showCost: false
+showCostHistory: false
+showDailyCostHistoryChart: false
+showWeeklyCostHistoryChart: false
+showMonthlyCostHistoryChart: false
+showYearlyCostHistoryChart: false
+```
 
 ### Waze Travel Time Card
 > [GitHub](https://github.com/r-renato/ha-card-waze-travel-time)

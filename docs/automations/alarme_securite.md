@@ -36,7 +36,7 @@
 ---
 
 ## `automation.alarme_declenchement` — Alarme Déclenchement
-> [📄 Voir le YAML](../../automations/alarme_declenchement.yaml)
+> [📄 Voir le YAML](../../automations/alarme_declenchement.yaml) | [📄 Script pyscript](../../pyscripts/surveillance_station_recording.py)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 

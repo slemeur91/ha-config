@@ -70,5 +70,3 @@ Contrôle intelligent d'un Velux selon la présence, les alertes météo et la p
 | `input_button.velux_sde_fermer` | input_button | Fermeture manuelle |
 | `input_button.velux_sdb_fermer` | input_button | Fermeture manuelle |
 | `input_select.presence_chambre` | input_select | Présent, Absent |
-
-> ⚠️ **Bug connu** : le trigger `temp_secondaire` surveille `attribute: current_temperature` qui n'existe pas sur un sensor. La température secondaire ne déclenchera pas l'automation directement (les autres triggers corrigent la situation).

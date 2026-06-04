@@ -20,11 +20,15 @@
 
 ---
 
-### ⚠️ Capteur de température FGT001 — Contournement MQTT
+### ⚠️ Capteur de température FGT001 — Contournement Z-Wave JS UI
 
-Le paramètre `[2-112-0-3-1] Temperature Sensor` ne remonte plus via zwavejs2mqtt pour les vannes FGT001. Le capteur est recréé manuellement via MQTT Discovery.
+Le paramètre `[2-112-0-3-1] Temperature Sensor` est une option qui a disparu lors du passage de **Z-Wave JS** vers **Z-Wave JS UI** (zwavejs2mqtt). Ce capteur n'est donc plus remonté automatiquement dans HA.
 
-**Topic :** `homeassistant/binary_sensor/nodeID_2_temperature_sensor/config` (Retain = true)
+**Solution :** Dans Z-Wave JS UI, ouvrir chaque périphérique FGT001, aller dans l'onglet **HOME ASSISTANT**, et coller le JSON ci-dessous dans le champ **"Hass Device JSON"**, en remplaçant les 4 occurrences de `nodeID_X` (dans `state_topic`, `topic` de disponibilité, `identifiers` et `unique_id`) par le numéro de nœud réel du périphérique :
+
+- Bureau → node **2**, Chambre → node **6**, Salle de bain → node **5**, Salle d'eau → node **4**, Suite parentale → node **3**
+
+**JSON à copier (adapter les 4 occurrences de `nodeID_X`) :**
 
 ```json
 {
@@ -64,4 +68,4 @@ Le paramètre `[2-112-0-3-1] Temperature Sensor` ne remonte plus via zwavejs2mqt
 }
 ```
 
-> Adapter `nodeID_2` au numéro de nœud pour chaque vanne. Publier via MQTT Explorer.
+> ⚠️ **4 occurrences à remplacer** dans ce JSON : `state_topic`, le premier `topic` de disponibilité, `identifiers` et `unique_id`. Ne pas oublier d'adapter aussi le numéro dans `unique_id` (ex: `2-112-0-3-1` → `6-112-0-3-1` pour le node 6).

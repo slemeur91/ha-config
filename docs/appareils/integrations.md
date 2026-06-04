@@ -1,0 +1,241 @@
+# Appareils WiFi / IP / Filaire & Autres (73 appareils)
+
+[← Retour Appareils](../appareils.md)
+
+---
+
+## Audio — SONOS (5 appareils)
+
+> 🏠 **Natif HA** — Intégration : **Sonos** — [Documentation](https://www.home-assistant.io/integrations/sonos/)
+
+| Nb | Modèle | Pièce HA | Connexion |
+|---|---|---|---|
+| 3 | Sonos One | Salle de bain, Séjour (×2 groupés), Salle d'eau | 🔌 Ethernet (RJ45) |
+| 1 | Sonos Beam | Suite parentale | 🔌 Ethernet (RJ45) |
+| 1 | Sonos Move | Bureau (nommé "Garage") | 📶 WiFi |
+
+> ℹ️ Le Séjour dispose de 2 enceintes One groupées, comptées comme 1 dans HA.
+
+---
+
+## Climatisation — Daikin (4 appareils)
+
+> 🏠 **Natif HA** — Intégration : **Daikin** — [Documentation](https://www.home-assistant.io/integrations/daikin/)
+
+| Nb | Modèle | Pièce | Connexion |
+|---|---|---|---|
+| 3 | À compléter | Bureau, Chambre, Suite parentale | 📶 WiFi |
+| 1 | À compléter (modèle spécifique) | Séjour | 📶 WiFi |
+
+---
+
+## Multimédia
+
+> Intégration : **Bravia TV** (Sony) + **Apple TV** — 🏠 Natif HA
+
+| Nb | Fabricant | Modèle | Pièce | Connexion | Intégration |
+|---|---|---|---|---|---|
+| 1 | Sony | KD-55A1 (OLED 55") | Salon | 🔌 Ethernet (RJ45) | Bravia TV |
+| 1 | Apple | Apple TV | Salon | 🔌 Ethernet (RJ45) | Apple TV |
+| 2 | Broadlink | RM4 Pro | Salon (×2) | 📶 WiFi | Broadlink |
+
+---
+
+## Qualité de l'air & Purification (3 appareils)
+
+| Nb | Fabricant | Modèle | Pièce | Connexion | Intégration |
+|---|---|---|---|---|---|
+| 1 | Xiaomi | 米家PM2.5 (zhimi.airmonitor.v1) | Salon | 📶 WiFi | 🔧 HACS — Xiaomi Miot |
+| 1 | Xiaomi | Mi Air Purifier (zhimi.airpurifier.m1) | Salon | 📶 WiFi | 🔧 HACS — Xiaomi Miot |
+| 2 | Dyson | Pure Cool (527) | Salon, Bureau | 📶 WiFi | 🔧 HACS — Dyson Local |
+
+---
+
+## Robots & Automatismes (3 appareils)
+
+| Nb | Fabricant | Modèle | Pièce | Connexion | Intégration |
+|---|---|---|---|---|---|
+| 2 | Roborock | Mi Robot Vacuum (rockrobo.vacuum.v1) | Étage, Bas | 📶 WiFi | 🏠 Natif HA (Xiaomi Miio) |
+| 1 | Husqvarna | Automower | Jardin | 📶 WiFi | 🏠 Natif HA |
+
+---
+
+## Serrures & Accès (2 appareils)
+
+> 🏠 **Natif HA** — Intégration : **Nuki** — [Documentation](https://www.home-assistant.io/integrations/nuki/)
+
+| Nb | Fabricant | Modèle | Localisation | Connexion |
+|---|---|---|---|---|
+| 2 | Nuki | Smart Lock 3.0 Pro | Entrée, Garage | 📶 WiFi (via Nuki Bridge) |
+
+---
+
+## Météo & Capteurs — Netatmo (7 appareils)
+
+> 🏠 **Natif HA** — Intégration : **Netatmo** — [Documentation](https://www.home-assistant.io/integrations/netatmo/)
+> ☁️ Cloud
+
+| Nb | Modèle | Description | Localisation |
+|---|---|---|---|
+| 1 | Smart Weather Station | Station météo principale | Salon |
+| 4 | Smart Indoor Module | Sonde température/humidité | Bureau, Chambre, Suite parentale, Extérieur |
+| 1 | Rain Gauge | Pluviomètre | Extérieur |
+| 1 | Wind Gauge | Anémomètre | Extérieur |
+
+---
+
+## Énergie — EcoFlow (2 appareils cloud)
+
+> 🔧 **HACS Communauté** — Intégration : **EcoFlow Cloud**
+> ☁️ Cloud — ⚠️ Erreur connue : incompatibilité paho-mqtt, mise à jour requise.
+> ℹ️ L'EcoFlow Smart Plug est géré en Matter — voir [matter.md](matter.md)
+
+| Nb | Modèle | Description | Localisation |
+|---|---|---|---|
+| 1 | DELTA Max | Batterie de stockage | Réseau |
+| 1 | PowerStream | Micro-onduleur solaire | Extérieur |
+
+---
+
+## Énergie — Compteurs & Mesure (22 appareils)
+
+### Linky & GAZPAR
+
+| Nb | Fabricant | Modèle | Intégration | Mode |
+|---|---|---|---|---|
+| 1 | Enedis | Linky | 📦 Add-on [Linky](https://github.com/bokub/linky) | ☁️ Cloud |
+| 1 | GrDF | GAZPAR | 📦 Add-on [Gazpar2MQTT](https://github.com/ssenart/gazpar2mqtt) | ☁️ Cloud |
+
+### GCE EcoDevices RT2 (20 appareils de mesure)
+
+> 🔧 **HACS** — Intégration : **Ecodevices RT2** — [GitHub](https://github.com/pcourbin/ecodevices_rt2)
+> 🔌 Ethernet (RJ45) — IP locale
+
+Mesure de consommation et de production multi-circuits, dont :
+
+| Capteur type | Description |
+|---|---|
+| Compteur eau froide | Via entrée impulsion EcoDevices RT2 |
+| Compteur eau chaude | Via entrée impulsion EcoDevices RT2 |
+| Consommation électrique | Par circuit (réfrigérateur, chaudière, chauffe-eau…) |
+| Production solaire | Compteur de production photovoltaïque |
+
+> ℹ️ 20 entités de mesure au total exposées par l'intégration.
+
+---
+
+## Prises connectées — Multiprises (6 appareils)
+
+> 🏠 **Natif HA** — Intégration : **Tuya** — [Documentation](https://www.home-assistant.io/integrations/tuya/)
+> 📶 WiFi + ☁️ Cloud Tuya
+
+| Nb | Description | Localisation |
+|---|---|---|
+| 6 | Multiprise 4 prises + 2 USB avec mesure individuelle | Suite parentale, Salon G, Salon D, Garage, Informatique, Bureau |
+
+---
+
+## Caméras & NVR (9 appareils)
+
+> 🏠 **Natif HA** — Intégration : **UniFi Protect** — [Documentation](https://www.home-assistant.io/integrations/unifiprotect/)
+> 🔌 Ethernet (RJ45)
+
+| Nb | Fabricant | Modèle | Description | Localisation |
+|---|---|---|---|---|
+| 7 | — | IP Camera | Caméras de surveillance (slm-camera1 à 7) | Extérieur / Intérieur |
+| 1 | Ubiquiti | UNVR Instant | Enregistreur vidéo réseau | Armoire réseau |
+| 1 | — | Portier IP | Portier vidéo | Entrée |
+
+---
+
+## Infrastructure & NAS (3 appareils)
+
+> 🔌 Ethernet (RJ45)
+
+| Nb | Fabricant | Modèle | Description | Intégration |
+|---|---|---|---|---|
+| 2 | Synology | NAS (slm-disk3, slm-disk4) | Serveurs NAS | 🏠 Natif HA — Synology DSM |
+| 1 | Ubiquiti | UniFi | Switch/AP réseau | 🏠 Natif HA — UniFi Network |
+| 1 | Orange | Livebox | Box internet | 🔧 HACS — [Orange Livebox](https://github.com/cyr-ius/hass-livebox-component) |
+
+---
+
+## Assistants vocaux (1 appareil)
+
+> 🔧 **HACS** — Intégration : **Alexa Media Player**
+> ☁️ Cloud
+
+| Nb | Fabricant | Modèle | Pièce |
+|---|---|---|---|
+| 1 | Amazon | Echo Show | Cuisine |
+
+---
+
+## Sécurité & Détection
+
+### Sure Petcare (1 appareil)
+
+> 🏠 **Natif HA** — Intégration : **Sure Petcare** — ☁️ Cloud
+
+| Nb | Modèle | Description | Localisation |
+|---|---|---|---|
+| 1 | SureFlap Microchip Pet Door | Chatière connectée | Entrée |
+
+### X-Sense (4 appareils)
+
+> 🔧 **HACS Communauté** — Intégration : **xsense** — ☁️ Cloud
+
+| Nb | Modèle | Description | Localisation | Connexion |
+|---|---|---|---|---|
+| 1 | SBS50 | Station de base alarme incendie/CO | Réseau | 📶 WiFi → ☁️ Cloud |
+| 3 | XS01-WX / SC06-W | Détecteurs de fumée/CO | Séjour, Cellier, Étage | Protocole propriétaire → SBS50 |
+
+---
+
+## Autres appareils
+
+### Somfy io-homecontrol — KLF200 (14 appareils)
+
+> 🏠 **Natif HA** — Intégration : **KLF200 (Velux)** — [Documentation](https://www.home-assistant.io/integrations/velux/)
+> 🔌 Ethernet (RJ45)
+
+| Nb | Modèle | Description | Localisation |
+|---|---|---|---|
+| 1 | Somfy KLF200 | Passerelle io-homecontrol | Armoire réseau |
+| 9 | Somfy Volet io | Volet roulant motorisé | Bureau, Cellier, Chambre, Cuisine, Salle d'eau, Salle de bain, Salon, Séjour, Suite parentale |
+| 3 | Velux INTEGRA / KIX 300 | Velux motorisé | Chambre, Salle d'eau, Salle de bain |
+| 1 | Somfy Store io | Store extérieur (Pergola) | Terrasse |
+
+---
+
+### Somfy Protexial — Alarme (1 appareil)
+
+> 🔧 **HACS Communauté** — Intégration : **Somfy Protexial** — [GitHub](https://github.com/AuroreVgn/somfy-protexial)
+> 🔌 Connexion physique Ethernet (RJ45)
+
+| Nb | Modèle | Description |
+|---|---|---|
+| 1 | Somfy Protexial IO | Centrale d'alarme |
+
+---
+
+### GCE RFPlayer — RF 433/868 MHz (2 appareils)
+
+> 🔧 **HACS Communauté** — Intégration : **RfPlayer** — [GitHub](https://github.com/gce-electronics/HA_RFPlayer)
+
+| Nb | Modèle | Description | Localisation |
+|---|---|---|---|
+| 1 | GCE Electronics RFPlayer | Émetteur/récepteur RF 433/868 MHz | Armoire de brassage |
+| 1 | Somfy RTS 4 Portal | Porte de garage motorisée RTS | Garage |
+
+---
+
+### Schneider Odace — via Remote HA (4 appareils)
+
+> 🔧 **HACS** — Intégration : **Remote Home-Assistant** — [GitHub](https://github.com/custom-components/remote_homeassistant)
+> 🔵 Bluetooth — Via instance HA secondaire
+
+| Nb | Modèle | Description | Localisation |
+|---|---|---|---|
+| 2 | Schneider Odace SFSP | Armoire de toilette connectée | Salle de bain, Salle d'eau |
+| 2 | Schneider Odace SFSP | Plafonnier connecté | Salle de bain, Salle d'eau |

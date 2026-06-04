@@ -223,6 +223,13 @@
 
 ---
 
+## Scripts Pyscript
+
+> Les scripts pyscript sont dans `/config/pyscript/` et chargés par l'intégration **pyscript** (HACS).
+> Sources : [`pyscripts/gazpar_energy.py`](../pyscripts/gazpar_energy.py) | [`pyscripts/surveillance_station_recording.py`](../pyscripts/surveillance_station_recording.py)
+
+---
+
 ## Utilitaires
 
 ### `script.reload_pyscript` — Reload pyscript

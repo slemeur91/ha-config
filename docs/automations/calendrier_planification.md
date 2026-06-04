@@ -36,7 +36,7 @@
 ---
 
 ## `automation.gazpar_mise_a_jour_statistiques_journalieres` — GAZPAR – Mise à jour statistiques journalières
-> [📄 Voir le YAML](../../automations/gazpar_mise_a_jour_statistiques_journalieres.yaml)
+> [📄 Voir le YAML](../../automations/gazpar_mise_a_jour_statistiques_journalieres.yaml) | [📄 Script pyscript](../../pyscripts/gazpar_energy.py)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
