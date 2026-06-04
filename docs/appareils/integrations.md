@@ -265,9 +265,9 @@
 > 🔧 **HACS Communauté** — Intégration : **Somfy Protexial** — [GitHub](https://github.com/AuroreVgn/somfy-protexial)
 > 🔌 Ethernet (RJ45)
 
-| Nb | Modèle | Description |
-|---|---|---|
-| 1 | Somfy Protexial IO | Centrale d'alarme |
+| Nb | Modèle | Description | Documentation |
+|---|---|---|---|
+| 1 | Somfy Protexial IO | Centrale d'alarme | [📄 Manuel](../hardware/Notice_Protexiom_2014.pdf) |
 
 ---
 
