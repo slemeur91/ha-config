@@ -20,7 +20,11 @@
 
 ### ⚙️ Configuration principale (1)
 
-[→ Détail](docs/configuration.md)
+[Voir la documentation complète →](docs/configuration.md)
+
+| Section | Détail |
+|---|---|
+| Notifications SMTP (email) | Serveur SMTP local, `notify.email`, port 25 |
 
 ### 🔌 Appareils par technologie (187)
 
@@ -152,16 +156,6 @@
 | Gestion du Volet - Suite parentale | `automation.gestion_du_volet_suite_parentale` | Suite parentale |
 
 </details>
-
----
-
-## ⚙️ Configuration principale
-
-[Voir la documentation complète →](docs/configuration.md)
-
-| Section | Détail |
-|---|---|
-| Notifications SMTP (email) | Serveur SMTP local, `notify.email`, port 25 |
 
 ---
 
