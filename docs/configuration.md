@@ -4,6 +4,23 @@
 
 ---
 
+## 🐛 Débogage — Logger
+
+Configuration à activer temporairement dans `configuration.yaml` pour le diagnostic.
+
+```yaml
+logger:
+  default: info
+  logs:
+    custom_components.somfy_protexial: debug
+    custom_components.local_agenda: debug
+#    components.husqvarna_automower_ble: debug
+    homeassistant.components.apple_tv: debug
+    pyatv: debug
+```
+
+---
+
 ## 📧 Notifications — SMTP (email)
 
 Déclaré dans `configuration.yaml` sous la clé `notify`.

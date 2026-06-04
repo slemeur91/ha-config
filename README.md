@@ -27,6 +27,7 @@
 | Section | Détail |
 |---|---|
 | Notifications SMTP (email) | Serveur SMTP local, `notify.email`, port 25 |
+| Débogage — Logger | Niveaux `debug` pour Somfy Protexial, Local Agenda, Apple TV, pyatv |
 
 ---
 
