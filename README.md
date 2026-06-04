@@ -18,6 +18,8 @@
 | Intégrations HACS | **19** |
 | Cartes Lovelace HACS | **7** |
 
+---
+
 ### ⚙️ Configuration principale (1)
 
 [Voir la documentation complète →](docs/configuration.md)
