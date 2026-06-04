@@ -145,6 +145,40 @@ mqtt:
   keepalive: 60
 ```
 
+**Fichier `/homeassistant/enoceanmqtt.devices` :**
+
+```ini
+[enocean_refrigerateur]
+address         = 0x0190E335
+rorg            = 0xD2
+func            = 0x01
+type            = 0x09
+
+[enocean_refrigerateur_conso]
+address         = 0x0190E335
+rorg            = 0xA5
+func            = 0x12
+type            = 0x01
+
+[enocean_multimedia]
+address         = 0x01929433
+rorg            = 0xD2
+func            = 0x01
+type            = 0x09
+
+[enocean_multimedia_conso]
+address         = 0x01929433
+rorg            = 0xA5
+func            = 0x12
+type            = 0x01
+
+[switch_chaudiere]
+address         = 0x051B0D8F
+rorg            = 0xD2
+func            = 0x01
+type            = 0x0F
+```
+
 ### Homebridge
 > Dépôt : `0656e7b8` — [GitHub](https://github.com/homebridge/homebridge)
 
