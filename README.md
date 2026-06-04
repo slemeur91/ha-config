@@ -26,6 +26,8 @@
 |---|---|
 | Notifications SMTP (email) | Serveur SMTP local, `notify.email`, port 25 |
 
+---
+
 ### 🔌 Appareils par technologie (187)
 
 | Technologie | Appareils | Mode | Détail |
