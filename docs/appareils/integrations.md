@@ -74,14 +74,14 @@
 ## Météo & Capteurs — Netatmo (7 appareils)
 
 > 🏠 **Natif HA** — Intégration : **Netatmo** — [Documentation](https://www.home-assistant.io/integrations/netatmo/)
-> ☁️ Cloud
+> ☁️ Cloud via API Netatmo
 
-| Nb | Modèle | Description | Localisation |
-|---|---|---|---|
-| 1 | Smart Weather Station | Station météo principale | Salon |
-| 4 | Smart Indoor Module | Sonde température/humidité | Bureau, Chambre, Suite parentale, Extérieur |
-| 1 | Rain Gauge | Pluviomètre | Extérieur |
-| 1 | Wind Gauge | Anémomètre | Extérieur |
+| Nb | Modèle | Description | Localisation | Connexion |
+|---|---|---|---|---|
+| 1 | Smart Weather Station | Station météo principale | Salon | 📶 WiFi → ☁️ Cloud |
+| 4 | Smart Indoor Module | Sonde température/humidité | Bureau, Chambre, Suite parentale, Extérieur | Protocole propriétaire → Station |
+| 1 | Rain Gauge | Pluviomètre | Extérieur | Protocole propriétaire → Station |
+| 1 | Wind Gauge | Anémomètre | Extérieur | Protocole propriétaire → Station |
 
 ---
 
@@ -89,8 +89,6 @@
 
 > 🔧 **HACS Communauté** — Intégration : **EcoFlow Cloud**
 > ☁️ Cloud
-> ℹ️ L'EcoFlow Smart Plug est géré en Matter — voir [matter.md](matter.md)
-
 | Nb | Modèle | Description | Localisation |
 |---|---|---|---|
 | 1 | DELTA Max | Batterie de stockage | Réseau |
@@ -124,7 +122,7 @@
 ## Prises connectées — Multiprises (6 appareils)
 
 > 🏠 **Natif HA** — Intégration : **Tuya** — [Documentation](https://www.home-assistant.io/integrations/tuya/)
-> 📶 WiFi + ☁️ Cloud Tuya
+> 📶 WiFi → ☁️ Cloud Tuya
 
 | Nb | Description | Localisation |
 |---|---|---|
@@ -201,7 +199,7 @@
 ## Présence — Aqara FP2 (3 appareils)
 
 > 🏠 **Natif HA** — Intégration : **HomeKit** — [Documentation](https://www.home-assistant.io/integrations/homekit_controller/)
-> Les capteurs FP2 sont appairés directement via le protocole HomeKit (pas via Zigbee2MQTT).
+> Les capteurs FP2 sont appairés directement via le protocole HomeKit.
 
 | Nb | Fabricant | Modèle | Description | Localisation | Documentation |
 |---|---|---|---|---|---|
@@ -226,9 +224,10 @@
 
 > 🏠 **Natif HA** — Intégration : **Sure Petcare** — ☁️ Cloud
 
-| Nb | Modèle | Description | Localisation |
-|---|---|---|---|
-| 1 | SureFlap Microchip Pet Door | Chatière connectée | Entrée |
+| Nb | Modèle | Description | Localisation | Connexion |
+|---|---|---|---|---|
+| 1 | SureFlap Hub | Hub passerelle | Entrée | 🔌 Ethernet (RJ45) → ☁️ Cloud |
+| 1 | SureFlap Microchip Pet Door | Chatière connectée | Entrée | Protocole propriétaire → Hub |
 
 ### X-Sense (4 appareils)
 
@@ -246,7 +245,8 @@
 ### Somfy io-homecontrol — KLF200 (14 appareils)
 
 > 🏠 **Natif HA** — Intégration : **KLF200 (Velux)** — [Documentation](https://www.home-assistant.io/integrations/velux/)
-> 🔌 Ethernet (RJ45)
+> Passerelle KLF200 : 🔌 Ethernet (RJ45) → HA
+> Appareils : protocole io-homecontrol (radio propriétaire Somfy/Velux)
 
 | Nb | Modèle | Description | Localisation |
 |---|---|---|---|
@@ -271,6 +271,8 @@
 ### GCE RFPlayer — RF 433/868 MHz (2 appareils)
 
 > 🔧 **HACS Communauté** — Intégration : **RfPlayer** — [GitHub](https://github.com/gce-electronics/HA_RFPlayer)
+> Contrôleur GCE RFPlayer : 🔌 USB
+> Appareil Somfy RTS : protocole radio RTS 433 MHz
 
 | Nb | Modèle | Description | Localisation |
 |---|---|---|---|
