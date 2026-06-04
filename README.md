@@ -276,12 +276,6 @@ Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être captu
 
 ---
 
-## 🔌 Appareils connectés
-
-[Voir la documentation complète →](docs/appareils/integrations.md)
-
----
-
 ## 🏗️ Architecture
 
 ```
