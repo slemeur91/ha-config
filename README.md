@@ -18,6 +18,10 @@
 | Intégrations HACS | **19** |
 | Cartes Lovelace HACS | **7** |
 
+### ⚙️ Configuration principale (1)
+
+[→ Détail](docs/configuration.md)
+
 ### 🔌 Appareils par technologie (187)
 
 | Technologie | Appareils | Mode | Détail |
@@ -186,6 +190,25 @@
 
 ---
 
+## 📐 Blueprints (2)
+
+| Blueprint | Instances | Description |
+|---|---|---|
+| [Gestion des Velux](docs/automations/blueprint_velux.md) | 3 | Fermeture selon présence, météo, protection thermique |
+| [Gestion des Volets](docs/automations/blueprint_volets.md) | 9 | Pilotage intelligent selon mode, météo, soleil, présence |
+
+### Points d'attention lors de la création de blueprints
+
+Deux limitations importantes rencontrées lors du développement :
+
+**Les triggers ne peuvent pas utiliser les variables de la section `variables:`**
+Les variables déclarées dans la section `variables:` du blueprint ne sont pas encore évaluées au moment où les triggers sont définis. Il faut donc utiliser directement les `!input` dans les triggers, ou des entités statiques.
+
+**L'accès aux inputs dans les templates**
+Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être capturés au préalable dans la section `variables:` pour être accessibles. Un accès direct à `!input` dans un template imbriqué peut échouer selon le contexte d'évaluation.
+
+---
+
 ## 📦 Modules complémentaires — Add-ons (17)
 
 [Voir la documentation complète →](docs/addons.md)
@@ -256,25 +279,6 @@
 | expander-card | — | Carte extensible/rétractable pour les dashboards | [MelleD/lovelace-expander-card](https://github.com/MelleD/lovelace-expander-card) | 🔧 HACS |
 | GrDF Gazpar card | 1 | Affichage des données de consommation GAZPAR | [ssenart/lovelace-gazpar-card](https://github.com/ssenart/lovelace-gazpar-card) | 🔧 HACS Communauté |
 | Waze Travel Time Card | — | Temps de trajet calculé par Waze | [r-renato/ha-card-waze-travel-time](https://github.com/r-renato/ha-card-waze-travel-time) | 🔧 HACS |
-
----
-
-## 📐 Blueprints (2)
-
-| Blueprint | Instances | Description |
-|---|---|---|
-| [Gestion des Velux](docs/automations/blueprint_velux.md) | 3 | Fermeture selon présence, météo, protection thermique |
-| [Gestion des Volets](docs/automations/blueprint_volets.md) | 9 | Pilotage intelligent selon mode, météo, soleil, présence |
-
-### Points d'attention lors de la création de blueprints
-
-Deux limitations importantes rencontrées lors du développement :
-
-**Les triggers ne peuvent pas utiliser les variables de la section `variables:`**
-Les variables déclarées dans la section `variables:` du blueprint ne sont pas encore évaluées au moment où les triggers sont définis. Il faut donc utiliser directement les `!input` dans les triggers, ou des entités statiques.
-
-**L'accès aux inputs dans les templates**
-Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être capturés au préalable dans la section `variables:` pour être accessibles. Un accès direct à `!input` dans un template imbriqué peut échouer selon le contexte d'évaluation.
 
 ---
 
