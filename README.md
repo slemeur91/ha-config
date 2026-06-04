@@ -15,16 +15,15 @@
 | Intégrations HACS | **19** |
 | Cartes Lovelace HACS | **7** |
 
-### 🔌 Appareils par technologie (157)
+### 🔌 Appareils par technologie (187)
 
 | Technologie | Appareils | Mode | Détail |
 |---|---|---|---|
 | Z-Wave | **25** | ✅ Local | [→ Détail](docs/appareils/zwave.md) |
 | Zigbee | **20** | ✅ Local | [→ Détail](docs/appareils/zigbee.md) |
 | EnOcean | **4** | ✅ Local | [→ Détail](docs/appareils/enocean.md) |
-| WiFi / IP | **87** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/integrations.md) |
+| Intégrations (WiFi, IP, Filaire & Autres) | **137** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/integrations.md) |
 | Thread / Matter | **1** | ✅ Local | [→ Détail](docs/appareils/matter.md) |
-| Intégrations (Somfy KLF200, Protexial, RF…) | **21** | ✅ Local | [→ Détail](docs/appareils/integrations.md) |
 
 ---
 

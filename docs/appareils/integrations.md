@@ -1,4 +1,4 @@
-# Appareils WiFi / IP / Filaire & Autres (74 appareils)
+# Intégrations (WiFi, IP, Filaire & Autres) — 137 appareils
 
 [← Retour Appareils](../appareils.md)
 
