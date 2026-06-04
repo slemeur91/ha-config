@@ -90,6 +90,7 @@
 
 > 🔧 **HACS Communauté** — Intégration : **EcoFlow Cloud**
 > ☁️ Cloud
+
 | Nb | Modèle | Description | Localisation |
 |---|---|---|---|
 | 1 | DELTA Max | Batterie de stockage | Réseau |
@@ -193,7 +194,8 @@
 | 1 | Sunricher | On/Off | Lumière du Dressing | Dressing | — |
 | 1 | Sunricher | On/Off | Lumière du Meuble de la Cuisine | Cuisine | — |
 | 1 | Sunricher | SR-ZG9101SAC-HP-V3 Dimmable | Lumière du Salon | Salon | [📄 Manuel](../hardware/SR-ZG9101SAC-HP-V3-Instruction.pdf) |
-| 2 | NodOn | SIN-4-2-20 On/Off (2 sorties) | 3 zones actives : Lumière de l'Entrée (module 1 sortie 1), Lumière du Garage (module 1 sortie 2), Lumière de la Terrasse (module 2 sortie 2) — 4e sortie vide | Entrée, Garage, Terrasse | [📄 Manuel](../hardware/SIN-4-2-20-FR.pdf) |
+| 1 | NodOn | SIN-4-2-20 On/Off (2 sorties) | Lumière de l'Entrée (sortie 1), Lumière du Garage (sortie 2) | Entrée, Garage | [📄 Manuel](../hardware/SIN-4-2-20-FR.pdf) |
+| 1 | NodOn | SIN-4-2-20 On/Off (2 sorties) | Lumière de la Terrasse (sortie 2) — sortie 1 vide | Terrasse | [📄 Manuel](../hardware/SIN-4-2-20-FR.pdf) |
 
 ---
 
