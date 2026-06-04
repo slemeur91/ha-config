@@ -1,4 +1,4 @@
-# Appareils WiFi / IP / Filaire & Autres (73 appareils)
+# Appareils WiFi / IP / Filaire & Autres (74 appareils)
 
 [← Retour Appareils](../appareils.md)
 
@@ -281,6 +281,17 @@
 |---|---|---|---|
 | 1 | GCE Electronics RFPlayer | Émetteur/récepteur RF 433/868 MHz | Armoire de brassage |
 | 1 | Somfy RTS 4 Portal | Porte de garage motorisée RTS | Garage |
+
+---
+
+### Oral-B — Brosse à dents (1 appareil)
+
+> 🏠 **Natif HA** — Intégration : **Oral-B** — [Documentation](https://www.home-assistant.io/integrations/oral_b/)
+> 🔵 Bluetooth
+
+| Nb | Fabricant | Modèle | Localisation |
+|---|---|---|---|
+| 1 | Oral-B | IO Series 6/7 | Salle d'eau |
 
 ---
 
