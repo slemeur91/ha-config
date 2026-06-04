@@ -10,7 +10,7 @@
 | Entités totales | 2 156 |
 | Domaines (types d'entités) | 43 |
 | Zones / Pièces | 23 |
-| Appareils connectés | **157** |
+| Appareils connectés | **187** |
 | Modules complémentaires (Add-ons) | **17** |
 | Intégrations HACS | **19** |
 | Cartes Lovelace HACS | **7** |
