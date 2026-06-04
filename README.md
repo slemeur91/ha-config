@@ -22,7 +22,7 @@
 | Z-Wave | **25** | ✅ Local | [→ Détail](docs/appareils/zwave.md) |
 | Zigbee | **20** | ✅ Local | [→ Détail](docs/appareils/zigbee.md) |
 | EnOcean | **4** | ✅ Local | [→ Détail](docs/appareils/enocean.md) |
-| Intégrations (WiFi, IP, Filaire & Autres) | **137** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/integrations.md) |
+| Intégrations (WiFi, Ethernet RJ45 & Autres) | **137** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/integrations.md) |
 | Thread / Matter | **1** | ✅ Local | [→ Détail](docs/appareils/matter.md) |
 
 ---
