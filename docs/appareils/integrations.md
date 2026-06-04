@@ -157,6 +157,59 @@
 
 ---
 
+## Philips Hue — via Hue Bridge (31 appareils)
+
+> 🏠 **Natif HA** — Intégration : **Philips Hue** — [Documentation](https://www.home-assistant.io/integrations/hue/)
+> Les appareils communiquent en Zigbee avec le pont Hue Bridge (RJ45, Réseau). HA accède aux appareils via l'intégration Hue, pas directement en Zigbee.
+
+### Contrôles (11 appareils)
+
+| Nb | Modèle | Description | Localisation |
+|---|---|---|---|
+| 4 | Hue tap dial switch | Interrupteur 4 boutons + molette | Central Droit (Cuisine), Central Gauche (Cuisine), côté Entrée, Étage (Palier) |
+| 2 | Hue Smart button | Bouton connecté | Cellier (×2) |
+| 1 | Hue Smart button | Bouton connecté | Bureau |
+| 1 | Hue Smart button | Bouton connecté | Suite parentale |
+| 1 | Hue Smart button | Bouton connecté | Chambre |
+| 1 | Hue Smart button | Bouton connecté | Palier |
+| 1 | Hue Smart button | Bouton connecté | WC Étage |
+
+### Lumières (20 appareils)
+
+> ℹ️ Les modèles et regroupements seront complétés ultérieurement.
+
+| Nb | Modèle | Nom HA | Pièce |
+|---|---|---|---|
+| 1 | Hue Tento ambiance panel | Lumière du Bureau | Bureau |
+| 1 | Hue Tento color panel | Lumière de la Chambre | Chambre |
+| 1 | Hue Tento ambiance panel | Lumière de la Suite parentale | Suite parentale |
+| 1 | Hue Aurelle Panel | Lumière du Séjour | Séjour |
+| 4 | Hue ambiance candle | Lumière de la Cuisine 1 à 4 | Cuisine |
+| 2 | Hue ambiance candle | Lumière du Palier 1, 2 | Palier |
+| 1 | Hue ambiance lamp | Lumière du WC de l'Étage | WC Étage |
+| 1 | Hue ambiance lamp | Lumière du Cellier | Cellier |
+| 1 | Hue ambiance lamp | Lumière de l'Extérieur | Extérieur |
+| 1 | Sunricher On/Off | Lumière de l'Escalier | Escalier |
+| 1 | Sunricher On/Off | Lumière du WC du RDC | WC RDC |
+| 1 | Sunricher On/Off | Lumière du Dressing | Dressing |
+| 1 | Sunricher On/Off | Lumière du Meuble de la Cuisine | Cuisine |
+| 1 | Sunricher Dimmable | Lumière du Salon | Salon |
+| 1 | NodOn On/Off | Lumières de l'Entrée et du Garage | Garage |
+| 1 | NodOn On/Off | Lumières de la Terrasse et Vide | Garage |
+
+---
+
+## Présence — Aqara FP2 (3 appareils)
+
+> 🏠 **Natif HA** — Intégration : **HomeKit** — [Documentation](https://www.home-assistant.io/integrations/homekit_controller/)
+> Les capteurs FP2 sont appairés directement via le protocole HomeKit (pas via Zigbee2MQTT).
+
+| Nb | Fabricant | Modèle | Description | Pièces |
+|---|---|---|---|---|
+| 3 | Aqara | FP2 Presence Sensor | Capteur de présence radar mmWave | Bureau, Chambre, Suite parentale |
+
+---
+
 ## Assistants vocaux (1 appareil)
 
 > 🔧 **HACS** — Intégration : **Alexa Media Player**

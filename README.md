@@ -19,9 +19,9 @@
 | Technologie | Appareils | Mode | Détail |
 |---|---|---|---|
 | Z-Wave | **25** | ✅ Local | [→ Détail](docs/appareils/zwave.md) |
-| Zigbee | **37** | ✅ Local | [→ Détail](docs/appareils/zigbee.md) |
+| Zigbee | **20** | ✅ Local | [→ Détail](docs/appareils/zigbee.md) |
 | EnOcean | **3** | ✅ Local | [→ Détail](docs/appareils/enocean.md) |
-| WiFi / IP | **52** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/integrations.md) |
+| WiFi / IP | **86** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/integrations.md) |
 | Thread / Matter | **1** | ✅ Local | [→ Détail](docs/appareils/matter.md) |
 | Intégrations (Somfy KLF200, Protexial, RF…) | **21** | ✅ Local | [→ Détail](docs/appareils/integrations.md) |
 
