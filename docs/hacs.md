@@ -126,6 +126,12 @@ Liaison entre deux instances Home Assistant.
 **Configuration :**
 - Instance distante : `192.168.51.34:8123` (instance secondaire)
 
+> ⚠️ Sur l'instance distante, ajouter dans `configuration.yaml` :
+> ```yaml
+> remote_homeassistant:
+>   instances:
+> ```
+
 ---
 
 ### RfPlayer
