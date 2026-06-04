@@ -8,7 +8,7 @@
 |---|---|
 | Version HA | 2026.6.0 |
 | Entités totales | 2 156 |
-| Domaines | 43 |
+| Domaines (types d'entités) | 43 |
 | Zones / Pièces | 23 |
 | Appareils connectés | **157** |
 | Modules complémentaires (Add-ons) | **17** |
