@@ -22,10 +22,10 @@
 
 > 🏠 **Natif HA** — Intégration : **Daikin** — [Documentation](https://www.home-assistant.io/integrations/daikin/)
 
-| Nb | Modèle | Localisation | Connexion |
-|---|---|---|---|
-| 3 | À compléter | Bureau, Chambre, Suite parentale | 📶 WiFi |
-| 1 | À compléter (modèle spécifique) | Séjour | 📶 WiFi |
+| Nb | Modèle | Gamme | Localisation | Connexion |
+|---|---|---|---|---|
+| 3 | CTXA15AW | Stylish Blanche R32 | Bureau, Chambre, Suite parentale | 📶 WiFi |
+| 1 | FTXA35AW | Stylish Blanche R32 | Séjour | 📶 WiFi |
 
 ---
 
