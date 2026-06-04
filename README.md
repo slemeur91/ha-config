@@ -10,20 +10,22 @@
 | Entités totales | 2 156 |
 | Domaines | 43 |
 | Zones / Pièces | 23 |
+| Appareils connectés | **157** |
 | Modules complémentaires (Add-ons) | **17** |
 | Intégrations HACS | **19** |
 | Cartes Lovelace HACS | **7** |
 
-### 🔌 Appareils par technologie
+### 🔌 Appareils par technologie (157)
 
 | Technologie | Appareils | Mode | Détail |
 |---|---|---|---|
 | Z-Wave | **25** | ✅ Local | [→ Détail](docs/appareils/zwave.md) |
 | Zigbee | **20** | ✅ Local | [→ Détail](docs/appareils/zigbee.md) |
-| EnOcean | **3** | ✅ Local | [→ Détail](docs/appareils/enocean.md) |
+| EnOcean | **4** | ✅ Local | [→ Détail](docs/appareils/enocean.md) |
 | WiFi / IP | **86** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/integrations.md) |
 | Thread / Matter | **1** | ✅ Local | [→ Détail](docs/appareils/matter.md) |
 | Intégrations (Somfy KLF200, Protexial, RF…) | **21** | ✅ Local | [→ Détail](docs/appareils/integrations.md) |
+| **Total** | **157** | | |
 
 > [Détail complet →](docs/appareils/integrations.md)
 
@@ -194,7 +196,7 @@
 
 | Add-on | Appareils | GitHub | Rôle | Source |
 |---|---|---|---|---|
-| EnOcean MQTT | 3 | [asera-corp/ha-enoceanmqtt](https://github.com/asera-corp/ha-enoceanmqtt) | Passerelle EnOcean | 📦 Communauté |
+| EnOcean MQTT | 4 | [asera-corp/ha-enoceanmqtt](https://github.com/asera-corp/ha-enoceanmqtt) | Passerelle EnOcean | 📦 Communauté |
 | File editor | — | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/configurator) | Éditeur de fichiers | 🏠 Officiel HA |
 | Gazpar2MQTT | 1 | [ssenart/gazpar2mqtt](https://github.com/ssenart/gazpar2mqtt) | Données GAZPAR vers MQTT | 📦 Communauté |
 | Get HACS | — | [hacs/get](https://github.com/hacs/get) | Installateur HACS | 📦 Communauté |

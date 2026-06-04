@@ -178,24 +178,23 @@
 
 > ℹ️ Les modèles et regroupements seront complétés ultérieurement.
 
-| Nb | Modèle | Nom HA | Pièce |
-|---|---|---|---|
-| 1 | Hue Tento ambiance panel | Lumière du Bureau | Bureau |
-| 1 | Hue Tento color panel | Lumière de la Chambre | Chambre |
-| 1 | Hue Tento ambiance panel | Lumière de la Suite parentale | Suite parentale |
-| 1 | Hue Aurelle Panel | Lumière du Séjour | Séjour |
-| 4 | Hue ambiance candle | Lumière de la Cuisine 1 à 4 | Cuisine |
-| 2 | Hue ambiance candle | Lumière du Palier 1, 2 | Palier |
-| 1 | Hue ambiance lamp | Lumière du WC de l'Étage | WC Étage |
-| 1 | Hue ambiance lamp | Lumière du Cellier | Cellier |
-| 1 | Hue ambiance lamp | Lumière de l'Extérieur | Extérieur |
-| 1 | Sunricher On/Off | Lumière de l'Escalier | Escalier |
-| 1 | Sunricher On/Off | Lumière du WC du RDC | WC RDC |
-| 1 | Sunricher On/Off | Lumière du Dressing | Dressing |
-| 1 | Sunricher On/Off | Lumière du Meuble de la Cuisine | Cuisine |
-| 1 | Sunricher Dimmable | Lumière du Salon | Salon |
-| 1 | NodOn On/Off | Lumières de l'Entrée et du Garage | Garage |
-| 1 | NodOn On/Off | Lumières de la Terrasse et Vide | Garage |
+| Nb | Fabricant | Modèle | Nom HA / Description | Pièce | Documentation |
+|---|---|---|---|---|---|
+| 1 | Signify | Hue Tento ambiance panel | Lumière du Bureau | Bureau | — |
+| 1 | Signify | Hue Tento color panel | Lumière de la Chambre | Chambre | — |
+| 1 | Signify | Hue Tento ambiance panel | Lumière de la Suite parentale | Suite parentale | — |
+| 1 | Signify | Hue Aurelle Panel | Lumière du Séjour | Séjour | — |
+| 4 | Signify | Hue ambiance candle | Lumière de la Cuisine 1 à 4 | Cuisine *(zone)* | — |
+| 2 | Signify | Hue ambiance candle | Lumière du Palier 1, 2 | Palier *(zone)* | — |
+| 1 | Signify | Hue ambiance lamp | Lumière du WC de l'Étage | WC Étage | — |
+| 1 | Signify | Hue ambiance lamp | Lumière du Cellier | Cellier | — |
+| 1 | Signify | Hue ambiance lamp | Lumière de l'Extérieur | Extérieur | — |
+| 1 | Sunricher | On/Off | Lumière de l'Escalier | Escalier | — |
+| 1 | Sunricher | On/Off | Lumière du WC du RDC | WC RDC | — |
+| 1 | Sunricher | On/Off | Lumière du Dressing | Dressing | — |
+| 1 | Sunricher | On/Off | Lumière du Meuble de la Cuisine | Cuisine | — |
+| 1 | Sunricher | SR-ZG9101SAC-HP-V3 Dimmable | Lumière du Salon | Salon | [📄 Manuel](../hardware/SR-ZG9101SAC-HP-V3-Instruction.pdf) |
+| 2 | NodOn | SIN-4-2-20 On/Off (2 sorties) | 3 zones actives : Lumière de l'Entrée (module 1 sortie 1), Lumière du Garage (module 1 sortie 2), Lumière de la Terrasse (module 2 sortie 2) — 4e sortie vide | Entrée, Garage, Terrasse | [📄 Manuel](../hardware/SIN-4-2-20-FR.pdf) |
 
 ---
 

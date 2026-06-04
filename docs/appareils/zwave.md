@@ -15,8 +15,8 @@
 | 1 | Fibargroup | FGWP102 Metered Wall Plug Switch | Prise connectée avec mesure | Cellier | [📄 Manuel PDF](../hardware/FGWPx-102-FR-A-v1.00.pdf) |
 | 1 | ID-RF (NodOn) | CRC-3100 Octan Remote Control | Télécommande Z-Wave 8 boutons | Salon | [📄 Manuel FR PDF](../hardware/NodOn-CRC-3-1-xx-UserGuide-150609-FR-online.pdf) |
 | 1 | UFairy G.R. Tech | DMWV1 Water Main Shut-Off | Vanne d'arrivée d'eau | Cellier | [📄 Manuel PDF](https://www.007systems.com/uploads/2/1/1/9/21192470/dome-z-wave-plus-water-main-shut-off-dmwv1-advanced-manual_1.pdf) |
-| 6 | Qubino | ZMNHCD Flush Shutter | Module volet roulant encastré | Bureau, Cellier, Cuisine, Salon, Séjour, Suite parentale | [📄 Manuel EN (Qubino)](https://qubino.com/wp-content/uploads/2019/04/Qubino_Flush-Shutter-PLUS-extended-manual_eng_2.5.pdf) / [FR en ligne (ManualsLib)](https://www.manualslib.com/manual/1405546/Qubino-Zmnhcd1.html) |
-| 3 | Qubino | ZMNHSD DIN Rail Dimmer | Variateur d'éclairage sur rail DIN | Garage, Entrée, Terrasse | [📄 Manuel PDF](https://qubino.com/material/fabdis/ZMNHSD1/Qubino_DIN%20Dimmer_manual_2.0_multi.pdf) |
+| 6 | Qubino | ZMNHCD Flush Shutter | Module volet roulant encastré | Bureau, Cellier, Cuisine, Salon, Séjour, Suite parentale | [📄 Manuel FR](../hardware/Qubino_Flush%20shutter%20PLUS%20user%20manual_V1.1_fra.pdf) |
+| 3 | Qubino | ZMNHSD DIN Rail Dimmer | Variateur d'éclairage sur rail DIN | Garage, Entrée, Terrasse | [📄 Manuel](../hardware/manuel-utilisation-Qubino-ZMNHDD1-module-variateur.pdf) |
 
 ---
 
