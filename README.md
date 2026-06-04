@@ -218,6 +218,7 @@
 [Voir la documentation complète →](docs/hacs.md)
 
 > 🔧 **HACS** = disponible dans le catalogue HACS standard, sans dépôt personnalisé
+> 🔧 **HACS Communauté** = dépôt tiers à ajouter manuellement dans les sources HACS
 > ⚠️ **Dépôt perso** = dépôt GitHub personnel à ajouter manuellement dans HACS
 
 | Intégration | Appareils | Rôle | GitHub | Source |
