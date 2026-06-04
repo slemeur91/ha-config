@@ -11,6 +11,9 @@
 | Domaines (types d'entités) | 43 |
 | Zones / Pièces | 23 |
 | Appareils connectés | **187** |
+| Automatisations | **50** (46 actives) |
+| Scripts | **16** |
+| Blueprints | **2** |
 | Modules complémentaires (Add-ons) | **17** |
 | Intégrations HACS | **19** |
 | Cartes Lovelace HACS | **7** |
@@ -256,7 +259,7 @@
 
 ---
 
-## 📐 Blueprints
+## 📐 Blueprints (2)
 
 | Blueprint | Instances | Description |
 |---|---|---|
