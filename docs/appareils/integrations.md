@@ -75,7 +75,7 @@
 ## Météo & Capteurs — Netatmo (7 appareils)
 
 > 🏠 **Natif HA** — Intégration : **Netatmo** — [Documentation](https://www.home-assistant.io/integrations/netatmo/)
-> ☁️ Cloud via API Netatmo
+> ☁️ Cloud
 
 | Nb | Modèle | Description | Localisation | Connexion |
 |---|---|---|---|---|
@@ -124,7 +124,7 @@
 ## Prises connectées — Multiprises (6 appareils)
 
 > 🏠 **Natif HA** — Intégration : **Tuya** — [Documentation](https://www.home-assistant.io/integrations/tuya/)
-> 📶 WiFi → ☁️ Cloud Tuya
+> 📶 WiFi → ☁️ Cloud
 
 | Nb | Description | Localisation |
 |---|---|---|
