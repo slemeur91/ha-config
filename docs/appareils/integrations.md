@@ -48,7 +48,7 @@
 |---|---|---|---|---|---|
 | 1 | Xiaomi | 米家PM2.5 (zhimi.airmonitor.v1) | Salon | 📶 WiFi | 🔧 HACS — Xiaomi Miot |
 | 1 | Xiaomi | Mi Air Purifier (zhimi.airpurifier.m1) | Salon | 📶 WiFi | 🔧 HACS — Xiaomi Miot |
-| 1 | Dyson | Pure Cool (527) | Purificateur/ventilateur | Salon | 📶 WiFi | 🔧 HACS — Dyson Local |
+| 1 | Dyson | Pure Hot + Cool | Purificateur/ventilateur/chauffage | Salon | 📶 WiFi | 🔧 HACS — Dyson Local |
 | 1 | Dyson | Pure Cool | Purificateur/ventilateur | Bureau | 📶 WiFi | 🔧 HACS — Dyson Local |
 
 ---

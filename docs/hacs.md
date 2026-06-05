@@ -38,7 +38,7 @@ Suivi des types et dates de remplacement des batteries.
 Intégration locale (sans cloud) des appareils Dyson.
 
 **Appareils configurés :**
-- Dyson Pure Cool (purificateur Salon) — `fan.salon`
+- Dyson Pure Hot + Cool (purificateur/chauffage Salon) — `fan.salon`
 - Dyson Pure Cool (Bureau) — en erreur de connexion
 
 ---
