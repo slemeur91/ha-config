@@ -1,18 +1,20 @@
 alias: Gestion de la Présence dans les Pièces
-description: '**Statut :** Finalisé
+description: >-
+  **Statut :** Finalisé
 
   **Evolution :** Aucune
 
 
   **Déclencheurs :**
 
-  - Changement d''état des capteurs de présence Aqara FP2 (Suite parentale, Bureau,
-  Chambre) avec délai 5 min
+  - Changement d'état des capteurs de présence Aqara FP2 (Suite parentale,
+  Bureau, Chambre) avec délai 5 min
 
 
   **Fonctionnement :**
 
-  1. Selon le capteur déclenché, met à jour le sélecteur de présence correspondant.
+  1. Selon le capteur déclenché, met à jour le sélecteur de présence
+  correspondant.
 
   2. Présence détectée → sélectionne la première option (Présent).
 
@@ -23,102 +25,111 @@ description: '**Statut :** Finalisé
 
   - `binary_sensor.presence_sensor_fp2_*` : capteurs de présence Aqara
 
-  - `input_select.presence_bureau` / `presence_chambre` / `presence_suite_parentale`
-  : états de présence par pièce'
+  - `input_select.presence_bureau` / `presence_chambre` /
+  `presence_suite_parentale` : états de présence par pièce
 triggers:
-- trigger: state
-  entity_id:
-  - binary_sensor.presence_sensor_fp2_1932_presence_sensor_1
-  for:
-    hours: 0
-    minutes: 5
-    seconds: 0
-  id: Présence Suite parentale
-- trigger: state
-  entity_id:
-  - binary_sensor.presence_sensor_fp2_b226_presence_sensor_1
-  for:
-    hours: 0
-    minutes: 5
-    seconds: 0
-  id: Présence Bureau
-- trigger: state
-  entity_id:
-  - binary_sensor.presence_sensor_fp2_b21a_presence_sensor_1
-  for:
-    hours: 0
-    minutes: 5
-    seconds: 0
-  id: Présence Chambre
+  - entity_id:
+      - binary_sensor.presence_sensor_fp2_1932_presence_sensor_1
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+    id: Présence Suite parentale
+    trigger: state
+  - entity_id:
+      - binary_sensor.presence_sensor_fp2_b226_presence_sensor_1
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+    id: Présence Bureau
+    trigger: state
+  - entity_id:
+      - binary_sensor.presence_sensor_fp2_b21a_presence_sensor_1
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+    id: Présence Chambre
+    trigger: state
 conditions: []
 actions:
-- choose:
-  - conditions:
-    - condition: trigger
-      id:
-      - Présence Suite parentale
-    sequence:
-    - if:
-      - condition: state
-        entity_id: binary_sensor.presence_sensor_fp2_1932_presence_sensor_1
-        state: 'on'
-      then:
-      - action: input_select.select_first
-        metadata: {}
-        data: {}
-        target:
-          entity_id: input_select.presence_suite_parentale
-      else:
-      - action: input_select.select_last
-        metadata: {}
-        data: {}
-        target:
-          entity_id: input_select.presence_suite_parentale
-  - conditions:
-    - condition: trigger
-      id:
-      - Présence Bureau
-    sequence:
-    - if:
-      - condition: state
-        entity_id: binary_sensor.presence_sensor_fp2_b226_presence_sensor_1
-        state: 'on'
-      then:
-      - action: input_select.select_first
-        metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - input_select.presence_bureau
-      else:
-      - action: input_select.select_last
-        metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - input_select.presence_bureau
-  - conditions:
-    - condition: trigger
-      id:
-      - Présence Chambre
-    sequence:
-    - if:
-      - condition: state
-        entity_id: binary_sensor.presence_sensor_fp2_b21a_presence_sensor_1
-        state: 'on'
-      then:
-      - action: input_select.select_first
-        metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - input_select.presence_chambre
-      else:
-      - action: input_select.select_last
-        metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - input_select.presence_chambre
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - Présence Suite parentale
+        sequence:
+          - if:
+              - condition: state
+                entity_id: binary_sensor.presence_sensor_fp2_1932_presence_sensor_1
+                state: "on"
+            then:
+              - action: input_select.select_first
+                metadata: {}
+                data: {}
+                target:
+                  entity_id: input_select.presence_suite_parentale
+            else:
+              - action: input_select.select_last
+                metadata: {}
+                data: {}
+                target:
+                  entity_id: input_select.presence_suite_parentale
+        note: >-
+          Capteur FP2 Suite parentale → met à jour
+          input_select.presence_suite_parentale (Présent/Absent)
+      - conditions:
+          - condition: trigger
+            id:
+              - Présence Bureau
+        sequence:
+          - if:
+              - condition: state
+                entity_id: binary_sensor.presence_sensor_fp2_b226_presence_sensor_1
+                state: "on"
+            then:
+              - action: input_select.select_first
+                metadata: {}
+                data: {}
+                target:
+                  entity_id:
+                    - input_select.presence_bureau
+            else:
+              - action: input_select.select_last
+                metadata: {}
+                data: {}
+                target:
+                  entity_id:
+                    - input_select.presence_bureau
+        note: >-
+          Capteur FP2 Bureau → met à jour input_select.presence_bureau
+          (Présent/Absent)
+      - conditions:
+          - condition: trigger
+            id:
+              - Présence Chambre
+        sequence:
+          - if:
+              - condition: state
+                entity_id: binary_sensor.presence_sensor_fp2_b21a_presence_sensor_1
+                state: "on"
+            then:
+              - action: input_select.select_first
+                metadata: {}
+                data: {}
+                target:
+                  entity_id:
+                    - input_select.presence_chambre
+            else:
+              - action: input_select.select_last
+                metadata: {}
+                data: {}
+                target:
+                  entity_id:
+                    - input_select.presence_chambre
+        note: >-
+          Capteur FP2 Chambre → met à jour input_select.presence_chambre
+          (Présent/Absent)
 mode: parallel
 max: 10

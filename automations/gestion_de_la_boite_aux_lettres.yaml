@@ -1,19 +1,20 @@
 alias: Gestion de la Boîte aux Lettres
-description: '**Statut :** En test
+description: >-
+  **Statut :** En test
 
   **Evolution :** Corrections
 
 
   **Déclencheurs :**
 
-  - Changement d''état de `sensor.p100_boite_aux_lettres_device_posture` (capteur
+  - Changement d'état de `sensor.p100_boite_aux_lettres_device_posture` (capteur
   de posture boîte aux lettres)
 
 
   **Fonctionnement :**
 
-  1. Si `input_boolean.courrier_en_attente` est ON → désactive le flag et compose
-  le message "boîte vidée".
+  1. Si `input_boolean.courrier_en_attente` est ON → désactive le flag et
+  compose le message "boîte vidée".
 
   2. Si flag est OFF → active le flag et compose le message "colis déposé".
 
@@ -24,51 +25,57 @@ description: '**Statut :** En test
 
   - `sensor.p100_boite_aux_lettres_device_posture` : capteur de détection
 
-  - `input_boolean.courrier_en_attente` : état mémoire'
+  - `input_boolean.courrier_en_attente` : état mémoire
 triggers:
-- trigger: state
-  entity_id:
-  - sensor.p100_boite_aux_lettres_device_posture
-  to: null
+  - entity_id:
+      - sensor.p100_boite_aux_lettres_device_posture
+    to: null
+    trigger: state
 conditions: []
 actions:
-- choose:
-  - conditions:
-    - condition: state
-      entity_id: input_boolean.courrier_en_attente
-      state: 'on'
-    sequence:
-    - action: input_boolean.turn_off
-      target:
-        entity_id: input_boolean.courrier_en_attente
-    - variables:
-        message_courrier: La boîte aux lettres a été vidée
-  - conditions:
-    - condition: state
-      entity_id: input_boolean.courrier_en_attente
-      state: 'off'
-    sequence:
-    - action: input_boolean.turn_on
-      target:
-        entity_id:
-        - input_boolean.courrier_en_attente
-      data: {}
-    - variables:
-        message_courrier: Un colis vient d'être déposé
-- if:
-  - condition: template
-    value_template: '{{ message_courrier != null }}'
-  then:
-  - action: script.notification_vocale
-    data:
-      message_vocal: '{{ message_courrier }}'
-    enabled: false
-  - action: script.notification_mail
-    data:
-      message_type: Boite aux lettres
-      message_mail: '{{ message_courrier }}'
-  - action: script.notification_sms
-    data:
-      message_type: Boite aux lettres
-      message_sms: '{{ message_courrier }}'
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: input_boolean.courrier_en_attente
+            state: "on"
+        sequence:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.courrier_en_attente
+          - variables:
+              message_courrier: La boîte aux lettres a été vidée
+        note: >-
+          Courrier précédemment en attente → désactive le flag, compose le
+          message 'boîte vidée'
+      - conditions:
+          - condition: state
+            entity_id: input_boolean.courrier_en_attente
+            state: "off"
+        sequence:
+          - action: input_boolean.turn_on
+            target:
+              entity_id:
+                - input_boolean.courrier_en_attente
+            data: {}
+          - variables:
+              message_courrier: Un colis vient d'être déposé
+        note: >-
+          Boîte précédemment vide → active le flag, compose le message 'colis
+          déposé'
+  - if:
+      - condition: template
+        value_template: "{{ message_courrier != null }}"
+    then:
+      - action: script.notification_vocale
+        data:
+          message_vocal: "{{ message_courrier }}"
+        enabled: false
+      - action: script.notification_mail
+        data:
+          message_type: Boite aux lettres
+          message_mail: "{{ message_courrier }}"
+      - action: script.notification_sms
+        data:
+          message_type: Boite aux lettres
+          message_sms: "{{ message_courrier }}"
 mode: single

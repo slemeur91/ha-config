@@ -1,29 +1,31 @@
 alias: Gestion du Chauffage du RDC
-description: '**Statut :** Finalisé
+description: >-
+  **Statut :** Finalisé
 
   **Evolution :** Aucune
 
 
   **Déclencheurs :**
 
-  - Changement de `input_boolean.chauffage_horsgel`, `input_select.chauffage_mode_rdc`,
-  `input_select.chauffage_action`
+  - Changement de `input_boolean.chauffage_horsgel`,
+  `input_select.chauffage_mode_rdc`, `input_select.chauffage_action`
 
-  - Changement d''état des détecteurs de portes RDC (avec délai 5 min)
+  - Changement d'état des détecteurs de portes RDC (avec délai 5 min)
 
 
   **Fonctionnement :**
 
-  1. Calcule `horsgel_rdc` selon le mode HorsGel global, l''état des portes et l''action
-  chauffage.
+  1. Calcule `horsgel_rdc` selon le mode HorsGel global, l'état des portes et
+  l'action chauffage.
 
-  2. En parallèle, ajuste la consigne RDC selon le mode (Confort+ / Confort / Réduit).
+  2. En parallèle, ajuste la consigne RDC selon le mode (Confort+ / Confort /
+  Réduit).
 
-  3. Met à jour `input_boolean.chauffage_horsgel_rdc` et envoie un mail si changement
-  de mode.
+  3. Met à jour `input_boolean.chauffage_horsgel_rdc` et envoie un mail si
+  changement de mode.
 
-  4. Applique la consigne au thermostat du cellier (représentant le RDC) en activant
-  si nécessaire.
+  4. Applique la consigne au thermostat du cellier (représentant le RDC) en
+  activant si nécessaire.
 
 
   **Entités principales :**
@@ -32,221 +34,239 @@ description: '**Statut :** Finalisé
 
   - `input_number.chauffage_rdc` : consigne calculée
 
-  - `switch.contacteur_de_la_chaudiere` : contacteur chaudière RDC'
+  - `switch.contacteur_de_la_chaudiere` : contacteur chaudière RDC
 triggers:
-- trigger: state
-  entity_id:
-  - input_boolean.chauffage_horsgel
-  id: Chauffage HorsGel
-- trigger: state
-  entity_id:
-  - input_select.chauffage_mode_rdc
-  id: Chauffage Mode
-- trigger: state
-  entity_id:
-  - input_select.chauffage_action
-  id: Chauffage Action
-- trigger: state
-  entity_id:
-  - binary_sensor.do_cuisine
-  - binary_sensor.do_sejour
-  - binary_sensor.do_salon
-  - binary_sensor.do_porte_entree
-  id: Portes
-  to: null
-  for:
-    hours: 0
-    minutes: 5
-    seconds: 0
+  - entity_id:
+      - input_boolean.chauffage_horsgel
+    id: Chauffage HorsGel
+    trigger: state
+  - entity_id:
+      - input_select.chauffage_mode_rdc
+    id: Chauffage Mode
+    trigger: state
+  - entity_id:
+      - input_select.chauffage_action
+    id: Chauffage Action
+    trigger: state
+  - entity_id:
+      - binary_sensor.do_cuisine
+      - binary_sensor.do_sejour
+      - binary_sensor.do_salon
+      - binary_sensor.do_porte_entree
+    id: Portes
+    to: null
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+    trigger: state
 conditions: []
 actions:
-- parallel:
+  - parallel:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: input_boolean.chauffage_horsgel
+                state: "on"
+            sequence:
+              - if:
+                  - condition: state
+                    entity_id: switch.contacteur_de_la_chaudiere
+                    state: "on"
+                then:
+                  - action: switch.turn_off
+                    data: {}
+                    target:
+                      entity_id: switch.contacteur_de_la_chaudiere
+              - variables:
+                  horsgel_rdc: true
+            note: >-
+              HorsGel global ON → éteint le contacteur chaudière, horsgel_rdc =
+              true
+          - conditions:
+              - condition: state
+                entity_id: input_boolean.chauffage_horsgel
+                state: "off"
+            sequence:
+              - if:
+                  - condition: state
+                    entity_id: switch.contacteur_de_la_chaudiere
+                    state: "off"
+                then:
+                  - action: switch.turn_on
+                    data: {}
+                    target:
+                      entity_id: switch.contacteur_de_la_chaudiere
+              - if:
+                  - condition: or
+                    conditions:
+                      - condition: state
+                        entity_id: binary_sensor.do_cuisine
+                        state: "on"
+                      - condition: state
+                        entity_id: binary_sensor.do_sejour
+                        state: "on"
+                      - condition: state
+                        entity_id: binary_sensor.do_salon
+                        state: "on"
+                      - condition: state
+                        entity_id: binary_sensor.do_porte_entree
+                        state: "on"
+                then:
+                  - variables:
+                      horsgel_rdc: true
+                else:
+                  - choose:
+                      - conditions:
+                          - condition: state
+                            entity_id: input_select.chauffage_action
+                            state: Repos
+                        sequence:
+                          - variables:
+                              horsgel_rdc: false
+                      - conditions:
+                          - condition: state
+                            entity_id: input_select.chauffage_action
+                            state: TéléTravail
+                        sequence:
+                          - variables:
+                              horsgel_rdc: false
+                      - conditions:
+                          - condition: state
+                            entity_id: input_select.chauffage_action
+                            state: Travail
+                        sequence:
+                          - variables:
+                              horsgel_rdc: false
+                      - conditions:
+                          - condition: state
+                            entity_id: input_select.chauffage_action
+                            state: Absent
+                        sequence:
+                          - variables:
+                              horsgel_rdc: true
+            note: >-
+              HorsGel global OFF → allume le contacteur, vérifie portes ouvertes
+              ou mode Absent pour horsgel_rdc
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: input_select.chauffage_mode_rdc
+                state: Confort+
+            sequence:
+              - action: input_number.set_value
+                metadata: {}
+                data:
+                  value: >-
+                    {{ states('input_number.chauffage_consigne_confort_rdc_2')
+                    }}
+                target:
+                  entity_id: input_number.chauffage_rdc
+            note: Mode Confort+ → applique la consigne confort haute
+          - conditions:
+              - condition: state
+                entity_id: input_select.chauffage_mode_rdc
+                state: Confort
+            sequence:
+              - action: input_number.set_value
+                metadata: {}
+                data:
+                  value: "{{ states('input_number.chauffage_consigne_confort_rdc') }}"
+                target:
+                  entity_id: input_number.chauffage_rdc
+            note: Mode Confort → applique la consigne confort normale
+          - conditions:
+              - condition: state
+                entity_id: input_select.chauffage_mode_rdc
+                state: Réduit
+            sequence:
+              - action: input_number.set_value
+                metadata: {}
+                data:
+                  value: "{{ states('input_number.chauffage_consigne_reduit_rdc') }}"
+                target:
+                  entity_id: input_number.chauffage_rdc
+            note: Mode Réduit → applique la consigne réduite
   - choose:
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.chauffage_horsgel
-        state: 'on'
-      sequence:
+      - conditions:
+          - condition: and
+            conditions:
+              - condition: template
+                value_template: "{{ horsgel_rdc == false }}"
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: input_boolean.chauffage_horsgel_rdc
+                    state: "on"
+                  - condition: trigger
+                    id:
+                      - Chauffage Mode
+        sequence:
+          - action: input_boolean.turn_off
+            data: {}
+            target:
+              entity_id: input_boolean.chauffage_horsgel_rdc
+          - action: script.notification_mail
+            data:
+              message_type: Chauffage RDC
+              message_mail: "{{ states('input_select.chauffage_mode_rdc') }}"
+        note: >-
+          HorsGel RDC désactivé → met à jour le flag, envoie mail avec le
+          nouveau mode
+      - conditions:
+          - condition: and
+            conditions:
+              - condition: template
+                value_template: "{{ horsgel_rdc == true }}"
+              - condition: state
+                entity_id: input_boolean.chauffage_horsgel_rdc
+                state: "off"
+        sequence:
+          - action: input_boolean.turn_on
+            data: {}
+            target:
+              entity_id: input_boolean.chauffage_horsgel_rdc
+          - action: script.notification_mail
+            data:
+              message_type: Chauffage RDC
+              message_mail: HorsGel
+        note: HorsGel RDC activé → met à jour le flag, envoie mail HorsGel
+  - sequence:
       - if:
-        - condition: state
-          entity_id: switch.contacteur_de_la_chaudiere
-          state: 'on'
+          - condition: state
+            entity_id: input_boolean.chauffage_horsgel_rdc
+            state: "on"
         then:
-        - action: switch.turn_off
-          data: {}
-          target:
-            entity_id: switch.contacteur_de_la_chaudiere
-      - variables:
-          horsgel_rdc: true
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.chauffage_horsgel
-        state: 'off'
-      sequence:
-      - if:
-        - condition: state
-          entity_id: switch.contacteur_de_la_chaudiere
-          state: 'off'
-        then:
-        - action: switch.turn_on
-          data: {}
-          target:
-            entity_id: switch.contacteur_de_la_chaudiere
-      - if:
-        - condition: or
-          conditions:
-          - condition: state
-            entity_id: binary_sensor.do_cuisine
-            state: 'on'
-          - condition: state
-            entity_id: binary_sensor.do_sejour
-            state: 'on'
-          - condition: state
-            entity_id: binary_sensor.do_salon
-            state: 'on'
-          - condition: state
-            entity_id: binary_sensor.do_porte_entree
-            state: 'on'
-        then:
-        - variables:
-            horsgel_rdc: true
+          - variables:
+              consigne: "{{ states('input_number.chauffage_consigne_horsgel_rdc') }}"
         else:
-        - choose:
-          - conditions:
-            - condition: state
-              entity_id: input_select.chauffage_action
-              state: Repos
-            sequence:
-            - variables:
-                horsgel_rdc: false
-          - conditions:
-            - condition: state
-              entity_id: input_select.chauffage_action
-              state: TéléTravail
-            sequence:
-            - variables:
-                horsgel_rdc: false
-          - conditions:
-            - condition: state
-              entity_id: input_select.chauffage_action
-              state: Travail
-            sequence:
-            - variables:
-                horsgel_rdc: false
-          - conditions:
-            - condition: state
-              entity_id: input_select.chauffage_action
-              state: Absent
-            sequence:
-            - variables:
-                horsgel_rdc: true
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: input_select.chauffage_mode_rdc
-        state: Confort+
-      sequence:
-      - action: input_number.set_value
-        metadata: {}
-        data:
-          value: '{{ states(''input_number.chauffage_consigne_confort_rdc_2'') }}'
-        target:
-          entity_id: input_number.chauffage_rdc
-    - conditions:
-      - condition: state
-        entity_id: input_select.chauffage_mode_rdc
-        state: Confort
-      sequence:
-      - action: input_number.set_value
-        metadata: {}
-        data:
-          value: '{{ states(''input_number.chauffage_consigne_confort_rdc'') }}'
-        target:
-          entity_id: input_number.chauffage_rdc
-    - conditions:
-      - condition: state
-        entity_id: input_select.chauffage_mode_rdc
-        state: Réduit
-      sequence:
-      - action: input_number.set_value
-        metadata: {}
-        data:
-          value: '{{ states(''input_number.chauffage_consigne_reduit_rdc'') }}'
-        target:
-          entity_id: input_number.chauffage_rdc
-- choose:
-  - conditions:
-    - condition: and
-      conditions:
-      - condition: template
-        value_template: '{{ horsgel_rdc == false }}'
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: input_boolean.chauffage_horsgel_rdc
-          state: 'on'
-        - condition: trigger
-          id:
-          - Chauffage Mode
-    sequence:
-    - action: input_boolean.turn_off
-      data: {}
-      target:
-        entity_id: input_boolean.chauffage_horsgel_rdc
-    - action: script.notification_mail
-      data:
-        message_type: Chauffage RDC
-        message_mail: '{{ states(''input_select.chauffage_mode_rdc'') }}'
-  - conditions:
-    - condition: and
-      conditions:
-      - condition: template
-        value_template: '{{ horsgel_rdc == true }}'
-      - condition: state
-        entity_id: input_boolean.chauffage_horsgel_rdc
-        state: 'off'
-    sequence:
-    - action: input_boolean.turn_on
-      data: {}
-      target:
-        entity_id: input_boolean.chauffage_horsgel_rdc
-    - action: script.notification_mail
-      data:
-        message_type: Chauffage RDC
-        message_mail: HorsGel
-- sequence:
-  - if:
-    - condition: state
-      entity_id: input_boolean.chauffage_horsgel_rdc
-      state: 'on'
-    then:
-    - variables:
-        consigne: '{{ states(''input_number.chauffage_consigne_horsgel_rdc'') }}'
-    else:
-    - variables:
-        consigne: '{{ states(''input_number.chauffage_rdc'') }}'
-  - if:
-    - condition: not
-      conditions:
-      - condition: state
-        entity_id: climate.cellier
-        attribute: temperature
-        state: '{{ consigne }}'
-    then:
-    - if:
-      - condition: state
-        entity_id: climate.cellier
-        state: 'off'
-      then:
-      - action: climate.turn_on
-        data: {}
-        target:
-          entity_id: climate.cellier
-      enabled: false
-    - action: climate.set_temperature
-      data:
-        temperature: '{{ consigne }}'
-      target:
-        entity_id: climate.cellier
+          - variables:
+              consigne: "{{ states('input_number.chauffage_rdc') }}"
+      - if:
+          - condition: not
+            conditions:
+              - condition: state
+                entity_id: climate.cellier
+                attribute: temperature
+                state: "{{ consigne }}"
+        then:
+          - if:
+              - condition: state
+                entity_id: climate.cellier
+                state: "off"
+            then:
+              - action: climate.turn_on
+                data: {}
+                target:
+                  entity_id: climate.cellier
+            enabled: false
+          - action: climate.set_temperature
+            data:
+              temperature: "{{ consigne }}"
+            target:
+              entity_id: climate.cellier
+    note: >-
+      Applique la consigne calculée au thermostat du Cellier (représentant le
+      RDC)
 mode: queued
 max: 10

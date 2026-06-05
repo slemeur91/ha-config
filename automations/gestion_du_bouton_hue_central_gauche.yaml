@@ -1,183 +1,177 @@
 alias: Gestion du Bouton Hue Central Gauche
-description: '**Statut :** Finalisé
-
+description: |-
+  **Statut :** Finalisé
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
   - Appui sur les 4 boutons du Tap Dial Central Gauche (événements Hue)
 
-
   **Fonctionnement :**
-
   1. Bouton 1 appui long → déclenche la HiFi en mode SOURCE.
-
   2. Bouton 2 appui long → lance les SONOS en mode ON.
-
   3. Bouton 3 appui long → éteint la HiFi.
-
   4. Bouton 4 appui long → éteint les SONOS.
-
   (Les appuis courts sont réservés pour une future affectation lumière.)
 
-
   **Entités principales :**
-
-  - `input_select.hifi_action` / `input_select.sonos_action` : coordination AV'
+  - `input_select.hifi_action` / `input_select.sonos_action` : coordination AV
 triggers:
-- trigger: state
-  entity_id:
-  - event.tap_dial_central_gauche_bouton_1
-  id: Bouton1
-- trigger: state
-  entity_id:
-  - event.tap_dial_central_gauche_bouton_2
-  id: Bouton2
-- trigger: state
-  entity_id:
-  - event.tap_dial_central_gauche_bouton_3
-  id: Bouton3
-- trigger: state
-  entity_id:
-  - event.tap_dial_central_gauche_bouton_4
-  id: Bouton4
-- trigger: state
-  entity_id:
-  - event.tap_dial_central_gauche_rotatif
-  id: Rotation
+  - entity_id:
+      - event.tap_dial_central_gauche_bouton_1
+    id: Bouton1
+    trigger: state
+  - entity_id:
+      - event.tap_dial_central_gauche_bouton_2
+    id: Bouton2
+    trigger: state
+  - entity_id:
+      - event.tap_dial_central_gauche_bouton_3
+    id: Bouton3
+    trigger: state
+  - entity_id:
+      - event.tap_dial_central_gauche_bouton_4
+    id: Bouton4
+    trigger: state
+  - entity_id:
+      - event.tap_dial_central_gauche_rotatif
+    id: Rotation
+    trigger: state
 conditions: []
 actions:
-- if:
-  - condition: trigger
-    id:
-    - Bouton1
-  then:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: event.tap_dial_central_gauche_bouton_1
-        attribute: event_type
-        state: short_release
-      sequence:
-      - action: light.toggle
-        data: {}
-        enabled: false
-    - conditions:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: event.tap_dial_central_gauche_bouton_1
-          attribute: event_type
-          state: long_press
-        - condition: state
-          entity_id: event.tap_dial_central_gauche_bouton_1
-          attribute: event_type
-          state: long_release
-      sequence:
-      - action: input_select.select_option
-        metadata: {}
-        data:
-          option: SOURCE
-        target:
-          entity_id: input_select.hifi_action
-- if:
-  - condition: trigger
-    id:
-    - Bouton2
-  then:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: event.tap_dial_central_gauche_bouton_2
-        attribute: event_type
-        state: short_release
-      sequence:
-      - action: light.toggle
-        data: {}
-        enabled: false
-    - conditions:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: event.tap_dial_central_gauche_bouton_2
-          attribute: event_type
-          state: long_press
-        - condition: state
-          entity_id: event.tap_dial_central_gauche_bouton_2
-          attribute: event_type
-          state: long_release
-      sequence:
-      - action: input_select.select_option
-        metadata: {}
-        data:
-          option: 'ON'
-        target:
-          entity_id: input_select.sonos_action
-- if:
-  - condition: trigger
-    id:
-    - Bouton3
-  then:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: event.tap_dial_central_gauche_bouton_3
-        attribute: event_type
-        state: short_release
-      sequence:
-      - action: light.toggle
-        data: {}
-        enabled: false
-    - conditions:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: event.tap_dial_central_gauche_bouton_3
-          attribute: event_type
-          state: long_press
-        - condition: state
-          entity_id: event.tap_dial_central_gauche_bouton_3
-          attribute: event_type
-          state: long_release
-      sequence:
-      - action: input_select.select_option
-        metadata: {}
-        data:
-          option: 'OFF'
-        target:
-          entity_id: input_select.hifi_action
-- if:
-  - condition: trigger
-    id:
-    - Bouton4
-  then:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: event.tap_dial_central_gauche_bouton_4
-        attribute: event_type
-        state: short_release
-      sequence:
-      - action: light.toggle
-        data: {}
-        enabled: false
-    - conditions:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: event.tap_dial_central_gauche_bouton_4
-          attribute: event_type
-          state: long_press
-        - condition: state
-          entity_id: event.tap_dial_central_gauche_bouton_4
-          attribute: event_type
-          state: long_release
-      sequence:
-      - action: input_select.select_option
-        metadata: {}
-        data:
-          option: 'OFF'
-        target:
-          entity_id: input_select.sonos_action
+  - if:
+      - condition: trigger
+        id:
+          - Bouton1
+    then:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: event.tap_dial_central_gauche_bouton_1
+                attribute: event_type
+                state: short_release
+            sequence:
+              - action: light.toggle
+                data: {}
+                enabled: false
+          - conditions:
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: event.tap_dial_central_gauche_bouton_1
+                    attribute: event_type
+                    state: long_press
+                  - condition: state
+                    entity_id: event.tap_dial_central_gauche_bouton_1
+                    attribute: event_type
+                    state: long_release
+            sequence:
+              - action: input_select.select_option
+                metadata: {}
+                data:
+                  option: SOURCE
+                target:
+                  entity_id: input_select.hifi_action
+            note: Appui long → déclenche HiFi en mode SOURCE
+  - if:
+      - condition: trigger
+        id:
+          - Bouton2
+    then:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: event.tap_dial_central_gauche_bouton_2
+                attribute: event_type
+                state: short_release
+            sequence:
+              - action: light.toggle
+                data: {}
+                enabled: false
+          - conditions:
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: event.tap_dial_central_gauche_bouton_2
+                    attribute: event_type
+                    state: long_press
+                  - condition: state
+                    entity_id: event.tap_dial_central_gauche_bouton_2
+                    attribute: event_type
+                    state: long_release
+            sequence:
+              - action: input_select.select_option
+                metadata: {}
+                data:
+                  option: "ON"
+                target:
+                  entity_id: input_select.sonos_action
+            note: Appui long → lance SONOS en mode ON
+  - if:
+      - condition: trigger
+        id:
+          - Bouton3
+    then:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: event.tap_dial_central_gauche_bouton_3
+                attribute: event_type
+                state: short_release
+            sequence:
+              - action: light.toggle
+                data: {}
+                enabled: false
+          - conditions:
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: event.tap_dial_central_gauche_bouton_3
+                    attribute: event_type
+                    state: long_press
+                  - condition: state
+                    entity_id: event.tap_dial_central_gauche_bouton_3
+                    attribute: event_type
+                    state: long_release
+            sequence:
+              - action: input_select.select_option
+                metadata: {}
+                data:
+                  option: "OFF"
+                target:
+                  entity_id: input_select.hifi_action
+            note: Appui long → éteint la HiFi (action OFF)
+  - if:
+      - condition: trigger
+        id:
+          - Bouton4
+    then:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: event.tap_dial_central_gauche_bouton_4
+                attribute: event_type
+                state: short_release
+            sequence:
+              - action: light.toggle
+                data: {}
+                enabled: false
+          - conditions:
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: event.tap_dial_central_gauche_bouton_4
+                    attribute: event_type
+                    state: long_press
+                  - condition: state
+                    entity_id: event.tap_dial_central_gauche_bouton_4
+                    attribute: event_type
+                    state: long_release
+            sequence:
+              - action: input_select.select_option
+                metadata: {}
+                data:
+                  option: "OFF"
+                target:
+                  entity_id: input_select.sonos_action
+            note: Appui long → éteint les SONOS (action OFF)
 mode: restart

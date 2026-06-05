@@ -1,5 +1,6 @@
 alias: Gestion du Poêle et de la Climatisation
-description: '**Statut :** Finalisé
+description: >-
+  **Statut :** Finalisé
 
   **Evolution :** Aucune
 
@@ -10,25 +11,25 @@ description: '**Statut :** Finalisé
 
   - Changement de `sensor.poele_smoke_temperature` (< 78°C)
 
-  - Changement d''état des climatisations (avec délai 5 min)
+  - Changement d'état des climatisations (avec délai 5 min)
 
   - Changement de `input_boolean.alarme`
 
 
   **Fonctionnement :**
 
-  1. Gère le flag `input_boolean.poele` : allume si le poêle s''allume, éteint en
+  1. Gère le flag `input_boolean.poele` : allume si le poêle s'allume, éteint en
   Stand-by si nécessaire, désactive si status = OFF.
 
-  2. Gère le flag `input_boolean.climatisation` : active si une climatisation tourne,
-  désactive si toutes sont éteintes.
+  2. Gère le flag `input_boolean.climatisation` : active si une climatisation
+  tourne, désactive si toutes sont éteintes.
 
   3. Si alarme armée-absent → éteint toutes les climatisations une par une.
 
   4. Si alarme désarmée → rallume le contacteur de la climatisation.
 
-  5. Si tout est éteint (poêle OFF + clim OFF + alarme armed_away) → coupe le contacteur
-  de la climatisation.
+  5. Si tout est éteint (poêle OFF + clim OFF + alarme armed_away) → coupe le
+  contacteur de la climatisation.
 
 
   **Entités principales :**
@@ -39,295 +40,299 @@ description: '**Statut :** Finalisé
 
   - `switch.contacteur_de_la_climatisation` : alimentation physique de la clim
 
-  - `input_boolean.poele` / `input_boolean.climatisation` : flags d''état'
+  - `input_boolean.poele` / `input_boolean.climatisation` : flags d'état
 triggers:
-- trigger: state
-  entity_id:
-  - sensor.poele_status
-  for:
-    hours: 0
-    minutes: 30
-    seconds: 0
-  to: null
-- trigger: state
-  entity_id:
-  - sensor.poele_status
-  to:
-  - 'OFF'
-- trigger: state
-  entity_id:
-  - climate.climatisation_de_la_chambre
-  - climate.climatisation_de_la_suite_parentale
-  - climate.climatisation_du_bureau
-  - climate.climatisation_du_sejour
-  for:
-    hours: 0
-    minutes: 5
-    seconds: 0
-  to: null
-- trigger: numeric_state
-  entity_id:
-  - sensor.poele_smoke_temperature
-  below: 78
-- trigger: state
-  entity_id:
-  - input_boolean.alarme
-  to: null
+  - entity_id:
+      - sensor.poele_status
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
+    to: null
+    trigger: state
+  - entity_id:
+      - sensor.poele_status
+    to:
+      - "OFF"
+    trigger: state
+  - entity_id:
+      - climate.climatisation_de_la_chambre
+      - climate.climatisation_de_la_suite_parentale
+      - climate.climatisation_du_bureau
+      - climate.climatisation_du_sejour
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+    to: null
+    trigger: state
+  - entity_id:
+      - sensor.poele_smoke_temperature
+    below: 78
+    trigger: numeric_state
+  - entity_id:
+      - input_boolean.alarme
+    to: null
+    trigger: state
 conditions: []
 actions:
-- parallel:
-  - if:
-    - condition: state
-      entity_id: input_boolean.poele
-      state:
-      - 'off'
-    then:
-    - if:
-      - condition: state
-        entity_id: sensor.poele_status
-        state:
-        - Ignition
-      then:
-      - action: input_boolean.turn_on
-        metadata: {}
-        data: {}
-        target:
-          entity_id: input_boolean.poele
-    else:
-    - choose:
-      - conditions:
-        - condition: state
-          entity_id: sensor.poele_status
-          state:
-          - Stand-by
-        sequence:
-        - if:
-          - condition: not
-            conditions:
-            - condition: state
-              entity_id: climate.poele
-              state:
-              - 'off'
-          then:
-          - device_id: 4ae3ac3b2a6d31d7d3576e5a4e10f889
-            domain: climate
-            entity_id: eff7a24b63971bbbc6e6479194828ecf
-            type: set_hvac_mode
-            hvac_mode: 'off'
-            enabled: false
-          - action: climate.turn_off
-            target:
-              entity_id: climate.poele
-            data: {}
-      - conditions:
-        - condition: state
-          entity_id: sensor.poele_status
-          state:
-          - 'OFF'
-        sequence:
-        - action: input_boolean.turn_off
-          metadata: {}
-          target:
-            entity_id:
-            - input_boolean.poele
-          data: {}
-  - if:
-    - condition: state
-      entity_id: input_boolean.climatisation
-      state:
-      - 'off'
-    then:
-    - if:
-      - condition: or
-        conditions:
-        - condition: not
-          conditions:
-          - condition: state
-            entity_id: climate.climatisation_de_la_chambre
-            state:
-            - 'off'
-        - condition: not
-          conditions:
-          - condition: state
-            entity_id: climate.climatisation_de_la_suite_parentale
-            state:
-            - 'off'
-        - condition: not
-          conditions:
-          - condition: state
-            entity_id: climate.climatisation_du_bureau
-            state:
-            - 'off'
-        - condition: not
-          conditions:
-          - condition: state
-            entity_id: climate.climatisation_du_sejour
-            state:
-            - 'off'
-      then:
-      - action: input_boolean.turn_on
-        metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - input_boolean.climatisation
-    else:
-    - if:
-      - condition: or
-        conditions:
-        - condition: not
-          conditions:
-          - condition: state
-            entity_id: climate.climatisation_de_la_chambre
-            state:
-            - 'off'
-            - unavailable
-        - condition: not
-          conditions:
-          - condition: state
-            entity_id: climate.climatisation_de_la_suite_parentale
-            state:
-            - 'off'
-            - unavailable
-        - condition: not
-          conditions:
-          - condition: state
-            entity_id: climate.climatisation_du_bureau
-            state:
-            - 'off'
-            - unavailable
-        - condition: not
-          conditions:
-          - condition: state
-            entity_id: climate.climatisation_du_sejour
-            state:
-            - 'off'
-            - unavailable
-      then:
+  - parallel:
       - if:
-        - condition: state
-          entity_id: alarm_control_panel.alarme
-          state:
-          - armed_away
+          - condition: state
+            entity_id: input_boolean.poele
+            state:
+              - "off"
         then:
-        - if:
-          - condition: not
+          - if:
+              - condition: state
+                entity_id: sensor.poele_status
+                state:
+                  - Ignition
+            then:
+              - action: input_boolean.turn_on
+                metadata: {}
+                data: {}
+                target:
+                  entity_id: input_boolean.poele
+        else:
+          - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: sensor.poele_status
+                    state:
+                      - Stand-by
+                sequence:
+                  - if:
+                      - condition: not
+                        conditions:
+                          - condition: state
+                            entity_id: climate.poele
+                            state:
+                              - "off"
+                    then:
+                      - device_id: 4ae3ac3b2a6d31d7d3576e5a4e10f889
+                        domain: climate
+                        entity_id: eff7a24b63971bbbc6e6479194828ecf
+                        type: set_hvac_mode
+                        hvac_mode: "off"
+                        enabled: false
+                      - action: climate.turn_off
+                        target:
+                          entity_id: climate.poele
+                        data: {}
+              - conditions:
+                  - condition: state
+                    entity_id: sensor.poele_status
+                    state:
+                      - "OFF"
+                sequence:
+                  - action: input_boolean.turn_off
+                    metadata: {}
+                    target:
+                      entity_id:
+                        - input_boolean.poele
+                    data: {}
+      - if:
+          - condition: state
+            entity_id: input_boolean.climatisation
+            state:
+              - "off"
+        then:
+          - if:
+              - condition: or
+                conditions:
+                  - condition: not
+                    conditions:
+                      - condition: state
+                        entity_id: climate.climatisation_de_la_chambre
+                        state:
+                          - "off"
+                  - condition: not
+                    conditions:
+                      - condition: state
+                        entity_id: climate.climatisation_de_la_suite_parentale
+                        state:
+                          - "off"
+                  - condition: not
+                    conditions:
+                      - condition: state
+                        entity_id: climate.climatisation_du_bureau
+                        state:
+                          - "off"
+                  - condition: not
+                    conditions:
+                      - condition: state
+                        entity_id: climate.climatisation_du_sejour
+                        state:
+                          - "off"
+            then:
+              - action: input_boolean.turn_on
+                metadata: {}
+                data: {}
+                target:
+                  entity_id:
+                    - input_boolean.climatisation
+        else:
+          - if:
+              - condition: or
+                conditions:
+                  - condition: not
+                    conditions:
+                      - condition: state
+                        entity_id: climate.climatisation_de_la_chambre
+                        state:
+                          - "off"
+                          - unavailable
+                  - condition: not
+                    conditions:
+                      - condition: state
+                        entity_id: climate.climatisation_de_la_suite_parentale
+                        state:
+                          - "off"
+                          - unavailable
+                  - condition: not
+                    conditions:
+                      - condition: state
+                        entity_id: climate.climatisation_du_bureau
+                        state:
+                          - "off"
+                          - unavailable
+                  - condition: not
+                    conditions:
+                      - condition: state
+                        entity_id: climate.climatisation_du_sejour
+                        state:
+                          - "off"
+                          - unavailable
+            then:
+              - if:
+                  - condition: state
+                    entity_id: alarm_control_panel.alarme
+                    state:
+                      - armed_away
+                then:
+                  - if:
+                      - condition: not
+                        conditions:
+                          - condition: state
+                            entity_id: climate.climatisation_de_la_chambre
+                            state:
+                              - "off"
+                    then:
+                      - action: climate.turn_off
+                        target:
+                          entity_id: climate.climatisation_de_la_chambre
+                        data: {}
+                  - if:
+                      - condition: not
+                        conditions:
+                          - condition: state
+                            entity_id: climate.climatisation_de_la_suite_parentale
+                            state:
+                              - "off"
+                    then:
+                      - action: climate.turn_off
+                        target:
+                          entity_id: climate.climatisation_de_la_suite_parentale
+                        data: {}
+                  - if:
+                      - condition: not
+                        conditions:
+                          - condition: state
+                            entity_id: climate.climatisation_du_bureau
+                            state:
+                              - "off"
+                    then:
+                      - action: climate.turn_off
+                        target:
+                          entity_id: climate.climatisation_du_bureau
+                        data: {}
+                  - if:
+                      - condition: not
+                        conditions:
+                          - condition: state
+                            entity_id: climate.climatisation_du_sejour
+                            state:
+                              - "off"
+                    then:
+                      - action: climate.turn_off
+                        target:
+                          entity_id: climate.climatisation_du_sejour
+                        data: {}
+            else:
+              - action: input_boolean.turn_off
+                metadata: {}
+                target:
+                  entity_id: input_boolean.climatisation
+                data: {}
+    note: >-
+      Exécute en parallèle : (1) gestion flag poêle selon son status ; (2)
+      gestion flag climatisation + extinction si alarme absent ; (3) contrôle
+      contacteur clim (ON si désarmé, OFF si tout éteint+absent)
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: alarm_control_panel.alarme
+            state:
+              - disarmed
+        sequence:
+          - if:
+              - condition: state
+                entity_id: switch.contacteur_de_la_climatisation
+                state:
+                  - "off"
+            then:
+              - action: switch.turn_on
+                continue_on_error: true
+                data: {}
+                target:
+                  entity_id: switch.contacteur_de_la_climatisation
+      - conditions:
+          - condition: and
             conditions:
-            - condition: state
-              entity_id: climate.climatisation_de_la_chambre
-              state:
-              - 'off'
-          then:
-          - action: climate.turn_off
-            target:
-              entity_id: climate.climatisation_de_la_chambre
-            data: {}
-        - if:
-          - condition: not
-            conditions:
-            - condition: state
-              entity_id: climate.climatisation_de_la_suite_parentale
-              state:
-              - 'off'
-          then:
-          - action: climate.turn_off
-            target:
-              entity_id: climate.climatisation_de_la_suite_parentale
-            data: {}
-        - if:
-          - condition: not
-            conditions:
-            - condition: state
-              entity_id: climate.climatisation_du_bureau
-              state:
-              - 'off'
-          then:
-          - action: climate.turn_off
-            target:
-              entity_id: climate.climatisation_du_bureau
-            data: {}
-        - if:
-          - condition: not
-            conditions:
-            - condition: state
-              entity_id: climate.climatisation_du_sejour
-              state:
-              - 'off'
-          then:
-          - action: climate.turn_off
-            target:
-              entity_id: climate.climatisation_du_sejour
-            data: {}
-      else:
-      - action: input_boolean.turn_off
-        metadata: {}
-        target:
-          entity_id: input_boolean.climatisation
-        data: {}
-- choose:
-  - conditions:
-    - condition: state
-      entity_id: alarm_control_panel.alarme
-      state:
-      - disarmed
-    sequence:
-    - if:
-      - condition: state
-        entity_id: switch.contacteur_de_la_climatisation
-        state:
-        - 'off'
-      then:
-      - action: switch.turn_on
-        continue_on_error: true
-        data: {}
-        target:
-          entity_id: switch.contacteur_de_la_climatisation
-  - conditions:
-    - condition: and
-      conditions:
-      - condition: state
-        entity_id: sensor.poele_status
-        state:
-        - 'OFF'
-      - condition: state
-        entity_id: input_boolean.poele
-        state:
-        - 'off'
-      - condition: state
-        entity_id: climate.climatisation_de_la_chambre
-        state:
-        - 'off'
-      - condition: state
-        entity_id: climate.climatisation_de_la_suite_parentale
-        state:
-        - 'off'
-      - condition: state
-        entity_id: climate.climatisation_du_bureau
-        state:
-        - 'off'
-      - condition: state
-        entity_id: climate.climatisation_du_sejour
-        state:
-        - 'off'
-      - condition: state
-        entity_id: input_boolean.climatisation
-        state:
-        - 'off'
-      - condition: state
-        entity_id: alarm_control_panel.alarme
-        state:
-        - armed_away
-    sequence:
-    - if:
-      - condition: state
-        entity_id: switch.contacteur_de_la_climatisation
-        state:
-        - 'on'
-      then:
-      - action: switch.turn_off
-        continue_on_error: true
-        data: {}
-        target:
-          entity_id: switch.contacteur_de_la_climatisation
+              - condition: state
+                entity_id: sensor.poele_status
+                state:
+                  - "OFF"
+              - condition: state
+                entity_id: input_boolean.poele
+                state:
+                  - "off"
+              - condition: state
+                entity_id: climate.climatisation_de_la_chambre
+                state:
+                  - "off"
+              - condition: state
+                entity_id: climate.climatisation_de_la_suite_parentale
+                state:
+                  - "off"
+              - condition: state
+                entity_id: climate.climatisation_du_bureau
+                state:
+                  - "off"
+              - condition: state
+                entity_id: climate.climatisation_du_sejour
+                state:
+                  - "off"
+              - condition: state
+                entity_id: input_boolean.climatisation
+                state:
+                  - "off"
+              - condition: state
+                entity_id: alarm_control_panel.alarme
+                state:
+                  - armed_away
+        sequence:
+          - if:
+              - condition: state
+                entity_id: switch.contacteur_de_la_climatisation
+                state:
+                  - "on"
+            then:
+              - action: switch.turn_off
+                continue_on_error: true
+                data: {}
+                target:
+                  entity_id: switch.contacteur_de_la_climatisation
 mode: queued
 max: 10
