@@ -160,11 +160,11 @@
 |---|---|---|---|---|
 | 1 | Axis | M1065-L | slm-camera1 | Séjour |
 | 1 | Axis | M1065-L | slm-camera2 | Salon |
+| 1 | TRENDnet | TV-IP572PI | slm-camera3 | Cellier |
 | 1 | Axis | M1065-L | slm-camera4 | Palier |
 | 1 | Hikvision | DS-2CD2142FWD-IS | slm-camera5 | Réseau |
 | 1 | Reolink | Duo 2 PoE | slm-camera6 | Extérieur |
 | 1 | TP-Link Tapo | TC500 | slm-camera7 | Garage |
-| 1 | TRENDnet | TV-IP572PI | slm-camera3 | Cellier |
 | 1 | KONX | KW02C | slm-portier | Entrée |
 
 ---
