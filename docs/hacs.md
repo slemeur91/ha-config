@@ -298,6 +298,66 @@ Intégration des appareils X-Sense (station de sécurité SBS50, détecteurs de 
 
 Graphiques avancés basés sur ApexCharts. Utilisé pour les graphiques de consommation énergie.
 
+**Exemple — Eau chaude vs Chauffe-eau :**
+
+> Compare la consommation d'eau chaude du jour J (en litres) avec la consommation électrique du chauffe-eau du jour J+1 (en kWh). La consommation d'eau J est décalée de -1j pour être alignée avec la chauffe électrique qui s'effectue le lendemain.
+
+```yaml
+type: custom:apexcharts-card
+graph_span: 14d
+span:
+  end: day
+update_interval: 1h
+header:
+  show: true
+  title: Eau chaude vs Chauffe-eau (J-1 / J)
+  show_states: false
+apex_config:
+  chart:
+    type: bar
+  plotOptions:
+    bar:
+      columnWidth: 70%
+series:
+  - entity: sensor.compteur_eau_chaude_index
+    name: Eau chaude J-1 (L)
+    color: "#1E88E5"
+    type: column
+    statistics:
+      type: change
+      period: day
+    unit: L
+    yaxis_id: water
+    offset: "-1d"
+    transform: "return x < 0 ? 0 : Math.round(x);"
+  - entity: sensor.chauffe_eau_index
+    name: Chauffe-eau J (kWh)
+    color: "#E53935"
+    type: column
+    statistics:
+      type: change
+      period: day
+    unit: kWh
+    yaxis_id: energy
+    transform: "return x < 0 ? 0 : Math.round(x * 100) / 100;"
+yaxis:
+  - id: water
+    apex_config:
+      title:
+        text: Eau (L)
+      labels:
+        style:
+          colors: "#1E88E5"
+  - id: energy
+    opposite: true
+    apex_config:
+      title:
+        text: Énergie (kWh)
+      labels:
+        style:
+          colors: "#E53935"
+```
+
 ### Battery State Card
 > [GitHub](https://github.com/maxwroc/battery-state-card)
 
