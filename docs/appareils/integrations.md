@@ -1,4 +1,4 @@
-# Intégrations (WiFi, Ethernet RJ45 & Autres) — 137 appareils
+# Intégrations (WiFi, Ethernet RJ45 & Autres) — 139 appareils
 
 [← Retour Appareils](../appareils.md)
 
@@ -29,7 +29,7 @@
 
 ---
 
-## Multimédia
+## Multimédia (4 appareils)
 
 > 🏠 **Natif HA** — Intégration : **Bravia TV** (Sony) + **Apple TV**
 
@@ -98,9 +98,9 @@
 
 ---
 
-## Énergie — Compteurs & Mesure (22 appareils)
+## Énergie — Compteurs & Mesure (24 appareils)
 
-### Linky & GAZPAR
+### Linky & GAZPAR (2 appareils)
 
 | Nb | Fabricant | Modèle | Intégration | Mode |
 |---|---|---|---|---|
@@ -239,7 +239,7 @@
 
 ---
 
-## Sécurité & Détection
+## Sécurité & Détection (6 appareils)
 
 ### Sure Petcare (1 appareil)
 
@@ -261,7 +261,7 @@
 
 ---
 
-## Autres appareils
+## Autres appareils (22 appareils)
 
 ### Somfy io-homecontrol — KLF200 (14 appareils)
 
