@@ -358,6 +358,8 @@ yaxis:
           colors: "#E53935"
 ```
 
+![apexcharts-card](../images/apexcharts-card.png)
+
 ### Battery State Card
 > [GitHub](https://github.com/maxwroc/battery-state-card)
 
@@ -392,6 +394,8 @@ sort:
   by: state
 collapse: 60
 ```
+
+![Battery State Card](../images/Battery State Card.png)
 
 ### card-mod
 > [GitHub](https://github.com/thomasloven/lovelace-card-mod)
@@ -444,6 +448,8 @@ cards:
         {{ ns.out }}
 ```
 
+![card-mod](../images/card-mod.png)
+
 ### Custom-ui
 > [GitHub](https://github.com/Mariusthvdb/custom-ui)
 
@@ -470,6 +476,8 @@ showWeeklyCostHistoryChart: false
 showMonthlyCostHistoryChart: false
 showYearlyCostHistoryChart: false
 ```
+
+![GrDF Gazpar card](../images/GrDf Gazpar card.png)
 
 ### Waze Travel Time Card
 > [GitHub](https://github.com/r-renato/ha-card-waze-travel-time)
