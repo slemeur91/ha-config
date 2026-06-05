@@ -165,7 +165,7 @@
 | 1 | Axis | M1065-L | slm-camera4 | Palier | [📄 Manuel](../hardware/um_m1065l_1632647_en_1704.pdf) · [📄 Installation](../hardware/ig_m1065l_1665730_en_1610.pdf) · [📄 Datasheet](../hardware/ds_m1065l_1650486_fr_1612.pdf) |
 | 1 | Hikvision | DS-2CD2142FWD-IS | slm-camera5 | Réseau | [📄 Manuel](../hardware/DS-2CD2142FWD-I\(W\)\(S\).pdf) |
 | 1 | Reolink | Duo 2 PoE | slm-camera6 | Extérieur | [📄 Manuel](../hardware/e861e2.pdf) |
-| 1 | TP-Link Tapo | TC500 | slm-camera7 | Garage | — |
+| 1 | Synology | TC500 | slm-camera7 | Garage | — |
 | 1 | KONX | KW02C | slm-portier | Entrée | [📄 Manuel](../hardware/KW02C-user-guide-FR-web.pdf) |
 
 ---
