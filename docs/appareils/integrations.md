@@ -150,7 +150,7 @@
 
 ---
 
-## Caméras & NVR (8 appareils)
+## Caméras (8 appareils)
 
 > 🏠 **Natif HA** — Intégration : **Synology DSM** — [Documentation](https://www.home-assistant.io/integrations/synology_dsm/)
 > 🔌 Ethernet (RJ45)
@@ -165,7 +165,7 @@
 | 1 | Reolink | Duo 2 PoE | slm-camera6 | Extérieur |
 | 1 | TP-Link Tapo | TC500 | slm-camera7 | Garage |
 | 1 | TRENDnet | TV-IP572PI | slm-camera3 | Cellier |
-| 1 | — | Portier IP | — | Entrée |
+| 1 | KONX | KW02C | slm-portier | Entrée |
 
 ---
 
