@@ -150,31 +150,37 @@
 
 ---
 
-## Caméras & NVR (9 appareils)
+## Caméras & NVR (8 appareils)
 
-> 🏠 **Natif HA** — Intégration : **UniFi Protect** — [Documentation](https://www.home-assistant.io/integrations/unifiprotect/)
+> 🏠 **Natif HA** — Intégration : **Synology DSM** — [Documentation](https://www.home-assistant.io/integrations/synology_dsm/)
 > 🔌 Ethernet (RJ45)
 > 📹 Enregistrement et analyse vidéo via **Synology Surveillance Station** sur slm-disk4 (DVA1622)
 
-| Nb | Fabricant | Modèle | Description | Localisation |
+| Nb | Fabricant | Modèle | Nom HA | Localisation |
 |---|---|---|---|---|
-| 7 | Synology Surveillance Station | IP Camera | Caméras de surveillance (slm-camera1 à 7) | Extérieur / Intérieur |
-| 1 | Synology Surveillance Station | Portier IP | Portier vidéo | Entrée |
-| 1 | Ubiquiti | UNVR Instant | Enregistreur vidéo réseau | Armoire réseau |
+| 1 | Axis | M1065-L | slm-camera1 | Séjour |
+| 1 | Axis | M1065-L | slm-camera2 | Salon |
+| 1 | Axis | M1065-L | slm-camera4 | Palier |
+| 1 | Hikvision | DS-2CD2142FWD-IS | slm-camera5 | Réseau |
+| 1 | Reolink | Duo 2 PoE | slm-camera6 | Extérieur |
+| 1 | TP-Link Tapo | TC500 | slm-camera7 | Garage |
+| 1 | TRENDnet | TV-IP572PI | slm-camera3 | Cellier |
+| 1 | — | Portier IP | — | Entrée |
 
 ---
 
-## Infrastructure & NAS (5 appareils)
+## Infrastructure & NAS (6 appareils)
 
 > 🔌 Ethernet (RJ45)
 
 | Nb | Fabricant | Modèle | Nom | Description | Intégration |
 |---|---|---|---|---|---|
+| 1 | Orange | Livebox 7 | — | Box internet | 🔧 HACS — [Orange Livebox](https://github.com/cyr-ius/hass-livebox-component) |
 | 1 | Synology | DS916+ | slm-disk3 | Serveur NAS | 🏠 Natif HA — Synology DSM |
 | 1 | Synology | DVA1622 | slm-disk4 | Serveur NAS + Surveillance Station | 🏠 Natif HA — Synology DSM |
 | 1 | Ubiquiti | Cloud Gateway Fiber | — | Routeur | 🏠 Natif HA — UniFi Network |
 | 1 | Ubiquiti | U7 Pro | — | Point d'accès WiFi | 🏠 Natif HA — UniFi Network |
-| 1 | Orange | Livebox 7 | — | Box internet | 🔧 HACS — [Orange Livebox](https://github.com/cyr-ius/hass-livebox-component) |
+| 1 | Ubiquiti | UNVR Instant | — | Enregistreur vidéo réseau | 🏠 Natif HA — UniFi Network |
 
 ---
 
