@@ -8,14 +8,14 @@
 | Nb | Fabricant | Modèle | Description | Localisation | Documentation |
 |---|---|---|---|---|---|
 | 1 | AEON Labs | ZW090 Z-Stick Gen5 | Contrôleur USB Z-Wave | Armoire de brassage | [📄 Manuel](<../hardware/Z-Stick Gen5+ user guide _ Aeotec Help Desk.pdf>) |
-| 5 | Fibargroup | FGT001 Thermostatic Valve | Tête thermostatique | Bureau, Chambre, Suite parentale, Salle d'eau, Salle de bain | [📄 Manuel PDF](../hardware/FGT-001-S-v1.4-web.pdf) |
-| 3 | Fibargroup | FGFS101 Flood Sensor | Détecteur d'eau | Salle de bain, Cuisine, Cellier | [📄 Manuel PDF](../hardware/FGFS-101-FR-A-v1.00.pdf) |
-| 2 | Fibargroup | FGMS001 Motion Sensor | Capteur température/luminosité | Armoire de brassage, Grenier | [📄 Manuel PDF](../hardware/FGMS-001-FR-A-v1.01.pdf) |
-| 2 | Fibargroup | FGWPE/F-101 Metered Wall Plug Switch | Prise connectée avec mesure | Salon (Canapé gauche, Canapé droite) | [📄 Manuel PDF](../hardware/FGWPx-102-FR-A-v1.00.pdf) |
-| 1 | Fibargroup | FGWP102 Metered Wall Plug Switch | Prise connectée avec mesure | Cellier | [📄 Manuel PDF](../hardware/FGWPx-102-FR-A-v1.00.pdf) |
-| 1 | ID-RF (NodOn) | CRC-3100 Octan Remote Control | Télécommande Z-Wave 8 boutons | Salon | [📄 Manuel FR PDF](../hardware/NodOn-CRC-3-1-xx-UserGuide-150609-FR-online.pdf) |
+| 5 | Fibargroup | FGT001 Thermostatic Valve | Tête thermostatique | Bureau, Chambre, Suite parentale, Salle d'eau, Salle de bain | [📄 Manuel](../hardware/FGT-001-S-v1.4-web.pdf) |
+| 3 | Fibargroup | FGFS101 Flood Sensor | Détecteur d'eau | Salle de bain, Cuisine, Cellier | [📄 Manuel](../hardware/FGFS-101-FR-A-v1.00.pdf) |
+| 2 | Fibargroup | FGMS001 Motion Sensor | Capteur température/luminosité | Armoire de brassage, Grenier | [📄 Manuel](../hardware/FGMS-001-FR-A-v1.01.pdf) |
+| 2 | Fibargroup | FGWPE/F-101 Metered Wall Plug Switch | Prise connectée avec mesure | Salon (Canapé gauche, Canapé droite) | [📄 Manuel](../hardware/FGWPx-102-FR-A-v1.00.pdf) |
+| 1 | Fibargroup | FGWP102 Metered Wall Plug Switch | Prise connectée avec mesure | Cellier | [📄 Manuel](../hardware/FGWPx-102-FR-A-v1.00.pdf) |
+| 1 | ID-RF (NodOn) | CRC-3100 Octan Remote Control | Télécommande Z-Wave 8 boutons | Salon | [📄 Manuel](../hardware/NodOn-CRC-3-1-xx-UserGuide-150609-FR-online.pdf) |
 | 1 | UFairy G.R. Tech | DMWV1 Water Main Shut-Off | Vanne d'arrivée d'eau | Cellier | [📄 Manuel](../hardware/4f09da.pdf) |
-| 6 | Qubino | ZMNHCD Flush Shutter | Module volet roulant encastré | Bureau, Cellier, Cuisine, Salon, Séjour, Suite parentale | [📄 Manuel FR](../hardware/Qubino_Flush%20shutter%20PLUS%20user%20manual_V1.1_fra.pdf) |
+| 6 | Qubino | ZMNHCD Flush Shutter | Module volet roulant encastré | Bureau, Cellier, Cuisine, Salon, Séjour, Suite parentale | [📄 Manuel](../hardware/Qubino_Flush%20shutter%20PLUS%20user%20manual_V1.1_fra.pdf) |
 | 3 | Qubino | ZMNHSD DIN Rail Dimmer | Variateur d'éclairage sur rail DIN | Garage, Entrée, Terrasse | [📄 Manuel](../hardware/qubino_din_dimmer_user_manual_v1.0_eng_1.pdf) |
 
 ---

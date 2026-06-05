@@ -156,16 +156,16 @@
 > 🔌 Ethernet (RJ45)
 > 📹 Enregistrement et analyse vidéo via **Synology Surveillance Station** sur slm-disk4 (DVA1622)
 
-| Nb | Fabricant | Modèle | Nom HA | Localisation |
-|---|---|---|---|---|
-| 1 | Axis | M1065-L | slm-camera1 | Séjour |
-| 1 | Axis | M1065-L | slm-camera2 | Salon |
-| 1 | TRENDnet | TV-IP572PI | slm-camera3 | Cellier |
-| 1 | Axis | M1065-L | slm-camera4 | Palier |
-| 1 | Hikvision | DS-2CD2142FWD-IS | slm-camera5 | Réseau |
-| 1 | Reolink | Duo 2 PoE | slm-camera6 | Extérieur |
-| 1 | TP-Link Tapo | TC500 | slm-camera7 | Garage |
-| 1 | KONX | KW02C | slm-portier | Entrée |
+| Nb | Fabricant | Modèle | Nom HA | Localisation | Documentation |
+|---|---|---|---|---|---|
+| 1 | Axis | M1065-L | slm-camera1 | Séjour | — |
+| 1 | Axis | M1065-L | slm-camera2 | Salon | — |
+| 1 | TRENDnet | TV-IP572PI | slm-camera3 | Cellier | — |
+| 1 | Axis | M1065-L | slm-camera4 | Palier | — |
+| 1 | Hikvision | DS-2CD2142FWD-IS | slm-camera5 | Réseau | — |
+| 1 | Reolink | Duo 2 PoE | slm-camera6 | Extérieur | — |
+| 1 | TP-Link Tapo | TC500 | slm-camera7 | Garage | — |
+| 1 | KONX | KW02C | slm-portier | Entrée | [📄 Manuel](../hardware/KW02C-user-guide-FR-web.pdf) |
 
 ---
 
@@ -330,7 +330,7 @@
 
 | Nb | Modèle | Description | Localisation | Documentation |
 |---|---|---|---|---|
-| 2 | DCL | Armoire de toilette connectée | Salle de bain, Salle d'eau | [📄 Notice DCL](../hardware/notice_DCL.pdf) |
-| 2 | DCL | Plafonnier connecté | Salle de bain, Salle d'eau | [📄 Notice DCL](../hardware/notice_DCL.pdf) |
+| 2 | DCL | Armoire de toilette connectée | Salle de bain, Salle d'eau | [📄 Manuel](../hardware/notice_DCL.pdf) |
+| 2 | DCL | Plafonnier connecté | Salle de bain, Salle d'eau | [📄 Manuel](../hardware/notice_DCL.pdf) |
 | 2 | Switch | Interrupteur armoire de toilette | Salle de bain, Salle d'eau | [📄 Manuel](../hardware/GDE33208-0026Sept19.pdf) |
 | 2 | Switch | Interrupteur plafonnier | Salle de bain, Salle d'eau | [📄 Manuel](../hardware/GDE33208-0026Sept19.pdf) |

@@ -23,12 +23,12 @@
 
 | Nb | Fabricant | Modèle | Description | Localisation | Documentation |
 |---|---|---|---|---|---|
-| 1 | Aqara | P100 Multi-state sensor | Capteur boîte aux lettres (posture/contact) | Extérieur | [📄 Manuel FR](../hardware/Multi-State_Sensor_P100_User_Manual_FR.pdf) |
+| 1 | Aqara | P100 Multi-state sensor | Capteur boîte aux lettres (posture/contact) | Extérieur | [📄 Manuel](../hardware/Multi-State_Sensor_P100_User_Manual_FR.pdf) |
 
 ### Capteurs divers (2 appareils)
 
 | Nb | Fabricant | Modèle | Description | Localisation | Documentation |
 |---|---|---|---|---|---|
 | 1 | OWON | Temperature sensor | Sonde de température | Placard réseau | [📄 Manuel](../hardware/Manuel-utilisateur-Owon-THS317-ET.pdf) |
-| 1 | Woox | Smart garden irrigation control | Vanne d'arrosage | Extérieur | [📄 Manuel FR](../hardware/guide-utilisateur-controleur-arrosage-intelligent-woox.pdf) · [📄 Manuel R7060](../hardware/manuel-utilisation-woox-R7060.pdf) |
+| 1 | Woox | Smart garden irrigation control | Vanne d'arrosage | Extérieur | [📄 Manuel](../hardware/manuel-utilisation-woox-R7060.pdf) |
 
