@@ -158,9 +158,9 @@
 
 | Nb | Fabricant | Modèle | Description | Localisation |
 |---|---|---|---|---|
-| 7 | — | IP Camera | Caméras de surveillance (slm-camera1 à 7) | Extérieur / Intérieur |
+| 7 | Synology Surveillance Station | IP Camera | Caméras de surveillance (slm-camera1 à 7) | Extérieur / Intérieur |
+| 1 | Synology Surveillance Station | Portier IP | Portier vidéo | Entrée |
 | 1 | Ubiquiti | UNVR Instant | Enregistreur vidéo réseau | Armoire réseau |
-| 1 | — | Portier IP | Portier vidéo | Entrée |
 
 ---
 
