@@ -1,573 +1,600 @@
 alias: Notification des Alertes
-description: '**Statut :** Finalisé
+description: >-
+  **Statut :** Finalisé
 
   **Evolution :** Aucune
 
 
   **Déclencheurs :**
 
-  - Changement de température ou luminosité dans l''armoire de brassage et le grenier
+  - Changement de température ou luminosité dans l'armoire de brassage et le
+  grenier
 
-  - Changement d''état des détecteurs d''eau (SdB, Cuisine, Cellier)
+  - Changement d'état des détecteurs d'eau (SdB, Cuisine, Cellier)
 
-  - Changement d''état des serveurs réseau (slm-disk3, slm-disk4, ZappitiNAS, Livebox)
+  - Changement d'état des serveurs réseau (slm-disk3, slm-disk4, ZappitiNAS,
+  Livebox)
 
   - Brouillage réseau RF détecté
 
-  - Changement d''état des détecteurs de fumée (Séjour, Cellier, Étage) — montée et
-  descente
+  - Changement d'état des détecteurs de fumée (Séjour, Cellier, Étage) — montée
+  et descente
 
 
   **Fonctionnement :**
 
-  1. Chaque déclencheur identifié par son ID compose un message d''alerte spécifique
-  et met à jour un `input_boolean` garde-fou anti-doublon.
+  1. Chaque déclencheur identifié par son ID compose un message d'alerte
+  spécifique et met à jour un `input_boolean` garde-fou anti-doublon.
 
-  2. En cas de fuite d''eau → ferme automatiquement la vanne d''arrivée d''eau ; en
+  2. En cas de fuite d'eau → ferme automatiquement la vanne d'arrivée d'eau ; en
   cas de retour à la normale → rouvre la vanne.
 
-  3. Si un message a été composé → envoie simultanément : notification vocale, mail
-  et SMS.
+  3. Si un message a été composé → envoie simultanément : notification vocale,
+  mail et SMS.
 
 
   **Entités principales :**
 
   - `valve.vanne_d_arrivee_d_eau_nodeid_25_switch` : coupure automatique eau
 
-  - `input_boolean.fuite_*` / `input_boolean.temperature_armoire` / etc. : garde-fous
-  anti-doublon
+  - `input_boolean.fuite_*` / `input_boolean.temperature_armoire` / etc. :
+  garde-fous anti-doublon
 
-  - `binary_sensor.*_water_alarm` / `binary_sensor.*_fumee` : capteurs d''alerte'
+  - `binary_sensor.*_water_alarm` / `binary_sensor.*_fumee` : capteurs d'alerte
 triggers:
-- trigger: state
-  entity_id:
-  - sensor.temperature_de_l_armoire_de_brassage_nodeid_26_temperature_air
-  id: Temp_Armoire
-  to: null
-- trigger: state
-  entity_id:
-  - sensor.temperature_de_l_armoire_de_brassage_nodeid_26_illuminance
-  id: Luminosite_Armoire
-  to: null
-- trigger: state
-  entity_id:
-  - sensor.temperature_du_grenier_nodeid_27_illuminance
-  id: Luminosite_Grenier
-  to: null
-- trigger: state
-  entity_id:
-  - binary_sensor.detecteur_de_la_salle_de_bain_nodeid_28_water_alarm
-  id: Fuite_SDB
-- trigger: state
-  entity_id:
-  - binary_sensor.detecteur_de_la_cuisine_nodeid_30_water_alarm
-  id: Fuite_Cuisine
-- trigger: state
-  entity_id:
-  - binary_sensor.detecteur_du_cellier_nodeid_29_water_alarm
-  id: Fuite_Cellier
-- trigger: state
-  entity_id:
-  - binary_sensor.slm_disk3
-  id: slm-disk3
-  to: null
-- trigger: state
-  entity_id:
-  - binary_sensor.slm_disk4
-  id: slm-disk4
-  to: null
-- trigger: state
-  entity_id:
-  - device_tracker.zappitinas_zappitinas
-  id: ZappitiNas
-  for:
-    hours: 0
-    minutes: 5
-    seconds: 0
-  to: null
-- trigger: state
-  entity_id:
-  - binary_sensor.livebox_w7_wan_status
-  id: Livebox
-  attribute: link_state
-- trigger: state
-  entity_id:
-  - binary_sensor.jamming_0_detector
-  to: 'on'
-  id: RF_Player
-- trigger: state
-  entity_id:
-  - binary_sensor.sejour_fumee
-  - binary_sensor.cellier_fumee
-  - binary_sensor.etage_fumee
-  to:
-  - 'on'
-  - 'off'
-  id: Fumée
+  - entity_id:
+      - sensor.temperature_de_l_armoire_de_brassage_nodeid_26_temperature_air
+    id: Temp_Armoire
+    to: null
+    trigger: state
+  - entity_id:
+      - sensor.temperature_de_l_armoire_de_brassage_nodeid_26_illuminance
+    id: Luminosite_Armoire
+    to: null
+    trigger: state
+  - entity_id:
+      - sensor.temperature_du_grenier_nodeid_27_illuminance
+    id: Luminosite_Grenier
+    to: null
+    trigger: state
+  - entity_id:
+      - binary_sensor.detecteur_de_la_salle_de_bain_nodeid_28_water_alarm
+    id: Fuite_SDB
+    trigger: state
+  - entity_id:
+      - binary_sensor.detecteur_de_la_cuisine_nodeid_30_water_alarm
+    id: Fuite_Cuisine
+    trigger: state
+  - entity_id:
+      - binary_sensor.detecteur_du_cellier_nodeid_29_water_alarm
+    id: Fuite_Cellier
+    trigger: state
+  - entity_id:
+      - binary_sensor.slm_disk3
+    id: slm-disk3
+    to: null
+    trigger: state
+  - entity_id:
+      - binary_sensor.slm_disk4
+    id: slm-disk4
+    to: null
+    trigger: state
+  - entity_id:
+      - device_tracker.zappitinas_zappitinas
+    id: ZappitiNas
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+    to: null
+    trigger: state
+  - entity_id:
+      - binary_sensor.livebox_w7_wan_status
+    id: Livebox
+    attribute: link_state
+    trigger: state
+  - entity_id:
+      - binary_sensor.jamming_0_detector
+    to: "on"
+    id: RF_Player
+    trigger: state
+  - entity_id:
+      - binary_sensor.sejour_fumee
+      - binary_sensor.cellier_fumee
+      - binary_sensor.etage_fumee
+    to:
+      - "on"
+      - "off"
+    id: Fumée
+    trigger: state
 conditions: []
 actions:
-- choose:
-  - conditions:
-    - condition: trigger
-      id:
-      - Temp_Armoire
-    sequence:
-    - if:
-      - condition: numeric_state
-        entity_id: sensor.temperature_de_l_armoire_de_brassage_nodeid_26_temperature_air
-        above: 40.5
-      then:
-      - if:
-        - condition: state
-          entity_id: input_boolean.temperature_armoire
-          state: 'on'
-        then:
-        - stop: Fin normale
-        else:
-        - action: input_boolean.turn_on
-          metadata: {}
-          data: {}
-          target:
-            entity_id: input_boolean.temperature_armoire
-      - variables:
-          message_alerte: Température élevée dans l'armoire de brassage
-      else:
-      - if:
-        - condition: state
-          entity_id: input_boolean.temperature_armoire
-          state: 'off'
-        then:
-        - stop: Fin normale
-        else:
-        - action: input_boolean.turn_off
-          metadata: {}
-          data: {}
-          target:
-            entity_id: input_boolean.temperature_armoire
-      - variables:
-          message_alerte: Température normale dans l'armoire de brassage
-  - conditions:
-    - condition: trigger
-      id:
-      - Luminosite_Armoire
-    sequence:
-    - if:
-      - condition: numeric_state
-        entity_id: sensor.temperature_de_l_armoire_de_brassage_nodeid_26_illuminance
-        above: 10
-      then:
-      - if:
-        - condition: state
-          entity_id: input_boolean.luminosite_armoire
-          state: 'on'
-        then:
-        - stop: Fin normale
-        else:
-        - action: input_boolean.turn_on
-          metadata: {}
-          data: {}
-          target:
-            entity_id:
-            - input_boolean.luminosite_armoire
-      - variables:
-          message_alerte: Luminosité élevée dans l'armoire de brassage
-      else:
-      - if:
-        - condition: state
-          entity_id: input_boolean.luminosite_armoire
-          state: 'off'
-        then:
-        - stop: Fin normale
-        else:
-        - action: input_boolean.turn_off
-          metadata: {}
-          data: {}
-          target:
-            entity_id:
-            - input_boolean.luminosite_armoire
-      - variables:
-          message_alerte: Luminosité normale dans l'armoire de brassage
-  - conditions:
-    - condition: trigger
-      id:
-      - Luminosite_Grenier
-    sequence:
-    - if:
-      - condition: numeric_state
-        entity_id: sensor.temperature_du_grenier_nodeid_27_illuminance
-        above: 10
-      then:
-      - if:
-        - condition: state
-          entity_id: input_boolean.luminosite_grenier
-          state: 'on'
-        then:
-        - stop: Fin normale
-        else:
-        - action: input_boolean.turn_on
-          metadata: {}
-          data: {}
-          target:
-            entity_id:
-            - input_boolean.luminosite_grenier
-      - variables:
-          message_alerte: Luminosité élevée dans le grenier
-      else:
-      - if:
-        - condition: state
-          entity_id: input_boolean.luminosite_grenier
-          state: 'off'
-        then:
-        - stop: Fin normale
-        else:
-        - action: input_boolean.turn_off
-          metadata: {}
-          data: {}
-          target:
-            entity_id:
-            - input_boolean.luminosite_grenier
-      - variables:
-          message_alerte: Luminosité normale dans le grenier
-  - conditions:
-    - condition: trigger
-      id:
-      - Fuite_SDB
-      - Fuite_Cellier
-      - Fuite_Cuisine
-    sequence:
-    - choose:
+  - choose:
       - conditions:
-        - condition: trigger
-          id:
-          - Fuite_SDB
+          - condition: trigger
+            id:
+              - Temp_Armoire
         sequence:
-        - if:
-          - condition: state
-            entity_id: binary_sensor.detecteur_de_la_salle_de_bain_nodeid_28_water_alarm
-            state: 'on'
-          then:
           - if:
-            - condition: state
-              entity_id: input_boolean.fuite_sdb
-              state: 'on'
+              - condition: numeric_state
+                entity_id: >-
+                  sensor.temperature_de_l_armoire_de_brassage_nodeid_26_temperature_air
+                above: 40.5
             then:
-            - stop: Fin normale
+              - if:
+                  - condition: state
+                    entity_id: input_boolean.temperature_armoire
+                    state: "on"
+                then:
+                  - stop: Fin normale
+                else:
+                  - action: input_boolean.turn_on
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: input_boolean.temperature_armoire
+              - variables:
+                  message_alerte: Température élevée dans l'armoire de brassage
             else:
-            - action: input_boolean.turn_on
-              metadata: {}
-              data: {}
-              target:
-                entity_id:
-                - input_boolean.fuite_sdb
-          - variables:
-              message_alerte: Fuite d'eau dans la Salle de bain
-          else:
-          - if:
-            - condition: state
-              entity_id: input_boolean.fuite_sdb
-              state: 'off'
-            then:
-            - stop: Fin normale
-            else:
-            - action: input_boolean.turn_off
-              metadata: {}
-              data: {}
-              target:
-                entity_id: input_boolean.fuite_sdb
-          - variables:
-              message_alerte: Fin de la fuite d'eau dans la Salle de bain
+              - if:
+                  - condition: state
+                    entity_id: input_boolean.temperature_armoire
+                    state: "off"
+                then:
+                  - stop: Fin normale
+                else:
+                  - action: input_boolean.turn_off
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: input_boolean.temperature_armoire
+              - variables:
+                  message_alerte: Température normale dans l'armoire de brassage
+        note: >-
+          Température armoire de brassage → alerte si > 40.5°C (garde-fou
+          anti-doublon via input_boolean)
       - conditions:
-        - condition: trigger
-          id:
-          - Fuite_Cuisine
+          - condition: trigger
+            id:
+              - Luminosite_Armoire
         sequence:
-        - if:
-          - condition: state
-            entity_id: binary_sensor.detecteur_de_la_cuisine_nodeid_30_water_alarm
-            state: 'on'
-          then:
           - if:
-            - condition: state
-              entity_id: input_boolean.fuite_cuisine
-              state: 'on'
+              - condition: numeric_state
+                entity_id: >-
+                  sensor.temperature_de_l_armoire_de_brassage_nodeid_26_illuminance
+                above: 10
             then:
-            - stop: Fin normale
+              - if:
+                  - condition: state
+                    entity_id: input_boolean.luminosite_armoire
+                    state: "on"
+                then:
+                  - stop: Fin normale
+                else:
+                  - action: input_boolean.turn_on
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id:
+                        - input_boolean.luminosite_armoire
+              - variables:
+                  message_alerte: Luminosité élevée dans l'armoire de brassage
             else:
-            - action: input_boolean.turn_on
-              metadata: {}
-              data: {}
-              target:
-                entity_id:
-                - input_boolean.fuite_cuisine
-          - variables:
-              message_alerte: Fuite d'eau dans la Cuisine
-          else:
-          - if:
-            - condition: state
-              entity_id: input_boolean.fuite_cuisine
-              state: 'off'
-            then:
-            - stop: Fin normale
-            else:
-            - action: input_boolean.turn_off
-              metadata: {}
-              data: {}
-              target:
-                entity_id: input_boolean.fuite_cuisine
-          - variables:
-              message_alerte: Fin de la fuite d'eau dans la Cuisine
+              - if:
+                  - condition: state
+                    entity_id: input_boolean.luminosite_armoire
+                    state: "off"
+                then:
+                  - stop: Fin normale
+                else:
+                  - action: input_boolean.turn_off
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id:
+                        - input_boolean.luminosite_armoire
+              - variables:
+                  message_alerte: Luminosité normale dans l'armoire de brassage
+        note: Luminosité armoire de brassage → alerte si > 10 lux (porte ouverte?)
       - conditions:
-        - condition: trigger
-          id:
-          - Fuite_Cellier
+          - condition: trigger
+            id:
+              - Luminosite_Grenier
         sequence:
-        - if:
-          - condition: state
-            entity_id: binary_sensor.detecteur_du_cellier_nodeid_29_water_alarm
-            state: 'on'
-          then:
           - if:
-            - condition: state
-              entity_id: input_boolean.fuite_cellier
-              state: 'on'
+              - condition: numeric_state
+                entity_id: sensor.temperature_du_grenier_nodeid_27_illuminance
+                above: 10
             then:
-            - stop: Fin normale
+              - if:
+                  - condition: state
+                    entity_id: input_boolean.luminosite_grenier
+                    state: "on"
+                then:
+                  - stop: Fin normale
+                else:
+                  - action: input_boolean.turn_on
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id:
+                        - input_boolean.luminosite_grenier
+              - variables:
+                  message_alerte: Luminosité élevée dans le grenier
             else:
-            - action: input_boolean.turn_on
-              metadata: {}
-              data: {}
-              target:
-                entity_id: input_boolean.fuite_cellier
-          - variables:
-              message_alerte: Fuite d'eau dans le Cellier
-          else:
+              - if:
+                  - condition: state
+                    entity_id: input_boolean.luminosite_grenier
+                    state: "off"
+                then:
+                  - stop: Fin normale
+                else:
+                  - action: input_boolean.turn_off
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id:
+                        - input_boolean.luminosite_grenier
+              - variables:
+                  message_alerte: Luminosité normale dans le grenier
+        note: Luminosité grenier → alerte si > 10 lux
+      - conditions:
+          - condition: trigger
+            id:
+              - Fuite_SDB
+              - Fuite_Cellier
+              - Fuite_Cuisine
+        sequence:
+          - choose:
+              - conditions:
+                  - condition: trigger
+                    id:
+                      - Fuite_SDB
+                sequence:
+                  - if:
+                      - condition: state
+                        entity_id: >-
+                          binary_sensor.detecteur_de_la_salle_de_bain_nodeid_28_water_alarm
+                        state: "on"
+                    then:
+                      - if:
+                          - condition: state
+                            entity_id: input_boolean.fuite_sdb
+                            state: "on"
+                        then:
+                          - stop: Fin normale
+                        else:
+                          - action: input_boolean.turn_on
+                            metadata: {}
+                            data: {}
+                            target:
+                              entity_id:
+                                - input_boolean.fuite_sdb
+                      - variables:
+                          message_alerte: Fuite d'eau dans la Salle de bain
+                    else:
+                      - if:
+                          - condition: state
+                            entity_id: input_boolean.fuite_sdb
+                            state: "off"
+                        then:
+                          - stop: Fin normale
+                        else:
+                          - action: input_boolean.turn_off
+                            metadata: {}
+                            data: {}
+                            target:
+                              entity_id: input_boolean.fuite_sdb
+                      - variables:
+                          message_alerte: Fin de la fuite d'eau dans la Salle de bain
+              - conditions:
+                  - condition: trigger
+                    id:
+                      - Fuite_Cuisine
+                sequence:
+                  - if:
+                      - condition: state
+                        entity_id: >-
+                          binary_sensor.detecteur_de_la_cuisine_nodeid_30_water_alarm
+                        state: "on"
+                    then:
+                      - if:
+                          - condition: state
+                            entity_id: input_boolean.fuite_cuisine
+                            state: "on"
+                        then:
+                          - stop: Fin normale
+                        else:
+                          - action: input_boolean.turn_on
+                            metadata: {}
+                            data: {}
+                            target:
+                              entity_id:
+                                - input_boolean.fuite_cuisine
+                      - variables:
+                          message_alerte: Fuite d'eau dans la Cuisine
+                    else:
+                      - if:
+                          - condition: state
+                            entity_id: input_boolean.fuite_cuisine
+                            state: "off"
+                        then:
+                          - stop: Fin normale
+                        else:
+                          - action: input_boolean.turn_off
+                            metadata: {}
+                            data: {}
+                            target:
+                              entity_id: input_boolean.fuite_cuisine
+                      - variables:
+                          message_alerte: Fin de la fuite d'eau dans la Cuisine
+              - conditions:
+                  - condition: trigger
+                    id:
+                      - Fuite_Cellier
+                sequence:
+                  - if:
+                      - condition: state
+                        entity_id: >-
+                          binary_sensor.detecteur_du_cellier_nodeid_29_water_alarm
+                        state: "on"
+                    then:
+                      - if:
+                          - condition: state
+                            entity_id: input_boolean.fuite_cellier
+                            state: "on"
+                        then:
+                          - stop: Fin normale
+                        else:
+                          - action: input_boolean.turn_on
+                            metadata: {}
+                            data: {}
+                            target:
+                              entity_id: input_boolean.fuite_cellier
+                      - variables:
+                          message_alerte: Fuite d'eau dans le Cellier
+                    else:
+                      - if:
+                          - condition: state
+                            entity_id: input_boolean.fuite_cellier
+                            state: "off"
+                        then:
+                          - stop: Fin normale
+                        else:
+                          - action: input_boolean.turn_off
+                            metadata: {}
+                            data: {}
+                            target:
+                              entity_id: input_boolean.fuite_cellier
+                      - variables:
+                          message_alerte: Fin de la fuite d'eau dans le Cellier
           - if:
-            - condition: state
-              entity_id: input_boolean.fuite_cellier
-              state: 'off'
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: >-
+                      binary_sensor.detecteur_de_la_salle_de_bain_nodeid_28_water_alarm
+                    state: "on"
+                  - condition: state
+                    entity_id: >-
+                      binary_sensor.detecteur_de_la_cuisine_nodeid_30_water_alarm
+                    state: "on"
+                  - condition: state
+                    entity_id: binary_sensor.detecteur_du_cellier_nodeid_29_water_alarm
+                    state: "on"
             then:
-            - stop: Fin normale
+              - if:
+                  - condition: state
+                    entity_id: valve.vanne_d_arrivee_d_eau_nodeid_25_switch
+                    state: "on"
+                then:
+                  - action: valve.close_valve
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: valve.vanne_d_arrivee_d_eau_nodeid_25_switch
             else:
-            - action: input_boolean.turn_off
-              metadata: {}
-              data: {}
-              target:
-                entity_id: input_boolean.fuite_cellier
-          - variables:
-              message_alerte: Fin de la fuite d'eau dans le Cellier
-    - if:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: binary_sensor.detecteur_de_la_salle_de_bain_nodeid_28_water_alarm
-          state: 'on'
-        - condition: state
-          entity_id: binary_sensor.detecteur_de_la_cuisine_nodeid_30_water_alarm
-          state: 'on'
-        - condition: state
-          entity_id: binary_sensor.detecteur_du_cellier_nodeid_29_water_alarm
-          state: 'on'
-      then:
-      - if:
-        - condition: state
-          entity_id: valve.vanne_d_arrivee_d_eau_nodeid_25_switch
-          state: 'on'
-        then:
-        - action: valve.close_valve
-          metadata: {}
-          data: {}
-          target:
-            entity_id: valve.vanne_d_arrivee_d_eau_nodeid_25_switch
-      else:
-      - if:
-        - condition: state
-          entity_id: valve.vanne_d_arrivee_d_eau_nodeid_25_switch
-          state: 'off'
-        then:
-        - action: valve.open_valve
-          metadata: {}
-          data: {}
-          target:
-            entity_id: valve.vanne_d_arrivee_d_eau_nodeid_25_switch
-  - conditions:
-    - condition: trigger
-      id:
-      - slm-disk3
-      - slm-disk4
-      - ZappitiNas
-      - Livebox
-    sequence:
-    - choose:
+              - if:
+                  - condition: state
+                    entity_id: valve.vanne_d_arrivee_d_eau_nodeid_25_switch
+                    state: "off"
+                then:
+                  - action: valve.open_valve
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: valve.vanne_d_arrivee_d_eau_nodeid_25_switch
+        note: >-
+          Fuite d'eau → compose message SdB/Cuisine/Cellier + ferme
+          automatiquement la vanne d'arrivée d'eau ; la rouvre si plus de fuite
       - conditions:
-        - condition: trigger
-          id:
-          - slm-disk3
+          - condition: trigger
+            id:
+              - slm-disk3
+              - slm-disk4
+              - ZappitiNas
+              - Livebox
         sequence:
-        - if:
-          - condition: state
-            entity_id: binary_sensor.slm_disk3
-            state:
-            - 'off'
-          then:
-          - variables:
-              message_alerte: Le serveur slm-disk3 ne répond plus
-          else:
-          - variables:
-              message_alerte: Le serveur slm-disk3 est de retour
+          - choose:
+              - conditions:
+                  - condition: trigger
+                    id:
+                      - slm-disk3
+                sequence:
+                  - if:
+                      - condition: state
+                        entity_id: binary_sensor.slm_disk3
+                        state:
+                          - "off"
+                    then:
+                      - variables:
+                          message_alerte: Le serveur slm-disk3 ne répond plus
+                    else:
+                      - variables:
+                          message_alerte: Le serveur slm-disk3 est de retour
+              - conditions:
+                  - condition: trigger
+                    id:
+                      - slm-disk4
+                sequence:
+                  - if:
+                      - condition: state
+                        entity_id: binary_sensor.slm_disk4
+                        state:
+                          - "off"
+                    then:
+                      - variables:
+                          message_alerte: Le serveur slm-disk4 ne répond plus
+                    else:
+                      - variables:
+                          message_alerte: Le serveur slm-disk4 est de retour
+              - conditions:
+                  - condition: trigger
+                    id:
+                      - ZappitiNas
+                sequence:
+                  - if:
+                      - condition: state
+                        entity_id: device_tracker.zappitinas_zappitinas
+                        state:
+                          - not_home
+                    then:
+                      - if:
+                          - condition: state
+                            entity_id: input_boolean.etat_zapittinas
+                            state:
+                              - "on"
+                        then:
+                          - stop: Fin normale
+                        else:
+                          - action: input_boolean.turn_on
+                            metadata: {}
+                            data: {}
+                            target:
+                              entity_id: input_boolean.etat_zapittinas
+                      - variables:
+                          message_alerte: Le serveur ZAPPITINAS ne répond plus
+                    else:
+                      - if:
+                          - condition: state
+                            entity_id: input_boolean.etat_zapittinas
+                            state:
+                              - "off"
+                        then:
+                          - stop: Fin normale
+                        else:
+                          - action: input_boolean.turn_off
+                            metadata: {}
+                            data: {}
+                            target:
+                              entity_id: input_boolean.etat_zapittinas
+                      - variables:
+                          message_alerte: Le serveur ZAPPITINAS est de retour
+              - conditions:
+                  - condition: trigger
+                    id:
+                      - Livebox
+                sequence:
+                  - if:
+                      - condition: state
+                        entity_id: binary_sensor.livebox_w7_wan_status
+                        state:
+                          - "off"
+                    then:
+                      - variables:
+                          message_alerte: Internet ne répond plus.
+                    else:
+                      - variables:
+                          message_alerte: Internet est de retour.
+        note: >-
+          Serveurs réseau → alerte si slm-disk3/4 hors ligne, ZappitiNAS absent
+          ou Livebox WAN down
       - conditions:
-        - condition: trigger
-          id:
-          - slm-disk4
+          - condition: trigger
+            id:
+              - RF_Player
         sequence:
-        - if:
-          - condition: state
-            entity_id: binary_sensor.slm_disk4
-            state:
-            - 'off'
-          then:
-          - variables:
-              message_alerte: Le serveur slm-disk4 ne répond plus
-          else:
-          - variables:
-              message_alerte: Le serveur slm-disk4 est de retour
-      - conditions:
-        - condition: trigger
-          id:
-          - ZappitiNas
-        sequence:
-        - if:
-          - condition: state
-            entity_id: device_tracker.zappitinas_zappitinas
-            state:
-            - not_home
-          then:
           - if:
-            - condition: state
-              entity_id: input_boolean.etat_zapittinas
-              state:
-              - 'on'
+              - condition: state
+                entity_id: binary_sensor.jamming_0_detector
+                state: "on"
             then:
-            - stop: Fin normale
+              - if:
+                  - condition: state
+                    entity_id: input_boolean.brouillage_reseau
+                    state: "on"
+                then:
+                  - stop: Fin normale
+                else:
+                  - action: input_boolean.turn_on
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: input_boolean.brouillage_reseau
+              - variables:
+                  message_alerte: Brouillage réseau.
             else:
-            - action: input_boolean.turn_on
-              metadata: {}
-              data: {}
-              target:
-                entity_id: input_boolean.etat_zapittinas
-          - variables:
-              message_alerte: Le serveur ZAPPITINAS ne répond plus
-          else:
-          - if:
-            - condition: state
-              entity_id: input_boolean.etat_zapittinas
-              state:
-              - 'off'
-            then:
-            - stop: Fin normale
-            else:
-            - action: input_boolean.turn_off
-              metadata: {}
-              data: {}
-              target:
-                entity_id: input_boolean.etat_zapittinas
-          - variables:
-              message_alerte: Le serveur ZAPPITINAS est de retour
+              - if:
+                  - condition: state
+                    entity_id: input_boolean.brouillage_reseau
+                    state: "off"
+                then:
+                  - stop: Fin normale
+                else:
+                  - action: input_boolean.turn_off
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id:
+                        - input_boolean.brouillage_reseau
+              - variables:
+                  message_alerte: Fin du brouillage réseau.
+        note: >-
+          Brouillage RF → alerte jamming détecté via RFPlayer (garde-fou
+          anti-doublon)
       - conditions:
-        - condition: trigger
-          id:
-          - Livebox
+          - condition: trigger
+            id:
+              - Fumée
         sequence:
-        - if:
-          - condition: state
-            entity_id: binary_sensor.livebox_w7_wan_status
-            state:
-            - 'off'
-          then:
-          - variables:
-              message_alerte: Internet ne répond plus.
-          else:
-          - variables:
-              message_alerte: Internet est de retour.
-  - conditions:
-    - condition: trigger
-      id:
-      - RF_Player
-    sequence:
-    - if:
-      - condition: state
-        entity_id: binary_sensor.jamming_0_detector
-        state: 'on'
-      then:
-      - if:
-        - condition: state
-          entity_id: input_boolean.brouillage_reseau
-          state: 'on'
-        then:
-        - stop: Fin normale
-        else:
-        - action: input_boolean.turn_on
-          metadata: {}
-          data: {}
-          target:
-            entity_id: input_boolean.brouillage_reseau
-      - variables:
-          message_alerte: Brouillage réseau.
-      else:
-      - if:
-        - condition: state
-          entity_id: input_boolean.brouillage_reseau
-          state: 'off'
-        then:
-        - stop: Fin normale
-        else:
-        - action: input_boolean.turn_off
-          metadata: {}
-          data: {}
-          target:
-            entity_id:
-            - input_boolean.brouillage_reseau
-      - variables:
-          message_alerte: Fin du brouillage réseau.
-  - conditions:
-    - condition: trigger
-      id:
-      - Fumée
-    sequence:
-    - if:
-      - condition: or
-        conditions:
-        - condition: state
-          state:
-          - 'on'
-          entity_id: binary_sensor.sejour_fumee
-        - condition: state
-          state:
-          - 'on'
-          entity_id: binary_sensor.cellier_fumee
-        - condition: state
-          state:
-          - 'on'
-          entity_id: binary_sensor.etage_fumee
-      then:
-      - variables:
-          message_alerte: Detection de fumée
-      else:
-      - variables:
-          message_alerte: Fin de la detection de fumée
-- if:
-  - condition: template
-    value_template: '{{ message_alerte != null }}'
-  then:
-  - action: script.notification_vocale
-    data:
-      message_vocal: '{{ message_alerte }}'
-  - action: script.notification_mail
-    data:
-      message_type: Alerte
-      message_mail: '{{ message_alerte }}'
-  - action: script.notification_sms
-    data:
-      message_type: Alerte
-      message_sms: '{{ message_alerte }}'
+          - if:
+              - condition: or
+                conditions:
+                  - condition: state
+                    state:
+                      - "on"
+                    entity_id: binary_sensor.sejour_fumee
+                  - condition: state
+                    state:
+                      - "on"
+                    entity_id: binary_sensor.cellier_fumee
+                  - condition: state
+                    state:
+                      - "on"
+                    entity_id: binary_sensor.etage_fumee
+            then:
+              - variables:
+                  message_alerte: Detection de fumée
+            else:
+              - variables:
+                  message_alerte: Fin de la detection de fumée
+        note: >-
+          Détecteurs de fumée → alerte montée/descente des 3 capteurs (Séjour,
+          Cellier, Étage)
+  - if:
+      - condition: template
+        value_template: "{{ message_alerte != null }}"
+    then:
+      - action: script.notification_vocale
+        data:
+          message_vocal: "{{ message_alerte }}"
+      - action: script.notification_mail
+        data:
+          message_type: Alerte
+          message_mail: "{{ message_alerte }}"
+      - action: script.notification_sms
+        data:
+          message_type: Alerte
+          message_sms: "{{ message_alerte }}"
 mode: queued
 max: 10
