@@ -39,7 +39,7 @@ Intégration locale (sans cloud) des appareils Dyson.
 
 **Appareils configurés :**
 - Dyson Pure Hot + Cool (purificateur/chauffage Salon) — `fan.salon`
-- Dyson Pure Cool (Bureau) — en erreur de connexion
+- Dyson Pure Cool (Bureau) — `fan.chambre_principale`
 
 ---
 
