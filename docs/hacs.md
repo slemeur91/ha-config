@@ -395,7 +395,7 @@ sort:
 collapse: 60
 ```
 
-![Battery State Card](../images/Battery State Card.png)
+![Battery State Card](../images/battery-state-card.png)
 
 ### card-mod
 > [GitHub](https://github.com/thomasloven/lovelace-card-mod)
@@ -477,7 +477,7 @@ showMonthlyCostHistoryChart: false
 showYearlyCostHistoryChart: false
 ```
 
-![GrDF Gazpar card](../images/GrDf Gazpar card.png)
+![GrDF Gazpar card](../images/grdf-gazpar-card.png)
 
 ### Waze Travel Time Card
 > [GitHub](https://github.com/r-renato/ha-card-waze-travel-time)
