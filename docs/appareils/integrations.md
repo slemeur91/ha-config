@@ -1,4 +1,4 @@
-# Intégrations (WiFi, Ethernet RJ45 & Autres) — 143 appareils
+# Intégrations (WiFi, Ethernet RJ45 & Autres) — 145 appareils
 
 [← Retour Appareils](../appareils.md)
 
@@ -114,28 +114,28 @@
 
 | Nom | Type | Localisation |
 |---|---|---|
-| EcoRT2 | Passerelle | Garage |
-| Index Base (EDF Info) | Télé-information | Garage |
-| Tele-Info | Poste | Extérieur |
-| Compteur Eau froide | Compteur impulsion eau | Cellier |
-| Compteur Eau Chaude | Compteur impulsion eau | Cellier |
-| Compteur GAZ | Compteur impulsion gaz | Extérieur |
+| Armoire Ecodevice RT2 | Poste consommation | Garage |
+| Autre PC | Poste consommation | Consommation |
+| Cabane | Poste consommation | Extérieur |
 | Chaudière | Poste consommation | Cellier |
 | Chauffe eau | Poste consommation | Cellier |
+| Compteur Eau Chaude | Compteur impulsion eau | Cellier |
+| Compteur Eau froide | Compteur impulsion eau | Cellier |
+| Compteur GAZ | Compteur impulsion gaz | Extérieur |
+| EcoRT2 | Passerelle | Garage |
+| Eclairage | Poste consommation | Consommation |
+| Four | Poste consommation | Cuisine |
+| Index Base (EDF Info) | Télé-information | Garage |
+| PC Cuisine+Ext | Poste consommation | Cuisine |
+| PC Lave vaisselle | Poste consommation | Cuisine |
+| PC LL et SL | Poste consommation | Salle de bain |
 | PC Poêle | Poste consommation | Séjour |
 | PC Réseau | Poste consommation | Réseau |
-| Armoire Ecodevice RT2 | Poste consommation | Garage |
-| PC LL et SL | Poste consommation | Salle de bain |
-| VMC | Poste consommation | Grenier |
-| Four | Poste consommation | Cuisine |
 | Plaque | Poste consommation | Cuisine |
-| PC Lave vaisselle | Poste consommation | Cuisine |
-| PC Cuisine+Ext | Poste consommation | Cuisine |
-| Eclairage | Poste consommation | — |
-| Volets | Poste consommation | — |
-| Autre PC | Poste consommation | — |
-| Cabane | Poste consommation | Extérieur |
 | Production | Poste production | Extérieur |
+| Tele-Info | Poste | Extérieur |
+| VMC | Poste consommation | Grenier |
+| Volets | Poste consommation | Consommation |
 
 ---
 
@@ -154,6 +154,7 @@
 
 > 🏠 **Natif HA** — Intégration : **UniFi Protect** — [Documentation](https://www.home-assistant.io/integrations/unifiprotect/)
 > 🔌 Ethernet (RJ45)
+> 📹 Enregistrement et analyse vidéo via **Synology Surveillance Station** sur slm-disk4 (DVA1622)
 
 | Nb | Fabricant | Modèle | Description | Localisation |
 |---|---|---|---|---|
@@ -163,15 +164,17 @@
 
 ---
 
-## Infrastructure & NAS (3 appareils)
+## Infrastructure & NAS (5 appareils)
 
 > 🔌 Ethernet (RJ45)
 
-| Nb | Fabricant | Modèle | Description | Intégration |
-|---|---|---|---|---|
-| 2 | Synology | NAS (slm-disk3, slm-disk4) | Serveurs NAS | 🏠 Natif HA — Synology DSM |
-| 1 | Ubiquiti | UniFi | Switch/AP réseau | 🏠 Natif HA — UniFi Network |
-| 1 | Orange | Livebox | Box internet | 🔧 HACS — [Orange Livebox](https://github.com/cyr-ius/hass-livebox-component) |
+| Nb | Fabricant | Modèle | Nom | Description | Intégration |
+|---|---|---|---|---|---|
+| 1 | Synology | DS916+ | slm-disk3 | Serveur NAS | 🏠 Natif HA — Synology DSM |
+| 1 | Synology | DVA1622 | slm-disk4 | Serveur NAS + Surveillance Station | 🏠 Natif HA — Synology DSM |
+| 1 | Ubiquiti | Cloud Gateway Fiber | — | Routeur | 🏠 Natif HA — UniFi Network |
+| 1 | Ubiquiti | U7 Pro | — | Point d'accès WiFi | 🏠 Natif HA — UniFi Network |
+| 1 | Orange | Livebox 7 | — | Box internet | 🔧 HACS — [Orange Livebox](https://github.com/cyr-ius/hass-livebox-component) |
 
 ---
 

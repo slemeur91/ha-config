@@ -10,7 +10,7 @@
 | Entités totales | 2 156 |
 | Domaines (types d'entités) | 43 |
 | Zones / Pièces | 23 |
-| Appareils connectés | **193** |
+| Appareils connectés | **195** |
 | Automatisations | **50** (46 actives) |
 | Scripts | **16** |
 | Blueprints | **2** |
@@ -32,14 +32,14 @@
 
 ---
 
-### 🔌 Appareils par technologie (193)
+### 🔌 Appareils par technologie (195)
 
 | Technologie | Appareils | Mode | Détail |
 |---|---|---|---|
 | Z-Wave | **25** | ✅ Local | [→ Détail](docs/appareils/zwave.md) |
 | Zigbee | **20** | ✅ Local | [→ Détail](docs/appareils/zigbee.md) |
 | EnOcean | **4** | ✅ Local | [→ Détail](docs/appareils/enocean.md) |
-| Intégrations (WiFi, Ethernet RJ45 & Autres) | **143** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/integrations.md) |
+| Intégrations (WiFi, Ethernet RJ45 & Autres) | **145** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/integrations.md) |
 | Thread / Matter | **1** | ✅ Local | [→ Détail](docs/appareils/matter.md) |
 
 ---
@@ -272,7 +272,7 @@ Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être captu
 
 | Carte | Appareils | Rôle | GitHub | Source |
 |---|---|---|---|---|
-| apexcharts-card | — | Graphiques avancés (consommation énergie) | [RomRider/apexcharts-card](https://github.com/RomRider/apexcharts-card) | 🔧 HACS |
+| apexcharts-card | 1 | Graphiques avancés (consommation énergie) | [RomRider/apexcharts-card](https://github.com/RomRider/apexcharts-card) | 🔧 HACS |
 | Battery State Card | 1 | Tableau de bord des niveaux de batteries | [maxwroc/battery-state-card](https://github.com/maxwroc/battery-state-card) | 🔧 HACS |
 | card-mod | 1 | CSS personnalisé sur n'importe quelle carte Lovelace | [thomasloven/lovelace-card-mod](https://github.com/thomasloven/lovelace-card-mod) | 🔧 HACS |
 | Custom-ui | — | Templates et couleurs d'icônes personnalisés | [Mariusthvdb/custom-ui](https://github.com/Mariusthvdb/custom-ui) | 🔧 HACS |
