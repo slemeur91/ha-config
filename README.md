@@ -26,9 +26,9 @@
 
 | Section | Détail |
 |---|---|
-| Notifications SMTP (email) | Serveur SMTP local, `notify.email`, port 25 |
 | Débogage — Logger | Niveaux `debug` pour Somfy Protexial, Local Agenda, Apple TV, pyatv |
 | Personnalisation — Homeassistant | Packages + correction `state_class: total` sur 28 capteurs d'énergie |
+| Notifications SMTP (email) | Serveur SMTP local, `notify.email`, port 25 |
 
 ---
 
