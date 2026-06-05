@@ -36,6 +36,21 @@
 
 ---
 
+## `automation.notification_appareils_en_batterie_faible_mail_hebdomadaire` — Notification Mail Hebdomadaire Batteries
+> [📄 Voir le YAML](../../automations/notification_appareils_en_batterie_faible_mail_hebdomadaire.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- Hebdomadaire (selon configuration)
+
+**Fonctionnement :**
+1. Envoie un mail récapitulatif des appareils dont la batterie est sous le seuil d'alerte.
+
+**Entrées utilisées :** Aucune entrée helper.
+
+---
+
 ## `automation.notification_de_batterie_remplacee` — Batterie Remplacée
 > [📄 Voir le YAML](../../automations/notification_de_batterie_remplacee.yaml)
 
