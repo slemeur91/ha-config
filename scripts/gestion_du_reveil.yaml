@@ -38,6 +38,8 @@ gestion_du_reveil:
         option: REVEIL
       target:
         entity_id: input_select.sonos_action
+    note: Si SONOS déjà en REVEIL → re-déclenche directement l'automation ; sinon
+      positionne l'action REVEIL (déclenche via state trigger)
   - action: script.notification_mail
     data:
       message_type: Information

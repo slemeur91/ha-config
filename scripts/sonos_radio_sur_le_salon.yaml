@@ -41,6 +41,7 @@ sonos_radio_sur_le_salon:
         minutes: 0
         seconds: 5
         milliseconds: 0
+      note: Repli après 5s si Voltage non démarré → flux direct Radio Browser
     - if:
       - condition: not
         conditions:

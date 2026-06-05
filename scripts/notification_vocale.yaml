@@ -95,6 +95,8 @@ notification_vocale:
           data:
             with_group: true
             entity_id: media_player.suite_parentale
+      note: Mode COUCHE → diffuse sur suite parentale uniquement (snapshot→pause→TTS
+        60%→attente→restore)
     - conditions:
       - condition: state
         entity_id: input_select.sonos
@@ -242,6 +244,8 @@ notification_vocale:
           data:
             with_group: false
             entity_id: media_player.garage
+      note: Mode REVEIL → diffuse sur salon+suite (+ garage si TéléTravail), volume
+        40% garage, 60% salon (snapshot→pause→TTS→attente→restore)
     default:
     - sequence:
       - action: sonos.snapshot
@@ -387,6 +391,8 @@ notification_vocale:
         data:
           with_group: false
           entity_id: media_player.garage
+      note: Mode ON ou autre (défaut) → diffuse sur Salon (+ garage si TéléTravail),
+        volumes 60%/40%, snapshot→pause→TTS→attente→restore
   - delay:
       hours: 0
       minutes: 0

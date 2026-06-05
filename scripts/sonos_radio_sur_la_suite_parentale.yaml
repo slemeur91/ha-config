@@ -64,6 +64,8 @@ sonos_radio_sur_la_suite_parentale:
                 media_content_id: ''
               - media_content_type: favorites_folder
                 media_content_id: object.item.audioItem.audioBroadcast
+      note: Entre 4h et 20h30 → lance Voltage ; sinon → lance Évasion FM Essonne (radio
+        de nuit)
     - delay:
         hours: 0
         minutes: 0
@@ -95,4 +97,6 @@ sonos_radio_sur_la_suite_parentale:
                 media_content_id: media-source://radio_browser
               - media_content_type: music
                 media_content_id: media-source://radio_browser/country/FR
+      note: Repli après 5s si lecture non démarrée → flux direct Radio Browser Évasion
+        FM Essonne
   mode: restart

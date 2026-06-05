@@ -22,18 +22,18 @@
 
 ---
 
-## `automation.gestion_de_la_boite_aux_lettres` — Gestion de la Boîte aux Lettres
-> [📄 Voir le YAML](../../automations/gestion_de_la_boite_aux_lettres.yaml)
+## `automation.depot_courrier_p100_unique` — 📬 Dépôt courrier — P100 unique
+> [📄 Voir le YAML](../../automations/depot_courrier_p100_unique.yaml)
 
-**Statut :** En production | **Evolution :** Aucune
+**Statut :** Finalisé | **Evolution :** Aucune
 
 **Déclencheurs :**
-- Changement de `sensor.p100_boite_aux_lettres_device_posture`
+- `sensor.p100_boite_aux_lettres_orientation` passe à ON
 
 **Fonctionnement :**
-1. `input_boolean.courrier_en_attente` ON → désactive le flag, compose "boîte vidée".
-2. Flag OFF → active le flag, compose "colis/courrier déposé".
-3. Envoie mail + SMS.
+1. Attend 4 s pour confirmer le signal (déduplication).
+2. Active `input_boolean.courrier_en_attente`.
+3. Notification vocale + SMS "courrier déposé".
 
 **Entrées utilisées :**
 
@@ -43,19 +43,25 @@
 
 ---
 
-## `automation.correction_tuya` — Correction Tuya
-> [📄 Voir le YAML](../../automations/correction_tuya.yaml)
+## `automation.ouverture_porte_p100_unique` — 🔓 Ouverture porte — P100 unique
+> [📄 Voir le YAML](../../automations/ouverture_porte_p100_unique.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
 **Déclencheurs :**
-- Démarrage de Home Assistant
+- `binary_sensor.p100_boite_aux_lettres_contact` passe à ON
 
 **Fonctionnement :**
-1. Attend 5 minutes (initialisation Tuya).
-2. Force l'activation du switch USB de la multiprise garage.
+1. Attend 5 s puis vérifie la fraîcheur du signal (déduplication).
+2. `input_boolean.courrier_en_attente` ON → désactive le flag, compose "boîte vidée".
+3. Flag OFF → compose "colis déposé".
+4. Notification vocale + SMS.
 
-**Entrées utilisées :** Aucune entrée helper.
+**Entrées utilisées :**
+
+| Entrée | Type | Config |
+|---|---|---|
+| `input_boolean.courrier_en_attente` | input_boolean | on/off |
 
 ---
 

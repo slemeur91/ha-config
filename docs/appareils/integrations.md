@@ -163,8 +163,8 @@
 | 1 | Axis | M1065-L | slm-camera2 | Salon | [📄 Manuel](../hardware/um_m1065l_1632647_en_1704.pdf) · [📄 Installation](../hardware/ig_m1065l_1665730_en_1610.pdf) · [📄 Datasheet](../hardware/ds_m1065l_1650486_fr_1612.pdf) |
 | 1 | TRENDnet | TV-IP572PI | slm-camera3 | Cellier | [📄 Manuel](../hardware/UG_TV-IP572P_TV-IP572PI(v1.0R).pdf) · [📄 Web guide](../hardware/FR_Web_TV_IP572PI(V1.0R)_04272012.pdf) · [📄 Spec](../hardware/FR_spec_TV-IP572PI(V1.0R).pdf) |
 | 1 | Axis | M1065-L | slm-camera4 | Palier | [📄 Manuel](../hardware/um_m1065l_1632647_en_1704.pdf) · [📄 Installation](../hardware/ig_m1065l_1665730_en_1610.pdf) · [📄 Datasheet](../hardware/ds_m1065l_1650486_fr_1612.pdf) |
-| 1 | Hikvision | DS-2CD2142FWD-IS | slm-camera5 | Réseau | — |
-| 1 | Reolink | Duo 2 PoE | slm-camera6 | Extérieur | — |
+| 1 | Hikvision | DS-2CD2142FWD-IS | slm-camera5 | Réseau | [📄 Manuel](../hardware/DS-2CD2142FWD-I\(W\)\(S\).pdf) |
+| 1 | Reolink | Duo 2 PoE | slm-camera6 | Extérieur | [📄 Manuel](../hardware/e861e2.pdf) |
 | 1 | TP-Link Tapo | TC500 | slm-camera7 | Garage | — |
 | 1 | KONX | KW02C | slm-portier | Entrée | [📄 Manuel](../hardware/KW02C-user-guide-FR-web.pdf) |
 
