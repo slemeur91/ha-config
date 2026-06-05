@@ -321,7 +321,7 @@
 
 | Nb | Modèle | Description | Localisation | Documentation |
 |---|---|---|---|---|
-| 2 | DCL | Armoire de toilette connectée | Salle de bain, Salle d'eau | [📄 Manuel](../hardware/GDE33208-0026Sept19.pdf) · [📄 Notice DCL](../hardware/notice_DCL.pdf) |
-| 2 | DCL | Plafonnier connecté | Salle de bain, Salle d'eau | [📄 Manuel](../hardware/GDE33208-0026Sept19.pdf) · [📄 Notice DCL](../hardware/notice_DCL.pdf) |
-| 2 | Switch | Interrupteur armoire de toilette | Salle de bain, Salle d'eau | — |
-| 2 | Switch | Interrupteur plafonnier | Salle de bain, Salle d'eau | — |
+| 2 | DCL | Armoire de toilette connectée | Salle de bain, Salle d'eau | [📄 Notice DCL](../hardware/notice_DCL.pdf) |
+| 2 | DCL | Plafonnier connecté | Salle de bain, Salle d'eau | [📄 Notice DCL](../hardware/notice_DCL.pdf) |
+| 2 | Switch | Interrupteur armoire de toilette | Salle de bain, Salle d'eau | [📄 Manuel](../hardware/GDE33208-0026Sept19.pdf) |
+| 2 | Switch | Interrupteur plafonnier | Salle de bain, Salle d'eau | [📄 Manuel](../hardware/GDE33208-0026Sept19.pdf) |
