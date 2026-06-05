@@ -1,68 +1,78 @@
 alias: Notification appareils en batterie faible
-description: '**Statut :** Finalisé
+description: >-
+  **Statut :** Finalisé
 
   **Evolution :** Aucune
 
 
   **Déclencheurs :**
 
-  - Événement `battery_notes_battery_threshold` (batterie passée en dessous du seuil)
+  - Événement `battery_notes_battery_threshold` (batterie passée en dessous du
+  seuil)
 
-  - Événement `battery_notes_battery_threshold` (batterie revenue au-dessus du seuil)
+  - Événement `battery_notes_battery_threshold` (batterie revenue au-dessus du
+  seuil)
 
 
   **Fonctionnement :**
 
-  1. Batterie faible → crée une notification persistante dans HA avec le nom de l''appareil,
-  le niveau de batterie et le type de pile nécessaire.
+  1. Batterie faible → crée une notification persistante dans HA avec le nom de
+  l'appareil, le niveau de batterie et le type de pile nécessaire.
 
-  2. Batterie revenue à la normale → supprime automatiquement la notification persistante
-  correspondante.
+  2. Batterie revenue à la normale → supprime automatiquement la notification
+  persistante correspondante.
 
 
   **Entités principales :**
 
-  - Intégration `battery_notes` : source des événements de seuil'
+  - Intégration `battery_notes` : source des événements de seuil
 triggers:
-- trigger: event
-  event_type: battery_notes_battery_threshold
-  event_data:
-    battery_low: true
-  id: low
-  alias: Batterie passée en niveau faible
-- trigger: event
-  event_type: battery_notes_battery_threshold
-  event_data:
-    battery_low: false
-  id: high
-  alias: Batterie revenue à un niveau suffisant
+  - event_type: battery_notes_battery_threshold
+    event_data:
+      battery_low: true
+    id: low
+    alias: Batterie passée en niveau faible
+    trigger: event
+  - event_type: battery_notes_battery_threshold
+    event_data:
+      battery_low: false
+    id: high
+    alias: Batterie revenue à un niveau suffisant
+    trigger: event
 conditions: []
 actions:
-- choose:
-  - conditions:
-    - condition: trigger
-      id:
-      - low
-    sequence:
-    - action: persistent_notification.create
-      data:
-        title: 'Batterie faible — {{ trigger.event.data.device_name }}
-
-          '
-        notification_id: '{{ trigger.event.data.device_id }}-{{ trigger.event.data.source_entity_id
-          }}'
-        message: 'L''appareil a un niveau de batterie de {{ trigger.event.data.battery_level
-          }}% {{ ''\n'' -}} Il vous faut {{ trigger.event.data.battery_quantity }}×
-          {{ trigger.event.data.battery_type }}
-
-          '
-  - conditions:
-    - condition: trigger
-      id:
-      - high
-    sequence:
-    - action: persistent_notification.dismiss
-      data:
-        notification_id: '{{ trigger.event.data.device_id }}-{{ trigger.event.data.source_entity_id
-          }}'
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - low
+        sequence:
+          - action: persistent_notification.create
+            data:
+              title: |
+                Batterie faible — {{ trigger.event.data.device_name }}
+              notification_id: >-
+                {{ trigger.event.data.device_id }}-{{
+                trigger.event.data.source_entity_id }}
+              message: >
+                L'appareil a un niveau de batterie de {{
+                trigger.event.data.battery_level }}% {{ '\n' -}} Il vous faut {{
+                trigger.event.data.battery_quantity }}× {{
+                trigger.event.data.battery_type }}
+        note: >-
+          Batterie sous le seuil → crée une notification persistante avec nom de
+          l'appareil, niveau et type de pile requis
+      - conditions:
+          - condition: trigger
+            id:
+              - high
+        sequence:
+          - action: persistent_notification.dismiss
+            data:
+              notification_id: >-
+                {{ trigger.event.data.device_id }}-{{
+                trigger.event.data.source_entity_id }}
+        note: >-
+          Batterie revenue à la normale → supprime automatiquement la
+          notification persistante correspondante
 mode: queued
