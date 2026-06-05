@@ -1,18 +1,20 @@
 alias: Notification des Poubelles
-description: '**Statut :** Finalisé
+description: >-
+  **Statut :** Finalisé
 
   **Evolution :** Aucune
 
 
   **Déclencheurs :**
 
-  - Changement de `input_select.poubelles` (déclenché par le calendrier permanent)
+  - Changement de `input_select.poubelles` (déclenché par le calendrier
+  permanent)
 
 
   **Fonctionnement :**
 
-  1. Selon l''option sélectionnée (Sortir/Rentrer Marron, Verte ou Jaune), compose
-  le message vocal approprié.
+  1. Selon l'option sélectionnée (Sortir/Rentrer Marron, Verte ou Jaune),
+  compose le message vocal approprié.
 
   2. Diffuse la notification vocale et envoie un SMS.
 
@@ -21,89 +23,95 @@ description: '**Statut :** Finalisé
 
   **Entités principales :**
 
-  - `input_select.poubelles` : sélecteur d''action poubelle piloté par l''agenda'
+  - `input_select.poubelles` : sélecteur d'action poubelle piloté par l'agenda
 triggers:
-- trigger: select.selection_changed
-  target:
-    entity_id: input_select.poubelles
+  - target:
+      entity_id: input_select.poubelles
+    trigger: select.selection_changed
 conditions: []
 actions:
-- choose:
-  - conditions:
-    - condition: select.is_option_selected
-      target:
-        entity_id: input_select.poubelles
-      options:
-        option:
-        - Sortir Marron
-    sequence:
-    - variables:
-        message_poubelle: C'est le moment de sortir la poubelle marron et orange
-  - conditions:
-    - condition: select.is_option_selected
-      target:
-        entity_id: input_select.poubelles
-      options:
-        option:
-        - Rentrer Marron
-    sequence:
-    - variables:
-        message_poubelle: C'est le moment de rentrer la poubelle marron
-  - conditions:
-    - condition: select.is_option_selected
-      target:
-        entity_id: input_select.poubelles
-      options:
-        option:
-        - Sortir Verte
-    sequence:
-    - variables:
-        message_poubelle: C'est le moment de sortir la poubelle végétaux
-  - conditions:
-    - condition: select.is_option_selected
-      target:
-        entity_id: input_select.poubelles
-      options:
-        option:
-        - Rentrer Verte
-    sequence:
-    - variables:
-        message_poubelle: C'est le moment de rentrer la poubelle végétaux
-  - conditions:
-    - condition: select.is_option_selected
-      target:
-        entity_id: input_select.poubelles
-      options:
-        option:
-        - Sortir Jaune
-    sequence:
-    - variables:
-        message_poubelle: C'est le moment de sortir la poubelle jaune
-  - conditions:
-    - condition: select.is_option_selected
-      target:
-        entity_id: input_select.poubelles
-      options:
-        option:
-        - Rentrer Jaune
-    sequence:
-    - variables:
-        message_poubelle: C'est le moment de rentrer la poubelle jaune
-- if:
-  - condition: template
-    value_template: '{{ message_poubelle != null }}'
-  then:
-  - action: script.notification_vocale
-    data:
-      message_vocal: '{{ message_poubelle }}'
-  - action: script.notification_sms
-    data:
-      message_type: Information
-      message_sms: '{{ message_poubelle }}'
-  - action: input_select.select_option
-    metadata: {}
-    target:
-      entity_id: input_select.poubelles
-    data:
-      option: Aucune
+  - choose:
+      - conditions:
+          - condition: select.is_option_selected
+            target:
+              entity_id: input_select.poubelles
+            options:
+              option:
+                - Sortir Marron
+        sequence:
+          - variables:
+              message_poubelle: C'est le moment de sortir la poubelle marron et orange
+        note: Sortir Marron → compose message 'sortir poubelle marron et orange'
+      - conditions:
+          - condition: select.is_option_selected
+            target:
+              entity_id: input_select.poubelles
+            options:
+              option:
+                - Rentrer Marron
+        sequence:
+          - variables:
+              message_poubelle: C'est le moment de rentrer la poubelle marron
+        note: Rentrer Marron → compose message 'rentrer poubelle marron'
+      - conditions:
+          - condition: select.is_option_selected
+            target:
+              entity_id: input_select.poubelles
+            options:
+              option:
+                - Sortir Verte
+        sequence:
+          - variables:
+              message_poubelle: C'est le moment de sortir la poubelle végétaux
+        note: Sortir Verte → compose message 'sortir poubelle végétaux'
+      - conditions:
+          - condition: select.is_option_selected
+            target:
+              entity_id: input_select.poubelles
+            options:
+              option:
+                - Rentrer Verte
+        sequence:
+          - variables:
+              message_poubelle: C'est le moment de rentrer la poubelle végétaux
+        note: Rentrer Verte → compose message 'rentrer poubelle végétaux'
+      - conditions:
+          - condition: select.is_option_selected
+            target:
+              entity_id: input_select.poubelles
+            options:
+              option:
+                - Sortir Jaune
+        sequence:
+          - variables:
+              message_poubelle: C'est le moment de sortir la poubelle jaune
+        note: Sortir Jaune → compose message 'sortir poubelle jaune'
+      - conditions:
+          - condition: select.is_option_selected
+            target:
+              entity_id: input_select.poubelles
+            options:
+              option:
+                - Rentrer Jaune
+        sequence:
+          - variables:
+              message_poubelle: C'est le moment de rentrer la poubelle jaune
+        note: Rentrer Jaune → compose message 'rentrer poubelle jaune'
+  - if:
+      - condition: template
+        value_template: "{{ message_poubelle != null }}"
+    then:
+      - action: script.notification_vocale
+        data:
+          message_vocal: "{{ message_poubelle }}"
+      - action: script.notification_sms
+        data:
+          message_type: Information
+          message_sms: "{{ message_poubelle }}"
+      - action: input_select.select_option
+        metadata: {}
+        target:
+          entity_id: input_select.poubelles
+        data:
+          option: Aucune
 mode: restart

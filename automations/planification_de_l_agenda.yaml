@@ -1,5 +1,6 @@
 alias: Planification de l'Agenda
-description: '**Statut :** Finalisé
+description: >-
+  **Statut :** Finalisé
 
   **Evolution :** Aucune
 
@@ -15,17 +16,17 @@ description: '**Statut :** Finalisé
 
   **Fonctionnement :**
 
-  1. Si déclenché par changement d''alarme et calendrier action = Absent → maintient
-  ou bascule vers Repos selon l''état de l''alarme.
+  1. Si déclenché par changement d'alarme et calendrier action = Absent →
+  maintient ou bascule vers Repos selon l'état de l'alarme.
 
-  2. Sinon → interroge le calendrier du jour, extrait les résumés d''événements.
+  2. Sinon → interroge le calendrier du jour, extrait les résumés d'événements.
 
-  3. Selon les mots-clés trouvés (Absent/Vacances, TéléTravail, ARTT/Congé, jour non
-  travaillé) → positionne `input_select.calendrier`, `chauffage_action` et `calendrier_action`,
-  active/désactive les calendriers correspondants.
+  3. Selon les mots-clés trouvés (Absent/Vacances, TéléTravail, ARTT/Congé, jour
+  non travaillé) → positionne `input_select.calendrier`, `chauffage_action` et
+  `calendrier_action`, active/désactive les calendriers correspondants.
 
-  4. Gère le mode HorsGel selon la période de l''année (mai–oct), la température extérieure
-  ou le mode absent.
+  4. Gère le mode HorsGel selon la période de l'année (mai–oct), la température
+  extérieure ou le mode absent.
 
 
   **Entités principales :**
@@ -34,228 +35,243 @@ description: '**Statut :** Finalisé
 
   - `input_select.calendrier` / `input_select.chauffage_action` : modes actifs
 
-  - `input_boolean.chauffage_horsgel` : activation du mode hors-gel global'
+  - `input_boolean.chauffage_horsgel` : activation du mode hors-gel global
 triggers:
-- trigger: time
-  at: 00:00:00
-- trigger: state
-  entity_id:
-  - input_boolean.alarme
-  id: Désactivation Alarme
-  to: null
-- trigger: state
-  entity_id:
-  - input_button.planification_agenda
+  - at: "00:00:00"
+    trigger: time
+  - entity_id:
+      - input_boolean.alarme
+    id: Désactivation Alarme
+    to: null
+    trigger: state
+  - entity_id:
+      - input_button.planification_agenda
+    trigger: state
 conditions: []
 actions:
-- parallel:
-  - if:
-    - condition: trigger
-      id:
-      - Désactivation Alarme
-    then:
-    - if:
-      - condition: state
-        entity_id: input_select.calendrier_action
-        state: Absent
-      then:
+  - parallel:
       - if:
-        - condition: state
-          entity_id: input_boolean.alarme
-          state: 'on'
+          - condition: trigger
+            id:
+              - Désactivation Alarme
         then:
-        - action: input_select.select_option
-          data:
-            option: Absent
-          target:
-            entity_id:
-            - input_select.calendrier
+          - if:
+              - condition: state
+                entity_id: input_select.calendrier_action
+                state: Absent
+            then:
+              - if:
+                  - condition: state
+                    entity_id: input_boolean.alarme
+                    state: "on"
+                then:
+                  - action: input_select.select_option
+                    data:
+                      option: Absent
+                    target:
+                      entity_id:
+                        - input_select.calendrier
+                else:
+                  - action: input_select.select_option
+                    data:
+                      option: Repos
+                    target:
+                      entity_id:
+                        - input_select.calendrier
         else:
-        - action: input_select.select_option
-          data:
-            option: Repos
-          target:
-            entity_id:
-            - input_select.calendrier
-    else:
-    - action: calendar.get_events
-      target:
-        entity_id: calendar.agenda
-      data:
-        start_date_time: '{{ now().strftime(''%Y-%m-%d'') }} 00:00:00Z'
-        end_date_time: '{{ now().strftime(''%Y-%m-%d'') }} 23:59:59Z'
-      response_variable: events_today
-    - variables:
-        today: '{{ now().strftime(''%Y-%m-%d'') }}'
-        summaries: "{{ events_today['calendar.agenda']['events']\n   | selectattr('start',\
-          \ '>=', today)\n   | map(attribute='summary') | list }}\n"
-      enabled: false
-    - variables:
-        today: '{{ now().strftime(''%Y-%m-%d'') }}'
-        summaries: "{{ events_today['calendar.agenda']['events']\n   | map(attribute='summary')\
-          \ | list }}\n"
-    - choose:
-      - conditions:
-        - condition: or
-          conditions:
-          - condition: template
-            value_template: '{{ summaries | contains(''Absent'') }}'
-          - condition: template
-            value_template: '{{ summaries | contains(''Vacance'') }}'
-          - condition: template
-            value_template: '{{ summaries | contains(''Vacances'') }}'
-        sequence:
-        - parallel:
-          - action: homeassistant.disable_entity
-            data:
-              entity_id:
-              - calendar.agenda_teletravail
-              - calendar.agenda_travail
-              - calendar.agenda_we_ferie_repos
-          - action: homeassistant.enable_entity
-            data:
-              entity_id:
-              - calendar.agenda_absent
-        - action: input_select.select_option
-          data:
-            option: Absent
-          target:
-            entity_id:
-            - input_select.chauffage_action
-            - input_select.calendrier_action
-        - if:
-          - condition: state
-            entity_id: alarm_control_panel.alarme
-            state: armed_away
-          then:
-          - action: input_select.select_option
-            data:
-              option: Absent
+          - action: calendar.get_events
             target:
-              entity_id:
-              - input_select.calendrier
-          else:
-          - action: input_select.select_option
+              entity_id: calendar.agenda
             data:
-              option: Repos
+              start_date_time: "{{ now().strftime('%Y-%m-%d') }} 00:00:00Z"
+              end_date_time: "{{ now().strftime('%Y-%m-%d') }} 23:59:59Z"
+            response_variable: events_today
+          - variables:
+              today: "{{ now().strftime('%Y-%m-%d') }}"
+              summaries: |
+                {{ events_today['calendar.agenda']['events']
+                   | selectattr('start', '>=', today)
+                   | map(attribute='summary') | list }}
+            enabled: false
+          - variables:
+              today: "{{ now().strftime('%Y-%m-%d') }}"
+              summaries: |
+                {{ events_today['calendar.agenda']['events']
+                   | map(attribute='summary') | list }}
+          - choose:
+              - conditions:
+                  - condition: or
+                    conditions:
+                      - condition: template
+                        value_template: "{{ summaries | contains('Absent') }}"
+                      - condition: template
+                        value_template: "{{ summaries | contains('Vacance') }}"
+                      - condition: template
+                        value_template: "{{ summaries | contains('Vacances') }}"
+                sequence:
+                  - parallel:
+                      - action: homeassistant.disable_entity
+                        data:
+                          entity_id:
+                            - calendar.agenda_teletravail
+                            - calendar.agenda_travail
+                            - calendar.agenda_we_ferie_repos
+                      - action: homeassistant.enable_entity
+                        data:
+                          entity_id:
+                            - calendar.agenda_absent
+                  - action: input_select.select_option
+                    data:
+                      option: Absent
+                    target:
+                      entity_id:
+                        - input_select.chauffage_action
+                        - input_select.calendrier_action
+                  - if:
+                      - condition: state
+                        entity_id: alarm_control_panel.alarme
+                        state: armed_away
+                    then:
+                      - action: input_select.select_option
+                        data:
+                          option: Absent
+                        target:
+                          entity_id:
+                            - input_select.calendrier
+                    else:
+                      - action: input_select.select_option
+                        data:
+                          option: Repos
+                        target:
+                          entity_id:
+                            - input_select.calendrier
+              - conditions:
+                  - condition: template
+                    value_template: "{{ summaries | contains('TéléTravail') }}"
+                sequence:
+                  - parallel:
+                      - action: homeassistant.disable_entity
+                        data:
+                          entity_id:
+                            - calendar.agenda_absent
+                            - calendar.agenda_travail
+                            - calendar.agenda_we_ferie_repos
+                      - action: homeassistant.enable_entity
+                        data:
+                          entity_id:
+                            - calendar.agenda_teletravail
+                  - action: input_select.select_option
+                    data:
+                      option: TéléTravail
+                    target:
+                      entity_id:
+                        - input_select.calendrier
+                        - input_select.chauffage_action
+                        - input_select.calendrier_action
+              - conditions:
+                  - condition: or
+                    conditions:
+                      - condition: state
+                        entity_id: binary_sensor.workday_sensor
+                        state: "off"
+                        enabled: true
+                      - condition: template
+                        value_template: "{{ summaries | contains('ARTT') }}"
+                      - condition: template
+                        value_template: "{{ summaries | contains('Congé') }}"
+                      - condition: template
+                        value_template: "{{ summaries | contains('Congés') }}"
+                    enabled: true
+                sequence:
+                  - parallel:
+                      - action: homeassistant.disable_entity
+                        data:
+                          entity_id:
+                            - calendar.agenda_absent
+                            - calendar.agenda_teletravail
+                            - calendar.agenda_travail
+                      - action: homeassistant.enable_entity
+                        data:
+                          entity_id:
+                            - calendar.agenda_we_ferie_repos
+                  - action: input_select.select_option
+                    data:
+                      option: Repos
+                    target:
+                      entity_id:
+                        - input_select.calendrier
+                        - input_select.chauffage_action
+                        - input_select.calendrier_action
+            default:
+              - parallel:
+                  - action: homeassistant.disable_entity
+                    data:
+                      entity_id:
+                        - calendar.agenda_absent
+                        - calendar.agenda_teletravail
+                        - calendar.agenda_we_ferie_repos
+                  - action: homeassistant.enable_entity
+                    data:
+                      entity_id:
+                        - calendar.agenda_travail
+                note: >-
+                  Jour de travail par défaut → active calendar.agenda_travail,
+                  positionne mode Travail
+              - action: input_select.select_option
+                data:
+                  option: Travail
+                target:
+                  entity_id:
+                    - input_select.calendrier
+                    - input_select.chauffage_action
+                    - input_select.calendrier_action
+          - action: script.notification_mail
+            data:
+              message_type: Information
+              message_mail: "{{ states('input_select.calendrier') }}"
+        note: >-
+          Logique calendrier → si trigger alarme: maintient Absent ou bascule
+          Repos ; sinon: interroge calendar.agenda et positionne le mode selon
+          mots-clés (Absent/TéléTravail/ARTT/Congé/Repos/Travail)
+      - if:
+          - condition: or
+            conditions:
+              - condition: and
+                conditions:
+                  - condition: template
+                    value_template: >-
+                      {{ now().month > 4 or (now().month == 4 and now().day >
+                      15) }}
+                  - condition: template
+                    value_template: >-
+                      {{ now().month < 10 or (now().month == 10 and now().day <
+                      15) }}
+              - condition: numeric_state
+                entity_id: sensor.netatmo_exterieur_temperature
+                above: 22
+              - condition: and
+                conditions:
+                  - condition: alarm_control_panel.is_armed_away
+                    target:
+                      entity_id: alarm_control_panel.alarme
+                    options: {}
+                  - condition: select.is_option_selected
+                    target:
+                      entity_id: input_select.calendrier
+                    options:
+                      option:
+                        - Absent
+        then:
+          - action: input_boolean.turn_on
+            data: {}
             target:
-              entity_id:
-              - input_select.calendrier
-      - conditions:
-        - condition: template
-          value_template: '{{ summaries | contains(''TéléTravail'') }}'
-        sequence:
-        - parallel:
-          - action: homeassistant.disable_entity
-            data:
-              entity_id:
-              - calendar.agenda_absent
-              - calendar.agenda_travail
-              - calendar.agenda_we_ferie_repos
-          - action: homeassistant.enable_entity
-            data:
-              entity_id:
-              - calendar.agenda_teletravail
-        - action: input_select.select_option
-          data:
-            option: TéléTravail
-          target:
-            entity_id:
-            - input_select.calendrier
-            - input_select.chauffage_action
-            - input_select.calendrier_action
-      - conditions:
-        - condition: or
-          conditions:
-          - condition: state
-            entity_id: binary_sensor.workday_sensor
-            state: 'off'
-            enabled: true
-          - condition: template
-            value_template: '{{ summaries | contains(''ARTT'') }}'
-          - condition: template
-            value_template: '{{ summaries | contains(''Congé'') }}'
-          - condition: template
-            value_template: '{{ summaries | contains(''Congés'') }}'
-          enabled: true
-        sequence:
-        - parallel:
-          - action: homeassistant.disable_entity
-            data:
-              entity_id:
-              - calendar.agenda_absent
-              - calendar.agenda_teletravail
-              - calendar.agenda_travail
-          - action: homeassistant.enable_entity
-            data:
-              entity_id:
-              - calendar.agenda_we_ferie_repos
-        - action: input_select.select_option
-          data:
-            option: Repos
-          target:
-            entity_id:
-            - input_select.calendrier
-            - input_select.chauffage_action
-            - input_select.calendrier_action
-      default:
-      - parallel:
-        - action: homeassistant.disable_entity
-          data:
-            entity_id:
-            - calendar.agenda_absent
-            - calendar.agenda_teletravail
-            - calendar.agenda_we_ferie_repos
-        - action: homeassistant.enable_entity
-          data:
-            entity_id:
-            - calendar.agenda_travail
-      - action: input_select.select_option
-        data:
-          option: Travail
-        target:
-          entity_id:
-          - input_select.calendrier
-          - input_select.chauffage_action
-          - input_select.calendrier_action
-    - action: script.notification_mail
-      data:
-        message_type: Information
-        message_mail: '{{ states(''input_select.calendrier'') }}'
-  - if:
-    - condition: or
-      conditions:
-      - condition: and
-        conditions:
-        - condition: template
-          value_template: '{{ now().month > 4 or (now().month == 4 and now().day >
-            15) }}'
-        - condition: template
-          value_template: '{{ now().month < 10 or (now().month == 10 and now().day
-            < 15) }}'
-      - condition: numeric_state
-        entity_id: sensor.netatmo_exterieur_temperature
-        above: 22
-      - condition: and
-        conditions:
-        - condition: alarm_control_panel.is_armed_away
-          target:
-            entity_id: alarm_control_panel.alarme
-          options: {}
-        - condition: select.is_option_selected
-          target:
-            entity_id: input_select.calendrier
-          options:
-            option:
-            - Absent
-    then:
-    - action: input_boolean.turn_on
-      data: {}
-      target:
-        entity_id: input_boolean.chauffage_horsgel
-    else:
-    - action: input_boolean.turn_off
-      data: {}
-      target:
-        entity_id: input_boolean.chauffage_horsgel
+              entity_id: input_boolean.chauffage_horsgel
+        else:
+          - action: input_boolean.turn_off
+            data: {}
+            target:
+              entity_id: input_boolean.chauffage_horsgel
+        note: >-
+          Logique HorsGel → active si période mai-oct, température > 22°C, ou
+          mode Absent ; désactive sinon
 mode: restart
