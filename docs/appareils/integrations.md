@@ -1,4 +1,4 @@
-# Intégrations (WiFi, Ethernet RJ45 & Autres) — 139 appareils
+# Intégrations (WiFi, Ethernet RJ45 & Autres) — 143 appareils
 
 [← Retour Appareils](../appareils.md)
 
@@ -261,7 +261,7 @@
 
 ---
 
-## Autres appareils (22 appareils)
+## Autres appareils (26 appareils)
 
 ### Somfy io-homecontrol — KLF200 (14 appareils)
 
@@ -313,7 +313,7 @@
 
 ---
 
-### Schneider Odace SFSP — via Remote HA (4 appareils)
+### Schneider Odace SFSP — via Remote HA (8 appareils)
 
 > 🔵 Bluetooth
 > Intégration personnelle : **Odace SFSP** — [GitHub slemeur91/odace_sfsp](https://github.com/slemeur91/odace_sfsp) sur l'instance HA secondaire
@@ -321,5 +321,7 @@
 
 | Nb | Modèle | Description | Localisation | Documentation |
 |---|---|---|---|---|
-| 2 | Schneider Odace SFSP | Armoire de toilette connectée | Salle de bain, Salle d'eau | [📄 Manuel](../hardware/GDE33208-0026Sept19.pdf) · [📄 Notice DCL](../hardware/notice_DCL.pdf) |
-| 2 | Schneider Odace SFSP | Plafonnier connecté | Salle de bain, Salle d'eau | [📄 Manuel](../hardware/GDE33208-0026Sept19.pdf) · [📄 Notice DCL](../hardware/notice_DCL.pdf) |
+| 2 | DCL | Armoire de toilette connectée | Salle de bain, Salle d'eau | [📄 Manuel](../hardware/GDE33208-0026Sept19.pdf) · [📄 Notice DCL](../hardware/notice_DCL.pdf) |
+| 2 | DCL | Plafonnier connecté | Salle de bain, Salle d'eau | [📄 Manuel](../hardware/GDE33208-0026Sept19.pdf) · [📄 Notice DCL](../hardware/notice_DCL.pdf) |
+| 2 | Switch | Interrupteur armoire de toilette | Salle de bain, Salle d'eau | — |
+| 2 | Switch | Interrupteur plafonnier | Salle de bain, Salle d'eau | — |
