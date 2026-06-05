@@ -96,6 +96,8 @@ actions:
         entity_id:
         - switch.multiprise_du_salon_droite_1_alimentation_apple
         - switch.prise_de_la_terrasse_socket_1
+    note: Mode Présent → lance SONOS ON, réactive les volets, allume prises habituelles
+      (hotte, four, terrasse, Apple TV)
   - conditions:
     - condition: state
       entity_id: input_select.presence_action
@@ -152,6 +154,8 @@ actions:
       data: {}
       target:
         entity_id: input_button.volets_reactivation
+    note: Mode Réveil → déverrouille serrure garage, allume lumières si avant l'aube,
+      active prises+purificateur+café, réactive les volets
   - conditions:
     - condition: state
       entity_id: input_select.presence_action
@@ -190,6 +194,8 @@ actions:
         option: Présent
       target:
         entity_id: input_select.presence_action
+    note: Mode Arrivée → déverrouille serrure garage, allume entrée si sombre, active
+      purificateur, bascule vers Présent
   - conditions:
     - condition: or
       conditions:
@@ -450,4 +456,7 @@ actions:
             option: COUCHE
           target:
             entity_id: input_select.sonos_action
+    note: 'Mode Extinction/Couché → éteint HiFi, verrouille les deux serrures, éteint
+      lumières/prises non essentielles ; Couché: veilleuses + store pergola si absent
+      + SONOS COUCHE'
 mode: restart

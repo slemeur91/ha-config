@@ -98,6 +98,8 @@ actions:
       target:
         entity_id:
         - switch.2_klf_200
+    note: KLF200 allumé mais ping perdu ou gateway unavailable → éteint le switch
+      pour initier un cycle de redémarrage
   - conditions:
     - condition: state
       entity_id: switch.2_klf_200
@@ -117,4 +119,5 @@ actions:
       metadata: {}
       data:
         entry_id: VOTRE_ENTRY_ID_KLF200
+    note: KLF200 éteint → rallume le switch, attend 10s, recharge l'intégration KLF200
 mode: restart

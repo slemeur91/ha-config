@@ -51,6 +51,8 @@ notification_snapshot:
         - camera.slm_portier
       data:
         filename: /config/www/Snapshots/portier.jpg
+    note: Capture en parallèle les 6 caméras (slm-camera1/2/3/4/6 + portier) dans
+      /config/www/Snapshots/
   - action: notify.email
     metadata: {}
     data:
@@ -67,4 +69,5 @@ notification_snapshot:
         - /config/www/Snapshots/camera6.jpg
         - /config/www/Snapshots/portier.jpg
       message: 'Snapshots des caméra :'
+    note: Envoie toutes les captures en pièces jointes par mail [HA] Alerte
   mode: restart

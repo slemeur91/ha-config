@@ -91,6 +91,8 @@ actions:
           option: '{{ states(''input_select.sonos_delay_action'') }}'
         target:
           entity_id: input_select.sonos_action
+    note: Timer terminé → bascule sur l'action différée (sonos_delay_action) si état
+      COUCHE ou REVEIL
   - conditions:
     - condition: state
       entity_id: input_select.sonos_action
@@ -175,6 +177,8 @@ actions:
         option: 'ON'
       target:
         entity_id: input_select.sonos
+    note: Action ON → dégroupage éventuel, réglage volumes Salon+Garage, lance radio
+      salon (+ garage si TéléTravail), état = ON
   - conditions:
     - condition: state
       entity_id: input_select.sonos_action
@@ -313,11 +317,15 @@ actions:
         option: 'OFF'
       target:
         entity_id: input_select.sonos
+    note: Action OFF → arrêt musique selon état précédent (ON/COUCHE/REVEIL/OFF),
+      démute toutes les enceintes, état = OFF
   - conditions:
     - condition: state
       entity_id: device_tracker.iphone_de_sylvain_le_meur
       state: not_home
     sequence: []
+    note: 'Guard iPhone absent → séquence vide : court-circuite les actions COUCHE
+      et REVEIL si le téléphone n''est pas à la maison'
   - conditions:
     - condition: state
       entity_id: input_select.sonos_action
@@ -396,6 +404,8 @@ actions:
         duration: '5400'
       target:
         entity_id: timer.sonos_timer
+    note: Action COUCHE → volumes suite+sde, join suite+sde, radio suite parentale,
+      timer 90min (extinction automatique)
   - conditions:
     - condition: state
       entity_id: input_select.sonos_action
@@ -508,5 +518,7 @@ actions:
           duration: '8100'
         target:
           entity_id: timer.sonos_timer
+    note: Action REVEIL → volumes toutes enceintes, join salon+suite+sde, radio salon+garage
+      si TéléTravail, timer 80min (TéléTravail) ou 135min
 mode: queued
 max: 10

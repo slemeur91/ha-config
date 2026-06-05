@@ -1,5 +1,14 @@
 alias: Surveillance - Automatisations inactives
-description: ''
+description: '**Déclencheurs :**
+
+  - Chaque jour à 9h00
+
+
+  **Fonctionnement :**
+
+  1. Identifie les automatisations non déclenchées depuis 7 jours.
+
+  2. Envoie un SMS récapitulatif avec noms et dates de dernier déclenchement.'
 triggers:
 - at: 09:00:00
   trigger: time
