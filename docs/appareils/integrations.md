@@ -126,9 +126,9 @@
 > 🏠 **Natif HA** — Intégration : **Tuya** — [Documentation](https://www.home-assistant.io/integrations/tuya/)
 > 📶 WiFi → ☁️ Cloud
 
-| Nb | Description | Localisation |
-|---|---|---|
-| 6 | Multiprise 4 prises + 2 USB avec mesure individuelle | Suite parentale, Salon G, Salon D, Garage, Informatique, Bureau |
+| Nb | Fabricant | Description | Localisation | Documentation |
+|---|---|---|---|---|
+| 6 | Konyks | Multiprise 4 prises + 2 USB avec mesure individuelle | Suite parentale, Salon G, Salon D, Garage, Informatique, Bureau | [📄 Manuel](<../hardware/Konyks - Manuel Polyco v1..1 Update Web.pdf>) |
 
 ---
 
@@ -189,10 +189,10 @@
 | 1 | Signify | Hue ambiance lamp | Lumière du WC de l'Étage | WC Étage | — |
 | 1 | Signify | Hue ambiance lamp | Lumière du Cellier | Cellier | — |
 | 1 | Signify | Hue ambiance lamp | Lumière de l'Extérieur | Extérieur | — |
-| 1 | Sunricher | On/Off | Lumière de l'Escalier | Escalier | — |
-| 1 | Sunricher | On/Off | Lumière du WC du RDC | WC RDC | — |
-| 1 | Sunricher | On/Off | Lumière du Dressing | Dressing | — |
-| 1 | Sunricher | On/Off | Lumière du Meuble de la Cuisine | Cuisine | — |
+| 1 | Sunricher | On/Off | Lumière de l'Escalier | Escalier | [📄 Manuel](../hardware/SR-ZG9100A.pdf) |
+| 1 | Sunricher | On/Off | Lumière du WC du RDC | WC RDC | [📄 Manuel](../hardware/SR-ZG9100A.pdf) |
+| 1 | Sunricher | On/Off | Lumière du Dressing | Dressing | [📄 Manuel](../hardware/SR-ZG9100A.pdf) |
+| 1 | Sunricher | On/Off | Lumière du Meuble de la Cuisine | Cuisine | [📄 Manuel](../hardware/SR-ZG9100A.pdf) |
 | 1 | Sunricher | SR-ZG9101SAC-HP-V3 Dimmable | Lumière du Salon | Salon | [📄 Manuel](../hardware/SR-ZG9101SAC-HP-V3-Instruction.pdf) |
 | 1 | NodOn | SIN-4-2-20 On/Off (2 sorties) | Lumière de l'Entrée (sortie 1), Lumière du Garage (sortie 2) | Entrée, Garage | [📄 Manuel](../hardware/SIN-4-2-20-FR.pdf) |
 | 1 | NodOn | SIN-4-2-20 On/Off (2 sorties) | Lumière de la Terrasse (sortie 2) — sortie 1 vide | Terrasse | [📄 Manuel](../hardware/SIN-4-2-20-FR.pdf) |
