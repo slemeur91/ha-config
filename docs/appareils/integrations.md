@@ -74,7 +74,7 @@
 
 ## Météo & Capteurs — Netatmo (7 appareils)
 
-> 🏠 **Natif HA** — Intégration : **Netatmo** — [Documentation](https://www.home-assistant.io/integrations/netatmo/)
+> 🏠 **Natif HA** — Intégration : **Netatmo** — [Documentation](https://www.home-assistant.io/integrations/netatmo/) — [📄 Manuel](../hardware/dp_netatmo_fr-fr.pdf)
 > ☁️ Cloud
 
 | Nb | Modèle | Description | Localisation | Connexion |
@@ -111,6 +111,7 @@
 
 > 🔧 **HACS** — Intégration : **Ecodevices RT2** — [GitHub](https://github.com/pcourbin/ecodevices_rt2)
 > 🔌 Ethernet (RJ45)
+> [📄 Mode d'emploi EcoDevice RT](<../hardware/Mode d'emploi EcoDevice RT.pdf>) — [📄 Mode d'emploi X-Bridge](<../hardware/mode-d'emploiX-BRIDGE.pdf>)
 
 | Nom | Type | Localisation |
 |---|---|---|
@@ -158,10 +159,10 @@
 
 | Nb | Fabricant | Modèle | Nom HA | Localisation | Documentation |
 |---|---|---|---|---|---|
-| 1 | Axis | M1065-L | slm-camera1 | Séjour | — |
-| 1 | Axis | M1065-L | slm-camera2 | Salon | — |
-| 1 | TRENDnet | TV-IP572PI | slm-camera3 | Cellier | — |
-| 1 | Axis | M1065-L | slm-camera4 | Palier | — |
+| 1 | Axis | M1065-L | slm-camera1 | Séjour | [📄 Manuel](../hardware/um_m1065l_1632647_en_1704.pdf) · [📄 Installation](../hardware/ig_m1065l_1665730_en_1610.pdf) · [📄 Datasheet](../hardware/ds_m1065l_1650486_fr_1612.pdf) |
+| 1 | Axis | M1065-L | slm-camera2 | Salon | [📄 Manuel](../hardware/um_m1065l_1632647_en_1704.pdf) · [📄 Installation](../hardware/ig_m1065l_1665730_en_1610.pdf) · [📄 Datasheet](../hardware/ds_m1065l_1650486_fr_1612.pdf) |
+| 1 | TRENDnet | TV-IP572PI | slm-camera3 | Cellier | [📄 Manuel](../hardware/UG_TV-IP572P_TV-IP572PI(v1.0R).pdf) · [📄 Web guide](../hardware/FR_Web_TV_IP572PI(V1.0R)_04272012.pdf) · [📄 Spec](../hardware/FR_spec_TV-IP572PI(V1.0R).pdf) |
+| 1 | Axis | M1065-L | slm-camera4 | Palier | [📄 Manuel](../hardware/um_m1065l_1632647_en_1704.pdf) · [📄 Installation](../hardware/ig_m1065l_1665730_en_1610.pdf) · [📄 Datasheet](../hardware/ds_m1065l_1650486_fr_1612.pdf) |
 | 1 | Hikvision | DS-2CD2142FWD-IS | slm-camera5 | Réseau | — |
 | 1 | Reolink | Duo 2 PoE | slm-camera6 | Extérieur | — |
 | 1 | TP-Link Tapo | TC500 | slm-camera7 | Garage | — |
@@ -304,10 +305,10 @@
 > Contrôleur GCE RFPlayer : 🔌 USB
 > Appareil Somfy RTS : protocole radio RTS 433 MHz
 
-| Nb | Modèle | Description | Localisation |
-|---|---|---|---|
-| 1 | GCE Electronics RFPlayer | Émetteur/récepteur RF 433/868 MHz | Armoire de brassage |
-| 1 | Somfy RTS 4 Portal | Porte de garage motorisée RTS | Garage |
+| Nb | Modèle | Description | Localisation | Documentation |
+|---|---|---|---|---|
+| 1 | GCE Electronics RFPlayer | Émetteur/récepteur RF 433/868 MHz | Armoire de brassage | [📄 Manuel](../hardware/rfplayer-guide-utilisation.pdf) |
+| 1 | Somfy RTS 4 Portal | Porte de garage motorisée RTS | Garage | — |
 
 ---
 
