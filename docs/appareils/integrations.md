@@ -112,12 +112,30 @@
 > 🔧 **HACS** — Intégration : **Ecodevices RT2** — [GitHub](https://github.com/pcourbin/ecodevices_rt2)
 > 🔌 Ethernet (RJ45)
 
-| Nb | Type | Description |
+| Nom | Type | Localisation |
 |---|---|---|
-| 1 | Compteur eau froide | Via entrée impulsion EcoDevices RT2 |
-| 1 | Compteur eau chaude | Via entrée impulsion EcoDevices RT2 |
-| 1 | Production solaire | Compteur de production photovoltaïque |
-| 19 | Consommation électrique | Par circuit (réfrigérateur, chaudière, chauffe-eau…) |
+| EcoRT2 | Passerelle | Garage |
+| Index Base (EDF Info) | Télé-information | Garage |
+| Tele-Info | Poste | Extérieur |
+| Compteur Eau froide | Compteur impulsion eau | Cellier |
+| Compteur Eau Chaude | Compteur impulsion eau | Cellier |
+| Compteur GAZ | Compteur impulsion gaz | Extérieur |
+| Chaudière | Poste consommation | Cellier |
+| Chauffe eau | Poste consommation | Cellier |
+| PC Poêle | Poste consommation | Séjour |
+| PC Réseau | Poste consommation | Réseau |
+| Armoire Ecodevice RT2 | Poste consommation | Garage |
+| PC LL et SL | Poste consommation | Salle de bain |
+| VMC | Poste consommation | Grenier |
+| Four | Poste consommation | Cuisine |
+| Plaque | Poste consommation | Cuisine |
+| PC Lave vaisselle | Poste consommation | Cuisine |
+| PC Cuisine+Ext | Poste consommation | Cuisine |
+| Eclairage | Poste consommation | — |
+| Volets | Poste consommation | — |
+| Autre PC | Poste consommation | — |
+| Cabane | Poste consommation | Extérieur |
+| Production | Poste production | Extérieur |
 
 ---
 
@@ -128,7 +146,7 @@
 
 | Nb | Fabricant | Description | Localisation | Documentation |
 |---|---|---|---|---|
-| 6 | Konyks | Multiprise 4 prises + 2 USB avec mesure individuelle | Suite parentale, Salon G, Salon D, Garage, Informatique, Bureau | [📄 Manuel](<../hardware/Konyks - Manuel Polyco v1..1 Update Web.pdf>) |
+| 6 | Konyks | Multiprise 4 prises + 4 USB | Suite parentale, Salon G, Salon D, Garage, Informatique, Bureau | [📄 Manuel](<../hardware/Konyks - Manuel Polyco v1..1 Update Web.pdf>) |
 
 ---
 

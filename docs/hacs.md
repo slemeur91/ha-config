@@ -48,9 +48,109 @@ Intégration locale (sans cloud) des appareils Dyson.
 
 Intégration pour le module de mesure GCE Ecodevices RT2.
 
-**Configuration :**
-- IP : [IP locale]
-- Fournit les capteurs de consommation par circuit (réfrigérateur, chaudière, chauffe-eau, production solaire, etc.)
+**Fichier `/homeassistant/packages/ecodevices_rt2.yaml` :**
+
+```yaml
+ecodevices_rt2:
+ - name: EcoRT2
+   host: "<ip_ecodevices>"
+   port: 80
+   api_key: <api_key>
+   update_after_switch: 0.1
+   scan_interval: 15
+   devices:
+     - name: Compteur Eau froide
+       type: "counter"
+       icon: mdi:water
+       device_class: water
+       unit_of_measurement: 'L'
+       id: 1
+     - name: Compteur Eau Chaude
+       type: "counter"
+       icon: mdi:water
+       device_class: water
+       unit_of_measurement: 'L'
+       id: 2
+     - name: Compteur GAZ
+       type: "counter"
+       icon: mdi:fire
+       device_class: gas
+       unit_of_measurement: 'm³'
+       id: 3
+     #### Post et Sub-Post
+     - name: Tele-Info
+       type: "post"
+       id: 1
+       subpost: 0
+     - name: Autre PC
+       type: "post"
+       id: 5
+       subpost: 0
+     - name: Chaudière
+       type: "post"
+       id: 2
+       subpost: 0
+     - name: Chauffe eau
+       type: "post"
+       id: 2
+       subpost: 1
+     - name: PC Réseau
+       type: "post"
+       id: 3
+       subpost: 0
+     - name: Eclairage
+       type: "post"
+       id: 6
+       subpost: 0
+     - name: Volets
+       type: "post"
+       id: 5
+       subpost: 1
+     - name: PC LL et SL
+       type: "post"
+       id: 5
+       subpost: 2
+     - name: VMC
+       type: "post"
+       id: 5
+       subpost: 3
+     - name: Four
+       type: "post"
+       id: 4
+       subpost: 0
+     - name: Plaque
+       type: "post"
+       id: 4
+       subpost: 1
+     - name: PC Lave vaisselle
+       type: "post"
+       id: 4
+       subpost: 4
+     - name: PC Cuisine+Ext
+       type: "post"
+       id: 4
+       subpost: 3
+     - name: PC Poêle
+       type: "post"
+       id: 2
+       subpost: 2
+     - name: Armoire Ecodevice RT2
+       type: "post"
+       id: 3
+       subpost: 1
+     - name: Cabane
+       type: "post"
+       id: 3
+       subpost: 2
+     - name: Production
+       type: "post"
+       id: 8
+       subpost: 0
+     #### Tele-Information
+     - name: Index Base (EDF Info)
+       type: "supplierindex"
+       id: 1
+```
 
 ---
 
