@@ -4,8 +4,6 @@
 
 ---
 
-## Via Zigbee2MQTT (via Add-on Apps) — 20 appareils
-
 > 📦 **Add-on Apps** — Zigbee2MQTT → Mosquitto MQTT → HA
 
 ### Prises et multiprises (14 appareils)
