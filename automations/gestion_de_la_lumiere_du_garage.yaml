@@ -1,49 +1,51 @@
 alias: Gestion de la lumière du Garage
-description: '**Statut :** Finalisé
+description: >-
+  **Statut :** Finalisé
 
   **Evolution :** Aucune
 
 
   **Déclencheurs :**
 
-  - Ouverture de la porte du garage (`binary_sensor.do_gar_porte_garage` passe à ON)
+  - Ouverture de la porte du garage (`binary_sensor.do_gar_porte_garage` passe à
+  ON)
 
 
   **Fonctionnement :**
 
-  1. Si le soleil est couché (ou dans l''heure avant le lever) ET que l''alarme est
-  désarmée → allume la lumière du garage.
+  1. Si le soleil est couché (ou dans l'heure avant le lever) ET que l'alarme
+  est désarmée → allume la lumière du garage.
 
 
   **Entités principales :**
 
   - `light.lumiere_du_garage` : lumière commandée
 
-  - `alarm_control_panel.alarme` : condition de sécurité'
+  - `alarm_control_panel.alarme` : condition de sécurité
 triggers:
-- trigger: state
-  entity_id:
-  - binary_sensor.do_gar_porte_garage
-  to: 'on'
-  id: Garage_door
-  from: 'off'
+  - trigger: state
+    entity_id:
+      - binary_sensor.do_gar_porte_garage
+    to: "on"
+    id: Garage_door
+    from: "off"
 conditions: []
 actions:
-- if:
-  - condition: and
-    conditions:
-    - condition: sun
-      before: sunrise
-      before_offset: '1800'
-      after: sunset
-      after_offset: '-1800'
-    - condition: state
-      entity_id: alarm_control_panel.alarme
-      state: disarmed
-  then:
-  - action: light.turn_on
-    data: {}
-    target:
-      entity_id:
-      - light.lumiere_du_garage
+  - if:
+      - condition: and
+        conditions:
+          - condition: sun
+            before: sunrise
+            before_offset: "1800"
+            after: sunset
+            after_offset: "-1800"
+          - condition: state
+            entity_id: alarm_control_panel.alarme
+            state: disarmed
+    then:
+      - action: light.turn_on
+        data: {}
+        target:
+          entity_id:
+            - light.lumiere_du_garage
 mode: restart

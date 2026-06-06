@@ -1,5 +1,6 @@
 alias: Corrections du KLF200 pour les Velux
-description: '**Statut :** Finalisé
+description: >-
+  **Statut :** Finalisé
 
   **Evolution :** Aucune
 
@@ -8,24 +9,24 @@ description: '**Statut :** Finalisé
 
   - Démarrage de Home Assistant (id: ha_start)
 
-  - `binary_sensor.192_168_52_67` (ping KLF200) passe à off / unknown / unavailable
-  (id: ping_lost)
+  - `binary_sensor.192_168_52_67` (ping KLF200) passe à off / unknown /
+  unavailable (id: ping_lost)
 
   - `switch.2_klf_200` reste éteint pendant 5 minutes (id: switch_off)
 
 
   **Fonctionnement :**
 
-  1. Si déclenchement au démarrage HA → attend 60 secondes pour laisser les intégrations
-  s''établir.
+  1. Si déclenchement au démarrage HA → attend 60 secondes pour laisser les
+  intégrations s'établir.
 
   2. Si autre déclenchement → attend 5 secondes.
 
-  3. Si le switch KLF200 est ON mais le gateway ne répond plus (ping perdu ou bouton
-  unavailable) → éteint le switch pour initier un cycle de redémarrage.
+  3. Si le switch KLF200 est ON mais le gateway ne répond plus (ping perdu ou
+  bouton unavailable) → éteint le switch pour initier un cycle de redémarrage.
 
-  4. Si le switch KLF200 est OFF depuis 5 minutes → rallume le switch, attend 10 secondes,
-  recharge l''intégration KLF200.
+  4. Si le switch KLF200 est OFF depuis 5 minutes → rallume le switch, attend 10
+  secondes, recharge l'intégration KLF200.
 
 
   **Entités principales :**
@@ -34,90 +35,93 @@ description: '**Statut :** Finalisé
 
   - `binary_sensor.192_168_52_67` : ping réseau du KLF200
 
-  - `button.klf_200_gateway_redemarrer` : indicateur état gateway'
+  - `button.klf_200_gateway_redemarrer` : indicateur état gateway
 triggers:
-- id: switch_off
-  entity_id:
-  - switch.2_klf_200
-  for:
-    hours: 0
-    minutes: 5
-    seconds: 0
-  to: 'off'
-  trigger: state
-- id: ping_lost
-  entity_id:
-  - binary_sensor.192_168_52_67
-  to:
-  - 'off'
-  - unknown
-  - unavailable
-  trigger: state
-- id: ha_start
-  event: start
-  trigger: homeassistant
+  - id: switch_off
+    entity_id:
+      - switch.2_klf_200
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+    to: "off"
+    trigger: state
+  - id: ping_lost
+    entity_id:
+      - binary_sensor.192_168_52_67
+    to:
+      - "off"
+      - unknown
+      - unavailable
+    trigger: state
+  - id: ha_start
+    event: start
+    trigger: homeassistant
 conditions: []
 actions:
-- if:
-  - condition: trigger
-    id: ha_start
-  then:
-  - delay:
-      hours: 0
-      minutes: 1
-      seconds: 0
-      milliseconds: 0
-  else:
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 5
-      milliseconds: 0
-- choose:
-  - conditions:
-    - condition: and
-      conditions:
-      - condition: state
-        entity_id: switch.2_klf_200
-        state: 'on'
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: binary_sensor.192_168_52_67
-          state:
-          - 'off'
-          - unknown
-          - unavailable
-        - condition: state
-          entity_id: button.klf_200_gateway_redemarrer
-          state:
-          - unavailable
-    sequence:
-    - action: switch.turn_off
-      data: {}
-      target:
-        entity_id:
-        - switch.2_klf_200
-    note: KLF200 allumé mais ping perdu ou gateway unavailable → éteint le switch
-      pour initier un cycle de redémarrage
-  - conditions:
-    - condition: state
-      entity_id: switch.2_klf_200
-      state: 'off'
-    sequence:
-    - action: switch.turn_on
-      data: {}
-      target:
-        entity_id:
-        - switch.2_klf_200
-    - delay:
-        hours: 0
-        minutes: 0
-        seconds: 10
-        milliseconds: 0
-    - action: homeassistant.reload_config_entry
-      metadata: {}
-      data:
-        entry_id: VOTRE_ENTRY_ID_KLF200
-    note: KLF200 éteint → rallume le switch, attend 10s, recharge l'intégration KLF200
+  - if:
+      - condition: trigger
+        id: ha_start
+    then:
+      - delay:
+          hours: 0
+          minutes: 1
+          seconds: 0
+          milliseconds: 0
+    else:
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+  - choose:
+      - conditions:
+          - condition: and
+            conditions:
+              - condition: state
+                entity_id: switch.2_klf_200
+                state: "on"
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: binary_sensor.192_168_52_67
+                    state:
+                      - "off"
+                      - unknown
+                      - unavailable
+                  - condition: state
+                    entity_id: button.klf_200_gateway_redemarrer
+                    state:
+                      - unavailable
+        sequence:
+          - action: switch.turn_off
+            data: {}
+            target:
+              entity_id:
+                - switch.2_klf_200
+        note: >-
+          KLF200 allumé mais ping perdu ou gateway unavailable → éteint le
+          switch pour initier un cycle de redémarrage
+      - conditions:
+          - condition: state
+            entity_id: switch.2_klf_200
+            state: "off"
+        sequence:
+          - action: switch.turn_on
+            data: {}
+            target:
+              entity_id:
+                - switch.2_klf_200
+          - delay:
+              hours: 0
+              minutes: 0
+              seconds: 10
+              milliseconds: 0
+          - action: homeassistant.reload_config_entry
+            metadata: {}
+            data:
+              entry_id: 01K2GS1XM2TFEEMYCJBXSQQJHQ
+        note: >-
+          KLF200 éteint → rallume le switch, attend 10s, recharge l'intégration
+          KLF200
 mode: restart

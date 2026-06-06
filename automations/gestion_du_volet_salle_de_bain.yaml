@@ -1,10 +1,9 @@
 alias: Gestion du Volet - Salle de bain
-description: '**Statut :** Finalisé
-
+description: |-
+  **Statut :** Finalisé
   **Evolution :** Aucune
 
-
-  Gestion du Volet - Salle de bain'
+  Gestion du Volet - Salle de bain
 use_blueprint:
   path: Volets/Gestion_des_volets.yaml
   input:

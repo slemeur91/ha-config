@@ -1,10 +1,9 @@
 alias: Gestion du Volet - Suite parentale
-description: '**Statut :** Finalisé
-
+description: |-
+  **Statut :** Finalisé
   **Evolution :** Aucune
 
-
-  Gestion du Volet - Suite parentale'
+  Gestion du Volet - Suite parentale
 use_blueprint:
   path: Volets/Gestion_des_volets.yaml
   input:

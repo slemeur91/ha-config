@@ -1,462 +1,469 @@
 alias: Gestion du Domicile en fonction de la Présence
-description: '**Statut :** Finalisé
+description: >-
+  **Statut :** Finalisé
 
   **Evolution :** Aucune
 
 
   **Déclencheurs :**
 
-  - Changement de `input_select.presence_action` (Présent / Réveil / Arrivée / Extinction
-  / Couché)
+  - Changement de `input_select.presence_action` (Présent / Réveil / Arrivée /
+  Extinction / Couché)
 
 
   **Fonctionnement :**
 
-  1. Présent → lance les SONOS en mode ON, réactive les volets, allume les prises
-  habituelles (hotte, four, terrasse, Apple).
+  1. Présent → lance les SONOS en mode ON, réactive les volets, allume les
+  prises habituelles (hotte, four, terrasse, Apple).
 
-  2. Réveil → déverrouille la serrure du garage, allume les lumières si avant l''aube,
-  allume les prises + purificateur + machine à café, réactive les volets.
+  2. Réveil → déverrouille la serrure du garage, allume les lumières si avant
+  l'aube, allume les prises + purificateur + machine à café, réactive les
+  volets.
 
-  3. Arrivée → déverrouille la serrure du garage, allume l''entrée si sombre, active
-  le purificateur, puis passe en mode Présent.
+  3. Arrivée → déverrouille la serrure du garage, allume l'entrée si sombre,
+  active le purificateur, puis passe en mode Présent.
 
-  4. Extinction / Couché → éteint la HiFi, verrouille les deux serrures, éteint lumières
-  et prises non essentielles ; en mode Couché : allume les veilleuses, ouvre le store
-  pergola si alarme armée, lance les SONOS en mode COUCHE.
+  4. Extinction / Couché → éteint la HiFi, verrouille les deux serrures, éteint
+  lumières et prises non essentielles ; en mode Couché : allume les veilleuses,
+  ouvre le store pergola si alarme armée, lance les SONOS en mode COUCHE.
 
 
   **Entités principales :**
 
-  - `lock.serrure_de_l_entree` / `lock.serrure_du_garage` : verrouillage automatique
+  - `lock.serrure_de_l_entree` / `lock.serrure_du_garage` : verrouillage
+  automatique
 
   - `input_select.sonos_action` / `input_select.hifi_action` : coordination AV
 
-  - `cover.store_pergola` : ouverture automatique en cas d''absence
+  - `cover.store_pergola` : ouverture automatique en cas d'absence
 
-  - `switch.machine_a_cafe_100_automatique` : démarrage café au réveil'
+  - `switch.machine_a_cafe_100_automatique` : démarrage café au réveil
 triggers:
-- entity_id:
-  - input_select.presence_action
-  trigger: state
+  - entity_id:
+      - input_select.presence_action
+    trigger: state
 conditions: []
 actions:
-- choose:
-  - conditions:
-    - condition: state
-      entity_id: input_select.presence_action
-      state: Présent
-    sequence:
-    - if:
-      - condition: not
-        conditions:
-        - condition: state
-          entity_id: input_select.sonos
-          state: REVEIL
-      then:
-      - if:
-        - condition: state
-          entity_id: input_select.sonos_action
-          state: 'ON'
-        then:
-        - action: automation.trigger
-          metadata: {}
-          data:
-            skip_condition: true
-          target:
-            entity_id:
-            - automation.gestion_des_sonos
-        else:
-        - action: input_select.select_option
-          metadata: {}
-          data:
-            option: 'ON'
-          target:
-            entity_id: input_select.sonos_action
-    - action: button.press
-      data: {}
-      target:
-        entity_id: input_button.volets_reactivation
-    - action: switch.turn_off
-      continue_on_error: true
-      data: {}
-      target:
-        entity_id: switch.prise_de_l_entree
-    - action: switch.turn_on
-      continue_on_error: true
-      data: {}
-      target:
-        entity_id:
-        - switch.prise_de_la_hotte
-        - switch.contacteur_du_four
-    - action: switch.turn_on
-      continue_on_error: true
-      data: {}
-      target:
-        entity_id:
-        - switch.multiprise_du_salon_droite_1_alimentation_apple
-        - switch.prise_de_la_terrasse_socket_1
-    note: Mode Présent → lance SONOS ON, réactive les volets, allume prises habituelles
-      (hotte, four, terrasse, Apple TV)
-  - conditions:
-    - condition: state
-      entity_id: input_select.presence_action
-      state: Réveil
-    sequence:
-    - if:
-      - condition: state
-        entity_id: lock.serrure_du_garage
-        state: locked
-      then:
-      - action: lock.unlock
-        data: {}
-        target:
-          entity_id: lock.serrure_du_garage
-    - if:
-      - condition: sun
-        before: sunrise
-        before_offset: '1800'
-      then:
-      - action: light.turn_on
-        data: {}
-        target:
-          entity_id:
-          - light.lumiere_de_lescalier
-          - light.lumiere_du_palier
-          - light.lumiere_de_la_cuisine
-          - light.lumiere_du_sejour
-    - action: switch.turn_on
-      continue_on_error: true
-      data: {}
-      target:
-        entity_id:
-        - switch.multiprise_du_salon_droite_1_alimentation_apple
-        - switch.prise_de_la_terrasse_socket_1
-        - switch.prise_de_la_hotte
-        - switch.contacteur_du_four
-    - action: switch.turn_on
-      target:
-        entity_id:
-        - switch.multiprise_du_salon_droite_2_purificateur
-        - switch.2_ventilateur
-      data: {}
-    - action: switch.turn_off
-      continue_on_error: true
-      data: {}
-      target:
-        entity_id: switch.prise_de_l_entree
-    - action: switch.turn_on
-      target:
-        entity_id: switch.machine_a_cafe_100_automatique
-      data: {}
-    - action: button.press
-      metadata: {}
-      data: {}
-      target:
-        entity_id: input_button.volets_reactivation
-    note: Mode Réveil → déverrouille serrure garage, allume lumières si avant l'aube,
-      active prises+purificateur+café, réactive les volets
-  - conditions:
-    - condition: state
-      entity_id: input_select.presence_action
-      state: Arrivée
-    sequence:
-    - if:
-      - condition: state
-        entity_id: lock.serrure_du_garage
-        state: locked
-      then:
-      - action: lock.unlock
-        data: {}
-        target:
-          entity_id: lock.serrure_du_garage
-    - if:
-      - condition: sun
-        before: sunrise
-        before_offset: '1800'
-        after: sunset
-        after_offset: '-1800'
-      then:
-      - action: light.turn_on
-        data: {}
-        target:
-          entity_id:
-          - light.lumiere_de_l_entree
-    - action: switch.turn_on
-      target:
-        entity_id:
-        - switch.multiprise_du_salon_droite_2_purificateur
-        - switch.2_ventilateur
-      data: {}
-    - action: input_select.select_option
-      metadata: {}
-      data:
-        option: Présent
-      target:
-        entity_id: input_select.presence_action
-    note: Mode Arrivée → déverrouille serrure garage, allume entrée si sombre, active
-      purificateur, bascule vers Présent
-  - conditions:
-    - condition: or
-      conditions:
-      - condition: state
-        entity_id: input_select.presence_action
-        state: Extinction
-      - condition: state
-        entity_id: input_select.presence_action
-        state: Couché
-    sequence:
-    - if:
-      - condition: state
-        entity_id: input_select.hifi_action
-        state: 'OFF'
-      then:
-      - action: automation.trigger
-        metadata: {}
-        data:
-          skip_condition: true
-        target:
-          entity_id:
-          - automation.gestion_de_la_hifi
-      else:
-      - action: input_select.select_option
-        metadata: {}
-        data:
-          option: 'OFF'
-        target:
-          entity_id: input_select.hifi_action
-    - if:
-      - condition: state
-        entity_id: input_select.presence_action
-        state: Couché
-      then:
-      - if:
-        - condition: or
-          conditions:
-          - condition: time
-            before: 02:00:00
-          - condition: sun
-            after: sunset
-            after_offset: '-1800'
-        then:
-        - action: light.turn_on
-          continue_on_error: true
-          data: {}
-          target:
-            entity_id:
-            - light.lumiere_de_l_entree
-            - light.lumiere_de_lescalier
-            - light.lumiere_du_palier
-            - light.lumiere_de_la_suite_parentale
-      - action: switch.turn_on
-        continue_on_error: true
-        target:
-          entity_id: switch.prise_de_l_entree
-        data: {}
-    - parallel:
-      - if:
-        - condition: state
-          entity_id: lock.serrure_de_l_entree
-          state: unlocked
-        then:
-        - action: lock.lock
-          data: {}
-          target:
-            entity_id: lock.serrure_de_l_entree
-      - if:
-        - condition: state
-          entity_id: lock.serrure_du_garage
-          state: unlocked
-        then:
-        - action: lock.lock
-          data: {}
-          target:
-            entity_id: lock.serrure_du_garage
-    - parallel:
-      - action: light.turn_off
-        continue_on_error: true
-        data: {}
-        target:
-          entity_id:
-          - light.lumiere_de_la_terrasse
-          - light.lumiere_du_garage
-          - light.lumiere_du_cellier
-          - light.lumiere_de_la_cuisine
-          - light.lumiere_de_lexterieur
-          - light.lumiere_du_meuble_de_la_cuisine
-          - light.lumiere_du_dressing
-      - action: switch.turn_off
-        continue_on_error: true
-        data: {}
-        target:
-          entity_id:
-          - switch.1_meuleuse
-          - switch.2_bosh
-          - switch.3_husqvarna
-          - switch.4_compresseur
-          - switch.multiprise_du_salon_droite_1_alimentation_apple
-          - switch.2_chargeur
-          - switch.3_lampe
-          - switch.prise_de_la_terrasse_socket_1
-      - action: switch.turn_off
-        continue_on_error: true
-        data: {}
-        target:
-          entity_id:
-          - switch.prise_de_la_hotte
-          - switch.contacteur_du_four
-      - action: switch.turn_off
-        continue_on_error: true
-        data: {}
-        target:
-          entity_id:
-          - switch.multiprise_de_la_suite_parentale_3_tv_apple_tv
-      - if:
-        - condition: state
-          entity_id: alarm_control_panel.alarme
-          state: armed_away
-        then:
-        - action: light.turn_off
-          continue_on_error: true
-          data: {}
-          target:
-            entity_id:
-            - light.armoire_de_toilette_de_la_salle_d_eau
-            - light.armoire_de_toilette_de_la_salle_de_bain
-            - light.plafonnier_de_la_salle_d_eau
-            - light.plafonnier_de_la_salle_de_bain
-            - light.lumiere_de_l_entree
-            - light.lumiere_de_lescalier
-            - light.lumiere_du_wc_de_letage
-            - light.lumiere_du_palier
-            - light.lumiere_du_wc_du_rdc
-        - if:
-          - condition: numeric_state
-            entity_id: cover.store_pergola
-            attribute: current_position
-            below: 100
-          then:
-          - action: cover.open_cover
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: input_select.presence_action
+            state: Présent
+        sequence:
+          - if:
+              - condition: not
+                conditions:
+                  - condition: state
+                    entity_id: input_select.sonos
+                    state: REVEIL
+            then:
+              - if:
+                  - condition: state
+                    entity_id: input_select.sonos_action
+                    state: "ON"
+                then:
+                  - action: automation.trigger
+                    metadata: {}
+                    data:
+                      skip_condition: true
+                    target:
+                      entity_id:
+                        - automation.gestion_des_sonos
+                else:
+                  - action: input_select.select_option
+                    metadata: {}
+                    data:
+                      option: "ON"
+                    target:
+                      entity_id: input_select.sonos_action
+          - action: button.press
             data: {}
             target:
-              entity_id: cover.store_pergola
-        - if:
-          - condition: state
-            entity_id: input_boolean.purification
-            state: 'off'
-          then:
+              entity_id: input_button.volets_reactivation
           - action: switch.turn_off
             continue_on_error: true
             data: {}
             target:
+              entity_id: switch.prise_de_l_entree
+          - action: switch.turn_on
+            continue_on_error: true
+            data: {}
+            target:
               entity_id:
-              - switch.multiprise_du_salon_droite_2_purificateur
-              - switch.2_ventilateur
-      - if:
-        - condition: or
-          conditions:
+                - switch.prise_de_la_hotte
+                - switch.contacteur_du_four
+          - action: switch.turn_on
+            continue_on_error: true
+            data: {}
+            target:
+              entity_id:
+                - switch.multiprise_du_salon_droite_1_alimentation_apple
+                - switch.prise_de_la_terrasse_socket_1
+        note: >-
+          Mode Présent → lance SONOS ON, réactive les volets, allume prises
+          habituelles (hotte, four, terrasse, Apple TV)
+      - conditions:
           - condition: state
-            entity_id: alarm_control_panel.alarme
-            state: armed_away
+            entity_id: input_select.presence_action
+            state: Réveil
+        sequence:
+          - if:
+              - condition: state
+                entity_id: lock.serrure_du_garage
+                state: locked
+            then:
+              - action: lock.unlock
+                data: {}
+                target:
+                  entity_id: lock.serrure_du_garage
+          - if:
+              - condition: sun
+                before: sunrise
+                before_offset: "1800"
+            then:
+              - action: light.turn_on
+                data: {}
+                target:
+                  entity_id:
+                    - light.lumiere_de_lescalier
+                    - light.lumiere_du_palier
+                    - light.lumiere_de_la_cuisine
+                    - light.lumiere_du_sejour
+          - action: switch.turn_on
+            continue_on_error: true
+            data: {}
+            target:
+              entity_id:
+                - switch.multiprise_du_salon_droite_1_alimentation_apple
+                - switch.prise_de_la_terrasse_socket_1
+                - switch.prise_de_la_hotte
+                - switch.contacteur_du_four
+          - action: switch.turn_on
+            target:
+              entity_id:
+                - switch.multiprise_du_salon_droite_2_purificateur
+                - switch.2_ventilateur
+            data: {}
+          - action: switch.turn_off
+            continue_on_error: true
+            data: {}
+            target:
+              entity_id: switch.prise_de_l_entree
+          - action: switch.turn_on
+            target:
+              entity_id: switch.machine_a_cafe_100_automatique
+            data: {}
+          - action: button.press
+            metadata: {}
+            data: {}
+            target:
+              entity_id: input_button.volets_reactivation
+        note: >-
+          Mode Réveil → déverrouille serrure garage, allume lumières si avant
+          l'aube, active prises+purificateur+café, réactive les volets
+      - conditions:
           - condition: state
-            entity_id: input_select.presence_salon
-            state: Absent
-        then:
-        - action: light.turn_off
-          continue_on_error: true
-          data: {}
-          target:
-            entity_id:
-            - light.lumiere_du_salon
-            - light.lumiere_du_sejour
-        enabled: false
-      - action: light.turn_off
-        continue_on_error: true
-        data: {}
-        target:
-          entity_id:
-          - light.lumiere_du_salon
-          - light.lumiere_du_sejour
-      - if:
-        - condition: state
-          entity_id: alarm_control_panel.alarme
-          state: armed_away
-        - condition: or
-          conditions:
-          - condition: state
-            entity_id: input_select.presence_suite_parentale
-            state: Absent
-          enabled: false
-        then:
-        - action: light.turn_off
-          continue_on_error: true
-          data: {}
-          target:
-            entity_id:
-            - light.lumiere_de_la_suite_parentale
-      - if:
-        - condition: or
-          conditions:
-          - condition: state
-            entity_id: alarm_control_panel.alarme
-            state: armed_away
-          - condition: state
-            entity_id: input_select.presence_bureau
-            state: Absent
-        then:
-        - action: light.turn_off
-          continue_on_error: true
-          data: {}
-          target:
-            entity_id:
-            - light.lumiere_du_bureau
-      - if:
-        - condition: or
-          conditions:
-          - condition: state
-            entity_id: alarm_control_panel.alarme
-            state: armed_away
-          - condition: state
-            entity_id: input_select.presence_chambre
-            state: Absent
-        then:
-        - action: light.turn_off
-          continue_on_error: true
-          data: {}
-          target:
-            entity_id:
-            - light.lumiere_de_la_chambre
-      - action: button.press
-        metadata: {}
-        data: {}
-        target:
-          entity_id: input_button.volets_reactivation
-      continue_on_error: true
-    - if:
-      - condition: state
-        entity_id: input_select.presence_action
-        state: Couché
-      then:
-      - if:
-        - condition: state
-          entity_id: input_select.sonos_action
-          state: COUCHE
-        then:
-        - action: automation.trigger
-          metadata: {}
-          data:
-            skip_condition: true
-          target:
-            entity_id:
-            - automation.gestion_des_sonos
-        else:
-        - action: input_select.select_option
-          metadata: {}
-          data:
-            option: COUCHE
-          target:
-            entity_id: input_select.sonos_action
-    note: 'Mode Extinction/Couché → éteint HiFi, verrouille les deux serrures, éteint
-      lumières/prises non essentielles ; Couché: veilleuses + store pergola si absent
-      + SONOS COUCHE'
+            entity_id: input_select.presence_action
+            state: Arrivée
+        sequence:
+          - if:
+              - condition: state
+                entity_id: lock.serrure_du_garage
+                state: locked
+            then:
+              - action: lock.unlock
+                data: {}
+                target:
+                  entity_id: lock.serrure_du_garage
+          - if:
+              - condition: sun
+                before: sunrise
+                before_offset: "1800"
+                after: sunset
+                after_offset: "-1800"
+            then:
+              - action: light.turn_on
+                data: {}
+                target:
+                  entity_id:
+                    - light.lumiere_de_l_entree
+          - action: switch.turn_on
+            target:
+              entity_id:
+                - switch.multiprise_du_salon_droite_2_purificateur
+                - switch.2_ventilateur
+            data: {}
+          - action: input_select.select_option
+            metadata: {}
+            data:
+              option: Présent
+            target:
+              entity_id: input_select.presence_action
+        note: >-
+          Mode Arrivée → déverrouille serrure garage, allume entrée si sombre,
+          active purificateur, bascule vers Présent
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id: input_select.presence_action
+                state: Extinction
+              - condition: state
+                entity_id: input_select.presence_action
+                state: Couché
+        sequence:
+          - if:
+              - condition: state
+                entity_id: input_select.hifi_action
+                state: "OFF"
+            then:
+              - action: automation.trigger
+                metadata: {}
+                data:
+                  skip_condition: true
+                target:
+                  entity_id:
+                    - automation.gestion_de_la_hifi
+            else:
+              - action: input_select.select_option
+                metadata: {}
+                data:
+                  option: "OFF"
+                target:
+                  entity_id: input_select.hifi_action
+          - if:
+              - condition: state
+                entity_id: input_select.presence_action
+                state: Couché
+            then:
+              - if:
+                  - condition: or
+                    conditions:
+                      - condition: time
+                        before: "02:00:00"
+                      - condition: sun
+                        after: sunset
+                        after_offset: "-1800"
+                then:
+                  - action: light.turn_on
+                    continue_on_error: true
+                    data: {}
+                    target:
+                      entity_id:
+                        - light.lumiere_de_l_entree
+                        - light.lumiere_de_lescalier
+                        - light.lumiere_du_palier
+                        - light.lumiere_de_la_suite_parentale
+              - action: switch.turn_on
+                continue_on_error: true
+                target:
+                  entity_id: switch.prise_de_l_entree
+                data: {}
+          - parallel:
+              - if:
+                  - condition: state
+                    entity_id: lock.serrure_de_l_entree
+                    state: unlocked
+                then:
+                  - action: lock.lock
+                    data: {}
+                    target:
+                      entity_id: lock.serrure_de_l_entree
+              - if:
+                  - condition: state
+                    entity_id: lock.serrure_du_garage
+                    state: unlocked
+                then:
+                  - action: lock.lock
+                    data: {}
+                    target:
+                      entity_id: lock.serrure_du_garage
+          - parallel:
+              - action: light.turn_off
+                continue_on_error: true
+                data: {}
+                target:
+                  entity_id:
+                    - light.lumiere_de_la_terrasse
+                    - light.lumiere_du_garage
+                    - light.lumiere_du_cellier
+                    - light.lumiere_de_la_cuisine
+                    - light.lumiere_de_lexterieur
+                    - light.lumiere_du_meuble_de_la_cuisine
+                    - light.lumiere_du_dressing
+              - action: switch.turn_off
+                continue_on_error: true
+                data: {}
+                target:
+                  entity_id:
+                    - switch.1_meuleuse
+                    - switch.2_bosh
+                    - switch.3_husqvarna
+                    - switch.4_compresseur
+                    - switch.multiprise_du_salon_droite_1_alimentation_apple
+                    - switch.2_chargeur
+                    - switch.3_lampe
+                    - switch.prise_de_la_terrasse_socket_1
+              - action: switch.turn_off
+                continue_on_error: true
+                data: {}
+                target:
+                  entity_id:
+                    - switch.prise_de_la_hotte
+                    - switch.contacteur_du_four
+              - action: switch.turn_off
+                continue_on_error: true
+                data: {}
+                target:
+                  entity_id:
+                    - switch.multiprise_de_la_suite_parentale_3_tv_apple_tv
+              - if:
+                  - condition: state
+                    entity_id: alarm_control_panel.alarme
+                    state: armed_away
+                then:
+                  - action: light.turn_off
+                    continue_on_error: true
+                    data: {}
+                    target:
+                      entity_id:
+                        - light.armoire_de_toilette_de_la_salle_d_eau
+                        - light.armoire_de_toilette_de_la_salle_de_bain
+                        - light.plafonnier_de_la_salle_d_eau
+                        - light.plafonnier_de_la_salle_de_bain
+                        - light.lumiere_de_l_entree
+                        - light.lumiere_de_lescalier
+                        - light.lumiere_du_wc_de_letage
+                        - light.lumiere_du_palier
+                        - light.lumiere_du_wc_du_rdc
+                  - if:
+                      - condition: numeric_state
+                        entity_id: cover.store_pergola
+                        attribute: current_position
+                        below: 100
+                    then:
+                      - action: cover.open_cover
+                        data: {}
+                        target:
+                          entity_id: cover.store_pergola
+                  - if:
+                      - condition: state
+                        entity_id: input_boolean.purification
+                        state: "off"
+                    then:
+                      - action: switch.turn_off
+                        continue_on_error: true
+                        data: {}
+                        target:
+                          entity_id:
+                            - switch.multiprise_du_salon_droite_2_purificateur
+                            - switch.2_ventilateur
+              - if:
+                  - condition: or
+                    conditions:
+                      - condition: state
+                        entity_id: alarm_control_panel.alarme
+                        state: armed_away
+                      - condition: state
+                        entity_id: input_select.presence_salon
+                        state: Absent
+                then:
+                  - action: light.turn_off
+                    continue_on_error: true
+                    data: {}
+                    target:
+                      entity_id:
+                        - light.lumiere_du_salon
+                        - light.lumiere_du_sejour
+                enabled: false
+              - action: light.turn_off
+                continue_on_error: true
+                data: {}
+                target:
+                  entity_id:
+                    - light.lumiere_du_salon
+                    - light.lumiere_du_sejour
+              - if:
+                  - condition: state
+                    entity_id: alarm_control_panel.alarme
+                    state: armed_away
+                  - condition: or
+                    conditions:
+                      - condition: state
+                        entity_id: input_select.presence_suite_parentale
+                        state: Absent
+                    enabled: false
+                then:
+                  - action: light.turn_off
+                    continue_on_error: true
+                    data: {}
+                    target:
+                      entity_id:
+                        - light.lumiere_de_la_suite_parentale
+              - if:
+                  - condition: or
+                    conditions:
+                      - condition: state
+                        entity_id: alarm_control_panel.alarme
+                        state: armed_away
+                      - condition: state
+                        entity_id: input_select.presence_bureau
+                        state: Absent
+                then:
+                  - action: light.turn_off
+                    continue_on_error: true
+                    data: {}
+                    target:
+                      entity_id:
+                        - light.lumiere_du_bureau
+              - if:
+                  - condition: or
+                    conditions:
+                      - condition: state
+                        entity_id: alarm_control_panel.alarme
+                        state: armed_away
+                      - condition: state
+                        entity_id: input_select.presence_chambre
+                        state: Absent
+                then:
+                  - action: light.turn_off
+                    continue_on_error: true
+                    data: {}
+                    target:
+                      entity_id:
+                        - light.lumiere_de_la_chambre
+              - action: button.press
+                metadata: {}
+                data: {}
+                target:
+                  entity_id: input_button.volets_reactivation
+            continue_on_error: true
+          - if:
+              - condition: state
+                entity_id: input_select.presence_action
+                state: Couché
+            then:
+              - if:
+                  - condition: state
+                    entity_id: input_select.sonos_action
+                    state: COUCHE
+                then:
+                  - action: automation.trigger
+                    metadata: {}
+                    data:
+                      skip_condition: true
+                    target:
+                      entity_id:
+                        - automation.gestion_des_sonos
+                else:
+                  - action: input_select.select_option
+                    metadata: {}
+                    data:
+                      option: COUCHE
+                    target:
+                      entity_id: input_select.sonos_action
+        note: >-
+          Mode Extinction/Couché → éteint HiFi, verrouille les deux serrures,
+          éteint lumières/prises non essentielles ; Couché: veilleuses + store
+          pergola si absent + SONOS COUCHE
 mode: restart

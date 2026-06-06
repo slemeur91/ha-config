@@ -1,7 +1,8 @@
 alias: Gestion du Bouton Hue de l'Entrée
-description: '**Statut :** Finalisé
+description: >-
+  **Statut :** Finalisé
 
-  **Evolution :** En cours d''affectation des actions
+  **Evolution :** En cours d'affectation des actions
 
 
   **Déclencheurs :**
@@ -11,144 +12,144 @@ description: '**Statut :** Finalisé
 
   **Fonctionnement :**
 
-  Les appuis courts et longs sont détectés mais aucune action n''est encore affectée
-  (séquences vides).
+  Les appuis courts et longs sont détectés mais aucune action n'est encore
+  affectée (séquences vides).
 
 
   **Entités principales :**
 
-  - `event.tap_dial_cote_entree_bouton_*` : événements boutons Hue'
+  - `event.tap_dial_cote_entree_bouton_*` : événements boutons Hue
 triggers:
-- trigger: state
-  entity_id:
-  - event.tap_dial_cote_entree_bouton_1
-  id: Bouton1
-- trigger: state
-  entity_id:
-  - event.tap_dial_cote_entree_bouton_2
-  id: Bouton2
-- trigger: state
-  entity_id:
-  - event.tap_dial_cote_entree_bouton_3
-  id: Bouton3
-- trigger: state
-  entity_id:
-  - event.tap_dial_cote_entree_bouton_4
-  id: Bouton4
-- trigger: state
-  entity_id:
-  - event.tap_dial_cote_entree_rotatif
-  id: Rotation
+  - trigger: state
+    entity_id:
+      - event.tap_dial_cote_entree_bouton_1
+    id: Bouton1
+  - trigger: state
+    entity_id:
+      - event.tap_dial_cote_entree_bouton_2
+    id: Bouton2
+  - trigger: state
+    entity_id:
+      - event.tap_dial_cote_entree_bouton_3
+    id: Bouton3
+  - trigger: state
+    entity_id:
+      - event.tap_dial_cote_entree_bouton_4
+    id: Bouton4
+  - trigger: state
+    entity_id:
+      - event.tap_dial_cote_entree_rotatif
+    id: Rotation
 conditions: []
 actions:
-- if:
-  - condition: trigger
-    id:
-    - Bouton1
-  then:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: event.tap_dial_cote_entree_bouton_1
-        attribute: event_type
-        state: short_release
-      sequence:
-      - action: light.toggle
-        data: {}
-        enabled: false
-    - conditions:
-      - condition: or
+  - if:
+      - condition: trigger
+        id:
+          - Bouton1
+    then:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: event.tap_dial_cote_entree_bouton_1
+                attribute: event_type
+                state: short_release
+            sequence:
+              - action: light.toggle
+                data: {}
+                enabled: false
+          - conditions:
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: event.tap_dial_cote_entree_bouton_1
+                    attribute: event_type
+                    state: long_press
+                  - condition: state
+                    entity_id: event.tap_dial_cote_entree_bouton_1
+                    attribute: event_type
+                    state: long_release
+            sequence: []
+  - if:
+      - condition: and
         conditions:
-        - condition: state
-          entity_id: event.tap_dial_cote_entree_bouton_1
-          attribute: event_type
-          state: long_press
-        - condition: state
-          entity_id: event.tap_dial_cote_entree_bouton_1
-          attribute: event_type
-          state: long_release
-      sequence: []
-- if:
-  - condition: and
-    conditions:
-    - condition: trigger
-      id:
-      - Bouton2
-  then:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: event.tap_dial_cote_entree_bouton_2
-        attribute: event_type
-        state: short_release
-      sequence:
-      - action: light.toggle
-        data: {}
-        enabled: false
-    - conditions:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: event.tap_dial_cote_entree_bouton_2
-          attribute: event_type
-          state: long_press
-        - condition: state
-          entity_id: event.tap_dial_cote_entree_bouton_2
-          attribute: event_type
-          state: long_release
-      sequence: []
-- if:
-  - condition: trigger
-    id:
-    - Bouton3
-  then:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: event.tap_dial_cote_entree_bouton_3
-        attribute: event_type
-        state: short_release
-      sequence:
-      - action: light.toggle
-        data: {}
-        enabled: false
-    - conditions:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: event.tap_dial_cote_entree_bouton_3
-          attribute: event_type
-          state: long_press
-        - condition: state
-          entity_id: event.tap_dial_cote_entree_bouton_3
-          attribute: event_type
-          state: long_release
-      sequence: []
-- if:
-  - condition: trigger
-    id:
-    - Bouton4
-  then:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: event.tap_dial_cote_entree_bouton_4
-        attribute: event_type
-        state: short_release
-      sequence:
-      - action: light.toggle
-        data: {}
-        enabled: false
-    - conditions:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: event.tap_dial_cote_entree_bouton_4
-          attribute: event_type
-          state: long_press
-        - condition: state
-          entity_id: event.tap_dial_cote_entree_bouton_4
-          attribute: event_type
-          state: long_release
-      sequence: []
+          - condition: trigger
+            id:
+              - Bouton2
+    then:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: event.tap_dial_cote_entree_bouton_2
+                attribute: event_type
+                state: short_release
+            sequence:
+              - action: light.toggle
+                data: {}
+                enabled: false
+          - conditions:
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: event.tap_dial_cote_entree_bouton_2
+                    attribute: event_type
+                    state: long_press
+                  - condition: state
+                    entity_id: event.tap_dial_cote_entree_bouton_2
+                    attribute: event_type
+                    state: long_release
+            sequence: []
+  - if:
+      - condition: trigger
+        id:
+          - Bouton3
+    then:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: event.tap_dial_cote_entree_bouton_3
+                attribute: event_type
+                state: short_release
+            sequence:
+              - action: light.toggle
+                data: {}
+                enabled: false
+          - conditions:
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: event.tap_dial_cote_entree_bouton_3
+                    attribute: event_type
+                    state: long_press
+                  - condition: state
+                    entity_id: event.tap_dial_cote_entree_bouton_3
+                    attribute: event_type
+                    state: long_release
+            sequence: []
+  - if:
+      - condition: trigger
+        id:
+          - Bouton4
+    then:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: event.tap_dial_cote_entree_bouton_4
+                attribute: event_type
+                state: short_release
+            sequence:
+              - action: light.toggle
+                data: {}
+                enabled: false
+          - conditions:
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: event.tap_dial_cote_entree_bouton_4
+                    attribute: event_type
+                    state: long_press
+                  - condition: state
+                    entity_id: event.tap_dial_cote_entree_bouton_4
+                    attribute: event_type
+                    state: long_release
+            sequence: []
 mode: restart

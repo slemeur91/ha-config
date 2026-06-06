@@ -1,5 +1,6 @@
 alias: Notification appareils en batterie faible - Mail hebdomadaire
-description: '**Statut :** Finalisé
+description: >-
+  **Statut :** Finalisé
 
   **Evolution :** Aucune
 
@@ -11,31 +12,39 @@ description: '**Statut :** Finalisé
 
   **Fonctionnement :**
 
-  1. Envoie un mail récapitulatif des appareils dont la batterie est en dessous du
-  seuil d''alerte.'
+  1. Envoie un mail récapitulatif des appareils dont la batterie est en dessous
+  du seuil d'alerte.
 triggers:
-- at: '19:00:00'
-  weekday:
-  - fri
-  trigger: time
+  - at: "19:00:00"
+    weekday:
+      - fri
+    trigger: time
 conditions: []
 actions:
-- variables:
-    low_battery_devices: "{% set devices = namespace(list=[]) %}\n{% for entity_id\
-      \ in integration_entities('battery_notes') %}\n  {% set state = states[entity_id]\
-      \ %}\n  {% if state and state.domain == 'sensor' and state.attributes.get('battery_low',\
-      \ false) %}\n    {% set devices.list = devices.list + [{\n      'name': state.attributes.get('device_name',\
-      \ entity_id),\n      'battery_type_and_quantity': state.attributes.get('battery_type_and_quantity',\
-      \ 'Inconnu'),\n      'battery_level': state.state\n    }] %}\n  {% endif %}\n\
-      {% endfor %}\n{{ devices.list }}\n"
-- condition: template
-  value_template: '{{ low_battery_devices | length > 0 }}'
-- variables:
-    message_mail: "Liste des appareils avec batterie faible :\n{% for device in low_battery_devices\
-      \ -%}\n  - {{ device.name }} à {{ device.battery_level | int }}% : {{ device.battery_type_and_quantity\
-      \ }}\n{% endfor %}\n"
-- action: script.notification_mail
-  data:
-    message_type: Batteries
-    message_mail: '{{ message_mail }}'
+  - variables:
+      low_battery_devices: |
+        {% set devices = namespace(list=[]) %}
+        {% for entity_id in integration_entities('battery_notes') %}
+          {% set state = states[entity_id] %}
+          {% if state and state.domain == 'sensor' and state.attributes.get('battery_low', false) %}
+            {% set devices.list = devices.list + [{
+              'name': state.attributes.get('device_name', entity_id),
+              'battery_type_and_quantity': state.attributes.get('battery_type_and_quantity', 'Inconnu'),
+              'battery_level': state.state
+            }] %}
+          {% endif %}
+        {% endfor %}
+        {{ devices.list }}
+  - condition: template
+    value_template: "{{ low_battery_devices | length > 0 }}"
+  - variables:
+      message_mail: |
+        Liste des appareils avec batterie faible :
+        {% for device in low_battery_devices -%}
+          - {{ device.name }} à {{ device.battery_level | int }}% : {{ device.battery_type_and_quantity }}
+        {% endfor %}
+  - action: script.notification_mail
+    data:
+      message_type: Batteries
+      message_mail: "{{ message_mail }}"
 mode: restart

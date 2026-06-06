@@ -1,5 +1,6 @@
 alias: Correction Tuya
-description: '**Statut :** Finalisé
+description: >-
+  **Statut :** Finalisé
 
   **Evolution :** Aucune
 
@@ -11,27 +12,27 @@ description: '**Statut :** Finalisé
 
   **Fonctionnement :**
 
-  1. Attend 5 minutes (laisser l''intégration Tuya s''initialiser).
+  1. Attend 5 minutes (laisser l'intégration Tuya s'initialiser).
 
-  2. Force l''activation du switch USB de la multiprise garage pour corriger un problème
-  de reconnexion Tuya au démarrage.
+  2. Force l'activation du switch USB de la multiprise garage pour corriger un
+  problème de reconnexion Tuya au démarrage.
 
 
   **Entités principales :**
 
-  - `switch.multiprise_du_garage_usb_1` : switch Tuya à forcer'
+  - `switch.multiprise_du_garage_usb_1` : switch Tuya à forcer
 triggers:
-- trigger: homeassistant
-  event: start
+  - trigger: homeassistant
+    event: start
 conditions: []
 actions:
-- delay:
-    hours: 0
-    minutes: 5
-    seconds: 0
-    milliseconds: 0
-- action: switch.turn_on
-  data: {}
-  target:
-    entity_id: switch.multiprise_du_garage_usb_1
+  - delay:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - action: switch.turn_on
+    data: {}
+    target:
+      entity_id: switch.multiprise_du_garage_usb_1
 mode: restart

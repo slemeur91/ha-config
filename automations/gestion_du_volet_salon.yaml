@@ -1,10 +1,9 @@
 alias: Gestion du Volet - Salon
-description: '**Statut :** Finalisé
-
+description: |-
+  **Statut :** Finalisé
   **Evolution :** Aucune
 
-
-  Gestion du Volet - Salon'
+  Gestion du Volet - Salon
 use_blueprint:
   path: Volets/Gestion_des_volets.yaml
   input:

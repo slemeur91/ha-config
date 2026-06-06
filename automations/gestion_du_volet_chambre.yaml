@@ -1,10 +1,9 @@
 alias: Gestion du Volet - Chambre
-description: '**Statut :** Finalisé
-
+description: |-
+  **Statut :** Finalisé
   **Evolution :** Aucune
 
-
-  Gestion du Volet - Chambre'
+  Gestion du Volet - Chambre
 use_blueprint:
   path: Volets/Gestion_des_volets.yaml
   input:

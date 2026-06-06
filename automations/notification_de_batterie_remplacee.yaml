@@ -1,30 +1,30 @@
 alias: Notification de batterie remplacée
-description: '**Statut :** Finalisé
+description: >-
+  **Statut :** Finalisé
 
   **Evolution :** Aucune
 
 
   **Déclencheurs :**
 
-  - Événement `battery_notes_battery_increased` (niveau de batterie en hausse significative)
+  - Événement `battery_notes_battery_increased` (niveau de batterie en hausse
+  significative)
 
 
   **Fonctionnement :**
 
-  1. Crée une notification persistante suggérant de marquer la batterie comme remplacée
-  dans Battery Notes.'
+  1. Crée une notification persistante suggérant de marquer la batterie comme
+  remplacée dans Battery Notes.
 triggers:
-- trigger: event
-  event_type: battery_notes_battery_increased
+  - trigger: event
+    event_type: battery_notes_battery_increased
 conditions: []
 actions:
-- action: persistent_notification.create
-  data:
-    title: 'Batterie rechargée — {{ trigger.event.data.device_name }}
-
-      '
-    message: 'Le niveau de batterie de l''appareil a augmenté, vous souhaitez peut-être
-      le marquer comme remplacé
-
-      '
+  - action: persistent_notification.create
+    data:
+      title: |
+        Batterie rechargée — {{ trigger.event.data.device_name }}
+      message: >
+        Le niveau de batterie de l'appareil a augmenté, vous souhaitez peut-être
+        le marquer comme remplacé
 mode: queued

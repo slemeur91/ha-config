@@ -1,10 +1,9 @@
 alias: Gestion du Velux - Salle d'eau
-description: '**Statut :** Finalisé
-
+description: |-
+  **Statut :** Finalisé
   **Evolution :** Aucune
 
-
-  Gestion du Velux - Salle d''eau'
+  Gestion du Velux - Salle d'eau
 use_blueprint:
   path: Volets/Gestion_des_velux.yaml
   input:

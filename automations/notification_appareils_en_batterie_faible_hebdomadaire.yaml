@@ -1,5 +1,6 @@
 alias: Notification appareils en batterie faible - Hebdomadaire
-description: '**Statut :** Finalisé
+description: >-
+  **Statut :** Finalisé
 
   **Evolution :** Aucune
 
@@ -11,14 +12,15 @@ description: '**Statut :** Finalisé
 
   **Fonctionnement :**
 
-  1. Lance le service `battery_notes.check_battery_low` pour forcer une vérification
-  hebdomadaire de toutes les batteries et générer les notifications manquantes.'
+  1. Lance le service `battery_notes.check_battery_low` pour forcer une
+  vérification hebdomadaire de toutes les batteries et générer les notifications
+  manquantes.
 triggers:
-- trigger: time
-  at: '19:00:00'
-  weekday:
-  - fri
+  - trigger: time
+    at: "19:00:00"
+    weekday:
+      - fri
 conditions: []
 actions:
-- action: battery_notes.check_battery_low
+  - action: battery_notes.check_battery_low
 mode: restart

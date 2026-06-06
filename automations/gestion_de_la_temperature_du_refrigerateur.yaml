@@ -1,5 +1,6 @@
 alias: Gestion de la température du réfrigérateur
-description: '**Statut :** Finalisé
+description: >-
+  **Statut :** Finalisé
 
   **Evolution :** Aucune
 
@@ -8,59 +9,61 @@ description: '**Statut :** Finalisé
 
   - Changement de la température du frigo ou du congélateur
 
-  - Déconnexion réseau de l''interface du réfrigérateur (device tracker passe de "home")
+  - Déconnexion réseau de l'interface du réfrigérateur (device tracker passe de
+  "home")
 
 
   **Fonctionnement :**
 
-  1. Si la température du frigo est hors plage [2-4°C], OU le congélateur hors plage
-  [-20 à -18°C], OU l''interface réseau du frigo n''est plus détectée → envoie un
-  SMS d''alerte.
+  1. Si la température du frigo est hors plage [2-4°C], OU le congélateur hors
+  plage [-20 à -18°C], OU l'interface réseau du frigo n'est plus détectée →
+  envoie un SMS d'alerte.
 
 
   **Entités principales :**
 
-  - `sensor.refrigerateur_temperature_du_frigo` / `sensor.refrigerateur_temperature_du_congelateur`
-  : températures
+  - `sensor.refrigerateur_temperature_du_frigo` /
+  `sensor.refrigerateur_temperature_du_congelateur` : températures
 
-  - `device_tracker.unifi_default_34_fc_99_77_67_78` : supervision réseau du frigo'
+  - `device_tracker.unifi_default_34_fc_99_77_67_78` : supervision réseau du
+  frigo
 triggers:
-- trigger: state
-  entity_id:
-  - sensor.refrigerateur_temperature_du_frigo
-  - sensor.refrigerateur_temperature_du_congelateur
-- trigger: state
-  entity_id:
-  - device_tracker.unifi_default_34_fc_99_77_67_78
-  from:
-  - home
-  to: null
+  - trigger: state
+    entity_id:
+      - sensor.refrigerateur_temperature_du_frigo
+      - sensor.refrigerateur_temperature_du_congelateur
+  - trigger: state
+    entity_id:
+      - device_tracker.unifi_default_34_fc_99_77_67_78
+    from:
+      - home
+    to: null
 conditions: []
 actions:
-- if:
-  - condition: or
-    conditions:
-    - condition: not
-      conditions:
-      - condition: numeric_state
-        entity_id: sensor.refrigerateur_temperature_du_frigo
-        above: 2
-        below: 4
-    - condition: not
-      conditions:
-      - condition: numeric_state
-        entity_id: sensor.refrigerateur_temperature_du_congelateur
-        above: -20
-        below: -18
-    - condition: not
-      conditions:
-      - condition: state
-        entity_id: device_tracker.unifi_default_34_fc_99_77_67_78
-        state:
-        - home
-  then:
-  - action: script.notification_sms
-    data:
-      message_type: Alerte
-      message_sms: Problème de température dans le réfrigérateur
+  - if:
+      - condition: or
+        conditions:
+          - condition: not
+            conditions:
+              - condition: numeric_state
+                entity_id: sensor.refrigerateur_temperature_du_frigo
+                above: 2
+                below: 4
+          - condition: not
+            conditions:
+              - condition: numeric_state
+                entity_id: sensor.refrigerateur_temperature_du_congelateur
+                above: -20
+                below: -18
+          - condition: not
+            conditions:
+              - condition: state
+                entity_id: device_tracker.unifi_default_34_fc_99_77_67_78
+                state:
+                  - home
+    then:
+      - action: script.notification_sms
+        data:
+          message_type: Alerte
+          message_sms: Problème de température dans le réfrigérateur
 mode: single
