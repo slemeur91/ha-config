@@ -32,9 +32,10 @@ triggers:
     entity_id:
       - sensor.refrigerateur_temperature_du_frigo
       - sensor.refrigerateur_temperature_du_congelateur
+    to: null
   - trigger: state
     entity_id:
-      - device_tracker.unifi_default_34_fc_99_77_67_78
+      - device_tracker.samsung_refrigerator
     from:
       - home
     to: null
