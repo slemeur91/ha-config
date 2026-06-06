@@ -1,4 +1,4 @@
-# Maintenance & Corrections
+# Maintenance & Corrections (5)
 
 [← Retour README](../../README.md)
 
@@ -87,38 +87,6 @@
 | `input_boolean.poele` | input_boolean | on/off |
 | `input_boolean.climatisation` | input_boolean | on/off |
 | `input_boolean.alarme` | input_boolean | on/off |
-
----
-
-## `automation.surveillance_automatisations_desactivees` — Surveillance Automatisations Désactivées
-> [📄 Voir le YAML](../../automations/surveillance_automatisations_desactivees.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :** Chaque jour à 8h00
-
-**Conditions :** Au moins une automatisation désactivée
-
-**Fonctionnement :**
-1. Compose la liste des automatisations désactivées.
-2. Envoie un SMS récapitulatif.
-
-**Entrées utilisées :** Aucune entrée helper.
-
----
-
-## `automation.surveillance_automatisations_inactives` — Surveillance Automatisations Inactives
-> [📄 Voir le YAML](../../automations/surveillance_automatisations_inactives.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :** Chaque jour à 9h00
-
-**Fonctionnement :**
-1. Identifie les automatisations non déclenchées depuis 7 jours.
-2. Envoie un SMS récapitulatif avec noms et dates de dernier déclenchement.
-
-**Entrées utilisées :** Aucune entrée helper.
 
 ---
 

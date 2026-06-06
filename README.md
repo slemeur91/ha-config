@@ -6,12 +6,12 @@
 
 | Élément | Valeur |
 |---|---|
-| Version HA | 2026.6.0 |
+| Version HA | 2026.x.x |
 | Entités totales | 2 156 |
 | Domaines (types d'entités) | 43 |
 | Zones / Pièces | 23 |
 | Appareils connectés | **195** |
-| Automatisations | **50** (46 actives) |
+| Automatisations | **46** |
 | Scripts | **16** |
 | Blueprints | **2** |
 | Modules complémentaires (Add-ons) | **17** |
@@ -44,7 +44,7 @@
 
 ---
 
-## 🤖 Automations (46 actives)
+## 🤖 Automations (46)
 
 
 | Catégorie | Nb | Détail |
