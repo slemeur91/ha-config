@@ -1,29 +1,29 @@
-notification_sms:
-  alias: Notification SMS
-  description: '**Statut :** Finalisé
+alias: Notification SMS
+description: >-
+  **Statut :** Finalisé
 
-    **Evolution :** Aucune
-
-
-    **Rôle :** Envoie un message Telegram (SMS).
+  **Evolution :** Aucune
 
 
-    **Paramètres :**
-
-    - `message_type` : type du message
-
-    - `message_sms` : contenu du message
+  **Rôle :** Envoie un message Telegram (SMS).
 
 
-    **Fonctionnement :**
+  **Paramètres :**
 
-    1. Envoie un message via `telegram_bot.send_message` avec le type en titre et
-    le message en corps.'
-  sequence:
+  - `message_type` : type du message
+
+  - `message_sms` : contenu du message
+
+
+  **Fonctionnement :**
+
+  1. Envoie un message via `telegram_bot.send_message` avec le type en titre et
+  le message en corps.
+sequence:
   - action: telegram_bot.send_message
     data:
       config_entry_id: VOTRE_CONFIG_ENTRY_ID_TELEGRAM
-      message: '{{ message_sms }}'
-      title: '[HA] {{ message_type }}'
-  mode: queued
-  max: 10
+      message: "{{ message_sms }}"
+      title: "[HA] {{ message_type }}"
+mode: queued
+max: 10

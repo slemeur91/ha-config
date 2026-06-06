@@ -1,18 +1,14 @@
-reload_pyscript:
-  sequence:
+alias: Reload pyscript
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
+
+  **Rôle :** Recharge l'intégration pyscript sans redémarrer HA.
+
+  **Fonctionnement :**
+  1. Appelle `pyscript.reload` pour recharger tous les scripts Python.
+sequence:
   - action: pyscript.reload
     metadata: {}
     data: {}
-  alias: Reload pyscript
-  description: '**Statut :** Finalisé
-
-    **Evolution :** Aucune
-
-
-    **Rôle :** Recharge l''intégration pyscript sans redémarrer HA.
-
-
-    **Fonctionnement :**
-
-    1. Appelle `pyscript.reload` pour recharger tous les scripts Python.'
-  mode: restart
+mode: restart

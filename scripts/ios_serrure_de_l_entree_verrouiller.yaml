@@ -1,19 +1,15 @@
-ios_serrure_de_l_entree_verrouiller:
-  alias: iOS - Serrure de l'Entrée verrouiller
-  description: '**Statut :** Finalisé
+alias: iOS - Serrure de l'Entrée verrouiller
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
 
-    **Evolution :** Aucune
+  **Rôle :** Action rapide iOS pour verrouiller la serrure Nuki de l'entrée.
 
-
-    **Rôle :** Action rapide iOS pour verrouiller la serrure Nuki de l''entrée.
-
-
-    **Fonctionnement :**
-
-    1. Appelle `lock.lock` sur `lock.serrure_de_l_entree`.'
-  sequence:
+  **Fonctionnement :**
+  1. Appelle `lock.lock` sur `lock.serrure_de_l_entree`.
+sequence:
   - action: lock.lock
     data: {}
     target:
       entity_id: lock.serrure_de_l_entree
-  mode: restart
+mode: restart

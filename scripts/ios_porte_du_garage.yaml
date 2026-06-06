@@ -1,19 +1,15 @@
-ios_porte_du_garage:
-  alias: iOS - Porte du Garage
-  description: '**Statut :** Finalisé
+alias: iOS - Porte du Garage
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
 
-    **Evolution :** Aucune
+  **Rôle :** Action rapide iOS pour ouvrir ou fermer la porte du garage.
 
-
-    **Rôle :** Action rapide iOS pour ouvrir ou fermer la porte du garage.
-
-
-    **Fonctionnement :**
-
-    1. Déclenche `cover.toggle` sur `cover.rts_4_portal` (Somfy RTS).'
-  sequence:
+  **Fonctionnement :**
+  1. Déclenche `cover.toggle` sur `cover.rts_4_portal` (Somfy RTS).
+sequence:
   - action: cover.toggle
     data: {}
     target:
       entity_id: cover.rts_4_portal
-  mode: restart
+mode: restart

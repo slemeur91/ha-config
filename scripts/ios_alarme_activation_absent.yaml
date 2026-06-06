@@ -1,19 +1,20 @@
-ios_alarme_activation_absent:
-  alias: iOS - Alarme Activation (Absent)
-  description: '**Statut :** Finalisé
+alias: iOS - Alarme Activation (Absent)
+description: >-
+  **Statut :** Finalisé
 
-    **Evolution :** Aucune
-
-
-    **Rôle :** Action rapide iOS pour armer l''alarme en mode absent.
+  **Evolution :** Aucune
 
 
-    **Fonctionnement :**
+  **Rôle :** Action rapide iOS pour armer l'alarme en mode absent.
 
-    1. Appelle `alarm_control_panel.alarm_arm_away` sur `alarm_control_panel.alarme`.'
-  sequence:
+
+  **Fonctionnement :**
+
+  1. Appelle `alarm_control_panel.alarm_arm_away` sur
+  `alarm_control_panel.alarme`.
+sequence:
   - action: alarm_control_panel.alarm_arm_away
     target:
       entity_id: alarm_control_panel.alarme
     data: {}
-  mode: restart
+mode: restart

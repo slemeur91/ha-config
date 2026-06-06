@@ -1,71 +1,75 @@
-sonos_radio_sur_le_salon:
-  alias: SONOS Radio sur le Salon
-  description: '**Statut :** Finalisé
+alias: SONOS Radio sur le Salon
+description: >-
+  **Statut :** Finalisé
 
-    **Evolution :** Aucune
-
-
-    **Rôle :** Lance la radio Voltage sur l''enceinte du salon avec repli automatique.
+  **Evolution :** Aucune
 
 
-    **Fonctionnement :**
+  **Rôle :** Lance la radio Voltage sur l'enceinte du salon avec repli
+  automatique.
 
-    1. Lance Voltage via les favoris Sonos.
 
-    2. Attend 5 secondes.
+  **Fonctionnement :**
 
-    3. Si la lecture n''a pas démarré → repli sur le flux direct Radio Browser.'
-  sequence:
+  1. Lance Voltage via les favoris Sonos.
+
+  2. Attend 5 secondes.
+
+  3. Si la lecture n'a pas démarré → repli sur le flux direct Radio Browser.
+sequence:
   - sequence:
-    - action: media_player.play_media
-      continue_on_error: true
-      target:
-        entity_id: media_player.salon
-      data:
-        media:
-          media_content_id: FV:2/37
-          media_content_type: favorite_item_id
-          metadata:
-            title: VOLTAGE
-            thumbnail: https://sali.sonos.superhi.fi/image?w=60&image=https://cdn-profiles.tunein.com/s25257/images/logog.png%3Ft%3D1&partnerId=tunein
-            media_class: genre
-            children_media_class: null
-            navigateIds:
-            - {}
-            - media_content_type: favorites
-              media_content_id: ''
-            - media_content_type: favorites_folder
-              media_content_id: object.item.audioItem.audioBroadcast
-    - delay:
-        hours: 0
-        minutes: 0
-        seconds: 5
-        milliseconds: 0
-      note: Repli après 5s si Voltage non démarré → flux direct Radio Browser
-    - if:
-      - condition: not
-        conditions:
-        - condition: state
-          entity_id: media_player.salon
-          state: playing
-      then:
       - action: media_player.play_media
         continue_on_error: true
         target:
           entity_id: media_player.salon
         data:
           media:
-            media_content_id: media-source://radio_browser/96150311-0601-11e8-ae97-52543be04c81
-            media_content_type: audio/mpeg
+            media_content_id: FV:2/37
+            media_content_type: favorite_item_id
             metadata:
-              title: Voltage
-              thumbnail: https://bocir-prod-bucket.s3.eu-west-1.amazonaws.com/radios/voltage/images/favicon.ico
-              media_class: music
+              title: VOLTAGE
+              thumbnail: >-
+                https://sali.sonos.superhi.fi/image?w=60&image=https://cdn-profiles.tunein.com/s25257/images/logog.png%3Ft%3D1&partnerId=tunein
+              media_class: genre
               children_media_class: null
               navigateIds:
-              - {}
-              - media_content_type: app
-                media_content_id: media-source://radio_browser
-              - media_content_type: music
-                media_content_id: media-source://radio_browser/country/FR
-  mode: restart
+                - {}
+                - media_content_type: favorites
+                  media_content_id: ""
+                - media_content_type: favorites_folder
+                  media_content_id: object.item.audioItem.audioBroadcast
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+        note: Repli après 5s si Voltage non démarré → flux direct Radio Browser
+      - if:
+          - condition: not
+            conditions:
+              - condition: state
+                entity_id: media_player.salon
+                state: playing
+        then:
+          - action: media_player.play_media
+            continue_on_error: true
+            target:
+              entity_id: media_player.salon
+            data:
+              media:
+                media_content_id: >-
+                  media-source://radio_browser/96150311-0601-11e8-ae97-52543be04c81
+                media_content_type: audio/mpeg
+                metadata:
+                  title: Voltage
+                  thumbnail: >-
+                    https://bocir-prod-bucket.s3.eu-west-1.amazonaws.com/radios/voltage/images/favicon.ico
+                  media_class: music
+                  children_media_class: null
+                  navigateIds:
+                    - {}
+                    - media_content_type: app
+                      media_content_id: media-source://radio_browser
+                    - media_content_type: music
+                      media_content_id: media-source://radio_browser/country/FR
+mode: restart

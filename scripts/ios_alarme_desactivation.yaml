@@ -1,20 +1,21 @@
-ios_alarme_desactivation:
-  alias: iOS - Alarme Désactivation
-  description: '**Statut :** Finalisé
+alias: iOS - Alarme Désactivation
+description: >-
+  **Statut :** Finalisé
 
-    **Evolution :** Aucune
-
-
-    **Rôle :** Action rapide iOS pour désarmer l''alarme.
+  **Evolution :** Aucune
 
 
-    **Fonctionnement :**
+  **Rôle :** Action rapide iOS pour désarmer l'alarme.
 
-    1. Appelle `alarm_control_panel.alarm_disarm` sur `alarm_control_panel.alarme`.'
-  sequence:
+
+  **Fonctionnement :**
+
+  1. Appelle `alarm_control_panel.alarm_disarm` sur
+  `alarm_control_panel.alarme`.
+sequence:
   - action: alarm_control_panel.alarm_disarm
     target:
       entity_id:
-      - alarm_control_panel.alarme
+        - alarm_control_panel.alarme
     data: {}
-  mode: restart
+mode: restart

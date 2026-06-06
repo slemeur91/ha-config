@@ -1,19 +1,15 @@
-ios_serrure_du_garage_deverrouiller:
-  alias: iOS - Serrure du Garage déverrouiller
-  description: '**Statut :** Finalisé
+alias: iOS - Serrure du Garage déverrouiller
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
 
-    **Evolution :** Aucune
+  **Rôle :** Action rapide iOS pour déverrouiller la serrure Nuki du garage.
 
-
-    **Rôle :** Action rapide iOS pour déverrouiller la serrure Nuki du garage.
-
-
-    **Fonctionnement :**
-
-    1. Appelle `lock.unlock` sur `lock.serrure_du_garage`.'
-  sequence:
+  **Fonctionnement :**
+  1. Appelle `lock.unlock` sur `lock.serrure_du_garage`.
+sequence:
   - action: lock.unlock
     data: {}
     target:
       entity_id: lock.serrure_du_garage
-  mode: restart
+mode: restart
