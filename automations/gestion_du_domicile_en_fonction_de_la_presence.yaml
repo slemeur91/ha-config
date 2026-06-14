@@ -142,7 +142,7 @@ actions:
             target:
               entity_id:
                 - switch.multiprise_du_salon_droite_2_purificateur
-                - switch.2_ventilateur
+                - switch.salon_multiprise_du_salon_gauche_2_ventilateur
             data: {}
           - action: switch.turn_off
             continue_on_error: true
@@ -191,7 +191,7 @@ actions:
             target:
               entity_id:
                 - switch.multiprise_du_salon_droite_2_purificateur
-                - switch.2_ventilateur
+                - switch.salon_multiprise_du_salon_gauche_2_ventilateur
             data: {}
           - action: input_select.select_option
             metadata: {}
@@ -358,7 +358,7 @@ actions:
                         target:
                           entity_id:
                             - switch.multiprise_du_salon_droite_2_purificateur
-                            - switch.2_ventilateur
+                            - switch.salon_multiprise_du_salon_gauche_2_ventilateur
               - if:
                   - condition: or
                     conditions:
