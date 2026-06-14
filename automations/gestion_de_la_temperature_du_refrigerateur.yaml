@@ -39,7 +39,21 @@ triggers:
     from:
       - home
     to: null
-conditions: []
+conditions:
+  - condition: not
+    conditions:
+      - condition: state
+        entity_id: sensor.refrigerateur_temperature_du_frigo
+        state:
+          - unknown
+          - unavailable
+  - condition: not
+    conditions:
+      - condition: state
+        entity_id: sensor.refrigerateur_temperature_du_congelateur
+        state:
+          - unknown
+          - unavailable
 actions:
   - if:
       - condition: or

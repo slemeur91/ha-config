@@ -173,7 +173,7 @@ actions:
                 target:
                   entity_id:
                     - switch.multiprise_du_salon_droite_2_purificateur
-                    - switch.2_ventilateur
+                    - switch.salon_multiprise_du_salon_gauche_2_ventilateur
           - action: input_boolean.turn_off
             metadata: {}
             data: {}

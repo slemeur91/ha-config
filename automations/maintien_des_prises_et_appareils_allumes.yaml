@@ -79,7 +79,7 @@ triggers:
       seconds: 30
     trigger: state
   - entity_id:
-      - switch.1_routeur_4g
+      - switch.reseau_multiprise_de_l_informatique_1_routeur_4g
     to: null
     for:
       hours: 0
@@ -87,11 +87,11 @@ triggers:
       seconds: 30
     trigger: state
   - entity_id:
-      - switch.4_ventilateur
+      - switch.reseau_multiprise_de_l_informatique_4_ventilateur
     to: null
     trigger: state
   - entity_id:
-      - switch.3_zappitinas
+      - switch.reseau_multiprise_de_l_informatique_3_zappitinas
     to: null
     for:
       hours: 0
@@ -112,7 +112,7 @@ triggers:
       seconds: 30
     trigger: state
   - entity_id:
-      - switch.2_ventilateur
+      - switch.salon_multiprise_du_salon_gauche_2_ventilateur
     id: Ventilateur
     to: null
     for:
@@ -166,35 +166,36 @@ actions:
               entity_id: switch.prise_du_cellier_nodeid_24_switch
       - if:
           - condition: state
-            entity_id: switch.1_routeur_4g
+            entity_id: switch.reseau_multiprise_de_l_informatique_1_routeur_4g
             state: "off"
         then:
           - action: switch.turn_on
             data: {}
             target:
               entity_id:
-                - switch.1_routeur_4g
+                - switch.reseau_multiprise_de_l_informatique_1_routeur_4g
       - if:
           - condition: state
-            entity_id: switch.4_ventilateur
+            entity_id: switch.reseau_multiprise_de_l_informatique_4_ventilateur
             state: "off"
         then:
           - action: switch.turn_on
             data: {}
             target:
               entity_id:
-                - switch.4_ventilateur
+                - switch.reseau_multiprise_de_l_informatique_4_ventilateur
       - if:
           - condition: state
-            entity_id: switch.3_zappitinas
+            entity_id: switch.reseau_multiprise_de_l_informatique_3_zappitinas
             state: "off"
         then:
           - action: switch.turn_on
             data: {}
             target:
               entity_id:
-                - switch.3_zappitinas
-      - if:
+                - switch.reseau_multiprise_de_l_informatique_3_zappitinas
+      - note: ZappitiNAS absent depuis 2min ET switch ON → force le Wake-on-LAN
+        if:
           - condition: and
             conditions:
               - condition: state
@@ -206,7 +207,7 @@ actions:
                   minutes: 2
                   seconds: 0
               - condition: state
-                entity_id: switch.3_zappitinas
+                entity_id: switch.reseau_multiprise_de_l_informatique_3_zappitinas
                 state:
                   - "on"
         then:
@@ -214,7 +215,6 @@ actions:
             data: {}
             target:
               entity_id: switch.zappitinas
-        note: ZappitiNAS absent depuis 2min ET switch ON → force le Wake-on-LAN
       - if:
           - condition: trigger
             id:
@@ -237,14 +237,17 @@ actions:
         note: >-
           Purificateur (Dyson Salon) → active/désactive l'intégration selon
           l'état de la multiprise
-      - if:
+      - note: >-
+          Ventilateur (Dyson Bureau) → active/désactive la config entry selon
+          l'état du switch
+        if:
           - condition: trigger
             id:
               - Ventilateur
         then:
           - if:
               - condition: state
-                entity_id: switch.2_ventilateur
+                entity_id: switch.salon_multiprise_du_salon_gauche_2_ventilateur
                 state: "on"
             then:
               - action: homeassistant.enable_config_entry
@@ -254,8 +257,5 @@ actions:
               - action: homeassistant.disable_config_entry
                 data:
                   config_entry_id: 01K2GA7KJZ8HN8JE8ZWKRFZQYN
-        note: >-
-          Ventilateur (Dyson Bureau) → active/désactive la config entry selon
-          l'état du switch
 mode: queued
 max: 10

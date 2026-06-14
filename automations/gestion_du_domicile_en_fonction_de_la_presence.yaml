@@ -1,8 +1,8 @@
 alias: Gestion du Domicile en fonction de la Présence
 description: >-
-  **Statut :** Finalisé
+  **Statut :** Finalisé sauf le problème de démarrage de l'Apple TV
 
-  **Evolution :** Aucune
+  **Evolution :** Il y a un manque de fiabilité de l'allumage de l'Apple TV
 
 
   **Déclencheurs :**
@@ -98,7 +98,7 @@ actions:
             target:
               entity_id:
                 - switch.multiprise_du_salon_droite_1_alimentation_apple
-                - switch.prise_de_la_terrasse_socket_1
+                - switch.terrasse_prise_de_la_terrasse_socket_1
         note: >-
           Mode Présent → lance SONOS ON, réactive les volets, allume prises
           habituelles (hotte, four, terrasse, Apple TV)
@@ -135,7 +135,7 @@ actions:
             target:
               entity_id:
                 - switch.multiprise_du_salon_droite_1_alimentation_apple
-                - switch.prise_de_la_terrasse_socket_1
+                - switch.terrasse_prise_de_la_terrasse_socket_1
                 - switch.prise_de_la_hotte
                 - switch.contacteur_du_four
           - action: switch.turn_on
@@ -296,14 +296,15 @@ actions:
                 data: {}
                 target:
                   entity_id:
-                    - switch.1_meuleuse
-                    - switch.2_bosh
-                    - switch.3_husqvarna
-                    - switch.4_compresseur
+                    - switch.garage_multiprise_du_garage_1_meuleuse
+                    - switch.garage_multiprise_du_garage_2_bosh
+                    - switch.garage_multiprise_du_garage_3_husqvarna
+                    - switch.garage_multiprise_du_garage_4_compresseur
                     - switch.multiprise_du_salon_droite_1_alimentation_apple
-                    - switch.2_chargeur
-                    - switch.3_lampe
-                    - switch.prise_de_la_terrasse_socket_1
+                    - switch.bureau_multiprise_du_bureau_2_chargeur
+                    - switch.bureau_multiprise_du_bureau_3_lampe
+                    - switch.terrasse_prise_de_la_terrasse_socket_1
+                enabled: true
               - action: switch.turn_off
                 continue_on_error: true
                 data: {}
@@ -364,6 +365,12 @@ actions:
                       - condition: state
                         entity_id: alarm_control_panel.alarme
                         state: armed_away
+                      - condition: switch.is_on
+                        target:
+                          entity_id: input_boolean.seul_a_la_maison
+                        options:
+                          behavior: any
+                          for: "00:00:00"
                       - condition: state
                         entity_id: input_select.presence_salon
                         state: Absent
@@ -375,14 +382,7 @@ actions:
                       entity_id:
                         - light.lumiere_du_salon
                         - light.lumiere_du_sejour
-                enabled: false
-              - action: light.turn_off
-                continue_on_error: true
-                data: {}
-                target:
-                  entity_id:
-                    - light.lumiere_du_salon
-                    - light.lumiere_du_sejour
+                enabled: true
               - if:
                   - condition: state
                     entity_id: alarm_control_panel.alarme
@@ -392,7 +392,13 @@ actions:
                       - condition: state
                         entity_id: input_select.presence_suite_parentale
                         state: Absent
-                    enabled: false
+                      - condition: switch.is_on
+                        target:
+                          entity_id: input_boolean.seul_a_la_maison
+                        options:
+                          behavior: any
+                          for: "00:00:00"
+                    enabled: true
                 then:
                   - action: light.turn_off
                     continue_on_error: true

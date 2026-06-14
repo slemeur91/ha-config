@@ -39,12 +39,13 @@ description: >-
 triggers:
   - id: switch_off
     entity_id:
-      - switch.2_klf_200
+      - switch.reseau_multiprise_de_l_informatique_2_klf_200
     for:
       hours: 0
       minutes: 5
       seconds: 0
-    to: "off"
+    to:
+      - "off"
     trigger: state
   - id: ping_lost
     entity_id:
@@ -79,8 +80,9 @@ actions:
           - condition: and
             conditions:
               - condition: state
-                entity_id: switch.2_klf_200
-                state: "on"
+                entity_id: switch.reseau_multiprise_de_l_informatique_2_klf_200
+                state:
+                  - "on"
               - condition: or
                 conditions:
                   - condition: state
@@ -98,20 +100,21 @@ actions:
             data: {}
             target:
               entity_id:
-                - switch.2_klf_200
+                - switch.reseau_multiprise_de_l_informatique_2_klf_200
         note: >-
           KLF200 allumé mais ping perdu ou gateway unavailable → éteint le
           switch pour initier un cycle de redémarrage
       - conditions:
           - condition: state
-            entity_id: switch.2_klf_200
-            state: "off"
+            entity_id: switch.reseau_multiprise_de_l_informatique_2_klf_200
+            state:
+              - "off"
         sequence:
           - action: switch.turn_on
             data: {}
             target:
               entity_id:
-                - switch.2_klf_200
+                - switch.reseau_multiprise_de_l_informatique_2_klf_200
           - delay:
               hours: 0
               minutes: 0
