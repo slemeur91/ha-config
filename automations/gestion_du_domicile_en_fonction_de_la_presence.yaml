@@ -358,7 +358,8 @@ actions:
                         target:
                           entity_id:
                             - switch.multiprise_du_salon_droite_2_purificateur
-                            - switch.salon_multiprise_du_salon_gauche_2_ventilateur
+                            - >-
+                              switch.salon_multiprise_du_salon_gauche_2_ventilateur
               - if:
                   - condition: or
                     conditions:

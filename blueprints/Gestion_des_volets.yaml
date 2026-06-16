@@ -222,7 +222,7 @@ action:
                   - condition: template
                     value_template: "{{ is_state(volet_derogation, 'off') }}"
                   - condition: template
-                    value_template: "{{ is_state(volet_attendu, 'Fermé') or (is_state('alarm_control_panel.alarme', 'disarmed') and (is_state('input_boolean.seul_a_la_maison', 'on') or presence_entite_input == [] or states(presence_entite_input) in ['off', 'Absent'])) }}"
+                    value_template: "{{ is_state(volet_attendu, 'Fermé') or is_state('alarm_control_panel.alarme', 'armed_away') or (is_state('alarm_control_panel.alarme', 'disarmed') and (is_state('input_boolean.seul_a_la_maison', 'on') or presence_entite_input == [] or states(presence_entite_input) in ['off', 'Absent'])) }}"
             then:
               - variables:
                   cible: "{{ states(volet_attendu) }}"

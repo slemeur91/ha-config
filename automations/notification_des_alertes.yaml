@@ -573,11 +573,36 @@ actions:
                       - "on"
                     entity_id: binary_sensor.etage_fumee
             then:
-              - variables:
-                  message_alerte: Detection de fumée
+              - if:
+                  - condition: switch.is_off
+                    target:
+                      entity_id: input_boolean.detection_fumee
+                    options:
+                      behavior: any
+                      for: "00:00:00"
+                then:
+                  - variables:
+                      message_alerte: Detection de fumée
+                  - action: input_boolean.turn_on
+                    target:
+                      entity_id: input_boolean.detection_fumee
+                    data: {}
             else:
-              - variables:
-                  message_alerte: Fin de la detection de fumée
+              - if:
+                  - condition: switch.is_on
+                    target:
+                      entity_id: input_boolean.detection_fumee
+                    options:
+                      behavior: any
+                      for: "00:00:00"
+                then:
+                  - variables:
+                      message_alerte: Fin de la detection de fumée
+                  - action: input_boolean.turn_off
+                    target:
+                      entity_id:
+                        - input_boolean.detection_fumee
+                    data: {}
         note: >-
           Détecteurs de fumée → alerte montée/descente des 3 capteurs (Séjour,
           Cellier, Étage)

@@ -11,7 +11,7 @@
 | Domaines (types d'entités) | 43 |
 | Zones / Pièces | 23 |
 | Appareils connectés | **195** |
-| Automatisations | **46** |
+| Automatisations | **48** |
 | Scripts | **16** |
 | Blueprints | **2** |
 | Modules complémentaires (Add-ons) | **17** |
@@ -44,7 +44,7 @@
 
 ---
 
-## 🤖 Automations (46)
+## 🤖 Automations (48)
 
 
 | Catégorie | Nb | Détail |
@@ -57,7 +57,7 @@
 | Chauffage | 2 | [→ Détail](docs/automations/chauffage.md) |
 | Énergie & Environnement | 3 | [→ Détail](docs/automations/energie_environnement.md) |
 | Lumières | 5 | [→ Détail](docs/automations/lumieres.md) |
-| Maintenance & Corrections | 5 | [→ Détail](docs/automations/maintenance_corrections.md) |
+| Maintenance & Corrections | 7 | [→ Détail](docs/automations/maintenance_corrections.md) |
 | Présence & Domicile | 3 | [→ Détail](docs/automations/presence_domicile.md) |
 | Velux (blueprint) | 3 | [→ Détail](docs/automations/blueprint_velux.md) |
 | Volets (blueprint) | 9 | [→ Détail](docs/automations/blueprint_volets.md) |
