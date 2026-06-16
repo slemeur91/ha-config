@@ -519,6 +519,8 @@ entities:
 title: Somfy Protexial — Contrôle
 ```
 
+![Somfy Protexial Card](../images/somfy-protexial-card.png)
+
 ### Travel Time Card
 > [GitHub](https://github.com/ljmerza/travel-time-card)
 
@@ -541,3 +543,5 @@ entities:
   - entity: sensor.trajet_domicile_ehpad
   - entity: sensor.trajet_ehpad_domicile
 ```
+
+![Travel Time card](../images/travel-time-card.png)
