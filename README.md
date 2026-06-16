@@ -251,9 +251,9 @@ Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être captu
 | Alexa Media Player | 1 | Contrôle des appareils Amazon Alexa | [alandtse/alexa_media_player](https://github.com/alandtse/alexa_media_player) | 🔧 HACS |
 | Atmo France | — | Qualité de l'air des villes françaises (Atmo) | [sebcaps/atmofrance](https://github.com/sebcaps/atmofrance) | 🔧 HACS |
 | Battery Notes | — | Suivi des types et dates de remplacement de piles | [andrew-codechimp/HA-Battery-Notes](https://github.com/andrew-codechimp/HA-Battery-Notes) | 🔧 HACS |
-| Dyson Local | 1 | Intégration locale (sans cloud) des appareils Dyson | [libdyson-wg/ha-dyson](https://github.com/libdyson-wg/ha-dyson) | 🔧 HACS |
+| Dyson Local | 2 | Intégration locale (sans cloud) des appareils Dyson | [libdyson-wg/ha-dyson](https://github.com/libdyson-wg/ha-dyson) | 🔧 HACS |
 | Ecodevices RT2 | 1 | Mesure de consommation multi-circuits (GCE) | [pcourbin/ecodevices_rt2](https://github.com/pcourbin/ecodevices_rt2) | 🔧 HACS |
-| EcoFlow Cloud | 3 | Appareils EcoFlow (batterie DELTA Max, PowerStream) | [snell-evan-itt/hassio-ecoflow-cloud-US](https://github.com/snell-evan-itt/hassio-ecoflow-cloud-US) | 🔧 HACS |
+| EcoFlow Cloud | 2 | Appareils EcoFlow (batterie DELTA Max, PowerStream) | [snell-evan-itt/hassio-ecoflow-cloud-US](https://github.com/snell-evan-itt/hassio-ecoflow-cloud-US) | 🔧 HACS |
 | HACS | — | Gestionnaire de contenu communautaire HA | [hacs/integration](https://github.com/hacs/integration) | 🔧 HACS |
 | Local Agenda | — | Calendriers locaux enrichis pour la planification domotique | [slemeur91/local_agenda](https://github.com/slemeur91/local_agenda) | ⚠️ Dépôt perso |
 | LocalTuya | — | Contrôle local (sans cloud) des appareils Tuya | [rospogrigio/localtuya](https://github.com/rospogrigio/localtuya) | 🔧 HACS |
