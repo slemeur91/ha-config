@@ -4,7 +4,7 @@
 
 ---
 
-## Intégrations (19)
+## Intégrations (20)
 
 ### Alexa Media Player
 > [GitHub](https://github.com/alandtse/alexa_media_player) — `domain: alexa_media`
@@ -184,6 +184,13 @@ Intégration de calendriers locaux enrichis pour la planification de l'agenda do
 
 ---
 
+### LocalTuya
+> [GitHub](https://github.com/rospogrigio/localtuya) — `domain: localtuya`
+
+Contrôle local (sans cloud) des appareils Tuya, en complément de l'intégration Tuya native.
+
+---
+
 ### Micronova Agua IOT
 > [GitHub](https://github.com/vincentwolsink/home_assistant_micronova_agua_iot) — `domain: aguaiot`
 
@@ -291,7 +298,7 @@ Intégration des appareils X-Sense (station de sécurité SBS50, détecteurs de 
 
 ---
 
-## Cartes Lovelace (7)
+## Cartes Lovelace (8)
 
 ### apexcharts-card
 > [GitHub](https://github.com/RomRider/apexcharts-card)
@@ -479,7 +486,58 @@ showYearlyCostHistoryChart: false
 
 ![GrDF Gazpar card](../images/grdf-gazpar-card.png)
 
-### Waze Travel Time Card
-> [GitHub](https://github.com/r-renato/ha-card-waze-travel-time)
+### Somfy Protexial Card
+> [GitHub](https://github.com/developpeurbox/somfy-protexial-card)
 
-Affiche le temps de trajet calculé par Waze.
+Carte de contrôle dédiée à l'alarme Somfy Protexial : état des 9 capteurs (batterie, boîtier, porte/fenêtre, mouvement, GSM, communication radio/GSM).
+
+**Configuration utilisée :**
+```yaml
+type: custom:somfy-protexial-card
+alarm_entity: alarm_control_panel.alarme
+sensors:
+  - capteur1
+  - capteur2
+  - capteur3
+  - capteur4
+  - capteur5
+  - capteur6
+  - capteur7
+  - capteur8
+  - capteur9
+labels: {}
+entities:
+  capteur1: binary_sensor.batterie
+  capteur5: binary_sensor.garage_battery_plus_low
+  capteur4: binary_sensor.mouvement_detecte
+  capteur3: binary_sensor.porte_ou_fenetre
+  capteur2: binary_sensor.boitier
+  capteur8: sensor.operateur_gsm
+  capteur9: sensor.signal_gsm_5
+  capteur6: binary_sensor.communication_radio
+  capteur7: binary_sensor.communication_gsm
+title: Somfy Protexial — Contrôle
+```
+
+### Travel Time Card
+> [GitHub](https://github.com/ljmerza/travel-time-card)
+
+Affiche les temps de trajet (durée, distance, itinéraire) pour plusieurs trajets sous forme de tableau. Remplace la Waze Travel Time Card.
+
+**Configuration utilisée :**
+```yaml
+type: custom:travel-time-card
+show_header: true
+title: Trajets
+unit: km
+columns:
+  - name
+  - duration
+  - distance
+  - route
+entities:
+  - entity: sensor.trajet_domicile_travail
+  - entity: sensor.trajet_travail_domicile
+  - entity: sensor.trajet_domicile_ehpad
+  - entity: sensor.trajet_ehpad_domicile
+```

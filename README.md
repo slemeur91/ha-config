@@ -15,8 +15,8 @@
 | Scripts | **16** |
 | Blueprints | **2** |
 | Modules complémentaires (Add-ons) | **17** |
-| Intégrations HACS | **19** |
-| Cartes Lovelace HACS | **7** |
+| Intégrations HACS | **20** |
+| Cartes Lovelace HACS | **8** |
 
 ---
 
@@ -238,7 +238,7 @@ Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être captu
 
 ---
 
-## 🛠️ HACS — Intégrations (19)
+## 🛠️ HACS — Intégrations (20)
 
 [Voir la documentation complète →](docs/hacs.md)
 
@@ -256,6 +256,7 @@ Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être captu
 | EcoFlow Cloud | 3 | Appareils EcoFlow (batterie DELTA Max, PowerStream) | [snell-evan-itt/hassio-ecoflow-cloud-US](https://github.com/snell-evan-itt/hassio-ecoflow-cloud-US) | 🔧 HACS |
 | HACS | — | Gestionnaire de contenu communautaire HA | [hacs/integration](https://github.com/hacs/integration) | 🔧 HACS |
 | Local Agenda | — | Calendriers locaux enrichis pour la planification domotique | [slemeur91/local_agenda](https://github.com/slemeur91/local_agenda) | ⚠️ Dépôt perso |
+| LocalTuya | — | Contrôle local (sans cloud) des appareils Tuya | [rospogrigio/localtuya](https://github.com/rospogrigio/localtuya) | 🔧 HACS |
 | Micronova Agua IOT | — | Contrôle des poêles à granulés via Agua IOT *(désactivé)* | [vincentwolsink/home_assistant_micronova_agua_iot](https://github.com/vincentwolsink/home_assistant_micronova_agua_iot) | 🔧 HACS |
 | My EcoWatt by RTE | — | Signaux de sobriété électrique RTE | [kamaradclimber/rte-ecowatt](https://github.com/kamaradclimber/rte-ecowatt) | 🔧 HACS |
 | Orange Livebox | 1 | Supervision de la Livebox Orange | [cyr-ius/hass-livebox-component](https://github.com/cyr-ius/hass-livebox-component) | 🔧 HACS |
@@ -268,9 +269,9 @@ Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être captu
 | Xiaomi Miot | 2 | Appareils Xiaomi via protocole MIoT local | [al-one/hass-xiaomi-miot](https://github.com/al-one/hass-xiaomi-miot) | 🔧 HACS |
 | xsense | 4 | Détecteurs de fumée/CO X-Sense (cloud) | [Jarnsen/ha-xsense-component_test](https://github.com/Jarnsen/ha-xsense-component_test) | 🔧 HACS Communauté |
 
-### Cartes Lovelace HACS (7)
+### Cartes Lovelace HACS (8)
 
-| Carte | Appareils | Rôle | GitHub | Source |
+| Carte | Utilisation | Rôle | GitHub | Source |
 |---|---|---|---|---|
 | apexcharts-card | 1 | Graphiques avancés (consommation énergie) | [RomRider/apexcharts-card](https://github.com/RomRider/apexcharts-card) | 🔧 HACS |
 | Battery State Card | 1 | Tableau de bord des niveaux de batteries | [maxwroc/battery-state-card](https://github.com/maxwroc/battery-state-card) | 🔧 HACS |
@@ -278,7 +279,8 @@ Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être captu
 | Custom-ui | — | Templates et couleurs d'icônes personnalisés | [Mariusthvdb/custom-ui](https://github.com/Mariusthvdb/custom-ui) | 🔧 HACS |
 | expander-card | — | Carte extensible/rétractable pour les dashboards | [MelleD/lovelace-expander-card](https://github.com/MelleD/lovelace-expander-card) | 🔧 HACS |
 | GrDF Gazpar card | 1 | Affichage des données de consommation GAZPAR | [ssenart/lovelace-gazpar-card](https://github.com/ssenart/lovelace-gazpar-card) | 🔧 HACS Communauté |
-| Waze Travel Time Card | — | Temps de trajet calculé par Waze | [r-renato/ha-card-waze-travel-time](https://github.com/r-renato/ha-card-waze-travel-time) | 🔧 HACS |
+| Somfy Protexial Card | 1 | Contrôle de l'alarme Somfy Protexial (capteurs, GSM) | [developpeurbox/somfy-protexial-card](https://github.com/developpeurbox/somfy-protexial-card) | 🔧 HACS Communauté |
+| Travel Time Card | 1 | Temps de trajet (durée, distance, itinéraire) — remplace Waze Travel Time Card | [ljmerza/travel-time-card](https://github.com/ljmerza/travel-time-card) | 🔧 HACS Communauté |
 
 ---
 

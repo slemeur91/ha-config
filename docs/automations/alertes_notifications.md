@@ -34,6 +34,7 @@
 | `input_boolean.fuite_cellier` | input_boolean | Garde-fou fuite Cellier |
 | `input_boolean.brouillage_reseau` | input_boolean | Garde-fou brouillage RF |
 | `input_boolean.etat_zapittinas` | input_boolean | État NAS ZappitiNAS |
+| `input_boolean.detection_fumee` | input_boolean | Garde-fou détection de fumée |
 
 ---
 
