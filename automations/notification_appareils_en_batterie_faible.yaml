@@ -16,16 +16,13 @@ description: >-
 
   **Fonctionnement :**
 
-  1. Batterie faible → crée une notification persistante dans HA avec le nom de
-  l'appareil, le niveau de batterie et le type de pile nécessaire.
+  1. Batterie faible → appelle le script Notification HA
+  (`script.notification_ha`) avec le nom de l'appareil, le niveau de batterie et
+  le type de pile nécessaire, en passant un notification_id stable.
 
   2. Batterie revenue à la normale → supprime automatiquement la notification
-  persistante correspondante.
-
-
-  **Entités principales :**
-
-  - Intégration `battery_notes` : source des événements de seuil
+  persistante correspondante via `persistent_notification.dismiss` (même
+  notification_id).
 triggers:
   - event_type: battery_notes_battery_threshold
     event_data:
@@ -47,21 +44,20 @@ actions:
             id:
               - low
         sequence:
-          - action: persistent_notification.create
+          - action: script.notification_ha
             data:
-              title: |
-                Batterie faible — {{ trigger.event.data.device_name }}
-              notification_id: >-
-                {{ trigger.event.data.device_id }}-{{
-                trigger.event.data.source_entity_id }}
-              message: >
+              message_type: Batterie faible — {{ trigger.event.data.device_name }}
+              message_ha: >
                 L'appareil a un niveau de batterie de {{
                 trigger.event.data.battery_level }}% {{ '\n' -}} Il vous faut {{
                 trigger.event.data.battery_quantity }}× {{
                 trigger.event.data.battery_type }}
+              notification_id: >-
+                {{ trigger.event.data.device_id }}-{{
+                trigger.event.data.source_entity_id }}
         note: >-
-          Batterie sous le seuil → crée une notification persistante avec nom de
-          l'appareil, niveau et type de pile requis
+          Batterie sous le seuil -> appelle script.notification_ha (Notification
+          HA) avec le nom de l'appareil, niveau et type de pile requis
       - conditions:
           - condition: trigger
             id:

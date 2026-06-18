@@ -12,7 +12,7 @@
 | Zones / Pièces | 23 |
 | Appareils connectés | **195** |
 | Automatisations | **48** |
-| Scripts | **16** |
+| Scripts | **18** |
 | Blueprints | **2** |
 | Modules complémentaires (Add-ons) | **17** |
 | Intégrations HACS | **20** |
@@ -50,14 +50,14 @@
 | Catégorie | Nb | Détail |
 |---|---|---|
 | Alarme & Sécurité | 3 | [→ Détail](docs/automations/alarme_securite.md) |
-| Alertes & Notifications | 4 | [→ Détail](docs/automations/alertes_notifications.md) |
+| Alertes & Notifications | 6 | [→ Détail](docs/automations/alertes_notifications.md) |
 | Audio / HiFi | 3 | [→ Détail](docs/automations/audio_hifi.md) |
 | Batteries | 4 | [→ Détail](docs/automations/batteries.md) |
 | Calendrier & Planification | 2 | [→ Détail](docs/automations/calendrier_planification.md) |
 | Chauffage | 2 | [→ Détail](docs/automations/chauffage.md) |
 | Énergie & Environnement | 3 | [→ Détail](docs/automations/energie_environnement.md) |
 | Lumières | 5 | [→ Détail](docs/automations/lumieres.md) |
-| Maintenance & Corrections | 7 | [→ Détail](docs/automations/maintenance_corrections.md) |
+| Maintenance & Corrections | 5 | [→ Détail](docs/automations/maintenance_corrections.md) |
 | Présence & Domicile | 3 | [→ Détail](docs/automations/presence_domicile.md) |
 | Velux (blueprint) | 3 | [→ Détail](docs/automations/blueprint_velux.md) |
 | Volets (blueprint) | 9 | [→ Détail](docs/automations/blueprint_volets.md) |
@@ -65,7 +65,7 @@
 ### Résumé des automations actives
 
 <details>
-<summary>Voir la liste complète (46) — triée par catégorie puis alphabétiquement</summary>
+<summary>Voir la liste complète (48) — triée par catégorie puis alphabétiquement</summary>
 
 #### Alarme & Sécurité
 | Alias | Entity ID | Résumé |
@@ -81,6 +81,8 @@
 | Notification de l'Horloge | `automation.notification_de_l_horloge` | Annonce vocale de l'heure toutes les heures |
 | Notification des Alertes | `automation.gestion_des_alertes` | Détecte et notifie fuites, fumées, serveurs, brouillage |
 | Notification des Poubelles | `automation.notification_des_poubelles` | Rappels vocaux et SMS pour sortir/rentrer les poubelles |
+| Surveillance - Automatisations désactivées | `automation.surveillance_automatisations_desactivees` | Notifie chaque jour les automatisations désactivées |
+| Surveillance - Automatisations inactives | `automation.surveillance_automatisations_inactives` | Notifie chaque jour les automatisations jamais/peu déclenchées |
 
 #### Audio / HiFi
 | Alias | Entity ID | Résumé |
@@ -128,11 +130,11 @@
 #### Maintenance & Corrections
 | Alias | Entity ID | Résumé |
 |---|---|---|
-| Correction Tuya | `automation.correction_tuya` | Force la reconnexion Tuya 5 min après démarrage HA |
 | Corrections des Appareils EcoFlow | `automation.corrections_des_appareils_ecoflow` | Redémarre les intégrations EcoFlow si hors ligne |
 | Corrections du KLF200 pour les Velux | `automation.corrections_du_klf200_pour_les_velux` | Redémarre automatiquement le KLF200 en cas de panne |
 | Gestion du Poêle et de la Climatisation | `automation.gestion_du_poele_et_de_la_climatisation` | Gère les flags poêle/clim et le contacteur selon l'alarme |
 | Maintien des Prises et Appareils allumés | `automation.maintien_des_prises_et_appareils_allumes` | Garde les prises critiques allumées et surveille les serveurs |
+| Recharger les intégrations en défaut | `automation.recharger_les_integrations_en_defaut` | Détecte et recharge les intégrations en erreur ou en panne silencieuse |
 
 #### Présence & Domicile
 | Alias | Entity ID | Résumé |
@@ -165,13 +167,14 @@
 
 ---
 
-## 📜 Scripts (16)
+## 📜 Scripts (18)
 
 [Voir la documentation complète →](docs/scripts.md)
 
 | Script | Rôle |
 |---|---|
 | `delete_all_orphaned_entities` | Supprime les entités orphelines |
+| `eteindre_apple_tv_du_salon` | Éteint l'Apple TV du salon |
 | `gestion_du_reveil` | Déclenchement réveil musical |
 | `ios_alarme_activation_absent` | Arme l'alarme en mode absent (iOS) |
 | `ios_alarme_desactivation` | Désarme l'alarme (iOS) |
@@ -179,6 +182,7 @@
 | `ios_serrure_de_l_entree_deverrouiller` | Déverrouille serrure entrée (iOS) |
 | `ios_serrure_de_l_entree_verrouiller` | Verrouille serrure entrée (iOS) |
 | `ios_serrure_du_garage_deverrouiller` | Déverrouille serrure garage (iOS) |
+| `notification_ha` | Notification persistante Home Assistant |
 | `notification_mail` | Envoi mail |
 | `notification_sms` | Envoi Telegram |
 | `notification_snapshot` | Captures caméras par mail |

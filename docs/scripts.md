@@ -1,10 +1,28 @@
-# 📜 Scripts (16)
+# 📜 Scripts (18)
 
 [← Retour README](../README.md)
 
 ---
 
 ## Notifications
+
+### `script.notification_ha` — Notification HA
+> [📄 Voir le YAML](../scripts/notification_ha.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Envoi d'une notification persistante Home Assistant.
+
+**Paramètres :**
+- `message_type` : type du message
+- `message_ha` : contenu du message
+- `notification_id` (optionnel) : identifiant permettant de mettre à jour ou de dismiss la notification ensuite (`persistent_notification.dismiss`)
+
+**Fonctionnement :**
+1. Envoie une notification persistante via `notify.persistent_notification` avec le type en titre et le message en corps.
+2. Si `notification_id` est fourni, il est transmis pour permettre la mise à jour ou la suppression ciblée de la notification.
+
+---
 
 ### `script.notification_mail` — Notification Mail
 > [📄 Voir le YAML](../scripts/notification_mail.yaml)
@@ -128,6 +146,22 @@
 3. Si pas de lecture → repli sur flux Radio Browser direct.
 
 **Entités utilisées :** `media_player.garage`
+
+---
+
+## Contrôle Multimédia
+
+### `script.eteindre_apple_tv_du_salon` — Éteindre Apple TV du Salon
+> [📄 Voir le YAML](../scripts/eteindre_apple_tv_du_salon.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Éteint l'Apple TV du salon.
+
+**Fonctionnement :**
+1. Appelle `media_player.turn_off` sur `media_player.apple_tv_du_salon`.
+
+**Entités utilisées :** `media_player.apple_tv_du_salon`
 
 ---
 

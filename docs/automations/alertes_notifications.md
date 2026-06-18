@@ -1,4 +1,4 @@
-# Alertes & Notifications (4)
+# Alertes & Notifications (6)
 
 [← Retour README](../../README.md)
 
@@ -74,6 +74,40 @@
 | Entrée | Type | Config |
 |---|---|---|
 | `input_select.poubelles` | input_select | Sortir Marron, Rentrer Marron, Sortir Jaune, Rentrer Jaune, Sortir Verte, Rentrer Verte, Aucune |
+
+---
+
+## `automation.surveillance_automatisations_desactivees` — Surveillance - Automatisations désactivées
+> [📄 Voir le YAML](../../automations/surveillance_automatisations_desactivees.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- Chaque jour à 8h00
+
+**Conditions :** Au moins une automatisation désactivée
+
+**Fonctionnement :**
+1. Pour chaque automatisation désactivée, envoie une notification HA (`script.notification_ha`) avec un `notification_id` stable par automatisation (mise à jour, pas de doublon si toujours désactivée le lendemain).
+
+**Entrées utilisées :** Aucune entrée helper.
+
+---
+
+## `automation.surveillance_automatisations_inactives` — Surveillance - Automatisations inactives
+> [📄 Voir le YAML](../../automations/surveillance_automatisations_inactives.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- Chaque jour à 9h00
+
+**Conditions :** Au moins une automatisation jamais déclenchée, ou non déclenchée depuis 7 jours (hors `automation.alarme_declenchement` et `automation.alarme_sabotage`)
+
+**Fonctionnement :**
+1. Pour chaque automatisation jamais déclenchée ou inactive depuis 7 jours (hors exclusions alarme), envoie une notification HA (`script.notification_ha`) avec un `notification_id` stable par automatisation et la date du dernier déclenchement (ou "jamais déclenchée") dans le message.
+
+**Entrées utilisées :** Aucune entrée helper.
 
 ---
 

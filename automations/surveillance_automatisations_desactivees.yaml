@@ -1,14 +1,32 @@
 alias: Surveillance - Automatisations désactivées
-description: |-
-  **Déclencheurs :**
-  - Chaque jour à 8h00
+description: >-
+  Statut : Finalise
 
-  **Conditions :**
-  - Au moins une automatisation désactivée
+  Evolution : Aucune
 
-  **Fonctionnement :**
-  1. Compose la liste des automatisations désactivées.
-  2. Envoie un SMS récapitulatif.
+
+  Declencheurs :
+
+  - Chaque jour a 8h00
+
+
+  Conditions :
+
+  - Au moins une automatisation desactivee
+
+
+  Fonctionnement :
+
+  1. Pour chaque automatisation desactivee, appelle script.notification
+  (Notification HA) avec un notification_id stable par automatisation (mise a
+  jour, pas de doublon si toujours desactivee le lendemain).
+
+
+  Entites principales :
+
+  - automation.* : ensemble des automatisations surveillees (etat off)
+
+  - script.notification (Notification HA) : creation des notifications
 triggers:
   - at: "08:00:00"
     trigger: time
@@ -18,16 +36,14 @@ conditions:
       {{ states.automation | selectattr('state', 'eq', 'off') | list | count > 0
       }}
 actions:
-  - variables:
-      message: >
-        Les automatisations suivantes sont désactivées : {% for a in
-        states.automation | selectattr('state', 'eq', 'off') %} - {{ a.name }}
-        {% endfor %}
-  - if:
-      - condition: template
-        value_template: "{{ message != null }}"
-    then:
-      - action: script.notification_sms
-        data:
-          message_type: Automatisations désactivées
-          message_sms: "{{ message }}"
+  - note: >-
+      Envoie une notification HA distincte (Notification HA) pour chaque
+      automatisation désactivée
+    repeat:
+      for_each: "{{ states.automation | selectattr('state', 'eq', 'off') | list }}"
+      sequence:
+        - action: script.notification_ha
+          data:
+            message_type: Automatisations désactivées
+            message_ha: L'automatisation {{ repeat.item.name }} est désactivée.
+            notification_id: automation_disabled-{{ repeat.item.entity_id }}

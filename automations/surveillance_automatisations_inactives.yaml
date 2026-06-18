@@ -1,31 +1,91 @@
 alias: Surveillance - Automatisations inactives
-description: |-
-  **Déclencheurs :**
-  - Chaque jour à 9h00
+description: >-
+  Statut : Finalise
 
-  **Fonctionnement :**
-  1. Identifie les automatisations non déclenchées depuis 7 jours.
-  2. Envoie un SMS récapitulatif avec noms et dates de dernier déclenchement.
+  Evolution : Aucune
+
+
+  Declencheurs :
+
+  - Chaque jour a 9h00
+
+
+  Conditions :
+
+  - Au moins une automatisation jamais declenchee, ou non declenchee depuis 7
+  jours (hors exclusions)
+
+
+  Fonctionnement :
+
+  1. Pour chaque automatisation jamais declenchee ou non declenchee depuis 7
+  jours (en excluant automation.alarme_declenchement et
+  automation.alarme_sabotage), appelle script.notification (Notification HA)
+  avec un notification_id stable par automatisation (mise a jour, pas de doublon
+  si toujours inactive le lendemain) et la date du dernier declenchement (ou
+  mention 'jamais declenchee') dans le message.
+
+
+  Entites principales :
+
+  - automation.* : ensemble des automatisations surveillees (attribut
+  last_triggered)
+
+  - script.notification (Notification HA) : creation des notifications
 triggers:
   - at: "09:00:00"
     trigger: time
+conditions:
+  - condition: template
+    value_template: >
+      {% set seuil = now() - timedelta(days=7) %}
+
+      {% set exclusions = ['automation.alarme_declenchement',
+      'automation.alarme_sabotage'] %}
+
+      {% set jamais = states.automation | rejectattr('entity_id', 'in',
+      exclusions) | selectattr('attributes.last_triggered', 'none') | list %}
+
+      {% set anciennes = states.automation | rejectattr('entity_id', 'in',
+      exclusions) | selectattr('attributes.last_triggered', 'ne', None) |
+      selectattr('attributes.last_triggered', 'lt', seuil) | list %}
+
+      {{ (jamais + anciennes) | list | count > 0 }}
 actions:
-  - variables:
-      message: >
-        {% set seuil = now() - timedelta(days=7) %} {% set inactives =
-        states.automation 
-           | selectattr('attributes.last_triggered', 'ne', None)
-           | selectattr('attributes.last_triggered', 'lt', seuil) 
-           | list %}
-        {% if inactives %} Pas déclenchées depuis 7 jours : {% for a in
-        inactives %} - {{ a.name }} (last: {{ a.attributes.last_triggered |
-        as_timestamp | timestamp_custom('%d/%m %H:%M') }}) {% endfor %} {% else
-        %} Toutes les automatisations ont tourné récemment. {% endif %}
-  - if:
-      - condition: template
-        value_template: "{{ message != null }}"
-    then:
-      - action: script.notification_sms
-        data:
-          message_type: Automatisations inactives
-          message_sms: "{{ message }}"
+  - note: >-
+      Envoie une notification HA distincte (Notification HA) pour chaque
+      automatisation jamais declenchee ou inactive depuis 7 jours, hors
+      automation.alarme_declenchement et automation.alarme_sabotage (alarmes qui
+      ne se declenchent normalement qu'en cas d'intrusion)
+    repeat:
+      for_each: >-
+        {% set seuil = now() - timedelta(days=7) %}
+
+        {% set exclusions = ['automation.alarme_declenchement',
+        'automation.alarme_sabotage'] %}
+
+        {% set jamais = states.automation | rejectattr('entity_id', 'in',
+        exclusions) | selectattr('attributes.last_triggered', 'none') | list %}
+
+        {% set anciennes = states.automation | rejectattr('entity_id', 'in',
+        exclusions) | selectattr('attributes.last_triggered', 'ne', None) |
+        selectattr('attributes.last_triggered', 'lt', seuil) | list %}
+
+        {{ jamais + anciennes }}
+      sequence:
+        - action: script.notification_ha
+          data:
+            message_type: Automatisations inactives
+            message_ha: >-
+              {%- if repeat.item.attributes.last_triggered is none -%}
+
+              L'automatisation {{ repeat.item.name }} n'a jamais été déclenchée.
+
+              {%- else -%}
+
+              L'automatisation {{ repeat.item.name }} n'a pas été déclenchée
+              depuis le {{ repeat.item.attributes.last_triggered | as_timestamp
+              | timestamp_custom('%d/%m %H:%M') }}.
+
+              {%- endif -%}
+            notification_id: automation_inactive-{{ repeat.item.entity_id }}

@@ -1,7 +1,25 @@
-# Maintenance & Corrections (7)
+# Maintenance & Corrections (5)
 
 [← Retour README](../../README.md)
 
+
+---
+
+## `automation.corrections_des_appareils_ecoflow` — Corrections EcoFlow
+> [📄 Voir le YAML](../../automations/corrections_des_appareils_ecoflow.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- `sensor.powerstream_6231_status` ou `sensor.ecoflow_status` → "assume_offline"
+- Lever du soleil
+
+**Fonctionnement :**
+1. Attend 5 s.
+2. PowerStream offline + soleil levé → cycle désactivation/réactivation (15 s).
+3. EcoFlow offline → même cycle.
+
+**Entrées utilisées :** Aucune entrée helper.
 
 ---
 
@@ -44,24 +62,6 @@
 
 ---
 
-## `automation.corrections_des_appareils_ecoflow` — Corrections EcoFlow
-> [📄 Voir le YAML](../../automations/corrections_des_appareils_ecoflow.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :**
-- `sensor.powerstream_6231_status` ou `sensor.ecoflow_status` → "assume_offline"
-- Lever du soleil
-
-**Fonctionnement :**
-1. Attend 5 s.
-2. PowerStream offline + soleil levé → cycle désactivation/réactivation (15 s).
-3. EcoFlow offline → même cycle.
-
-**Entrées utilisées :** Aucune entrée helper.
-
----
-
 ## `automation.gestion_du_poele_et_de_la_climatisation` — Poêle & Climatisation
 > [📄 Voir le YAML](../../automations/gestion_du_poele_et_de_la_climatisation.yaml)
 
@@ -90,48 +90,20 @@
 
 ---
 
-## `automation.surveillance_automatisations_desactivees` — Surveillance Automatisations Désactivées
-> [📄 Voir le YAML](../../automations/surveillance_automatisations_desactivees.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :** Chaque jour à 8h00
-
-**Conditions :** Au moins une automatisation désactivée
-
-**Fonctionnement :**
-1. Compose la liste des automatisations désactivées.
-2. Envoie un SMS récapitulatif.
-
-**Entrées utilisées :** Aucune entrée helper.
-
----
-
-## `automation.surveillance_automatisations_inactives` — Surveillance Automatisations Inactives
-> [📄 Voir le YAML](../../automations/surveillance_automatisations_inactives.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :** Chaque jour à 9h00
-
-**Fonctionnement :**
-1. Identifie les automatisations non déclenchées depuis 7 jours.
-2. Envoie un SMS récapitulatif avec noms et dates de dernier déclenchement.
-
-**Entrées utilisées :** Aucune entrée helper.
-
----
-
-## `automation.correction_tuya` — Correction Tuya
-> [📄 Voir le YAML](../../automations/correction_tuya.yaml)
+## `automation.recharger_les_integrations_en_defaut` — Recharger les intégrations en défaut
+> [📄 Voir le YAML](../../automations/recharger_les_integrations_en_defaut.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
 **Déclencheurs :**
-- Démarrage HA
+- 5 minutes après le démarrage de Home Assistant
+- Détection d'un nouveau problème dans Repairs (`event.repair`, event_type = create)
+- Vérification périodique toutes les 15 minutes
 
 **Fonctionnement :**
-1. Attend 5 minutes (initialisation Tuya).
-2. Force l'activation du switch USB de la multiprise garage.
+1. Recherche les entrées de configuration via les entités existantes (`config_entry_id`).
+2. Détecte deux types de panne : erreur officielle (état `setup_error`, `setup_retry`, `failed_unload` ou `migration_error`) ou panne silencieuse (intégration déclarée « loaded » mais dont 100% des entités sont « unavailable » depuis plus de 10 minutes — ex : Netatmo dont toutes les sondes tombent indisponibles sans que l'intégration ne passe en erreur). Les intégrations média/TV (dlna_dmr, cast, braviatv, apple_tv, androidtv, samsungtv, roku, webostv, kodi, lg_netcast, philips_js, firetv) sont exclues car elles s'éteignent normalement.
+3. Recharge chaque entrée en erreur ou en panne silencieuse via `homeassistant.reload_config_entry`.
+4. Envoie une notification HA (`script.notification_ha`) pour chaque panne silencieuse détectée, avec un `notification_id` stable par intégration (pas de doublon si le problème persiste).
 
 **Entrées utilisées :** Aucune entrée helper.

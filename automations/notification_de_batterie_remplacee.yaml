@@ -13,18 +13,36 @@ description: >-
 
   **Fonctionnement :**
 
-  1. Crée une notification persistante suggérant de marquer la batterie comme
-  remplacée dans Battery Notes.
+  1. Envoie une notification HA (via script.notification) suggérant de marquer
+  la batterie comme remplacée dans Battery Notes.
+
+  2. Le texte s'adapte selon le type de batterie (rechargeable ou pile, via
+  trigger.event.data.battery_type).
+
+  3. notification_id stable (battery_increased-device_id-source_entity_id) pour
+  éviter les notifications dupliquées si l'évènement se répète pour le même
+  appareil.
 triggers:
   - trigger: event
     event_type: battery_notes_battery_increased
 conditions: []
 actions:
-  - action: persistent_notification.create
+  - action: script.notification_ha
     data:
-      title: |
-        Batterie rechargée — {{ trigger.event.data.device_name }}
-      message: >
-        Le niveau de batterie de l'appareil a augmenté, vous souhaitez peut-être
-        le marquer comme remplacé
+      message_type: >-
+        {{ 'Batterie rechargée' if trigger.event.data.battery_type ==
+        'Rechargeable' else 'Batterie augmentée' }} — {{
+        trigger.event.data.device_name }}
+      message_ha: >-
+        {%- if trigger.event.data.battery_type == 'Rechargeable' -%}Le niveau de
+        batterie est passé de {{ trigger.event.data.previous_battery_level }}% à
+        {{ trigger.event.data.battery_level }}%. Si elle a été rechargée, vous
+        pouvez la marquer comme remplacée dans Battery Notes.{%- else -%}Le
+        niveau de batterie est passé de {{
+        trigger.event.data.previous_battery_level }}% à {{
+        trigger.event.data.battery_level }}%. Si la pile a été remplacée, vous
+        pouvez la marquer comme remplacée dans Battery Notes.{%- endif -%}
+      notification_id: >-
+        battery_increased-{{ trigger.event.data.device_id }}-{{
+        trigger.event.data.source_entity_id }}
 mode: queued

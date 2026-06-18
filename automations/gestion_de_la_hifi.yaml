@@ -73,26 +73,9 @@ actions:
                 data: {}
                 target:
                   entity_id: button.rotel_off
-              - if:
-                  - condition: not
-                    conditions:
-                      - condition: state
-                        entity_id: media_player.apple_tv_du_salon
-                        state:
-                          - "off"
-                          - standby
-                          - unavailable
-                then:
-                  - action: remote.send_command
-                    target:
-                      entity_id: remote.apple_tv_du_salon
-                    data:
-                      command: suspend
-                    continue_on_error: true
-                  - action: media_player.turn_off
-                    target:
-                      entity_id: media_player.apple_tv_du_salon
-                    data: {}
+              - action: script.turn_on
+                target:
+                  entity_id: script.eteindre_apple_tv_salon
               - if:
                   - condition: state
                     entity_id: binary_sensor.slm_zappiti

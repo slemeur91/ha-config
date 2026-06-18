@@ -7,7 +7,7 @@ description: >-
 
   **Déclencheurs :**
 
-  - Minuit (00:00:00)
+  - 00:15
 
   - Changement de `input_boolean.alarme`
 
@@ -37,7 +37,7 @@ description: >-
 
   - `input_boolean.chauffage_horsgel` : activation du mode hors-gel global
 triggers:
-  - at: "00:00:00"
+  - at: "00:15:00"
     trigger: time
   - entity_id:
       - input_boolean.alarme
