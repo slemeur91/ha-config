@@ -11,7 +11,7 @@
 | Domaines (types d'entités) | 43 |
 | Zones / Pièces | 23 |
 | Appareils connectés | **195** |
-| Automatisations | **48** |
+| Automatisations | **49** |
 | Scripts | **18** |
 | Blueprints | **2** |
 | Modules complémentaires (Add-ons) | **17** |
@@ -20,13 +20,14 @@
 
 ---
 
-### ⚙️ Configuration principale (3)
+### ⚙️ Configuration principale (4)
 
 [Voir la documentation complète →](docs/configuration.md)
 
 | Section | Détail |
 |---|---|
 | Débogage — Logger | Niveaux `debug` pour Somfy Protexial, Local Agenda, Apple TV, pyatv |
+| Événements de log — System Log | `fire_event: true` requis pour l'automatisation de surveillance des erreurs |
 | Personnalisation — Homeassistant | Packages + correction `state_class: total` sur 28 capteurs d'énergie |
 | Notifications SMTP (email) | Serveur SMTP local, `notify.email`, port 25 |
 
@@ -50,7 +51,7 @@
 | Catégorie | Nb | Détail |
 |---|---|---|
 | Alarme & Sécurité | 3 | [→ Détail](docs/automations/alarme_securite.md) |
-| Alertes & Notifications | 6 | [→ Détail](docs/automations/alertes_notifications.md) |
+| Alertes & Notifications | 7 | [→ Détail](docs/automations/alertes_notifications.md) |
 | Audio / HiFi | 3 | [→ Détail](docs/automations/audio_hifi.md) |
 | Batteries | 4 | [→ Détail](docs/automations/batteries.md) |
 | Calendrier & Planification | 2 | [→ Détail](docs/automations/calendrier_planification.md) |
@@ -65,7 +66,7 @@
 ### Résumé des automations actives
 
 <details>
-<summary>Voir la liste complète (48) — triée par catégorie puis alphabétiquement</summary>
+<summary>Voir la liste complète (49) — triée par catégorie puis alphabétiquement</summary>
 
 #### Alarme & Sécurité
 | Alias | Entity ID | Résumé |
@@ -82,6 +83,7 @@
 | Notification des Alertes | `automation.gestion_des_alertes` | Détecte et notifie fuites, fumées, serveurs, brouillage |
 | Notification des Poubelles | `automation.notification_des_poubelles` | Rappels vocaux et SMS pour sortir/rentrer les poubelles |
 | Surveillance - Automatisations désactivées | `automation.surveillance_automatisations_desactivees` | Notifie chaque jour les automatisations désactivées |
+| Surveillance - Automatisations et Scripts en Défaut | `automation.surveillance_automatisations_et_scripts_en_defaut` | Notifie en temps réel les erreurs d'exécution d'automatisations/scripts |
 | Surveillance - Automatisations inactives | `automation.surveillance_automatisations_inactives` | Notifie chaque jour les automatisations jamais/peu déclenchées |
 
 #### Audio / HiFi
@@ -173,8 +175,8 @@
 
 | Script | Rôle |
 |---|---|
+| `allumer_eteindre_apple_tv_salon` | Allume/Éteint l'Apple TV du salon |
 | `delete_all_orphaned_entities` | Supprime les entités orphelines |
-| `eteindre_apple_tv_du_salon` | Éteint l'Apple TV du salon |
 | `gestion_du_reveil` | Déclenchement réveil musical |
 | `ios_alarme_activation_absent` | Arme l'alarme en mode absent (iOS) |
 | `ios_alarme_desactivation` | Désarme l'alarme (iOS) |
