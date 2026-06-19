@@ -15,8 +15,8 @@ description: >-
   **Fonctionnement :**
 
   1. Action OFF → notification vocale, extinction en parallèle (télécommande
-  Sony, ampli Rotel, Apple TV, Zappiti si allumé), gestion SONOS selon contexte
-  (alarme armée ou heure).
+  Sony, ampli Rotel, Apple TV (`script.allumer_eteindre_apple_tv_salon`),
+  Zappiti si allumé), gestion SONOS selon contexte (alarme armée ou heure).
 
   2. Action ON → vérifie les conditions horaires et de présence ; si iPhone
   présent, sélectionne la source BluRay et passe en SOURCE ; sinon attend 1 min
@@ -24,7 +24,8 @@ description: >-
 
   3. Action SOURCE → arrête ou configure les SONOS, notification vocale, allume
   en parallèle (télécommande Sony, source Rotel selon sélection, TV HDMI3, Apple
-  TV, lumière salon si après coucher du soleil).
+  TV (`script.allumer_eteindre_apple_tv_salon`), lumière salon si après coucher
+  du soleil).
 
 
   **Entités principales :**
@@ -57,6 +58,14 @@ actions:
             data:
               message_vocal: Extinction de la HiFi
             continue_on_error: true
+            enabled: false
+          - action: script.turn_on
+            target:
+              entity_id: script.notification_vocale
+            data:
+              variables:
+                message_vocal: Extinction de la HiFi
+            enabled: true
           - parallel:
               - type: turn_off
                 device_id: aad16acc2eac3cac734f776ecc1aa5f0
@@ -75,7 +84,12 @@ actions:
                   entity_id: button.rotel_off
               - action: script.turn_on
                 target:
-                  entity_id: script.eteindre_apple_tv_salon
+                  entity_id:
+                    - script.allumer_eteindre_apple_tv_salon
+                data:
+                  variables:
+                    action: "off"
+                continue_on_error: true
               - if:
                   - condition: state
                     entity_id: binary_sensor.slm_zappiti
@@ -254,6 +268,16 @@ actions:
           - action: script.notification_vocale
             data:
               message_vocal: Allumage de la HiFi sur {{ states('input_select.hifi_source') }}
+            enabled: false
+          - action: script.turn_on
+            target:
+              entity_id: script.notification_vocale
+            data:
+              variables:
+                message_vocal: >-
+                  Allumage de la HiFi sur {{ states('input_select.hifi_source')
+                  }}
+            enabled: true
           - action: automation.trigger
             metadata: {}
             data:
@@ -262,16 +286,6 @@ actions:
               entity_id:
                 - automation.gestion_des_sonos
           - parallel:
-              - type: turn_on
-                device_id: aad16acc2eac3cac734f776ecc1aa5f0
-                entity_id: 51e582f62e60e454477c970081af563b
-                domain: remote
-              - action: button.press
-                metadata: {}
-                data: {}
-                target:
-                  entity_id: button.tv_on
-                enabled: false
               - choose:
                   - conditions:
                       - condition: state
@@ -324,76 +338,29 @@ actions:
                         data: {}
                         target:
                           entity_id: button.rotel_video3
+              - type: turn_on
+                device_id: aad16acc2eac3cac734f776ecc1aa5f0
+                entity_id: 51e582f62e60e454477c970081af563b
+                domain: remote
+              - action: button.press
+                metadata: {}
+                data: {}
+                target:
+                  entity_id: button.tv_on
+                enabled: false
               - action: button.press
                 metadata: {}
                 data: {}
                 target:
                   entity_id:
                     - button.tv_hdmi3
-              - action: remote.send_command
-                target:
-                  entity_id: remote.apple_tv_du_salon
+              - action: script.turn_on
                 data:
-                  command: wakeup
-                enabled: false
-              - action: media_player.turn_on
-                metadata: {}
-                data: {}
+                  variables:
+                    action: "on"
+                continue_on_error: true
                 target:
-                  entity_id: media_player.apple_tv_du_salon
-                enabled: false
-                continue_on_error: true
-              - sequence:
-                  - action: homeassistant.reload_config_entry
-                    metadata: {}
-                    data: {}
-                    target:
-                      entity_id: remote.apple_tv_du_salon
-                  - delay:
-                      hours: 0
-                      minutes: 0
-                      seconds: 8
-                      milliseconds: 0
-                  - action: homeassistant.update_entity
-                    metadata: {}
-                    data:
-                      entity_id:
-                        - media_player.apple_tv_du_salon
-                    enabled: false
-                  - action: media_player.turn_on
-                    continue_on_error: true
-                    metadata: {}
-                    data: {}
-                    target:
-                      entity_id: media_player.apple_tv_du_salon
-                continue_on_error: true
-                enabled: true
-              - sequence:
-                  - action: homeassistant.reload_config_entry
-                    target:
-                      entity_id: remote.apple_tv_du_salon
-                  - delay:
-                      seconds: 8
-                  - repeat:
-                      count: 6
-                      sequence:
-                        - action: media_player.turn_on
-                          continue_on_error: true
-                          target:
-                            entity_id: media_player.apple_tv_du_salon
-                        - delay:
-                            seconds: 5
-                        - if:
-                            - condition: template
-                              value_template: >
-                                {{ not
-                                is_state('media_player.apple_tv_du_salon',
-                                'standby')
-                                   and not is_state('media_player.apple_tv_du_salon', 'unavailable') }}
-                          then:
-                            - stop: Apple TV réveillée
-                enabled: false
-                continue_on_error: true
+                  entity_id: script.allumer_eteindre_apple_tv_salon
               - if:
                   - condition: sun
                     after: sunset

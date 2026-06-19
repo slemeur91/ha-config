@@ -1,4 +1,4 @@
-# Alertes & Notifications (6)
+# Alertes & Notifications (7)
 
 [← Retour README](../../README.md)
 
@@ -89,6 +89,23 @@
 
 **Fonctionnement :**
 1. Pour chaque automatisation désactivée, envoie une notification HA (`script.notification_ha`) avec un `notification_id` stable par automatisation (mise à jour, pas de doublon si toujours désactivée le lendemain).
+
+**Entrées utilisées :** Aucune entrée helper.
+
+---
+
+## `automation.surveillance_automatisations_et_scripts_en_defaut` — Surveillance - Automatisations et Scripts en Défaut
+> [📄 Voir le YAML](../../automations/surveillance_automatisations_et_scripts_en_defaut.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune. Nécessite `system_log: fire_event: true` dans `configuration.yaml` (absent par défaut) pour que l'événement `system_log_event` soit émis — ajouté et validé le 19/06/2026 (testé via `system_log.write` après redémarrage : déclenchement confirmé).
+
+**Déclencheurs :**
+- Erreur d'exécution loggée par le composant `automation`
+- Erreur d'exécution loggée par le composant `script`
+
+**Fonctionnement :**
+1. Détecte chaque erreur loggée (`system_log_event`, niveau `ERROR`) provenant des composants `automation` ou `script`.
+2. Envoie une notification HA (`script.notification_ha`) avec le type (Automatisation/Script) et le message d'erreur, avec un `notification_id` stable basé sur le contenu pour éviter les doublons en cas de répétition rapide de la même erreur.
 
 **Entrées utilisées :** Aucune entrée helper.
 

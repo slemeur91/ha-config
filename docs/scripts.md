@@ -4,6 +4,33 @@
 
 ---
 
+## ⚠️ Appel de script depuis une automatisation : deux comportements distincts
+
+- **Appel direct** (`action: script.<id>`, avec `data:` classique) — Le script s'exécute **dans le contexte de l'automatisation appelante**. Si le script plante (erreur non gérée), l'erreur remonte et **fait planter l'automatisation appelante aussi**, sauf si `continue_on_error: true` est ajouté sur l'étape.
+
+  ```yaml
+  action: script.notification_sms
+  data:
+    message_type: Alerte
+    message_sms: "{{ message_alerte }}"
+  ```
+
+- **Appel via `script.turn_on`** (avec `target: entity_id:` et `data: variables:`) — Le script est lancé en **tâche de fond indépendante** (fire-and-forget). Une erreur à l'intérieur du script **n'impacte pas** l'automatisation appelante, qui continue normalement.
+
+  ```yaml
+  action: script.turn_on
+  target:
+    entity_id: script.notification_sms
+  data:
+    variables:
+      message_type: Alerte
+      message_sms: "{{ message_alerte }}"
+  ```
+
+À privilégier : `script.turn_on` pour les scripts annexes (notifications, actions secondaires) afin qu'un échec ponctuel ne bloque jamais le flux principal de l'automatisation. L'appel direct reste pertinent quand on veut justement que l'échec du script soit traité par l'automatisation appelante (ou avec `continue_on_error: true` si on veut ignorer l'erreur sans changer de méthode d'appel).
+
+---
+
 ## Notifications
 
 ### `script.notification_ha` — Notification HA
@@ -151,17 +178,21 @@
 
 ## Contrôle Multimédia
 
-### `script.eteindre_apple_tv_du_salon` — Éteindre Apple TV du Salon
-> [📄 Voir le YAML](../scripts/eteindre_apple_tv_du_salon.yaml)
+### `script.allumer_eteindre_apple_tv_salon` — Allumer/Éteindre Apple TV du Salon
+> [📄 Voir le YAML](../scripts/allumer_eteindre_apple_tv_salon.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Éteint l'Apple TV du salon.
+**Rôle :** Allume ou éteint l'Apple TV du salon, appelé par "Gestion de la HiFi" (branche extinction, `action: "off"`, et branche allumage/SOURCE, `action: "on"`) via `script.turn_on` (fire-and-forget).
+
+**Paramètres :**
+- `action` : `"on"` ou `"off"`
 
 **Fonctionnement :**
-1. Appelle `media_player.turn_off` sur `media_player.apple_tv_du_salon`.
+1. `action: "off"` → envoie la commande `suspend` via `remote.send_command` (seule méthode fiable testée), erreur ignorée (`continue_on_error`) pour ne jamais bloquer l'automatisation appelante.
+2. `action: "on"` → recharge l'intégration (`homeassistant.reload_config_entry` sur `remote.apple_tv_du_salon`), attend 8 s, puis appelle `media_player.turn_on` (avec une branche de repli désactivée par défaut qui réessaie 6 fois avec un délai de 5 s entre chaque tentative).
 
-**Entités utilisées :** `media_player.apple_tv_du_salon`
+**Entités utilisées :** `media_player.apple_tv_du_salon`, `remote.apple_tv_du_salon`
 
 ---
 
