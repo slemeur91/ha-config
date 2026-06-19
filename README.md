@@ -45,7 +45,7 @@
 
 ---
 
-## 🤖 Automations (48)
+## 🤖 Automations (49)
 
 
 | Catégorie | Nb | Détail |
