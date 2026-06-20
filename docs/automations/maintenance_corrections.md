@@ -90,8 +90,8 @@
 
 ---
 
-## `automation.recharger_les_integrations_en_defaut` — Recharger les intégrations en défaut
-> [📄 Voir le YAML](../../automations/recharger_les_integrations_en_defaut.yaml)
+## `automation.surveillance_recharger_les_integrations_en_defaut` — Surveillance - Recharger les intégrations en défaut
+> [📄 Voir le YAML](../../automations/surveillance_recharger_les_integrations_en_defaut.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 

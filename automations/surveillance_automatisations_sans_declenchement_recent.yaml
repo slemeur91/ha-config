@@ -1,0 +1,101 @@
+alias: Surveillance - Automatisations sans déclenchement récent
+description: >-
+  **Statut :** Finalise
+
+  **Evolution :** Aucune
+
+
+  **Declencheurs :**
+
+  - Chaque jour a 9h00
+
+
+  **Conditions :**
+
+  - Au moins une automatisation jamais declenchee, ou non declenchee depuis 7
+  jours (hors exclusions)
+
+
+  **Fonctionnement :**
+
+  1. Pour chaque automatisation jamais declenchee ou non declenchee depuis 7
+  jours (en excluant automation.alarme_declenchement, automation.alarme_sabotage
+  et automation.gestion_de_la_telecommande_hifi — declenchee uniquement par
+  appui sur la telecommande HiFi, peut rester longtemps sans declenchement sans
+  que ce soit anormal), appelle script.notification (Notification HA) avec un
+  notification_id stable par automatisation (mise a jour, pas de doublon si
+  toujours sans declenchement le lendemain) et la date du dernier declenchement
+  (ou mention 'jamais declenchee') dans le message.
+
+
+  **Entites principales :**
+
+  - automation.* : ensemble des automatisations surveillees (attribut
+  last_triggered)
+
+  - script.notification (Notification HA) : creation des notifications
+triggers:
+  - at: "09:00:00"
+    trigger: time
+conditions:
+  - condition: template
+    value_template: >
+      {% set seuil = now() - timedelta(days=7) %}
+
+      {% set exclusions = ['automation.alarme_declenchement',
+      'automation.alarme_sabotage',
+      'automation.gestion_de_la_telecommande_hifi'] %}
+
+      {% set jamais = states.automation | rejectattr('entity_id', 'in',
+      exclusions) | selectattr('attributes.last_triggered', 'none') |
+      map(attribute='entity_id') | list %}
+
+      {% set anciennes = states.automation | rejectattr('entity_id', 'in',
+      exclusions) | selectattr('attributes.last_triggered', 'ne', None) |
+      selectattr('attributes.last_triggered', 'lt', seuil) |
+      map(attribute='entity_id') | list %}
+
+      {{ (jamais + anciennes) | list | count > 0 }}
+actions:
+  - note: >-
+      Envoie une notification HA distincte (Notification HA) pour chaque
+      automatisation jamais declenchee ou sans declenchement depuis 7 jours,
+      hors automation.alarme_declenchement et automation.alarme_sabotage
+      (alarmes qui ne se declenchent normalement qu'en cas d'intrusion)
+    repeat:
+      for_each: >-
+        {% set seuil = now() - timedelta(days=7) %}
+
+        {% set exclusions = ['automation.alarme_declenchement',
+        'automation.alarme_sabotage',
+        'automation.gestion_de_la_telecommande_hifi'] %}
+
+        {% set jamais = states.automation | rejectattr('entity_id', 'in',
+        exclusions) | selectattr('attributes.last_triggered', 'none') |
+        map(attribute='entity_id') | list %}
+
+        {% set anciennes = states.automation | rejectattr('entity_id', 'in',
+        exclusions) | selectattr('attributes.last_triggered', 'ne', None) |
+        selectattr('attributes.last_triggered', 'lt', seuil) |
+        map(attribute='entity_id') | list %}
+
+        {{ jamais + anciennes }}
+      sequence:
+        - action: script.notification_ha
+          data:
+            message_type: Automatisations sans déclenchement récent
+            message_ha: >-
+              {%- if state_attr(repeat.item, 'last_triggered') is none -%}
+
+              L'automatisation {{ state_attr(repeat.item, 'friendly_name') or
+              repeat.item }} n'a jamais été déclenchée.
+
+              {%- else -%}
+
+              L'automatisation {{ state_attr(repeat.item, 'friendly_name') or
+              repeat.item }} n'a pas été déclenchée depuis le {{
+              state_attr(repeat.item, 'last_triggered') | as_timestamp |
+              timestamp_custom('%d/%m %H:%M') }}.
+
+              {%- endif -%}
+            notification_id: automation_inactive-{{ repeat.item }}

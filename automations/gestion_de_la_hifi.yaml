@@ -54,11 +54,6 @@ actions:
             entity_id: input_select.hifi_action
             state: "OFF"
         sequence:
-          - action: script.notification_vocale
-            data:
-              message_vocal: Extinction de la HiFi
-            continue_on_error: true
-            enabled: false
           - action: script.turn_on
             target:
               entity_id: script.notification_vocale
@@ -71,6 +66,36 @@ actions:
                 device_id: aad16acc2eac3cac734f776ecc1aa5f0
                 entity_id: 51e582f62e60e454477c970081af563b
                 domain: remote
+                enabled: false
+              - parallel:
+                  - if:
+                      - condition: or
+                        conditions:
+                          - condition: remote.is_on
+                            target:
+                              entity_id: remote.kd_55a1
+                            options:
+                              behavior: any
+                              "for": "00:00:00"
+                          - condition: remote.is_on
+                            target:
+                              entity_id: remote.sony_kd_55a1
+                            options:
+                              behavior: any
+                              "for": "00:00:00"
+                    then:
+                      - action: remote.turn_off
+                        metadata: {}
+                        target:
+                          entity_id: remote.sony_kd_55a1
+                        data: {}
+                        continue_on_error: true
+                      - action: remote.turn_off
+                        metadata: {}
+                        target:
+                          entity_id: remote.kd_55a1
+                        data: {}
+                        enabled: false
               - action: button.press
                 metadata: {}
                 data: {}
@@ -265,10 +290,6 @@ actions:
                   option: "OFF"
                 target:
                   entity_id: input_select.sonos_action
-          - action: script.notification_vocale
-            data:
-              message_vocal: Allumage de la HiFi sur {{ states('input_select.hifi_source') }}
-            enabled: false
           - action: script.turn_on
             target:
               entity_id: script.notification_vocale

@@ -2,10 +2,7 @@ alias: Surveillance - Automatisations et Scripts en Défaut
 description: >-
   **Statut :** Finalisé
 
-  **Evolution :** Aucune. Nécessite `system_log: fire_event: true` dans
-  `configuration.yaml` (absent par défaut) pour que l'événement
-  `system_log_event` soit émis — ajouté et validé le 19/06/2026 (testé via
-  `system_log.write` après redémarrage : déclenchement confirmé).
+  **Evolution :** Aucune
 
 
   **Déclencheurs :**

@@ -78,13 +78,13 @@
 #### Alertes & Notifications
 | Alias | Entity ID | Résumé |
 |---|---|---|
-| Gestion de la température du réfrigérateur | `automation.gestion_de_la_temperature_du_refrigerateur` | Alerte si températures frigo/congélateur hors plage |
+| Notification de défaut du réfrigérateur | `automation.notification_de_defaut_du_refrigerateur` | Alerte si températures frigo/congélateur hors plage |
 | Notification de l'Horloge | `automation.notification_de_l_horloge` | Annonce vocale de l'heure toutes les heures |
 | Notification des Alertes | `automation.gestion_des_alertes` | Détecte et notifie fuites, fumées, serveurs, brouillage |
 | Notification des Poubelles | `automation.notification_des_poubelles` | Rappels vocaux et SMS pour sortir/rentrer les poubelles |
 | Surveillance - Automatisations désactivées | `automation.surveillance_automatisations_desactivees` | Notifie chaque jour les automatisations désactivées |
 | Surveillance - Automatisations et Scripts en Défaut | `automation.surveillance_automatisations_et_scripts_en_defaut` | Notifie en temps réel les erreurs d'exécution d'automatisations/scripts |
-| Surveillance - Automatisations inactives | `automation.surveillance_automatisations_inactives` | Notifie chaque jour les automatisations jamais/peu déclenchées |
+| Surveillance - Automatisations sans déclenchement récent | `automation.surveillance_automatisations_sans_declenchement_recent` | Notifie chaque jour les automatisations jamais/peu déclenchées |
 
 #### Audio / HiFi
 | Alias | Entity ID | Résumé |
@@ -136,7 +136,7 @@
 | Corrections du KLF200 pour les Velux | `automation.corrections_du_klf200_pour_les_velux` | Redémarre automatiquement le KLF200 en cas de panne |
 | Gestion du Poêle et de la Climatisation | `automation.gestion_du_poele_et_de_la_climatisation` | Gère les flags poêle/clim et le contacteur selon l'alarme |
 | Maintien des Prises et Appareils allumés | `automation.maintien_des_prises_et_appareils_allumes` | Garde les prises critiques allumées et surveille les serveurs |
-| Recharger les intégrations en défaut | `automation.recharger_les_integrations_en_defaut` | Détecte et recharge les intégrations en erreur ou en panne silencieuse |
+| Surveillance - Recharger les intégrations en défaut | `automation.surveillance_recharger_les_integrations_en_defaut` | Détecte et recharge les intégrations en erreur ou en panne silencieuse |
 
 #### Présence & Domicile
 | Alias | Entity ID | Résumé |

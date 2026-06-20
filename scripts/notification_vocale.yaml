@@ -5,8 +5,8 @@ description: >-
   **Evolution :** Aucune
 
 
-  **Rôle :** Diffuse un message TTS sur les enceintes SONOS actives selon le
-  mode en cours.
+  **Rôle :** Diffuse un message TTS en overlay (announce) sur les enceintes
+  SONOS actives selon le mode en cours, sans interrompre une lecture en cours.
 
 
   **Paramètres :**
@@ -16,18 +16,16 @@ description: >-
 
   **Fonctionnement :**
 
-  1. Selon le mode SONOS actif (COUCHE, REVEIL, ou autre) → détermine les
-  enceintes cibles.
+  1. Selon le mode SONOS actif :
+     - COUCHE → diffuse sur tous les membres du groupe Suite parentale (`group_members`), volume d'annonce 60.
+     - REVEIL / autre → diffuse sur tous les membres du groupe Salon (`group_members`), volume d'annonce 60, + Garage si TéléTravail (volume d'annonce 40).
+  2. Chaque diffusion utilise `media_player.play_media` avec `announce: true` et
+  `media_content_id:
+  media-source://tts/tts.google_translate_fr_fr?message=...&language=fr&cache=true`.
 
-  2. Prend un snapshot de l'état des enceintes, met en pause si nécessaire.
-
-  3. Règle le volume à 60% (40% pour le garage en TéléTravail).
-
-  4. Lance la synthèse vocale Google Translate sur les enceintes cibles.
-
-  5. Attend la fin de la diffusion (timeout 2 min).
-
-  6. Restaure l'état précédent des enceintes (snapshot restore).
+  3. Sonos gère nativement la baisse du volume en cours, la lecture de
+  l'annonce, puis la restauration — aucune action de restauration explicite
+  n'est nécessaire.
 sequence:
   - choose:
       - conditions:
@@ -35,365 +33,66 @@ sequence:
             entity_id: input_select.sonos
             state: COUCHE
         sequence:
-          - sequence:
-              - action: sonos.snapshot
-                data:
-                  with_group: true
-                  entity_id: media_player.suite_parentale
-              - if:
-                  - condition: state
-                    entity_id: media_player.suite_parentale
-                    state: playing
-                then:
-                  - action: media_player.media_play_pause
-                    metadata: {}
-                    data: {}
-                    target:
-                      entity_id:
-                        - media_player.suite_parentale
-                  - wait_template: >-
-                      {{ not is_state('media_player.suite_parentale', 'playing')
-                      }}
-                    timeout:
-                      hours: 0
-                      minutes: 0
-                      seconds: 2
-                      milliseconds: 0
-                    continue_on_timeout: true
-              - delay:
-                  hours: 0
-                  minutes: 0
-                  seconds: 0
-                  milliseconds: 50
-              - action: media_player.volume_set
+          - action: media_player.play_media
+            target:
+              entity_id: >-
+                {{ state_attr('media_player.suite_parentale', 'group_members')
+                }}
+            data:
+              announce: true
+              extra:
+                volume: 60
+              media:
+                media_content_id: >-
+                  media-source://tts/tts.google_translate_fr_fr?message={{
+                  message_vocal | urlencode }}&language=fr&cache=true
+                media_content_type: music
                 metadata: {}
-                data:
-                  volume_level: 0.6
-                target:
-                  entity_id:
-                    - media_player.suite_parentale
-              - action: tts.speak
-                continue_on_error: true
-                metadata: {}
-                data:
-                  cache: true
-                  media_player_entity_id: media_player.suite_parentale
-                  message: "{{ message_vocal }}"
-                  language: fr
-                target:
-                  entity_id: tts.google_translate_fr_fr
-              - sequence:
-                  - wait_template: "{{ is_state('media_player.suite_parentale', 'playing') }}"
-                    timeout: "00:00:03"
-                    continue_on_timeout: true
-                  - wait_template: >-
-                      {{ not is_state('media_player.suite_parentale', 'playing')
-                      }}
-                    timeout: "00:02:00"
-                    continue_on_timeout: true
-              - action: sonos.restore
-                continue_on_error: true
-                data:
-                  with_group: true
-                  entity_id: media_player.suite_parentale
         note: >-
-          Mode COUCHE → diffuse sur suite parentale uniquement
-          (snapshot→pause→TTS 60%→attente→restore)
-      - conditions:
-          - condition: state
-            entity_id: input_select.sonos
-            state: REVEIL
-        sequence:
-          - sequence:
-              - action: sonos.snapshot
-                data:
-                  with_group: false
-                  entity_id: media_player.garage
-              - action: sonos.snapshot
-                data:
-                  with_group: true
-                  entity_id: media_player.salon
-              - parallel:
-                  - if:
-                      - condition: and
-                        conditions:
-                          - condition: state
-                            entity_id: input_select.calendrier
-                            state: TéléTravail
-                          - condition: state
-                            entity_id: media_player.garage
-                            state: playing
-                    then:
-                      - action: media_player.media_play_pause
-                        metadata: {}
-                        data: {}
-                        target:
-                          entity_id:
-                            - media_player.garage
-                      - wait_template: "{{ not is_state('media_player.garage', 'playing') }}"
-                        timeout:
-                          hours: 0
-                          minutes: 0
-                          seconds: 2
-                          milliseconds: 0
-                        continue_on_timeout: true
-                  - if:
-                      - condition: state
-                        entity_id: media_player.salon
-                        state: playing
-                    then:
-                      - action: media_player.media_play_pause
-                        metadata: {}
-                        data: {}
-                        target:
-                          entity_id: media_player.salon
-                      - wait_template: "{{ not is_state('media_player.salon', 'playing') }}"
-                        timeout:
-                          hours: 0
-                          minutes: 0
-                          seconds: 2
-                          milliseconds: 0
-                        continue_on_timeout: true
-              - delay:
-                  hours: 0
-                  minutes: 0
-                  seconds: 0
-                  milliseconds: 50
-              - parallel:
-                  - if:
-                      - condition: and
-                        conditions:
-                          - condition: state
-                            entity_id: input_select.calendrier
-                            state: TéléTravail
-                          - condition: state
-                            entity_id: input_select.sonos
-                            state: "ON"
-                    then:
-                      - action: media_player.volume_set
-                        continue_on_error: true
-                        metadata: {}
-                        data:
-                          volume_level: 0.4
-                        target:
-                          entity_id:
-                            - media_player.garage
-                  - action: media_player.volume_set
-                    metadata: {}
-                    data:
-                      volume_level: 0.6
-                    target:
-                      entity_id:
-                        - media_player.salon
-                        - media_player.suite_parentale
-              - parallel:
-                  - if:
-                      - condition: and
-                        conditions:
-                          - condition: state
-                            entity_id: input_select.calendrier
-                            state: TéléTravail
-                          - condition: state
-                            entity_id: input_select.sonos
-                            state: "ON"
-                    then:
-                      - action: tts.speak
-                        continue_on_error: true
-                        metadata: {}
-                        data:
-                          cache: true
-                          message: "{{ message_vocal }}"
-                          language: fr
-                          media_player_entity_id: media_player.garage
-                        target:
-                          entity_id: tts.google_translate_fr_fr
-                  - action: tts.speak
-                    continue_on_error: true
-                    metadata: {}
-                    data:
-                      cache: true
-                      media_player_entity_id: media_player.salon
-                      message: "{{ message_vocal }}"
-                      language: fr
-                    target:
-                      entity_id: tts.google_translate_fr_fr
-                  - action: tts.speak
-                    continue_on_error: true
-                    metadata: {}
-                    data:
-                      cache: true
-                      media_player_entity_id: media_player.suite_parentale
-                      message: "{{ message_vocal }}"
-                      language: fr
-                    target:
-                      entity_id: tts.google_translate_fr_fr
-              - sequence:
-                  - wait_template: "{{ is_state('media_player.salon', 'playing') }}"
-                    timeout: "00:00:03"
-                    continue_on_timeout: true
-                  - wait_template: "{{ not is_state('media_player.salon', 'playing') }}"
-                    timeout: "00:02:00"
-                    continue_on_timeout: true
-              - action: sonos.restore
-                continue_on_error: true
-                data:
-                  with_group: true
-                  entity_id: media_player.salon
-              - action: sonos.restore
-                continue_on_error: true
-                data:
-                  with_group: false
-                  entity_id: media_player.garage
-        note: >-
-          Mode REVEIL → diffuse sur salon+suite (+ garage si TéléTravail),
-          volume 40% garage, 60% salon (snapshot→pause→TTS→attente→restore)
+          Mode COUCHE → diffuse en overlay (announce) sur tous les membres du
+          groupe Suite parentale, volume d'annonce 60
     default:
-      - sequence:
-          - action: sonos.snapshot
-            data:
-              with_group: false
-              entity_id: media_player.garage
-          - action: sonos.snapshot
-            data:
-              with_group: true
-              entity_id: media_player.salon
-          - parallel:
-              - if:
-                  - condition: and
-                    conditions:
-                      - condition: state
-                        entity_id: input_select.calendrier
-                        state: TéléTravail
-                      - condition: state
-                        entity_id: media_player.garage
-                        state: playing
-                then:
-                  - action: media_player.media_play_pause
-                    metadata: {}
-                    data: {}
-                    target:
-                      entity_id:
-                        - media_player.garage
-                  - wait_template: "{{ not is_state('media_player.garage', 'playing') }}"
-                    timeout:
-                      hours: 0
-                      minutes: 0
-                      seconds: 2
-                      milliseconds: 0
-                    continue_on_timeout: true
-              - if:
+      - parallel:
+          - if:
+              - condition: and
+                conditions:
                   - condition: state
-                    entity_id: media_player.salon
-                    state: playing
-                then:
-                  - action: media_player.media_play_pause
-                    metadata: {}
-                    data: {}
-                    target:
-                      entity_id: media_player.salon
-                  - wait_template: "{{ not is_state('media_player.salon', 'playing') }}"
-                    timeout:
-                      hours: 0
-                      minutes: 0
-                      seconds: 2
-                      milliseconds: 0
-                    continue_on_timeout: true
-          - delay:
-              hours: 0
-              minutes: 0
-              seconds: 0
-              milliseconds: 50
-          - parallel:
-              - if:
-                  - condition: and
-                    conditions:
-                      - condition: state
-                        entity_id: input_select.calendrier
-                        state: TéléTravail
-                      - condition: state
-                        entity_id: input_select.sonos
-                        state: "ON"
-                then:
-                  - action: media_player.volume_set
-                    metadata: {}
-                    data:
-                      volume_level: 0.4
-                    target:
-                      entity_id:
-                        - media_player.garage
-              - action: media_player.volume_set
-                metadata: {}
-                data:
-                  volume_level: 0.6
+                    entity_id: input_select.calendrier
+                    state: TéléTravail
+                  - condition: state
+                    entity_id: input_select.sonos
+                    state: "ON"
+            then:
+              - action: media_player.play_media
                 target:
-                  entity_id: media_player.salon
-          - parallel:
-              - if:
-                  - condition: and
-                    conditions:
-                      - condition: state
-                        entity_id: input_select.calendrier
-                        state: TéléTravail
-                      - condition: state
-                        entity_id: input_select.sonos
-                        state: "ON"
-                then:
-                  - action: tts.speak
-                    continue_on_error: true
-                    metadata: {}
-                    data:
-                      cache: true
-                      message: "{{ message_vocal }}"
-                      language: fr
-                      media_player_entity_id: media_player.garage
-                    target:
-                      entity_id: tts.google_translate_fr_fr
-              - action: tts.speak
-                continue_on_error: true
-                metadata: {}
+                  entity_id: media_player.garage
                 data:
-                  cache: true
-                  media_player_entity_id: media_player.salon
-                  message: "{{ message_vocal }}"
-                  language: fr
-                target:
-                  entity_id: tts.google_translate_fr_fr
-          - sequence:
-              - wait_template: "{{ is_state('media_player.salon', 'playing') }}"
-                timeout: "00:00:03"
-                continue_on_timeout: true
-              - wait_template: "{{ not is_state('media_player.salon', 'playing') }}"
-                timeout: "00:02:00"
-                continue_on_timeout: true
-          - delay:
-              hours: 0
-              minutes: 0
-              seconds: 2
-              milliseconds: 0
-            enabled: false
-          - action: system_log.write
+                  announce: true
+                  extra:
+                    volume: 40
+                  media:
+                    media_content_id: >-
+                      media-source://tts/tts.google_translate_fr_fr?message={{
+                      message_vocal | urlencode }}&language=fr&cache=true
+                    media_content_type: music
+                    metadata: {}
+          - action: media_player.play_media
+            target:
+              entity_id: "{{ state_attr('media_player.salon', 'group_members') }}"
             data:
-              message: "Restore Salon - État: {{ states('media_player.salon') }}"
-              level: info
-            enabled: false
-          - action: sonos.restore
-            continue_on_error: true
-            data:
-              with_group: true
-              entity_id: media_player.salon
-          - action: system_log.write
-            data:
-              message: "Restore Garage - État: {{ states('media_player.garage') }}"
-              level: info
-            enabled: false
-          - action: sonos.restore
-            continue_on_error: true
-            data:
-              with_group: false
-              entity_id: media_player.garage
+              announce: true
+              extra:
+                volume: 60
+              media:
+                media_content_id: >-
+                  media-source://tts/tts.google_translate_fr_fr?message={{
+                  message_vocal | urlencode }}&language=fr&cache=true
+                media_content_type: music
+                metadata: {}
         note: >-
-          Mode ON ou autre (défaut) → diffuse sur Salon (+ garage si
-          TéléTravail), volumes 60%/40%, snapshot→pause→TTS→attente→restore
+          Mode REVEIL ou autre (défaut) → diffuse en overlay (announce) sur tous
+          les membres du groupe Salon (+ Garage si TéléTravail), volumes
+          d'annonce 60/40
   - delay:
       hours: 0
       minutes: 0

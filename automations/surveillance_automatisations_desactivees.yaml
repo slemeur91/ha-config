@@ -1,28 +1,28 @@
 alias: Surveillance - Automatisations désactivées
 description: >-
-  Statut : Finalise
+  **Statut :** Finalise
 
-  Evolution : Aucune
+  **Evolution :** Aucune
 
 
-  Declencheurs :
+  **Declencheurs :**
 
   - Chaque jour a 8h00
 
 
-  Conditions :
+  **Conditions :**
 
   - Au moins une automatisation desactivee
 
 
-  Fonctionnement :
+  **Fonctionnement :**
 
   1. Pour chaque automatisation desactivee, appelle script.notification
   (Notification HA) avec un notification_id stable par automatisation (mise a
   jour, pas de doublon si toujours desactivee le lendemain).
 
 
-  Entites principales :
+  **Entites principales :**
 
   - automation.* : ensemble des automatisations surveillees (etat off)
 

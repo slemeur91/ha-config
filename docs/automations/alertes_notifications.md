@@ -97,7 +97,7 @@
 ## `automation.surveillance_automatisations_et_scripts_en_defaut` — Surveillance - Automatisations et Scripts en Défaut
 > [📄 Voir le YAML](../../automations/surveillance_automatisations_et_scripts_en_defaut.yaml)
 
-**Statut :** Finalisé | **Evolution :** Aucune. Nécessite `system_log: fire_event: true` dans `configuration.yaml` (absent par défaut) pour que l'événement `system_log_event` soit émis — ajouté et validé le 19/06/2026 (testé via `system_log.write` après redémarrage : déclenchement confirmé).
+**Statut :** Finalisé
 
 **Déclencheurs :**
 - Erreur d'exécution loggée par le composant `automation`
@@ -111,15 +111,15 @@
 
 ---
 
-## `automation.surveillance_automatisations_inactives` — Surveillance - Automatisations inactives
-> [📄 Voir le YAML](../../automations/surveillance_automatisations_inactives.yaml)
+## `automation.surveillance_automatisations_sans_declenchement_recent` — Surveillance - Automatisations sans déclenchement récent
+> [📄 Voir le YAML](../../automations/surveillance_automatisations_sans_declenchement_recent.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
 **Déclencheurs :**
 - Chaque jour à 9h00
 
-**Conditions :** Au moins une automatisation jamais déclenchée, ou non déclenchée depuis 7 jours (hors `automation.alarme_declenchement` et `automation.alarme_sabotage`)
+**Conditions :** Au moins une automatisation jamais déclenchée, ou non déclenchée depuis 7 jours (hors `automation.alarme_declenchement`, `automation.alarme_sabotage` et `automation.gestion_de_la_telecommande_hifi` — déclenchée uniquement par appui sur la télécommande HiFi, peut rester longtemps sans déclenchement sans que ce soit anormal)
 
 **Fonctionnement :**
 1. Pour chaque automatisation jamais déclenchée ou inactive depuis 7 jours (hors exclusions alarme), envoie une notification HA (`script.notification_ha`) avec un `notification_id` stable par automatisation et la date du dernier déclenchement (ou "jamais déclenchée") dans le message.
@@ -128,14 +128,14 @@
 
 ---
 
-## `automation.gestion_de_la_temperature_du_refrigerateur` — Température Réfrigérateur
-> [📄 Voir le YAML](../../automations/gestion_de_la_temperature_du_refrigerateur.yaml)
+## `automation.notification_de_defaut_du_refrigerateur` — Notification de défaut du réfrigérateur
+> [📄 Voir le YAML](../../automations/notification_de_defaut_du_refrigerateur.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
 **Déclencheurs :**
 - Changement de température frigo ou congélateur
-- Déconnexion réseau de l'interface du réfrigérateur
+- Déconnexion réseau de l'interface du réfrigérateur (`device_tracker.samsung_refrigerator`)
 
 **Fonctionnement :**
 1. Si frigo hors [2-4°C] OU congélateur hors [-20 à -18°C] OU interface réseau absente → SMS d'alerte.

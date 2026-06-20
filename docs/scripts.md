@@ -88,25 +88,22 @@
 ### `script.notification_vocale` — Notification Vocale
 > [📄 Voir le YAML](../scripts/notification_vocale.yaml)
 
-**Statut :** Finalisé | **Evolution :** Aucune
+**Statut :** Finalisé
 
-**Rôle :** Diffusion d'un message TTS sur les enceintes SONOS actives.
+**Rôle :** Diffusion d'un message TTS en overlay (announce) sur les enceintes SONOS actives, sans interrompre une lecture en cours.
 
 **Paramètres :**
 - `message_vocal` : texte à synthétiser
 
 **Fonctionnement :**
-1. Selon le mode SONOS actif (COUCHE → Suite parentale / REVEIL → Salon+Suite+SdE / autre → Salon+Garage si TéléTravail) :
-2. Snapshot de l'état des enceintes.
-3. Mise en pause si lecture en cours.
-4. Volume à 60% (40% Garage en TéléTravail).
-5. Synthèse vocale via `tts.google_translate_fr_fr`.
-6. Attente fin de diffusion (timeout 2 min).
-7. Restauration état précédent.
+1. Selon le mode SONOS actif (COUCHE → Suite parentale, via `group_members` / REVEIL ou autre → Salon+Garage si TéléTravail, via `group_members`) :
+2. Diffuse le message en overlay via `media_player.play_media` (`announce: true`, `media-source://tts/tts.google_translate_fr_fr?...`).
+3. Volume d'annonce 60 (40 pour le Garage en TéléTravail), passé directement dans l'appel (`extra.volume`).
+4. Sonos gère nativement la baisse du volume en cours et sa restauration après l'annonce.
 
 **Entités utilisées :**
 - `input_select.sonos` / `input_select.calendrier`
-- `media_player.salon` / `media_player.suite_parentale` / `media_player.salle_d_eau` / `media_player.garage`
+- `media_player.salon` / `media_player.suite_parentale` / `media_player.garage`
 - `tts.google_translate_fr_fr`
 
 ---

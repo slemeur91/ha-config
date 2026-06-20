@@ -53,6 +53,7 @@ sequence:
                 state: playing
         then:
           - action: media_player.play_media
+            continue_on_error: true
             target:
               entity_id:
                 - media_player.garage

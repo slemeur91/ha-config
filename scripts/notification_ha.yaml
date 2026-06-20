@@ -1,14 +1,14 @@
 alias: Notification HA
 description: >-
-  Statut : Finalise
+  **Statut :** Finalisé
 
-  Evolution : Aucune
-
-
-  Role : Envoie une notification persistante Home Assistant.
+  **Evolution :** Aucune
 
 
-  Parametres :
+  **Role :** Envoie une notification persistante Home Assistant.
+
+
+  **Parametres :**
 
   - message_type : type du message
 
@@ -18,7 +18,7 @@ description: >-
   dismiss la notification ensuite (persistent_notification.dismiss)
 
 
-  Fonctionnement :
+  **Fonctionnement :**
 
   1. Envoie une notification persistante via notify.persistent_notification avec
   le type en titre et le message en corps.

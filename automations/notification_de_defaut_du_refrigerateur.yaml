@@ -1,4 +1,4 @@
-alias: Gestion de la température du réfrigérateur
+alias: Notification de défaut du réfrigérateur
 description: >-
   **Statut :** Finalisé
 
@@ -25,8 +25,7 @@ description: >-
   - `sensor.refrigerateur_temperature_du_frigo` /
   `sensor.refrigerateur_temperature_du_congelateur` : températures
 
-  - `device_tracker.unifi_default_34_fc_99_77_67_78` : supervision réseau du
-  frigo
+  - `device_tracker.samsung_refrigerator` : supervision réseau du frigo
 triggers:
   - trigger: state
     entity_id:
@@ -73,12 +72,16 @@ actions:
           - condition: not
             conditions:
               - condition: state
-                entity_id: device_tracker.unifi_default_34_fc_99_77_67_78
+                entity_id: device_tracker.samsung_refrigerator
                 state:
                   - home
     then:
-      - action: script.notification_sms
+      - action: script.turn_on
+        target:
+          entity_id:
+            - script.notification_sms
         data:
-          message_type: Alerte
-          message_sms: Problème de température dans le réfrigérateur
+          variables:
+            message_type: Alerte
+            message_sms: Problème de température dans le réfrigérateur
 mode: single
