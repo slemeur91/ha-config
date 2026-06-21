@@ -31,6 +31,192 @@
 
 ---
 
+## Administration
+
+### `script.delete_all_orphaned_entities` — Delete all orphaned entities
+> [📄 Voir le YAML](../scripts/delete_all_orphaned_entities.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Supprime toutes les entités orphelines du registre HA (service fourni par l'intégration Spook).
+
+**Fonctionnement :**
+1. Appelle `homeassistant.delete_all_orphaned_entities`.
+
+---
+
+### `script.reload_pyscript` — Reload pyscript
+> [📄 Voir le YAML](../scripts/reload_pyscript.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Recharge l'intégration pyscript sans redémarrer HA.
+
+**Fonctionnement :**
+1. Appelle `pyscript.reload`.
+
+---
+
+## Automatisation
+
+### `script.gestion_du_reveil` — Gestion du Réveil
+> [📄 Voir le YAML](../scripts/gestion_du_reveil.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Déclenche le réveil musical et envoie un mail de confirmation.
+
+**Fonctionnement :**
+1. Si `input_select.sonos_action` est déjà en REVEIL → déclenche directement l'automation SONOS.
+2. Sinon → positionne l'action sur REVEIL (déclenchement par trigger d'état).
+3. Envoie mail "Réveil".
+
+**Entités utilisées :** `input_select.sonos_action`
+
+---
+
+## HiFi
+
+### `script.allumer_eteindre_apple_tv_salon` — Allumer/Éteindre Apple TV du Salon
+> [📄 Voir le YAML](../scripts/allumer_eteindre_apple_tv_salon.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Allume ou éteint l'Apple TV du salon, appelé par "Gestion de la HiFi" (branche extinction, `action: "off"`, et branche allumage/SOURCE, `action: "on"`) via `script.turn_on` (fire-and-forget).
+
+**Paramètres :**
+- `action` : `"on"` ou `"off"`
+
+**Fonctionnement :**
+1. `action: "off"` → envoie la commande `suspend` via `remote.send_command` (seule méthode fiable testée), erreur ignorée (`continue_on_error`) pour ne jamais bloquer l'automatisation appelante.
+2. `action: "on"` → recharge l'intégration (`homeassistant.reload_config_entry` sur `remote.apple_tv_du_salon`), attend 8 s, puis appelle `media_player.turn_on` (avec une branche de repli désactivée par défaut qui réessaie 6 fois avec un délai de 5 s entre chaque tentative).
+
+**Entités utilisées :** `media_player.apple_tv_du_salon`, `remote.apple_tv_du_salon`
+
+---
+
+### `script.sonos_radio_sur_la_suite_parentale` — SONOS Radio sur la Suite parentale
+> [📄 Voir le YAML](../scripts/sonos_radio_sur_la_suite_parentale.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Lance la radio sur la Suite parentale avec sélection horaire et repli.
+
+**Fonctionnement :**
+1. Entre 4h et 20h30 → Voltage ; sinon → Évasion FM Essonne (radio de nuit).
+2. Attend 5 secondes.
+3. Si pas de lecture → repli sur flux Évasion FM Essonne via Radio Browser.
+
+**Entités utilisées :** `media_player.suite_parentale`
+
+---
+
+### `script.sonos_radio_sur_le_garage` — SONOS Radio sur le Garage
+> [📄 Voir le YAML](../scripts/sonos_radio_sur_le_garage.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Lance Voltage sur le Garage avec repli automatique.
+
+**Fonctionnement :**
+1. Lance Voltage via favoris Sonos.
+2. Attend 5 secondes.
+3. Si pas de lecture → repli sur flux Radio Browser direct.
+
+**Entités utilisées :** `media_player.garage`
+
+---
+
+### `script.sonos_radio_sur_le_salon` — SONOS Radio sur le Salon
+> [📄 Voir le YAML](../scripts/sonos_radio_sur_le_salon.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Lance Voltage sur le Salon avec repli automatique.
+
+**Fonctionnement :**
+1. Lance Voltage via favoris Sonos (FV:2/37).
+2. Attend 5 secondes.
+3. Si pas de lecture → repli sur flux Radio Browser direct.
+
+**Entités utilisées :** `media_player.salon`
+
+---
+
+## iOS
+
+### `script.ios_alarme_activation_absent` — iOS - Alarme Activation (Absent)
+> [📄 Voir le YAML](../scripts/ios_alarme_activation_absent.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Arme l'alarme en mode absent.
+
+**Fonctionnement :**
+1. Appelle `alarm_control_panel.alarm_arm_away` sur `alarm_control_panel.alarme`.
+
+---
+
+### `script.ios_alarme_desactivation` — iOS - Alarme Désactivation
+> [📄 Voir le YAML](../scripts/ios_alarme_desactivation.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Désarme l'alarme.
+
+**Fonctionnement :**
+1. Appelle `alarm_control_panel.alarm_disarm` sur `alarm_control_panel.alarme`.
+
+---
+
+### `script.ios_porte_du_garage` — iOS - Porte du Garage
+> [📄 Voir le YAML](../scripts/ios_porte_du_garage.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Toggle de la porte du garage (Somfy RTS via RFPlayer).
+
+**Fonctionnement :**
+1. Appelle `cover.toggle` sur `cover.rts_4_portal`.
+
+---
+
+### `script.ios_serrure_de_l_entree_deverrouiller` — iOS - Serrure de l'Entrée déverrouiller
+> [📄 Voir le YAML](../scripts/ios_serrure_de_l_entree_deverrouiller.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Déverrouille la serrure Nuki de l'entrée.
+
+**Fonctionnement :**
+1. Appelle `lock.unlock` sur `lock.serrure_de_l_entree`.
+
+---
+
+### `script.ios_serrure_de_l_entree_verrouiller` — iOS - Serrure de l'Entrée verrouiller
+> [📄 Voir le YAML](../scripts/ios_serrure_de_l_entree_verrouiller.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Verrouille la serrure Nuki de l'entrée.
+
+**Fonctionnement :**
+1. Appelle `lock.lock` sur `lock.serrure_de_l_entree`.
+
+---
+
+### `script.ios_serrure_du_garage_deverrouiller` — iOS - Serrure du Garage déverrouiller
+> [📄 Voir le YAML](../scripts/ios_serrure_du_garage_deverrouiller.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Déverrouille la serrure Nuki du garage.
+
+**Fonctionnement :**
+1. Appelle `lock.unlock` sur `lock.serrure_du_garage`.
+
+---
+
 ## Notifications
 
 ### `script.notification_ha` — Notification HA
@@ -85,6 +271,21 @@
 
 ---
 
+### `script.notification_snapshot` — Notification Snapshot
+> [📄 Voir le YAML](../scripts/notification_snapshot.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Capture et envoi par mail des images de 6 caméras lors d'une alerte.
+
+**Fonctionnement :**
+1. Capture en parallèle les caméras 1, 2, 3, 4, 6 et le portier.
+2. Envoie un mail avec toutes les images en pièces jointes.
+
+**Entités utilisées :** `camera.slm_camera1` à `camera.slm_camera6`, `camera.slm_portier`
+
+---
+
 ### `script.notification_vocale` — Notification Vocale
 > [📄 Voir le YAML](../scripts/notification_vocale.yaml)
 
@@ -108,210 +309,7 @@
 
 ---
 
-### `script.notification_snapshot` — Notification Snapshot
-> [📄 Voir le YAML](../scripts/notification_snapshot.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Rôle :** Capture et envoi par mail des images de 6 caméras lors d'une alerte.
-
-**Fonctionnement :**
-1. Capture en parallèle les caméras 1, 2, 3, 4, 6 et le portier.
-2. Envoie un mail avec toutes les images en pièces jointes.
-
-**Entités utilisées :** `camera.slm_camera1` à `camera.slm_camera6`, `camera.slm_portier`
-
----
-
-## SONOS Radio
-
-### `script.sonos_radio_sur_le_salon` — SONOS Radio sur le Salon
-> [📄 Voir le YAML](../scripts/sonos_radio_sur_le_salon.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Rôle :** Lance Voltage sur le Salon avec repli automatique.
-
-**Fonctionnement :**
-1. Lance Voltage via favoris Sonos (FV:2/37).
-2. Attend 5 secondes.
-3. Si pas de lecture → repli sur flux Radio Browser direct.
-
-**Entités utilisées :** `media_player.salon`
-
----
-
-### `script.sonos_radio_sur_la_suite_parentale` — SONOS Radio sur la Suite parentale
-> [📄 Voir le YAML](../scripts/sonos_radio_sur_la_suite_parentale.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Rôle :** Lance la radio sur la Suite parentale avec sélection horaire et repli.
-
-**Fonctionnement :**
-1. Entre 4h et 20h30 → Voltage ; sinon → Évasion FM Essonne (radio de nuit).
-2. Attend 5 secondes.
-3. Si pas de lecture → repli sur flux Évasion FM Essonne via Radio Browser.
-
-**Entités utilisées :** `media_player.suite_parentale`
-
----
-
-### `script.sonos_radio_sur_le_garage` — SONOS Radio sur le Garage
-> [📄 Voir le YAML](../scripts/sonos_radio_sur_le_garage.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Rôle :** Lance Voltage sur le Garage avec repli automatique.
-
-**Fonctionnement :**
-1. Lance Voltage via favoris Sonos.
-2. Attend 5 secondes.
-3. Si pas de lecture → repli sur flux Radio Browser direct.
-
-**Entités utilisées :** `media_player.garage`
-
----
-
-## Contrôle Multimédia
-
-### `script.allumer_eteindre_apple_tv_salon` — Allumer/Éteindre Apple TV du Salon
-> [📄 Voir le YAML](../scripts/allumer_eteindre_apple_tv_salon.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Rôle :** Allume ou éteint l'Apple TV du salon, appelé par "Gestion de la HiFi" (branche extinction, `action: "off"`, et branche allumage/SOURCE, `action: "on"`) via `script.turn_on` (fire-and-forget).
-
-**Paramètres :**
-- `action` : `"on"` ou `"off"`
-
-**Fonctionnement :**
-1. `action: "off"` → envoie la commande `suspend` via `remote.send_command` (seule méthode fiable testée), erreur ignorée (`continue_on_error`) pour ne jamais bloquer l'automatisation appelante.
-2. `action: "on"` → recharge l'intégration (`homeassistant.reload_config_entry` sur `remote.apple_tv_du_salon`), attend 8 s, puis appelle `media_player.turn_on` (avec une branche de repli désactivée par défaut qui réessaie 6 fois avec un délai de 5 s entre chaque tentative).
-
-**Entités utilisées :** `media_player.apple_tv_du_salon`, `remote.apple_tv_du_salon`
-
----
-
-## Réveil
-
-### `script.gestion_du_reveil` — Gestion du Réveil
-> [📄 Voir le YAML](../scripts/gestion_du_reveil.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Rôle :** Déclenche le réveil musical et envoie un mail de confirmation.
-
-**Fonctionnement :**
-1. Si `input_select.sonos_action` est déjà en REVEIL → déclenche directement l'automation SONOS.
-2. Sinon → positionne l'action sur REVEIL (déclenchement par trigger d'état).
-3. Envoie mail "Réveil".
-
-**Entités utilisées :** `input_select.sonos_action`
-
----
-
-## Actions iOS
-
-### `script.ios_porte_du_garage` — iOS - Porte du Garage
-> [📄 Voir le YAML](../scripts/ios_porte_du_garage.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Rôle :** Toggle de la porte du garage (Somfy RTS via RFPlayer).
-
-**Fonctionnement :**
-1. Appelle `cover.toggle` sur `cover.rts_4_portal`.
-
----
-
-### `script.ios_serrure_du_garage_deverrouiller` — iOS - Serrure du Garage déverrouiller
-> [📄 Voir le YAML](../scripts/ios_serrure_du_garage_deverrouiller.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Rôle :** Déverrouille la serrure Nuki du garage.
-
-**Fonctionnement :**
-1. Appelle `lock.unlock` sur `lock.serrure_du_garage`.
-
----
-
-### `script.ios_serrure_de_l_entree_deverrouiller` — iOS - Serrure de l'Entrée déverrouiller
-> [📄 Voir le YAML](../scripts/ios_serrure_de_l_entree_deverrouiller.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Rôle :** Déverrouille la serrure Nuki de l'entrée.
-
-**Fonctionnement :**
-1. Appelle `lock.unlock` sur `lock.serrure_de_l_entree`.
-
----
-
-### `script.ios_serrure_de_l_entree_verrouiller` — iOS - Serrure de l'Entrée verrouiller
-> [📄 Voir le YAML](../scripts/ios_serrure_de_l_entree_verrouiller.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Rôle :** Verrouille la serrure Nuki de l'entrée.
-
-**Fonctionnement :**
-1. Appelle `lock.lock` sur `lock.serrure_de_l_entree`.
-
----
-
-### `script.ios_alarme_activation_absent` — iOS - Alarme Activation (Absent)
-> [📄 Voir le YAML](../scripts/ios_alarme_activation_absent.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Rôle :** Arme l'alarme en mode absent.
-
-**Fonctionnement :**
-1. Appelle `alarm_control_panel.alarm_arm_away` sur `alarm_control_panel.alarme`.
-
----
-
-### `script.ios_alarme_desactivation` — iOS - Alarme Désactivation
-> [📄 Voir le YAML](../scripts/ios_alarme_desactivation.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Rôle :** Désarme l'alarme.
-
-**Fonctionnement :**
-1. Appelle `alarm_control_panel.alarm_disarm` sur `alarm_control_panel.alarme`.
-
----
-
 ## Scripts Pyscript
 
-> Les scripts pyscript sont dans `/config/pyscript/` et chargés par l'intégration **pyscript** (HACS).
+> Les scripts pyscript sont dans `/config/pyscript/` et chargés par l'intégration **pyscript** (HACS). Ce ne sont pas des entités `script.*` : ils ne sont pas comptés dans les 18 scripts ci-dessus.
 > Sources : [`pyscripts/gazpar_energy.py`](../pyscripts/gazpar_energy.py) | [`pyscripts/surveillance_station_recording.py`](../pyscripts/surveillance_station_recording.py)
-
----
-
-## Utilitaires
-
-### `script.reload_pyscript` — Reload pyscript
-> [📄 Voir le YAML](../scripts/reload_pyscript.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Rôle :** Recharge l'intégration pyscript sans redémarrer HA.
-
-**Fonctionnement :**
-1. Appelle `pyscript.reload`.
-
----
-
-### `script.delete_all_orphaned_entities` — Delete all orphaned entities
-> [📄 Voir le YAML](../scripts/delete_all_orphaned_entities.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Rôle :** Supprime toutes les entités orphelines du registre HA (service fourni par l'intégration Spook).
-
-**Fonctionnement :**
-1. Appelle `homeassistant.delete_all_orphaned_entities`.

@@ -5,6 +5,20 @@
 
 ---
 
+## `automation.gestion_de_la_lumiere_du_garage` — Lumière du Garage
+> [📄 Voir le YAML](../../automations/gestion_de_la_lumiere_du_garage.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :** Ouverture de la porte du garage
+
+**Fonctionnement :**
+1. Si période sombre (entre coucher et lever du soleil) ET alarme désarmée → allume `light.lumiere_du_garage`.
+
+**Entrées utilisées :** Aucune entrée helper.
+
+---
+
 ## `automation.gestion_du_bouton_hue_central_droit` — Bouton Hue Central Droit
 > [📄 Voir le YAML](../../automations/gestion_du_bouton_hue_central_droit.yaml)
 
@@ -65,17 +79,3 @@
 **Fonctionnement :** Détection des appuis, aucune action affectée pour le moment.
 
 **Entrées utilisées :** Aucune.
-
----
-
-## `automation.gestion_de_la_lumiere_du_garage` — Lumière du Garage
-> [📄 Voir le YAML](../../automations/gestion_de_la_lumiere_du_garage.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :** Ouverture de la porte du garage
-
-**Fonctionnement :**
-1. Si période sombre (entre coucher et lever du soleil) ET alarme désarmée → allume `light.lumiere_du_garage`.
-
-**Entrées utilisées :** Aucune entrée helper.

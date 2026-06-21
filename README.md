@@ -50,75 +50,55 @@
 
 | Catégorie | Nb | Détail |
 |---|---|---|
-| Alarme & Sécurité | 3 | [→ Détail](docs/automations/alarme_securite.md) |
-| Alertes & Notifications | 7 | [→ Détail](docs/automations/alertes_notifications.md) |
-| Audio / HiFi | 3 | [→ Détail](docs/automations/audio_hifi.md) |
-| Batteries | 4 | [→ Détail](docs/automations/batteries.md) |
-| Calendrier & Planification | 2 | [→ Détail](docs/automations/calendrier_planification.md) |
-| Chauffage | 2 | [→ Détail](docs/automations/chauffage.md) |
-| Énergie & Environnement | 3 | [→ Détail](docs/automations/energie_environnement.md) |
+| Alarme | 3 | [→ Détail](docs/automations/alarme.md) |
+| Automatisation | 11 | [→ Détail](docs/automations/automatisation.md) |
+| Corrections | 3 | [→ Détail](docs/automations/corrections.md) |
+| HiFi | 3 | [→ Détail](docs/automations/hifi.md) |
 | Lumières | 5 | [→ Détail](docs/automations/lumieres.md) |
-| Maintenance & Corrections | 5 | [→ Détail](docs/automations/maintenance_corrections.md) |
-| Présence & Domicile | 3 | [→ Détail](docs/automations/presence_domicile.md) |
-| Velux (blueprint) | 3 | [→ Détail](docs/automations/blueprint_velux.md) |
-| Volets (blueprint) | 9 | [→ Détail](docs/automations/blueprint_volets.md) |
+| Notifications | 8 | [→ Détail](docs/automations/notifications.md) |
+| Surveillance HA | 4 | [→ Détail](docs/automations/surveillance_ha.md) |
+| Volets | 12 | [→ Détail](docs/automations/volets.md) |
 
 ### Résumé des automations actives
 
 <details>
 <summary>Voir la liste complète (49) — triée par catégorie puis alphabétiquement</summary>
 
-#### Alarme & Sécurité
+#### Alarme
 | Alias | Entity ID | Résumé |
 |---|---|---|
 | Alarme Déclenchement | `automation.alarme_declenchement` | Snapshots et notifications en boucle lors d'un déclenchement |
 | Alarme Sabotage | `automation.alarme_sabotage` | Notifications lors d'un sabotage du boîtier alarme |
 | Gestion de l'Alarme | `automation.alarme` | Coordonne domicile, caméras et présence selon l'alarme |
 
-#### Alertes & Notifications
+#### Automatisation
 | Alias | Entity ID | Résumé |
 |---|---|---|
-| Notification de défaut du réfrigérateur | `automation.notification_de_defaut_du_refrigerateur` | Alerte si températures frigo/congélateur hors plage |
-| Notification de l'Horloge | `automation.notification_de_l_horloge` | Annonce vocale de l'heure toutes les heures |
-| Notification des Alertes | `automation.gestion_des_alertes` | Détecte et notifie fuites, fumées, serveurs, brouillage |
-| Notification des Poubelles | `automation.notification_des_poubelles` | Rappels vocaux et SMS pour sortir/rentrer les poubelles |
-| Surveillance - Automatisations désactivées | `automation.surveillance_automatisations_desactivees` | Notifie chaque jour les automatisations désactivées |
-| Surveillance - Automatisations et Scripts en Défaut | `automation.surveillance_automatisations_et_scripts_en_defaut` | Notifie en temps réel les erreurs d'exécution d'automatisations/scripts |
-| Surveillance - Automatisations sans déclenchement récent | `automation.surveillance_automatisations_sans_declenchement_recent` | Notifie chaque jour les automatisations jamais/peu déclenchées |
+| GAZPAR – Mise à jour statistiques journalières | `automation.gazpar_mise_a_jour_statistiques_journalieres` | Injecte les données gaz dans les statistiques HA |
+| Gestion de l'activation de l'Arrosage | `automation.gestion_de_l_activation_de_l_arrosage` | Ouvre/ferme la vanne selon le timer et la pluviométrie |
+| Gestion de la Boîte aux Lettres | `automation.gestion_de_la_boite_aux_lettres` | Détecte dépôt courrier/colis via capteur P100 |
+| Gestion de la Présence dans les Pièces | `automation.gestion_de_la_presence_dans_les_pieces` | Met à jour la présence par pièce via capteurs Aqara FP2 |
+| Gestion de la Qualité de l'Air | `automation.gestion_de_la_qualite_de_l_air` | Active les purificateurs selon PM2.5/PM10/VOC/NO2 |
+| Gestion du Chauffage de l'Etage | `automation.gestion_du_chauffage_de_l_etage` | Pilote les 5 thermostats Z-Wave de l'étage |
+| Gestion du Chauffage du RDC | `automation.gestion_du_chauffage_du_rdc` | Pilote le chauffage du rez-de-chaussée |
+| Gestion du Domicile en fonction de la Présence | `automation.gestion_du_domicile_en_fonction_de_la_presence` | Actions selon la présence (Réveil/Arrivée/Couché/Extinction) |
+| Gestion du Poêle et de la Climatisation | `automation.gestion_du_poele_et_de_la_climatisation` | Gère les flags poêle/clim et le contacteur selon l'alarme |
+| Gestion du Soleil | `automation.gestion_du_soleil` | Calcule le mode soleil et positionne les volets en Été/Hiver |
+| Planification de l'Agenda | `automation.planification_de_l_agenda` | Positionne les modes calendrier/chauffage selon l'agenda |
 
-#### Audio / HiFi
+#### Corrections
+| Alias | Entity ID | Résumé |
+|---|---|---|
+| Corrections des Appareils EcoFlow | `automation.corrections_des_appareils_ecoflow` | Redémarre les intégrations EcoFlow si hors ligne |
+| Corrections du KLF200 pour les Velux | `automation.corrections_du_klf200_pour_les_velux` | Redémarre automatiquement le KLF200 en cas de panne |
+| Maintien des Prises et Appareils allumés | `automation.maintien_des_prises_et_appareils_allumes` | Garde les prises critiques allumées et surveille les serveurs |
+
+#### HiFi
 | Alias | Entity ID | Résumé |
 |---|---|---|
 | Gestion de la HiFi | `automation.gestion_de_la_hifi` | Allume/éteint la chaîne HiFi et gère les sources |
 | Gestion de la Télécommande HiFi | `automation.gestion_de_la_telecommande_hifi` | Associe les boutons Z-Wave de la télécommande à la HiFi/SONOS |
 | Gestion des SONOS | `automation.gestion_des_sonos` | Pilote les enceintes selon les modes ON/OFF/COUCHE/REVEIL |
-
-#### Batteries
-| Alias | Entity ID | Résumé |
-|---|---|---|
-| Notification appareils en batterie faible | `automation.notification_appareils_en_batterie_faible` | Notifications persistantes batterie faible/restaurée |
-| Notification appareils en batterie faible - Hebdomadaire | `automation.notification_appareils_en_batterie_faible_hebdomadaire` | Vérification hebdomadaire batteries (vendredi 19h) |
-| Notification appareils en batterie faible - Mail hebdomadaire | `automation.notification_appareils_en_batterie_faible_mail_hebdomadaire` | Mail récapitulatif batteries faibles |
-| Notification de batterie remplacée | `automation.notification_de_batterie_remplacee` | Suggestion de marquer une batterie comme remplacée |
-
-#### Calendrier & Planification
-| Alias | Entity ID | Résumé |
-|---|---|---|
-| GAZPAR – Mise à jour statistiques journalières | `automation.gazpar_mise_a_jour_statistiques_journalieres` | Injecte les données gaz dans les statistiques HA |
-| Planification de l'Agenda | `automation.planification_de_l_agenda` | Positionne les modes calendrier/chauffage selon l'agenda |
-
-#### Chauffage
-| Alias | Entity ID | Résumé |
-|---|---|---|
-| Gestion du Chauffage de l'Etage | `automation.gestion_du_chauffage_de_l_etage` | Pilote les 5 thermostats Z-Wave de l'étage |
-| Gestion du Chauffage du RDC | `automation.gestion_du_chauffage_du_rdc` | Pilote le chauffage du rez-de-chaussée |
-
-#### Énergie & Environnement
-| Alias | Entity ID | Résumé |
-|---|---|---|
-| Gestion de l'activation de l'Arrosage | `automation.gestion_de_l_activation_de_l_arrosage` | Ouvre/ferme la vanne selon le timer et la pluviométrie |
-| Gestion de la Qualité de l'Air | `automation.gestion_de_la_qualite_de_l_air` | Active les purificateurs selon PM2.5/PM10/VOC/NO2 |
-| Gestion du Soleil | `automation.gestion_du_soleil` | Calcule le mode soleil et positionne les volets en Été/Hiver |
 
 #### Lumières
 | Alias | Entity ID | Résumé |
@@ -129,30 +109,34 @@
 | Gestion du Bouton Hue de l'Entrée | `automation.gestion_du_bouton_hue_de_l_entree` | En cours d'affectation |
 | Gestion du Bouton Hue de l'Etage | `automation.gestion_du_bouton_hue_de_l_etage` | En cours d'affectation |
 
-#### Maintenance & Corrections
+#### Notifications
 | Alias | Entity ID | Résumé |
 |---|---|---|
-| Corrections des Appareils EcoFlow | `automation.corrections_des_appareils_ecoflow` | Redémarre les intégrations EcoFlow si hors ligne |
-| Corrections du KLF200 pour les Velux | `automation.corrections_du_klf200_pour_les_velux` | Redémarre automatiquement le KLF200 en cas de panne |
-| Gestion du Poêle et de la Climatisation | `automation.gestion_du_poele_et_de_la_climatisation` | Gère les flags poêle/clim et le contacteur selon l'alarme |
-| Maintien des Prises et Appareils allumés | `automation.maintien_des_prises_et_appareils_allumes` | Garde les prises critiques allumées et surveille les serveurs |
+| Notification appareils en batterie faible | `automation.notification_appareils_en_batterie_faible` | Notifications persistantes batterie faible/restaurée |
+| Notification appareils en batterie faible - Hebdomadaire | `automation.notification_appareils_en_batterie_faible_hebdomadaire` | Vérification hebdomadaire batteries (vendredi 19h) |
+| Notification appareils en batterie faible - Mail hebdomadaire | `automation.notification_appareils_en_batterie_faible_mail_hebdomadaire` | Mail récapitulatif batteries faibles |
+| Notification de batterie remplacée | `automation.notification_de_batterie_remplacee` | Suggestion de marquer une batterie comme remplacée |
+| Notification de défaut du réfrigérateur | `automation.notification_de_defaut_du_refrigerateur` | Alerte si températures frigo/congélateur hors plage |
+| Notification de l'Horloge | `automation.notification_de_l_horloge` | Annonce vocale de l'heure toutes les heures |
+| Notification des Alertes | `automation.gestion_des_alertes` | Détecte et notifie fuites, fumées, serveurs, brouillage |
+| Notification des Poubelles | `automation.notification_des_poubelles` | Rappels vocaux et SMS pour sortir/rentrer les poubelles |
+
+#### Surveillance HA
+| Alias | Entity ID | Résumé |
+|---|---|---|
+| Surveillance - Automatisations désactivées | `automation.surveillance_automatisations_desactivees` | Notifie chaque jour les automatisations désactivées |
+| Surveillance - Automatisations et Scripts en Défaut | `automation.surveillance_automatisations_et_scripts_en_defaut` | Notifie en temps réel les erreurs d'exécution d'automatisations/scripts |
+| Surveillance - Automatisations sans déclenchement récent | `automation.surveillance_automatisations_sans_declenchement_recent` | Notifie chaque jour les automatisations jamais/peu déclenchées |
 | Surveillance - Recharger les intégrations en défaut | `automation.surveillance_recharger_les_integrations_en_defaut` | Détecte et recharge les intégrations en erreur ou en panne silencieuse |
 
-#### Présence & Domicile
-| Alias | Entity ID | Résumé |
-|---|---|---|
-| Gestion de la Boîte aux Lettres | `automation.gestion_de_la_boite_aux_lettres` | Détecte dépôt courrier/colis via capteur P100 |
-| Gestion de la Présence dans les Pièces | `automation.gestion_de_la_presence_dans_les_pieces` | Met à jour la présence par pièce via capteurs Aqara FP2 |
-| Gestion du Domicile en fonction de la Présence | `automation.gestion_du_domicile_en_fonction_de_la_presence` | Actions selon la présence (Réveil/Arrivée/Couché/Extinction) |
-
-#### Velux — Blueprint `Volets/Gestion_des_velux.yaml`
+#### Volets — Velux `Volets/Gestion_des_velux.yaml`
 | Alias | Entity ID | Pièce |
 |---|---|---|
 | Gestion du Velux - Chambre | `automation.gestion_du_velux_chambre` | Chambre |
 | Gestion du Velux - Salle d'eau | `automation.gestion_du_velux_salle_d_eau` | Salle d'eau |
 | Gestion du Velux - Salle de bain | `automation.gestion_du_velux_salle_de_bain` | Salle de bain |
 
-#### Volets — Blueprint `Volets/Gestion_des_volets.yaml`
+#### Volets — Volet `Volets/Gestion_des_volets.yaml`
 | Alias | Entity ID | Pièce |
 |---|---|---|
 | Gestion du Volet - Bureau | `automation.gestion_du_volet_bureau` | Bureau |
@@ -200,8 +184,8 @@
 
 | Blueprint | Instances | Description |
 |---|---|---|
-| [Gestion des Velux](docs/automations/blueprint_velux.md) | 3 | Fermeture selon présence, météo, protection thermique |
-| [Gestion des Volets](docs/automations/blueprint_volets.md) | 9 | Pilotage intelligent selon mode, météo, soleil, présence |
+| [Gestion des Velux](docs/automations/volets.md#gestion-des-velux-3-instances) | 3 | Fermeture selon présence, météo, protection thermique |
+| [Gestion des Volets](docs/automations/volets.md#gestion-des-volets-9-instances) | 9 | Pilotage intelligent selon mode, météo, soleil, présence |
 
 ### Points d'attention lors de la création de blueprints
 
