@@ -88,7 +88,7 @@
 - `action` : `"on"` ou `"off"`
 
 **Fonctionnement :**
-1. `action: "off"` → envoie la commande `suspend` via `remote.send_command` (seule méthode fiable testée), erreur ignorée (`continue_on_error`) pour ne jamais bloquer l'automatisation appelante.
+1. `action: "off"` → si l'appareil semble disponible (media_player ni off/standby/unavailable, ET media_player.is_on, ET remote.is_on depuis au moins 5 s), rafraîchit l'état des entités (`homeassistant.update_entity`) puis envoie la commande `suspend` via `remote.send_command`. Cette garde réduit, sans l'éliminer totalement, les échecs dus à un état HA obsolète par rapport à la connexion réelle (protocole Companion de pyatv) ; erreur résiduelle ignorée (`continue_on_error`) pour ne jamais bloquer l'automatisation appelante.
 2. `action: "on"` → recharge l'intégration (`homeassistant.reload_config_entry` sur `remote.apple_tv_du_salon`), attend 8 s, puis appelle `media_player.turn_on` (avec une branche de repli désactivée par défaut qui réessaie 6 fois avec un délai de 5 s entre chaque tentative).
 
 **Entités utilisées :** `media_player.apple_tv_du_salon`, `remote.apple_tv_du_salon`

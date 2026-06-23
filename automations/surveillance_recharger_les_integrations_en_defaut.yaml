@@ -7,7 +7,7 @@ description: >-
 
   **Declencheurs :**
 
-  - 5 minutes apres le demarrage de Home Assistant
+  - 12 minutes apres le demarrage de Home Assistant
 
   - Detection d'un nouveau probleme dans Repairs (`event.repair`, event_type =
   create)
@@ -59,10 +59,14 @@ actions:
             id: startup
         sequence:
           - delay:
-              minutes: 5
+              minutes: 12
     note: >-
-      Si déclenché par le démarrage de HA : patiente 5 minutes avant de vérifier
-      les intégrations (laisse le temps au réseau/aux services de redémarrer)
+      Si déclenché par le démarrage de HA : patiente 12 minutes avant de
+      vérifier les intégrations (laisse le temps au réseau/aux services de
+      redémarrer ET dépasse le seuil de 10 min de panne silencieuse, sinon une
+      intégration qui plante systématiquement au boot — ex : LocalTuya — n'est
+      jamais détectée par ce déclencheur et attend le prochain passage
+      périodique, jusqu'à 15 min plus tard)
   - variables:
       error_entries: |-
         {% set ns = namespace(rows=[]) %}

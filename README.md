@@ -16,7 +16,7 @@
 | Blueprints | **2** |
 | Modules complémentaires (Add-ons) | **17** |
 | Intégrations HACS | **20** |
-| Cartes Lovelace HACS | **8** |
+| Cartes Lovelace HACS | **9** |
 
 ---
 
@@ -259,7 +259,7 @@ Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être captu
 | Xiaomi Miot | 2 | Appareils Xiaomi via protocole MIoT local | [al-one/hass-xiaomi-miot](https://github.com/al-one/hass-xiaomi-miot) | 🔧 HACS |
 | xsense | 4 | Détecteurs de fumée/CO X-Sense (cloud) | [Jarnsen/ha-xsense-component_test](https://github.com/Jarnsen/ha-xsense-component_test) | 🔧 HACS Communauté |
 
-### Cartes Lovelace HACS (8)
+### Cartes Lovelace HACS (9)
 
 | Carte | Utilisation | Rôle | GitHub | Source |
 |---|---|---|---|---|
@@ -269,6 +269,7 @@ Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être captu
 | Custom-ui | — | Templates et couleurs d'icônes personnalisés | [Mariusthvdb/custom-ui](https://github.com/Mariusthvdb/custom-ui) | 🔧 HACS |
 | expander-card | — | Carte extensible/rétractable pour les dashboards | [MelleD/lovelace-expander-card](https://github.com/MelleD/lovelace-expander-card) | 🔧 HACS |
 | GrDF Gazpar card | 1 | Affichage des données de consommation GAZPAR | [ssenart/lovelace-gazpar-card](https://github.com/ssenart/lovelace-gazpar-card) | 🔧 HACS Communauté |
+| Pollenprognos Card | 1 | Prévisions des pollens et qualité de l'air (Atmo France) | [krissen/pollenprognos-card](https://github.com/krissen/pollenprognos-card) | 🔧 HACS Communauté |
 | Somfy Protexial Card | 1 | Contrôle de l'alarme Somfy Protexial (capteurs, GSM) | [developpeurbox/somfy-protexial-card](https://github.com/developpeurbox/somfy-protexial-card) | 🔧 HACS Communauté |
 | Travel Time Card | 1 | Temps de trajet (durée, distance, itinéraire) — remplace Waze Travel Time Card | [ljmerza/travel-time-card](https://github.com/ljmerza/travel-time-card) | 🔧 HACS |
 

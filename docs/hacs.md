@@ -298,7 +298,7 @@ Intégration des appareils X-Sense (station de sécurité SBS50, détecteurs de 
 
 ---
 
-## Cartes Lovelace (8)
+## Cartes Lovelace (9)
 
 ### apexcharts-card
 > [GitHub](https://github.com/RomRider/apexcharts-card)
@@ -485,6 +485,72 @@ showYearlyCostHistoryChart: false
 ```
 
 ![GrDF Gazpar card](../images/grdf-gazpar-card.png)
+
+### Pollenprognos Card
+> [GitHub](https://github.com/krissen/pollenprognos-card)
+
+Carte de prévisions des pollens et de la qualité de l'air, basée sur l'intégration Atmo France (risque allergique, graminées, ambroisie, armoise, aulne, bouleau, olivier, qualité de l'air, ozone…).
+
+**Configuration utilisée :**
+```yaml
+type: custom:pollenprognos-card
+integration: atmo
+location: ""
+entity_prefix: ""
+entity_suffix: ""
+allergens:
+  - allergy_risk
+  - qualite_globale
+  - ragweed
+  - mugwort
+  - alder
+  - birch
+  - grass
+  - olive
+  - pm25
+  - pm10
+  - ozone
+  - no2
+  - so2
+minimal: false
+minimal_gap: 35
+background_color: ""
+icon_size: "48"
+text_size_ratio: 1
+show_text_allergen: true
+show_value_text: true
+show_value_numeric: false
+show_value_numeric_in_circle: false
+show_empty_days: false
+debug: false
+show_version: true
+days_to_show: 2
+days_relative: true
+days_abbreviated: false
+days_uppercase: false
+days_boldfaced: false
+pollen_threshold: 1
+sort: value_descending
+allergy_risk_top: true
+show_summary_block: false
+show_summary_row: false
+show_summary_separator: true
+sort_pollution_block: true
+pollution_block_position: bottom
+show_block_separator: false
+allergens_abbreviated: false
+link_to_sensors: true
+phrases:
+  full: {}
+  short: {}
+  levels: []
+  days: {}
+  no_information: ""
+```
+
+![Pollenprognos Card](../images/pollenprognos-card.png)
+
+---
 
 ### Somfy Protexial Card
 > [GitHub](https://github.com/developpeurbox/somfy-protexial-card)
