@@ -66,20 +66,28 @@ actions:
             id:
               - Levé du Soleil
         sequence:
-          - action: script.notification_mail
+          - action: script.turn_on
+            target:
+              entity_id:
+                - script.notification_mail
             data:
-              message_type: Information
-              message_mail: Levé du soleil
+              variables:
+                message_type: Information
+                message_mail: Levé du soleil
         note: Lever du soleil → envoie mail d'information
       - conditions:
           - condition: trigger
             id:
               - Couché du Soleil
         sequence:
-          - action: script.notification_mail
+          - action: script.turn_on
+            target:
+              entity_id:
+                - script.notification_mail
             data:
-              message_type: Information
-              message_mail: Couché du soleil
+              variables:
+                message_type: Information
+                message_mail: Couché du soleil
         note: Coucher du soleil → envoie mail d'information
   - sequence:
       - action: counter.reset

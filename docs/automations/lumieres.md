@@ -1,4 +1,4 @@
-# Lumières (5)
+# Lumières (8)
 
 [← Retour README](../../README.md)
 
@@ -79,3 +79,51 @@
 **Fonctionnement :** Détection des appuis, aucune action affectée pour le moment.
 
 **Entrées utilisées :** Aucune.
+
+---
+
+## `automation.gestion_de_la_lumiere_de_l_entree` — Gestion de la Lumière de l'Entrée
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- Sonnette du portier (`binary_sensor.exterieur_slm_portier_visiteur` → on)
+- Présence devant le portier (`binary_sensor.exterieur_slm_portier_personne` → on)
+
+**Fonctionnement :**
+1. Si période sombre (30 min après coucher / 30 min avant lever du soleil) → allume `light.lumiere_de_lexterieur`, attend 5 s.
+2. Si la lumière est allumée → attend 5 min puis éteint automatiquement.
+
+> Mode `restart` : une nouvelle détection pendant le délai de 5 min relance l'extinction à zéro.
+
+**Entités utilisées :** `binary_sensor.exterieur_slm_portier_visiteur`, `binary_sensor.exterieur_slm_portier_personne`, `light.lumiere_de_lexterieur`
+
+---
+
+## `automation.gestion_de_la_lumiere_du_wc_de_l_etage` — Gestion de la Lumière du WC de l'Étage
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- Changement de `binary_sensor.presence_dans_le_wc_de_l_etage_presence` (on/off)
+
+**Fonctionnement :**
+1. Présence détectée → allume `light.lumiere_du_wc_de_letage` : 50 % en période sombre, 80 % en période lumineuse.
+2. Absence détectée → éteint `light.lumiere_du_wc_de_letage`.
+
+**Entités utilisées :** `binary_sensor.presence_dans_le_wc_de_l_etage_presence`, `light.lumiere_du_wc_de_letage`
+
+---
+
+## `automation.gestion_de_la_lumiere_du_wc_du_rdc` — Gestion de la Lumière du WC du RDC
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- Changement de `binary_sensor.presence_dans_le_wc_du_rdc_presence` (on/off)
+
+**Fonctionnement :**
+1. Présence détectée → allume `light.lumiere_du_wc_du_rdc`.
+2. Absence détectée → éteint `light.lumiere_du_wc_du_rdc`.
+
+**Entités utilisées :** `binary_sensor.presence_dans_le_wc_du_rdc_presence`, `light.lumiere_du_wc_du_rdc`

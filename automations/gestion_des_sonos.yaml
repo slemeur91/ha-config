@@ -358,6 +358,28 @@ actions:
                         - media_player.salle_d_eau
                         - media_player.suite_parentale
                         - media_player.salon
+              - if:
+                  - condition: or
+                    conditions:
+                      - condition: state
+                        entity_id: input_select.calendrier
+                        state: TéléTravail
+                      - condition: media_player.is_playing
+                        target:
+                          entity_id: media_player.garage
+                        options: {}
+                then:
+                  - action: media_player.media_stop
+                    data: {}
+                    target:
+                      entity_id: media_player.garage
+                  - action: media_player.volume_mute
+                    continue_on_error: true
+                    data:
+                      is_volume_muted: false
+                    target:
+                      entity_id:
+                        - media_player.garage
               - action: media_player.media_stop
                 data: {}
                 target:

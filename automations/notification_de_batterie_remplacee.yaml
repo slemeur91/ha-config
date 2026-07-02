@@ -45,4 +45,28 @@ actions:
       notification_id: >-
         battery_increased-{{ trigger.event.data.device_id }}-{{
         trigger.event.data.source_entity_id }}
+    enabled: false
+  - action: script.turn_on
+    target:
+      entity_id:
+        - script.notification_ha
+    data:
+      variables:
+        message_type: >-
+          {{ 'Batterie rechargée' if trigger.event.data.battery_type ==
+          'Rechargeable' else 'Batterie augmentée' }} — {{
+          trigger.event.data.device_name }}
+        message_ha: >-
+          {%- if trigger.event.data.battery_type == 'Rechargeable' -%}Le niveau
+          de batterie est passé de {{ trigger.event.data.previous_battery_level
+          }}% à {{ trigger.event.data.battery_level }}%. Si elle a été
+          rechargée, vous pouvez la marquer comme remplacée dans Battery
+          Notes.{%- else -%}Le niveau de batterie est passé de {{
+          trigger.event.data.previous_battery_level }}% à {{
+          trigger.event.data.battery_level }}%. Si la pile a été remplacée, vous
+          pouvez la marquer comme remplacée dans Battery Notes.{%- endif -%}
+        notification_id: >-
+          battery_increased-{{ trigger.event.data.device_id }}-{{
+          trigger.event.data.source_entity_id }}
+    enabled: true
 mode: queued

@@ -1,4 +1,4 @@
-# Zigbee (20 appareils)
+# Zigbee (22 appareils)
 
 [← Retour Appareils](../appareils.md)
 
@@ -18,6 +18,15 @@
 |---|---|---|---|---|---|
 | 2 | Nous | DIN Switch | Contacteur avec mesure | Garage (Four, Climatisation) | [📄 Manuel](../hardware/NOUS.pdf) |
 | 1 | Tongou | Din smart relay | Contacteur avec mesure | Garage (Chaudière) | [📄 Manuel](../hardware/SY1-SY2-Din-Rail-Smart-Switch-Operating-Manual-1.pdf) |
+
+### Aqara — Capteur de présence radar FP300 (2 appareils)
+
+| Nb | Fabricant | Modèle | Nom HA | Localisation | Documentation |
+|---|---|---|---|---|---|
+| 1 | Aqara | Presence sensor FP300 | Présence dans le WC de l'Étage | WC Étage | — |
+| 1 | Aqara | Presence sensor FP300 | Présence dans le WC du RDC | WC RDC | — |
+
+> IEEE : `0x54ef4410016dfa13` (Étage) / `0x54ef4410016df353` (RDC). FW `0.0.0_6542`, HW `1`. Capteur radar mmWave : présence (`binary_sensor.*_presence`), PIR (`binary_sensor.*_pir_detection`), température, humidité, luminosité, distance cible, sensibilité de détection, délai d'absence, portée de détection.
 
 ### Aqara — Capteur multi-état (1 appareil)
 

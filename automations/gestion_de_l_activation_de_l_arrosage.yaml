@@ -59,10 +59,14 @@ actions:
               option: Inactif
             target:
               entity_id: input_select.arrosage
-          - action: script.notification_mail
+          - action: script.turn_on
+            target:
+              entity_id:
+                - script.notification_mail
             data:
-              message_type: Information
-              message_mail: Arret de l'arrosage
+              variables:
+                message_type: Information
+                message_mail: Arret de l'arrosage
         note: >-
           Timer terminé → ferme la vanne, remet le sélecteur à Inactif, envoie
           mail de fin d'arrosage
@@ -97,10 +101,14 @@ actions:
             data: {}
             target:
               entity_id: timer.arrosage_timer
-          - action: script.notification_mail
+          - action: script.turn_on
+            target:
+              entity_id:
+                - script.notification_mail
             data:
-              message_type: Information
-              message_mail: Déclenchement de l'arrosage
+              variables:
+                message_type: Information
+                message_mail: Déclenchement de l'arrosage
         note: >-
           Arrosage activé → vérifie la pluviométrie Netatmo ; si pluie > 2mm
           stop, sinon ouvre la vanne et démarre le timer

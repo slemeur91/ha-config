@@ -317,7 +317,8 @@ actions:
                 data: {}
                 target:
                   entity_id:
-                    - switch.multiprise_de_la_suite_parentale_3_tv_apple_tv
+                    - >-
+                      switch.suite_parentale_multiprise_de_la_suite_parentale_3_tv_apple_tv
               - if:
                   - condition: state
                     entity_id: alarm_control_panel.alarme
@@ -381,8 +382,8 @@ actions:
                     data: {}
                     target:
                       entity_id:
-                        - light.lumiere_du_salon
                         - light.lumiere_du_sejour
+                        - light.lumiere_du_salon_2
                 enabled: true
               - if:
                   - condition: state

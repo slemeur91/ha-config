@@ -132,7 +132,7 @@ notify:
     recipient: "votre-email@domaine.fr"
 ```
 
-**Utilisation :** Le service `notify.email` est appelé par les scripts `notification_mail` et `notification_snapshot` pour envoyer des alertes, des récapitulatifs batteries, et des captures caméras.
+**Utilisation :** Le service `notify.email` est appelé par les scripts `notification_mail` et `notification_snapshot_des_cameras` pour envoyer des alertes, des récapitulatifs batteries, et des captures caméras.
 
 **Serveur :** SMTP local auto-hébergé (NAS Synology), sans chiffrement (port 25, réseau interne).
 

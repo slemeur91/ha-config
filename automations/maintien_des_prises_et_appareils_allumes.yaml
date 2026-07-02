@@ -135,9 +135,9 @@ actions:
         then:
           - action: switch.turn_on
             data: {}
-            continue_on_error: true
             target:
               entity_id: switch.prise_du_refrigerateur_switch
+            continue_on_error: true
       - if:
           - condition: state
             entity_id: switch.prise_du_multimedia_switch
@@ -145,9 +145,9 @@ actions:
         then:
           - action: switch.turn_on
             data: {}
-            continue_on_error: true
             target:
               entity_id: switch.prise_du_multimedia_switch
+            continue_on_error: true
       - if:
           - condition: state
             entity_id: switch.prise_de_l_informatique
@@ -155,9 +155,9 @@ actions:
         then:
           - action: switch.turn_on
             data: {}
-            continue_on_error: true
             target:
               entity_id: switch.prise_de_l_informatique
+            continue_on_error: true
       - if:
           - condition: state
             entity_id: switch.prise_du_cellier_nodeid_24_switch
@@ -165,9 +165,9 @@ actions:
         then:
           - action: switch.turn_on
             data: {}
-            continue_on_error: true
             target:
               entity_id: switch.prise_du_cellier_nodeid_24_switch
+            continue_on_error: true
       - if:
           - condition: state
             entity_id: switch.reseau_multiprise_de_l_informatique_1_routeur_4g
@@ -175,10 +175,10 @@ actions:
         then:
           - action: switch.turn_on
             data: {}
-            continue_on_error: true
             target:
               entity_id:
                 - switch.reseau_multiprise_de_l_informatique_1_routeur_4g
+            continue_on_error: true
       - if:
           - condition: state
             entity_id: switch.reseau_multiprise_de_l_informatique_4_ventilateur
@@ -186,10 +186,10 @@ actions:
         then:
           - action: switch.turn_on
             data: {}
-            continue_on_error: true
             target:
               entity_id:
                 - switch.reseau_multiprise_de_l_informatique_4_ventilateur
+            continue_on_error: true
       - if:
           - condition: state
             entity_id: switch.reseau_multiprise_de_l_informatique_3_zappitinas
@@ -197,10 +197,10 @@ actions:
         then:
           - action: switch.turn_on
             data: {}
-            continue_on_error: true
             target:
               entity_id:
                 - switch.reseau_multiprise_de_l_informatique_3_zappitinas
+            continue_on_error: true
       - note: ZappitiNAS absent depuis 2min ET switch ON → force le Wake-on-LAN
         if:
           - condition: and
@@ -220,9 +220,9 @@ actions:
         then:
           - action: switch.turn_on
             data: {}
-            continue_on_error: true
             target:
               entity_id: switch.zappitinas
+            continue_on_error: true
       - if:
           - condition: trigger
             id:

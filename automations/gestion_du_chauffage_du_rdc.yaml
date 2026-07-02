@@ -206,10 +206,14 @@ actions:
             data: {}
             target:
               entity_id: input_boolean.chauffage_horsgel_rdc
-          - action: script.notification_mail
+          - action: script.turn_on
+            target:
+              entity_id:
+                - script.notification_mail
             data:
-              message_type: Chauffage RDC
-              message_mail: "{{ states('input_select.chauffage_mode_rdc') }}"
+              variables:
+                message_type: Chauffage RDC
+                message_mail: "{{ states('input_select.chauffage_mode_rdc') }}"
         note: >-
           HorsGel RDC désactivé → met à jour le flag, envoie mail avec le
           nouveau mode
@@ -226,10 +230,14 @@ actions:
             data: {}
             target:
               entity_id: input_boolean.chauffage_horsgel_rdc
-          - action: script.notification_mail
+          - action: script.turn_on
+            target:
+              entity_id:
+                - script.notification_mail
             data:
-              message_type: Chauffage RDC
-              message_mail: HorsGel
+              variables:
+                message_type: Chauffage RDC
+                message_mail: HorsGel
         note: HorsGel RDC activé → met à jour le flag, envoie mail HorsGel
   - sequence:
       - if:

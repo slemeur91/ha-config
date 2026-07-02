@@ -1,0 +1,86 @@
+alias: Notification du Portier
+description: >-
+  **Statut :** Finalisé | **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Sonnette du portier (`binary_sensor.exterieur_slm_portier_visiteur` → on) —
+  **actif**
+
+  - Présence devant le portier (`binary_sensor.exterieur_slm_portier_personne` →
+  on) — désactivé
+
+  - Mouvement devant le portier
+  (`binary_sensor.exterieur_slm_portier_mouvement_2`) — désactivé
+
+
+  **Fonctionnement :**
+
+  1. Selon le déclencheur, compose la variable `message_portier` : "Appuis sur
+  la sonnette", "Présence devant le portier" ou "Mouvement devant le portier".
+
+  2. Appelle `script.notification_snapshot_du_portier` via `script.turn_on`
+  (fire-and-forget) avec le type et le message.
+
+
+  **Entités utilisées :** `binary_sensor.exterieur_slm_portier_visiteur`,
+  `binary_sensor.exterieur_slm_portier_personne`,
+  `binary_sensor.exterieur_slm_portier_mouvement_2`,
+  `script.notification_snapshot_du_portier`
+triggers:
+  - trigger: state
+    entity_id:
+      - binary_sensor.exterieur_slm_portier_visiteur
+    to:
+      - "on"
+    id: Sonette
+  - trigger: state
+    entity_id:
+      - binary_sensor.exterieur_slm_portier_personne
+    to:
+      - "on"
+    id: Détéction
+    enabled: false
+  - trigger: motion.detected
+    target:
+      entity_id:
+        - binary_sensor.exterieur_slm_portier_mouvement_2
+    options:
+      behavior: each
+      for: "00:00:00"
+    id: Mouvement
+    enabled: false
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - Sonette
+        sequence:
+          - variables:
+              message_portier: Appuis sur la sonnette
+      - conditions:
+          - condition: trigger
+            id:
+              - Détéction
+        sequence:
+          - variables:
+              message_portier: Présence devant le portier
+      - conditions:
+          - condition: trigger
+            id:
+              - Mouvement
+        sequence:
+          - variables:
+              message_portier: Mouvement devant le portier
+  - action: script.turn_on
+    target:
+      entity_id:
+        - script.notification_snapshot_du_portier
+    data:
+      variables:
+        message_type: Portier
+        message_mail: "{{ message_portier }}"
+mode: single

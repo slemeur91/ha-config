@@ -1,0 +1,59 @@
+alias: Notification Snapshot du Portier
+description: >-
+  **Statut :** Finalisé | **Evolution :** Aucune
+
+
+  **Rôle :** Capture un snapshot du portier et l'envoie par mail avec le message
+  et le type fournis en paramètres.
+
+
+  **Paramètres :**
+
+  - `message_type` : type du message (ex : "Portier")
+
+  - `message_mail` : corps du message (ex : "Appuis sur la sonnette")
+
+
+  **Fonctionnement :**
+
+  1. Capture une image de `camera.slm_portier` dans
+  `/config/www/Snapshots/portier.jpg`.
+
+  2. Envoie un mail `[HA] {{ message_type }}` avec l'image en pièce jointe et le
+  message en corps.
+
+
+  **Entités utilisées :** `camera.slm_portier`
+sequence:
+  - action: camera.snapshot
+    target:
+      entity_id:
+        - camera.exterieur_slm_portier
+    data:
+      filename: /config/www/Snapshots/portier.jpg
+  - note: Envoie de la capture du portier en pièces jointes par mail [HA] Portier
+    action: notify.email
+    metadata: {}
+    data:
+      message: "{{ message_mail }}"
+      title: |
+        [HA] {{ message_type }}
+      target: slemeur@slm-srv.dscloud.me
+      data:
+        images:
+          - /config/www/Snapshots/portier.jpg
+mode: queued
+max: 10
+fields:
+  message_type:
+    description: "Type du message (ex : \"Portier\")"
+    example: Portier
+    required: true
+    selector:
+      text: null
+  message_mail:
+    description: "Corps du message (ex : \"Appuis sur la sonnette\")"
+    example: Appuis sur la sonnette
+    required: true
+    selector:
+      text: null

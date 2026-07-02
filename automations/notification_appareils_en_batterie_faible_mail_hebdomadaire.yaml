@@ -43,8 +43,12 @@ actions:
         {% for device in low_battery_devices -%}
           - {{ device.name }} à {{ device.battery_level | int }}% : {{ device.battery_type_and_quantity }}
         {% endfor %}
-  - action: script.notification_mail
+  - action: script.turn_on
+    target:
+      entity_id:
+        - script.notification_mail
     data:
-      message_type: Batteries
-      message_mail: "{{ message_mail }}"
+      variables:
+        message_type: Batteries
+        message_mail: "{{ message_mail }}"
 mode: restart

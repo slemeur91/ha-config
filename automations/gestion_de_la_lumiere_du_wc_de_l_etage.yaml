@@ -1,0 +1,74 @@
+alias: Gestion de la Lumière du WC de l'Etage
+description: >-
+  **Statut :** Finalisé | **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Changement de `binary_sensor.presence_dans_le_wc_de_l_etage_presence`
+  (on/off)
+
+
+  **Fonctionnement :**
+
+  1. Présence détectée → allume `light.lumiere_du_wc_de_letage` : 50 % en
+  période sombre, 80 % en période lumineuse.
+
+  2. Absence détectée → éteint `light.lumiere_du_wc_de_letage`.
+
+
+  **Entités utilisées :**
+  `binary_sensor.presence_dans_le_wc_de_l_etage_presence`,
+  `light.lumiere_du_wc_de_letage`
+triggers:
+  - trigger: state
+    entity_id:
+      - binary_sensor.presence_dans_le_wc_de_l_etage_presence
+    to:
+      - "on"
+      - "off"
+    enabled: true
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: occupancy.is_detected
+            target:
+              entity_id: binary_sensor.presence_dans_le_wc_de_l_etage_presence
+            options:
+              behavior: any
+              for: "00:00:00"
+        sequence:
+          - if:
+              - condition: sun
+                before: sunrise
+                before_offset: "1800"
+                after: sunset
+                after_offset: "-1800"
+            then:
+              - action: light.turn_on
+                target:
+                  entity_id: light.lumiere_du_wc_de_letage
+                data:
+                  brightness_step_pct: 50
+                enabled: true
+            else:
+              - action: light.turn_on
+                target:
+                  entity_id: light.lumiere_du_wc_de_letage
+                data:
+                  brightness_step_pct: 80
+      - conditions:
+          - condition: occupancy.is_not_detected
+            target:
+              entity_id: binary_sensor.presence_dans_le_wc_de_l_etage_presence
+            options:
+              behavior: any
+              for: "00:00:00"
+        sequence:
+          - action: light.turn_off
+            target:
+              entity_id:
+                - light.lumiere_du_wc_de_letage
+            data: {}
+mode: single

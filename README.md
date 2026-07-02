@@ -10,9 +10,9 @@
 | Entités totales | 2 156 |
 | Domaines (types d'entités) | 43 |
 | Zones / Pièces | 23 |
-| Appareils connectés | **195** |
-| Automatisations | **49** |
-| Scripts | **18** |
+| Appareils connectés | **197** |
+| Automatisations | **53** |
+| Scripts | **19** |
 | Blueprints | **2** |
 | Modules complémentaires (Add-ons) | **17** |
 | Intégrations HACS | **20** |
@@ -33,36 +33,36 @@
 
 ---
 
-### 🔌 Appareils par technologie (195)
+### 🔌 Appareils par technologie (197)
 
 | Technologie | Appareils | Mode | Détail |
 |---|---|---|---|
 | Z-Wave | **25** | ✅ Local | [→ Détail](docs/appareils/zwave.md) |
-| Zigbee | **20** | ✅ Local | [→ Détail](docs/appareils/zigbee.md) |
+| Zigbee | **22** | ✅ Local | [→ Détail](docs/appareils/zigbee.md) |
 | EnOcean | **4** | ✅ Local | [→ Détail](docs/appareils/enocean.md) |
 | Intégrations (WiFi, Ethernet RJ45 & Autres) | **145** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/integrations.md) |
 | Thread / Matter | **1** | ✅ Local | [→ Détail](docs/appareils/matter.md) |
 
 ---
 
-## 🤖 Automations (49)
+## 🤖 Automations (53)
 
 
 | Catégorie | Nb | Détail |
 |---|---|---|
 | Alarme | 3 | [→ Détail](docs/automations/alarme.md) |
-| Automatisation | 11 | [→ Détail](docs/automations/automatisation.md) |
+| Automatisation | 10 | [→ Détail](docs/automations/automatisation.md) |
 | Corrections | 3 | [→ Détail](docs/automations/corrections.md) |
 | HiFi | 3 | [→ Détail](docs/automations/hifi.md) |
-| Lumières | 5 | [→ Détail](docs/automations/lumieres.md) |
-| Notifications | 8 | [→ Détail](docs/automations/notifications.md) |
+| Lumières | 8 | [→ Détail](docs/automations/lumieres.md) |
+| Notifications | 10 | [→ Détail](docs/automations/notifications.md) |
 | Surveillance HA | 4 | [→ Détail](docs/automations/surveillance_ha.md) |
 | Volets | 12 | [→ Détail](docs/automations/volets.md) |
 
 ### Résumé des automations actives
 
 <details>
-<summary>Voir la liste complète (49) — triée par catégorie puis alphabétiquement</summary>
+<summary>Voir la liste complète (53) — triée par catégorie puis alphabétiquement</summary>
 
 #### Alarme
 | Alias | Entity ID | Résumé |
@@ -76,7 +76,6 @@
 |---|---|---|
 | GAZPAR – Mise à jour statistiques journalières | `automation.gazpar_mise_a_jour_statistiques_journalieres` | Injecte les données gaz dans les statistiques HA |
 | Gestion de l'activation de l'Arrosage | `automation.gestion_de_l_activation_de_l_arrosage` | Ouvre/ferme la vanne selon le timer et la pluviométrie |
-| Gestion de la Boîte aux Lettres | `automation.gestion_de_la_boite_aux_lettres` | Détecte dépôt courrier/colis via capteur P100 |
 | Gestion de la Présence dans les Pièces | `automation.gestion_de_la_presence_dans_les_pieces` | Met à jour la présence par pièce via capteurs Aqara FP2 |
 | Gestion de la Qualité de l'Air | `automation.gestion_de_la_qualite_de_l_air` | Active les purificateurs selon PM2.5/PM10/VOC/NO2 |
 | Gestion du Chauffage de l'Etage | `automation.gestion_du_chauffage_de_l_etage` | Pilote les 5 thermostats Z-Wave de l'étage |
@@ -104,6 +103,9 @@
 | Alias | Entity ID | Résumé |
 |---|---|---|
 | Gestion de la lumière du Garage | `automation.gestion_de_la_lumiere_du_garage` | Allume la lumière à l'ouverture de la porte si sombre |
+| Gestion de la Lumière de l'Entrée | `automation.gestion_de_la_lumiere_de_l_entree` | Allume l'extérieur si sombre lors d'un appui sonnette/présence portier |
+| Gestion de la Lumière du WC de l'Étage | `automation.gestion_de_la_lumiere_du_wc_de_l_etage` | Allume/éteint la lumière WC étage selon la présence |
+| Gestion de la Lumière du WC du RDC | `automation.gestion_de_la_lumiere_du_wc_du_rdc` | Allume/éteint la lumière WC RDC selon la présence |
 | Gestion du Bouton Hue Central Droit | `automation.gestion_du_bouton_hue_central_droit` | Appuis longs : contrôle HiFi et SONOS |
 | Gestion du Bouton Hue Central Gauche | `automation.gestion_du_bouton_hue_central_gauche` | Appuis longs : contrôle HiFi et SONOS |
 | Gestion du Bouton Hue de l'Entrée | `automation.gestion_du_bouton_hue_de_l_entree` | En cours d'affectation |
@@ -118,8 +120,10 @@
 | Notification de batterie remplacée | `automation.notification_de_batterie_remplacee` | Suggestion de marquer une batterie comme remplacée |
 | Notification de défaut du réfrigérateur | `automation.notification_de_defaut_du_refrigerateur` | Alerte si températures frigo/congélateur hors plage |
 | Notification de l'Horloge | `automation.notification_de_l_horloge` | Annonce vocale de l'heure toutes les heures |
+| Notification de la Boîte aux Lettres | `automation.notification_de_la_boite_aux_lettres` | Détecte dépôt courrier/colis via capteur P100 |
 | Notification des Alertes | `automation.gestion_des_alertes` | Détecte et notifie fuites, fumées, serveurs, brouillage |
 | Notification des Poubelles | `automation.notification_des_poubelles` | Rappels vocaux et SMS pour sortir/rentrer les poubelles |
+| Notification du Portier | `automation.notification_du_portier` | Notifie par snapshot mail lors d'un appui sonnette/présence portier |
 
 #### Surveillance HA
 | Alias | Entity ID | Résumé |
@@ -153,7 +157,7 @@
 
 ---
 
-## 📜 Scripts (18)
+## 📜 Scripts (19)
 
 [Voir la documentation complète →](docs/scripts.md)
 
@@ -171,7 +175,8 @@
 | `notification_ha` | Notification persistante Home Assistant |
 | `notification_mail` | Envoi mail |
 | `notification_sms` | Envoi Telegram |
-| `notification_snapshot` | Captures caméras par mail |
+| `notification_snapshot_du_portier` | Snapshot portier par mail |
+| `notification_snapshot_des_cameras` | Captures 8 caméras par mail |
 | `notification_vocale` | TTS SONOS multi-mode |
 | `reload_pyscript` | Recharge l'intégration pyscript |
 | `sonos_radio_sur_la_suite_parentale` | Radio Suite parentale avec sélection horaire |

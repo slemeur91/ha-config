@@ -1,4 +1,4 @@
-# Automatisation (11)
+# Automatisation (10)
 
 [← Retour README](../../README.md)
 
@@ -45,26 +45,6 @@
 
 ---
 
-## `automation.gestion_de_la_boite_aux_lettres` — Gestion de la Boîte aux Lettres
-> [📄 Voir le YAML](../../automations/gestion_de_la_boite_aux_lettres.yaml)
-
-**Statut :** En production | **Evolution :** Aucune
-
-**Déclencheurs :**
-- Changement de `sensor.p100_boite_aux_lettres_device_posture`
-
-**Fonctionnement :**
-1. `input_boolean.courrier_en_attente` ON → désactive le flag, compose "boîte vidée".
-2. Flag OFF → active le flag, compose "colis/courrier déposé".
-3. Envoie mail + SMS.
-
-**Entrées utilisées :**
-
-| Entrée | Type | Config |
-|---|---|---|
-| `input_boolean.courrier_en_attente` | input_boolean | on/off |
-
----
 
 ## `automation.gestion_de_la_presence_dans_les_pieces` — Gestion de la Présence dans les Pièces
 > [📄 Voir le YAML](../../automations/gestion_de_la_presence_dans_les_pieces.yaml)

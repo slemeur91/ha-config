@@ -610,16 +610,25 @@ actions:
       - condition: template
         value_template: "{{ message_alerte != null }}"
     then:
-      - action: script.notification_vocale
+      - action: script.turn_on
+        target:
+          entity_id: script.notification_vocale
         data:
-          message_vocal: "{{ message_alerte }}"
-      - action: script.notification_mail
+          variables:
+            message_vocal: "{{ message_alerte }}"
+      - action: script.turn_on
+        target:
+          entity_id: script.notification_mail
         data:
-          message_type: Alerte
-          message_mail: "{{ message_alerte }}"
-      - action: script.notification_sms
+          variables:
+            message_type: Alerte
+            message_mail: "{{ message_alerte }}"
+      - action: script.turn_on
+        target:
+          entity_id: script.notification_sms
         data:
-          message_type: Alerte
-          message_sms: "{{ message_alerte }}"
+          variables:
+            message_type: Alerte
+            message_sms: "{{ message_alerte }}"
 mode: queued
 max: 10

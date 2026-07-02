@@ -73,7 +73,10 @@ actions:
       - variables:
           message_vocal: Il est {{ now().hour }} heure
         note: Autre heure → message générique 'Il est X heure' (X = heure courante)
-  - action: script.notification_vocale
+  - action: script.turn_on
+    target:
+      entity_id: script.notification_vocale
     data:
-      message_vocal: "{{ message_vocal }}"
+      variables:
+        message_vocal: "{{ message_vocal }}"
 mode: restart

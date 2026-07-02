@@ -287,10 +287,14 @@ actions:
             data: {}
             target:
               entity_id: input_boolean.chauffage_horsgel_etage
-          - action: script.notification_mail
+          - action: script.turn_on
+            target:
+              entity_id:
+                - script.notification_mail
             data:
-              message_type: Chauffage Etage
-              message_mail: "{{ states('input_select.chauffage_mode_etage') }}"
+              variables:
+                message_type: Chauffage Etage
+                message_mail: "{{ states('input_select.chauffage_mode_etage') }}"
         note: >-
           HorsGel étage désactivé → met à jour le flag, envoie mail avec le
           nouveau mode
@@ -308,10 +312,15 @@ actions:
             data: {}
             target:
               entity_id: input_boolean.chauffage_horsgel_etage
-          - action: script.notification_mail
+          - action: script.turn_on
+            target:
+              entity_id:
+                - script.notification_vocale
+                - script.notification_mail
             data:
-              message_type: Chauffage Etage
-              message_mail: HorsGel
+              variables:
+                message_type: Chauffage Etage
+                message_mail: HorsGel
         note: HorsGel étage activé → met à jour le flag, envoie mail HorsGel
   - sequence:
       - action: counter.reset

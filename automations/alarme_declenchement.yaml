@@ -68,16 +68,28 @@ actions:
             target:
               entity_id: counter.compteur_alarme
           - parallel:
-              - action: script.notification_vocale
-                data: {}
-              - action: script.notification_mail
+              - action: script.turn_on
+                target:
+                  entity_id: script.notification_vocale
                 data:
-                  message_type: Alerte
-                  message_mail: Déclenchement de l'alarme
-              - action: script.notification_sms
+                  variables:
+                    message_vocal: Déclenchement de l'alarme
+              - action: script.turn_on
+                target:
+                  entity_id:
+                    - script.notification_mail
                 data:
-                  message_type: Alerte
-                  message_sms: Déclenchement de l'alarme
+                  variables:
+                    message_type: Alerte
+                    message_mail: Déclenchement de l'alarme
+              - action: script.turn_on
+                target:
+                  entity_id:
+                    - script.notification_sms
+                data:
+                  variables:
+                    message_type: Alerte
+                    message_sms: Déclenchement de l'alarme
           - action: pyscript.surveillance_station_recording
             data:
               actionRecord: start
@@ -94,7 +106,10 @@ actions:
                 - select.slm_camera1_mode_enregistrement
                 - select.slm_camera2_mode_enregistrement
                 - select.slm_camera4_mode_enregistrement
-          - action: script.notification_snapshot
+          - action: script.turn_on
+            target:
+              entity_id:
+                - script.notification_snapshot_des_cameras
             data: {}
         note: >-
           Déclenchement initial → reset compteur, SMS+mail+vocal, caméras 1/2/4
@@ -111,19 +126,34 @@ actions:
                   - armed_away
                   - armed_night
         sequence:
-          - action: script.notification_snapshot
+          - action: script.turn_on
+            target:
+              entity_id:
+                - script.notification_snapshot_des_cameras
             data: {}
           - parallel:
-              - action: script.notification_vocale
-                data: {}
-              - action: script.notification_mail
+              - action: script.turn_on
+                target:
+                  entity_id: script.notification_vocale
                 data:
-                  message_type: Alerte
-                  message_mail: Fin de l'alerte du déclenchement de l'alarme
-              - action: script.notification_sms
+                  variables:
+                    message_vocal: Fin de l'alerte du déclenchement de l'alarme
+              - action: script.turn_on
+                target:
+                  entity_id:
+                    - script.notification_mail
                 data:
-                  message_type: Alerte
-                  message_sms: Fin de l'alerte du déclenchement de l'alarme
+                  variables:
+                    message_type: Alerte
+                    message_mail: Fin de l'alerte du déclenchement de l'alarme
+              - action: script.turn_on
+                target:
+                  entity_id:
+                    - script.notification_sms
+                data:
+                  variables:
+                    message_type: Alerte
+                    message_sms: Fin de l'alerte du déclenchement de l'alarme
           - if:
               - condition: state
                 entity_id: alarm_control_panel.alarme
@@ -157,7 +187,10 @@ actions:
         note: >-
           Timer en cours (compteur ≤ 8) → incrémente le compteur, envoie
           snapshot, relance le timer pour 1 minute supplémentaire
-      - action: script.notification_snapshot
+      - action: script.turn_on
+        target:
+          entity_id:
+            - script.notification_snapshot_des_cameras
         data: {}
       - action: timer.start
         metadata: {}

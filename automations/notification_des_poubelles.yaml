@@ -101,13 +101,19 @@ actions:
       - condition: template
         value_template: "{{ message_poubelle != null }}"
     then:
-      - action: script.notification_vocale
+      - action: script.turn_on
+        target:
+          entity_id: script.notification_vocale
         data:
-          message_vocal: "{{ message_poubelle }}"
-      - action: script.notification_sms
+          variables:
+            message_vocal: "{{ message_poubelle }}"
+      - action: script.turn_on
+        target:
+          entity_id: script.notification_sms
         data:
-          message_type: Information
-          message_sms: "{{ message_poubelle }}"
+          variables:
+            message_type: Information
+            message_sms: "{{ message_poubelle }}"
       - action: input_select.select_option
         metadata: {}
         target:

@@ -50,7 +50,11 @@ triggers:
 conditions: []
 actions:
   - parallel:
-      - if:
+      - note: >-
+          Logique calendrier → si trigger alarme: maintient Absent ou bascule
+          Repos ; sinon: interroge calendar.agenda et positionne le mode selon
+          mots-clés (Absent/TéléTravail/ARTT/Congé/Repos/Travail)
+        if:
           - condition: trigger
             id:
               - Désactivation Alarme
@@ -225,14 +229,14 @@ actions:
                     - input_select.calendrier
                     - input_select.chauffage_action
                     - input_select.calendrier_action
-          - action: script.notification_mail
+          - action: script.turn_on
+            target:
+              entity_id:
+                - script.notification_mail
             data:
-              message_type: Information
-              message_mail: "{{ states('input_select.calendrier') }}"
-        note: >-
-          Logique calendrier → si trigger alarme: maintient Absent ou bascule
-          Repos ; sinon: interroge calendar.agenda et positionne le mode selon
-          mots-clés (Absent/TéléTravail/ARTT/Congé/Repos/Travail)
+              variables:
+                message_type: Information
+                message_mail: "{{ states('input_select.calendrier') }}"
       - if:
           - condition: or
             conditions:

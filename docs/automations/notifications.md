@@ -1,4 +1,4 @@
-# Notifications (8)
+# Notifications (10)
 
 [← Retour README](../../README.md)
 
@@ -151,3 +151,41 @@
 | Entrée | Type | Config |
 |---|---|---|
 | `input_select.poubelles` | input_select | Sortir Marron, Rentrer Marron, Sortir Jaune, Rentrer Jaune, Sortir Verte, Rentrer Verte, Aucune |
+
+---
+
+## `automation.notification_du_portier` — Notification du Portier
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- Sonnette du portier (`binary_sensor.exterieur_slm_portier_visiteur` → on) — **actif**
+- Présence devant le portier (`binary_sensor.exterieur_slm_portier_personne` → on) — désactivé
+- Mouvement devant le portier (`binary_sensor.exterieur_slm_portier_mouvement_2`) — désactivé
+
+**Fonctionnement :**
+1. Selon le déclencheur, compose la variable `message_portier` : "Appuis sur la sonnette", "Présence devant le portier" ou "Mouvement devant le portier".
+2. Appelle `script.notification_snapshot_du_portier` via `script.turn_on` (fire-and-forget) avec le type et le message.
+
+**Entités utilisées :** `binary_sensor.exterieur_slm_portier_visiteur`, `binary_sensor.exterieur_slm_portier_personne`, `binary_sensor.exterieur_slm_portier_mouvement_2`, `script.notification_snapshot_du_portier`
+
+---
+
+## `automation.notification_de_la_boite_aux_lettres` — Notification de la Boîte aux Lettres
+> [📄 Voir le YAML](../../automations/gestion_de_la_boite_aux_lettres.yaml)
+
+**Statut :** En production | **Evolution :** Aucune
+
+**Déclencheurs :**
+- Changement de `sensor.p100_boite_aux_lettres_device_posture`
+
+**Fonctionnement :**
+1. `input_boolean.courrier_en_attente` ON → désactive le flag, compose "boîte vidée".
+2. Flag OFF → active le flag, compose "colis/courrier déposé".
+3. Envoie mail + SMS.
+
+**Entrées utilisées :**
+
+| Entrée | Type | Config |
+|---|---|---|
+| `input_boolean.courrier_en_attente` | input_boolean | on/off |

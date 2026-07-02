@@ -1,4 +1,4 @@
-# 📜 Scripts (18)
+# 📜 Scripts (19)
 
 [← Retour README](../README.md)
 
@@ -271,18 +271,35 @@
 
 ---
 
-### `script.notification_snapshot` — Notification Snapshot
-> [📄 Voir le YAML](../scripts/notification_snapshot.yaml)
+### `script.notification_snapshot_du_portier` — Notification Snapshot du Portier
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Capture et envoi par mail des images de 6 caméras lors d'une alerte.
+**Rôle :** Capture un snapshot du portier et l'envoie par mail avec le message et le type fournis en paramètres.
+
+**Paramètres :**
+- `message_type` : type du message (ex : "Portier")
+- `message_mail` : corps du message (ex : "Appuis sur la sonnette")
 
 **Fonctionnement :**
-1. Capture en parallèle les caméras 1, 2, 3, 4, 6 et le portier.
-2. Envoie un mail avec toutes les images en pièces jointes.
+1. Capture une image de `camera.exterieur_slm_portier` dans `/config/www/Snapshots/portier.jpg`.
+2. Envoie un mail `[HA] {{ message_type }}` avec l'image en pièce jointe et le message en corps.
 
-**Entités utilisées :** `camera.slm_camera1` à `camera.slm_camera6`, `camera.slm_portier`
+**Entités utilisées :** `camera.exterieur_slm_portier`
+
+---
+
+### `script.notification_snapshot_des_cameras` — Notification Snapshot des Caméras
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Capture les images des 7 caméras et du portier, et les envoie par mail en cas d'alerte.
+
+**Fonctionnement :**
+1. Capture en parallèle les caméras `slm_camera1` à `slm_camera7` et `slm_portier` (8 snapshots, dans `/config/www/Snapshots/`).
+2. Envoie un mail `[HA] Alerte` avec toutes les images en pièces jointes.
+
+**Entités utilisées :** `camera.slm_camera1` à `camera.slm_camera7`, `camera.slm_portier`
 
 ---
 

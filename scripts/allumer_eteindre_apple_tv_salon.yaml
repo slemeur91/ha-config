@@ -14,17 +14,20 @@ description: >-
 
   **Fonctionnement :**
 
-  1. `action: "off"` → envoie la commande `suspend` (seule méthode fiable testée
-  pour éteindre cet appareil).
+  1. Recharge l'intégration, puis attend (jusqu'à 20s) que
+  `remote.apple_tv_du_salon` repasse à "on" (= connexion pyatv rétablie) au lieu
+  d'un délai fixe.
 
-  2. `action: "on"` → recharge l'intégration
-  (`homeassistant.reload_config_entry` sur `remote.apple_tv_du_salon`), attend 8
-  s, puis appelle `media_player.turn_on` (branche de repli désactivée par défaut
-  qui réessaie 6 fois avec 5 s entre chaque tentative).
+  2. action "off" → envoie "suspend" via remote.send_command (contourne le garde
+  power_state de media_player.turn_off), puis vérifie que media_player passe à
+  "off".
 
-  3. Erreur ignorée (`continue_on_error`) : ce script est lancé en tâche de fond
-  via `script.turn_on` afin qu'un échec ponctuel (ex: "Command _hidC failed")
-  n'interrompe jamais l'automatisation appelante.
+  3. action "on" → envoie "wakeup" via remote.send_command (contourne le garde
+  FeatureName.TurnOn de media_player.turn_on), puis vérifie que media_player
+  quitte l'état "off".
+
+  4. Si l'état attendu n'est pas atteint, une entrée logbook est créée pour
+  rendre l'échec visible (au lieu d'un échec totalement silencieux).
 
 
   **Entités principales :**
@@ -35,6 +38,14 @@ description: >-
 mode: queued
 max: 5
 sequence:
+  - action: homeassistant.reload_config_entry
+    target:
+      entity_id: remote.apple_tv_du_salon
+    data: {}
+  - wait_template: "{{ is_state('remote.apple_tv_du_salon', 'on') }}"
+    timeout:
+      seconds: 20
+    continue_on_timeout: true
   - choose:
       - conditions:
           - condition: template
@@ -46,103 +57,33 @@ sequence:
             data:
               command: suspend
             continue_on_error: true
-            enabled: true
+          - wait_template: "{{ is_state('media_player.apple_tv_du_salon', 'off') }}"
+            timeout:
+              seconds: 15
+            continue_on_timeout: true
       - conditions:
           - condition: template
             value_template: "{{ action == \"on\" }}"
         sequence:
           - action: media_player.turn_on
+            continue_on_error: true
             metadata: {}
             data: {}
             target:
               entity_id: media_player.apple_tv_du_salon
-            enabled: false
-            continue_on_error: true
-          - action: remote.send_command
-            target:
-              entity_id: remote.apple_tv_du_salon
-            data:
-              command: wakeup
-            enabled: false
-          - sequence:
-              - action: homeassistant.reload_config_entry
-                metadata: {}
-                data: {}
-                target:
-                  entity_id: remote.apple_tv_du_salon
-              - delay:
-                  hours: 0
-                  minutes: 0
-                  seconds: 8
-                  milliseconds: 0
-              - action: homeassistant.update_entity
-                metadata: {}
-                data:
-                  entity_id:
-                    - media_player.apple_tv_du_salon
-                enabled: false
-              - action: media_player.turn_on
-                continue_on_error: true
-                metadata: {}
-                data: {}
-                target:
-                  entity_id: media_player.apple_tv_du_salon
-            continue_on_error: true
-            enabled: true
-          - sequence:
-              - action: homeassistant.reload_config_entry
-                target:
-                  entity_id: remote.apple_tv_du_salon
-              - delay:
-                  seconds: 8
-              - repeat:
-                  count: 6
-                  sequence:
-                    - action: media_player.turn_on
-                      continue_on_error: true
-                      target:
-                        entity_id: media_player.apple_tv_du_salon
-                    - delay:
-                        seconds: 5
-                    - if:
-                        - condition: template
-                          value_template: >
-                            {{ not is_state('media_player.apple_tv_du_salon',
-                            'standby')
-                               and not is_state('media_player.apple_tv_du_salon', 'unavailable') }}
-                      then:
-                        - stop: Apple TV réveillée
-            enabled: false
-            continue_on_error: true
+          - wait_template: "{{ not is_state('media_player.apple_tv_du_salon', 'off') }}"
+            timeout:
+              seconds: 20
+            continue_on_timeout: true
+    continue_on_error: true
   - if:
-      - condition: and
-        conditions:
-          - condition: not
-            conditions:
-              - condition: state
-                entity_id: media_player.apple_tv_du_salon
-                state:
-                  - "off"
-                  - standby
-                  - unavailable
-            enabled: true
-          - condition: media_player.is_on
-            target:
-              device_id: 9d5e183d3174508e18e6e7345ed66e1d
-            options:
-              behavior: any
-            enabled: true
-          - condition: remote.is_on
-            target:
-              entity_id: remote.apple_tv_du_salon
-            options:
-              behavior: any
-              for: "00:00:00"
+      - condition: template
+        value_template: "{{ not wait.completed }}"
     then:
-      - action: remote.send_command
-        target:
-          entity_id: remote.apple_tv_du_salon
+      - action: logbook.log
         data:
-          command: suspend
-        continue_on_error: true
-    enabled: false
+          name: Apple TV du Salon
+          message: >-
+            Échec probable de la commande "{{ action }}" : l'état attendu n'a
+            pas été observé après reload + commande.
+          entity_id: remote.apple_tv_du_salon

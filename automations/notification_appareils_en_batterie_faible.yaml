@@ -44,17 +44,22 @@ actions:
             id:
               - low
         sequence:
-          - action: script.notification_ha
+          - action: script.turn_on
+            target:
+              entity_id:
+                - script.notification_ha
             data:
-              message_type: Batterie faible — {{ trigger.event.data.device_name }}
-              message_ha: >
-                L'appareil a un niveau de batterie de {{
-                trigger.event.data.battery_level }}% {{ '\n' -}} Il vous faut {{
-                trigger.event.data.battery_quantity }}× {{
-                trigger.event.data.battery_type }}
-              notification_id: >-
-                {{ trigger.event.data.device_id }}-{{
-                trigger.event.data.source_entity_id }}
+              variables:
+                message_type: Batterie faible — {{ trigger.event.data.device_name }}
+                message_ha: >
+                  L'appareil a un niveau de batterie de {{
+                  trigger.event.data.battery_level }}% {{ '\n' -}} Il vous faut
+                  {{ trigger.event.data.battery_quantity }}× {{
+                  trigger.event.data.battery_type }}
+                notification_id: >-
+                  {{ trigger.event.data.device_id }}-{{
+                  trigger.event.data.source_entity_id }}
+            enabled: true
         note: >-
           Batterie sous le seuil -> appelle script.notification_ha (Notification
           HA) avec le nom de l'appareil, niveau et type de pile requis

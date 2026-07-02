@@ -209,6 +209,9 @@ actions:
         - 3
         - 6
         - 7
+        - 8
+        - 5
+        - 10
   - action: select.select_option
     metadata: {}
     data:
@@ -219,6 +222,7 @@ actions:
         - select.slm_camera5_mode_enregistrement
         - select.slm_camera6_mode_enregistrement
         - select.slm_camera7_mode_enregistrement
+        - select.exterieur_slm_portier_mode_enregistrement_2
   - choose:
       - conditions:
           - condition: state

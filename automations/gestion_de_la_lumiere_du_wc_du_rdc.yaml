@@ -1,0 +1,55 @@
+alias: Gestion de la Lumière du WC du RDC
+description: >-
+  **Statut :** Finalisé | **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Changement de `binary_sensor.presence_dans_le_wc_du_rdc_presence` (on/off)
+
+
+  **Fonctionnement :**
+
+  1. Présence détectée → allume `light.lumiere_du_wc_du_rdc`.
+
+  2. Absence détectée → éteint `light.lumiere_du_wc_du_rdc`.
+
+
+  **Entités utilisées :** `binary_sensor.presence_dans_le_wc_du_rdc_presence`,
+  `light.lumiere_du_wc_du_rdc`
+triggers:
+  - trigger: state
+    entity_id:
+      - binary_sensor.presence_dans_le_wc_du_rdc_presence
+    to:
+      - "on"
+      - "off"
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: occupancy.is_detected
+            target:
+              entity_id: binary_sensor.presence_dans_le_wc_du_rdc_presence
+            options:
+              behavior: any
+              for: "00:00:00"
+        sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.lumiere_du_wc_du_rdc
+            data: {}
+      - conditions:
+          - condition: occupancy.is_not_detected
+            target:
+              entity_id: binary_sensor.presence_dans_le_wc_du_rdc_presence
+            options:
+              behavior: any
+              for: "00:00:00"
+        sequence:
+          - action: light.turn_off
+            target:
+              entity_id:
+                - light.lumiere_du_wc_du_rdc
+            data: {}
+mode: single

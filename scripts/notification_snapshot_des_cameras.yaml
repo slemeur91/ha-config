@@ -1,21 +1,27 @@
-alias: Notification Snapshot
+alias: Notification Snapshot des Caméras
 description: >-
-  **Statut :** Finalisé
-
-  **Evolution :** Aucune
+  **Statut :** Finalisé | **Evolution :** Aucune
 
 
-  **Rôle :** Capture les images de 6 caméras et les envoie par mail en cas
-  d'alerte.
+  **Rôle :** Capture les images des 7 caméras et du portier, et les envoie par
+  mail en cas d'alerte.
 
 
   **Fonctionnement :**
 
-  1. Prend en parallèle un snapshot des caméras 1, 2, 3, 4, 6 et du portier.
+  1. Capture en parallèle les caméras `slm_camera1` à `slm_camera7` et
+  `slm_portier` (8 snapshots, dans `/config/www/Snapshots/`).
 
-  2. Envoie un mail avec toutes les images en pièces jointes.
+  2. Envoie un mail `[HA] Alerte` avec toutes les images en pièces jointes.
+
+
+  **Entités utilisées :** `camera.slm_camera1` à `camera.slm_camera7`,
+  `camera.slm_portier`
 sequence:
-  - parallel:
+  - note: >-
+      Capture en parallèle les 7 caméras (slm_camera1 à slm_camera7 + portier)
+      dans /config/www/Snapshots/
+    parallel:
       - action: camera.snapshot
         target:
           entity_id:
@@ -43,32 +49,44 @@ sequence:
       - action: camera.snapshot
         target:
           entity_id:
+            - camera.slm_camera5
+        data:
+          filename: /config/www/Snapshots/camera5.jpg
+      - action: camera.snapshot
+        target:
+          entity_id:
             - camera.slm_camera6
         data:
           filename: /config/www/Snapshots/camera6.jpg
       - action: camera.snapshot
         target:
           entity_id:
-            - camera.slm_portier
+            - camera.slm_camera7
+        data:
+          filename: /config/www/Snapshots/camera7.jpg
+      - action: camera.snapshot
+        target:
+          entity_id:
+            - camera.exterieur_slm_portier
         data:
           filename: /config/www/Snapshots/portier.jpg
-    note: >-
-      Capture en parallèle les 6 caméras (slm-camera1/2/3/4/6 + portier) dans
-      /config/www/Snapshots/
-  - action: notify.email
+  - note: Envoie toutes les captures en pièces jointes par mail [HA] Alerte
+    action: notify.email
     metadata: {}
     data:
       title: |
         [HA] Alerte
-      target: votre-email@domaine.fr
+      target: slemeur@slm-srv.dscloud.me
       data:
         images:
           - /config/www/Snapshots/camera1.jpg
           - /config/www/Snapshots/camera2.jpg
           - /config/www/Snapshots/camera3.jpg
           - /config/www/Snapshots/camera4.jpg
+          - /config/www/Snapshots/camera5.jpg
           - /config/www/Snapshots/camera6.jpg
+          - /config/www/Snapshots/camera7.jpg
           - /config/www/Snapshots/portier.jpg
       message: "Snapshots des caméra :"
-    note: Envoie toutes les captures en pièces jointes par mail [HA] Alerte
-mode: restart
+mode: queued
+max: 10
