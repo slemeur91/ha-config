@@ -83,6 +83,7 @@
 ---
 
 ## `automation.gestion_de_la_lumiere_de_l_entree` — Gestion de la Lumière de l'Entrée
+> [📄 Voir le YAML](../../automations/gestion_de_la_lumiere_de_l_entree.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -101,6 +102,7 @@
 ---
 
 ## `automation.gestion_de_la_lumiere_du_wc_de_l_etage` — Gestion de la Lumière du WC de l'Étage
+> [📄 Voir le YAML](../../automations/gestion_de_la_lumiere_du_wc_de_l_etage.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -116,6 +118,7 @@
 ---
 
 ## `automation.gestion_de_la_lumiere_du_wc_du_rdc` — Gestion de la Lumière du WC du RDC
+> [📄 Voir le YAML](../../automations/gestion_de_la_lumiere_du_wc_du_rdc.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 

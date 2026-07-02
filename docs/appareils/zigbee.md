@@ -23,8 +23,8 @@
 
 | Nb | Fabricant | Modèle | Nom HA | Localisation | Documentation |
 |---|---|---|---|---|---|
-| 1 | Aqara | Presence sensor FP300 | Présence dans le WC de l'Étage | WC Étage | — |
-| 1 | Aqara | Presence sensor FP300 | Présence dans le WC du RDC | WC RDC | — |
+| 1 | Aqara | Presence sensor FP300 | Présence dans le WC de l'Étage | WC Étage | [📄 Manuel](../hardware/8298e7.pdf) |
+| 1 | Aqara | Presence sensor FP300 | Présence dans le WC du RDC | WC RDC | [📄 Manuel](../hardware/8298e7.pdf) |
 
 > IEEE : `0x54ef4410016dfa13` (Étage) / `0x54ef4410016df353` (RDC). FW `0.0.0_6542`, HW `1`. Capteur radar mmWave : présence (`binary_sensor.*_presence`), PIR (`binary_sensor.*_pir_detection`), température, humidité, luminosité, distance cible, sensibilité de détection, délai d'absence, portée de détection.
 
