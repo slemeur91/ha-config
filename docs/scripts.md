@@ -272,6 +272,7 @@
 ---
 
 ### `script.notification_snapshot_du_portier` — Notification Snapshot du Portier
+> [📄 Voir le YAML](../scripts/notification_snapshot_du_portier.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -290,6 +291,7 @@
 ---
 
 ### `script.notification_snapshot_des_cameras` — Notification Snapshot des Caméras
+> [📄 Voir le YAML](../scripts/notification_snapshot_des_cameras.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
