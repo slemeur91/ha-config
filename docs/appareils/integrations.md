@@ -33,6 +33,8 @@
 
 > 🏠 **Natif HA** — Intégration : **Bravia TV** (Sony) + **Apple TV**
 > 🔧 **HACS** — Intégration : **Hue Sync Box** — [GitHub](https://github.com/mvdwetering/huesyncbox)
+>
+> 💡 Le **Hue Gradient Lightstrip** est positionné derrière la télé et piloté par la **Hue Play HDMI Sync Box** : celle-ci analyse le flux HDMI en temps réel et synchronise les couleurs du bandeau avec l'image affichée, créant un effet **Ambilight** sur le mur.
 
 | Nb | Fabricant | Modèle | Localisation | Connexion | Intégration |
 |---|---|---|---|---|---|
