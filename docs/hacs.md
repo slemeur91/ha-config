@@ -4,7 +4,7 @@
 
 ---
 
-## Intégrations (20)
+## Intégrations (22)
 
 ### Alexa Media Player
 > [GitHub](https://github.com/alandtse/alexa_media_player) — `domain: alexa_media`
@@ -170,6 +170,13 @@ Home Assistant Community Store — gestionnaire de contenu communautaire.
 
 ---
 
+### Hue Sync Box
+> [GitHub](https://github.com/mvdwetering/huesyncbox) — `domain: huesyncbox`
+
+Intégration du Philips Hue Play HDMI Sync Box (synchronisation lumières/vidéo).
+
+---
+
 ### Local Agenda
 > [GitHub](https://github.com/slemeur91/local_agenda) — `domain: local_agenda`
 
@@ -277,6 +284,18 @@ Calendrier des vacances scolaires françaises.
 
 **Configuration :**
 - Zone : C (Île-de-France)
+
+---
+
+### WashData
+> [GitHub](https://github.com/3dg1luk43/ha_washdata) — `domain: ha_washdata`
+
+Suivi des cycles de lavage par analyse de consommation électrique.
+
+**Appareils configurés :**
+- Lave-vaisselle
+- Lave-linge
+- Sèche-linge
 
 ---
 

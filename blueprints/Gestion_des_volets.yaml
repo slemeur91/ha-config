@@ -145,7 +145,6 @@ action:
         sequence:
           - variables:
               pos_attendue: "{{ states(volet_attendu) }}"
-#              pos_reelle: "{{ state_attr('!input volet_target', 'current_position') | int(0) }}"
           - choose:
               - conditions:
                   - condition: template
@@ -194,8 +193,10 @@ action:
             target:
               entity_id: "{{ volet_attendu }}"
             data:
+#                {% if is_state(weather_alert, 'Rouge') and states('sensor.cheptainville_original_condition') in ['Averses orageuses', 'Orages'] %}Fermé
               option: >-
-                {% if is_state(weather_alert, 'Rouge') or is_state('input_select.domicile', 'Vacances') %}Fermé
+                {% if (is_state(weather_alert, 'Rouge') and states('sensor.cheptainville_original_condition') in ['Orage avec grêle', 'Risque de grêle', 'Averses de grêle']) or state_attr(weather_alert, 'Vent violent') in ['Rouge'] %}Fermé
+                {% elif is_state('input_select.domicile', 'Vacances') %}Fermé
                 {% elif as_timestamp(states('sensor.sun_next_midnight')) > as_timestamp(states('sensor.sun_next_dawn')) or as_timestamp(states('sensor.sun_next_midnight')) < as_timestamp(states('sensor.sun_next_dusk')) %}Fermé
                 {% elif volet_name_var == 'Bureau' and is_state('input_select.domicile', 'Présent') and is_state('input_select.calendrier', 'TéléTravail') %}Ouvert
                 {% elif is_state('input_select.volets_mode', 'Eté') %}

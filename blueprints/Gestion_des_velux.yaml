@@ -1,6 +1,24 @@
 blueprint:
   name: "Gestion du Velux - "
-  description: Contrôle intelligent d'un Velux selon la présence, le soleil, les alertes météo et la température.
+  description: |
+    **Contrôle intelligent d'un Velux selon la présence, le soleil, les alertes météo et la température.**
+
+    **Entités requises (doivent exister avant utilisation) :**
+    - `input_select.domicile` → Occupation du domicile (Présent/Nuit/Vacances/Absent).
+    - `input_select.volets_mode` → Mode chaud/froid (Été/Hiver).
+    - `sensor.91_weather_alert` → Alerte météo.
+    - `sensor.netatmo_exterieur_temperature` → Température extérieure.
+    - `input_button.volets_reactivation` → Réactivation manuelle globale.
+
+    **Fonctionnalités intégrées :**
+    1. **Fermeture conditionnelle** (absence, nuit en hiver, alerte météo, protection thermique).
+    2. **Dérogation 1h** (si le velux est ouvert manuellement, les fermetures automatiques sont bloquées pendant 1h).
+    3. **Réactivation manuelle** (bouton de fermeture forcée, réinitialise la dérogation).
+
+    **Helpers à créer par instance :**
+    - `input_boolean.velux_<nom>_derogation` (généré automatiquement depuis le nom)
+    - Un `timer` dédié (ex: `timer.velux_<nom>_timer`, durée 1h)
+
   domain: automation
   input:
     velux_name:
@@ -14,26 +32,32 @@ blueprint:
       description: Le velux à piloter.
       selector:
         entity:
-          domain: cover    
-    # Entités cibles
+          domain: cover
     chauffage_target:
       name: Chauffage
       description: Le chauffage de la pièce.
       selector:
         entity:
-          domain: climate    
-    # Entités bouton
+          domain: climate
+    # Entité bouton
     velux_button:
       name: Nom du bouton
-      description: Le bouton pour ferme le velux.
+      description: Le bouton pour fermer le velux.
       selector:
         entity:
-          domain: input_button    
+          domain: input_button
+    # Timer de dérogation
+    velux_timer:
+      name: Nom du velux_timer
+      description: "Le timer de dérogation du velux (configurer à 1h00)."
+      selector:
+        entity:
+          domain: timer
     # Températures
     temp_secondaire:
       name: "Température Intérieure Secondaire (optionnel)"
       description: "Optionnel : seconde sonde de température."
-      default: [] # Permet de laisser vide
+      default: []
       selector:
         entity:
           domain: sensor
@@ -48,18 +72,18 @@ blueprint:
 
 # Section Variables pour composer et figer les données techniques
 variables:
-  # Récupération du nom saisi
   velux_name_var: !input velux_name
   velux_target_var: !input velux_target
   chauffage_target_var: !input chauffage_target
-  # Detecteur de presence  
   presence_entite_var: !input presence_entite
   temp_secondaire_var: !input temp_secondaire
+  weather_alert: "sensor.91_weather_alert"
+  velux_derogation: "input_boolean.velux_{{ velux_name_var | slugify }}_derogation"
 
 mode: queued
 max: 10
 
-# --- Triggers (fusion des 3 automations) ---
+# --- Triggers ---
 trigger:
   # Déclencheurs principaux
   - platform: state
@@ -68,13 +92,13 @@ trigger:
       - input_select.volets_mode
       - sensor.91_weather_alert
 
-#  - platform: state
-#    entity_id:
-#      - sensor.sun_next_dawn
-#      - sensor.sun_next_dusk
-#    id: "Aube/Crépuscule"
+  - platform: state
+    entity_id:
+      - sensor.sun_next_dawn
+      - sensor.sun_next_dusk
+    id: "Aube/Crépuscule"
 
-  # Boutons de fermeture manuels
+  # Bouton de fermeture manuelle
   - platform: state
     entity_id: !input velux_button
     id: "Fermer"
@@ -83,7 +107,7 @@ trigger:
     entity_id: input_button.volets_reactivation
     id: "Réactivation"
 
-  # Triggers température simples — la logique de comparaison est dans l'action
+  # Triggers température — la logique de comparaison est dans l'action
   - platform: state
     entity_id: sensor.netatmo_exterieur_temperature
     id: "Température"
@@ -97,19 +121,72 @@ trigger:
     entity_id: !input temp_secondaire
     id: "Température"
 
+  # Dérogation — détection d'ouverture manuelle du velux
+  - platform: state
+    entity_id: !input velux_target
+    attribute: current_position
+    for: "00:01:00"
+    id: "velux_mouvement"
+
+  - platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: !input velux_timer
+    id: "velux_timer_finished"
+
 action:
 #  - service: system_log.write
 #    data:
 #      message: "Blueprint Velux : {{ trigger.id }} / {{ velux_name_var }}"
 #      level: warning
   - choose:
-      # Action manuelle ou réactivation
+      # --- 1. Timer de dérogation terminé → désactive la dérogation ---
+      - conditions:
+          - condition: trigger
+            id: "velux_timer_finished"
+        sequence:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: "{{ velux_derogation }}"
+
+      # --- 2. Mouvement du velux → dérogation 1h si ouvert, reset si fermé ---
+      - conditions:
+          - condition: trigger
+            id: "velux_mouvement"
+        sequence:
+          - if:
+              - condition: template
+                value_template: "{{ state_attr(velux_target_var, 'current_position') | int(0) > 5 }}"
+            then:
+              - action: input_boolean.turn_on
+                target:
+                  entity_id: "{{ velux_derogation }}"
+              - action: timer.start
+                data:
+                  duration: "01:00:00"
+                target:
+                  entity_id: !input velux_timer
+            else:
+              - action: input_boolean.turn_off
+                target:
+                  entity_id: "{{ velux_derogation }}"
+              - action: timer.cancel
+                target:
+                  entity_id: !input velux_timer
+
+      # --- 3. Fermeture manuelle ou réactivation → reset dérogation + ferme si absent ---
       - conditions:
           - condition: trigger
             id:
               - "Fermer"
               - "Réactivation"
         sequence:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: "{{ velux_derogation }}"
+          - action: timer.cancel
+            target:
+              entity_id: !input velux_timer
           - if:
               - condition: and
                 conditions:
@@ -122,49 +199,66 @@ action:
                 target:
                   entity_id: !input velux_target
 
-      # Alerte Rouge
+      # --- 4. Alerte Rouge (grêle ou vent violent) ---
       - conditions:
-          - condition: state
-            entity_id: sensor.91_weather_alert
-            state: Rouge
+          - condition: and
+            conditions:
+              - condition: template
+                value_template: "{{ is_state(velux_derogation, 'off') }}"
+              - condition: state
+                entity_id: sensor.91_weather_alert
+                state: Rouge
+              - condition: template
+                value_template: "{{ (is_state(weather_alert, 'Rouge') and states('sensor.cheptainville_original_condition') in ['Orage avec grêle', 'Risque de grêle', 'Averses de grêle']) or state_attr(weather_alert, 'Vent violent') in ['Rouge'] }}"
         sequence:
           - action: input_button.press
             target:
               entity_id: !input velux_button
 
-      # Vacances
+      # --- 5. Vacances / Absent ---
       - conditions:
-          - condition: template
-            value_template: "{{ states('input_select.domicile') in ['Vacances', 'Absent'] }}"
+          - condition: and
+            conditions:
+              - condition: template
+                value_template: "{{ is_state(velux_derogation, 'off') }}"
+              - condition: template
+                value_template: "{{ states('input_select.domicile') in ['Vacances', 'Absent'] }}"
         sequence:
           - action: input_button.press
             target:
               entity_id: !input velux_button
 
-      # Nuit (Logique Soleil)
+      # --- 6. Nuit en mode Hiver (Logique Soleil) ---
       - conditions:
           - condition: trigger
             id: "Aube/Crépuscule"
-          - condition: or
+          - condition: and
             conditions:
               - condition: template
-                value_template: >-
-                  {{ as_timestamp(states('sensor.sun_next_midnight')) >
-                  as_timestamp(states('sensor.sun_next_dawn')) }}
+                value_template: "{{ is_state(velux_derogation, 'off') }}"
               - condition: template
-                value_template: >-
-                  {{ as_timestamp(states('sensor.sun_next_midnight')) <
-                  as_timestamp(states('sensor.sun_next_dusk')) }}
+                value_template: "{{ is_state('input_select.volets_mode', 'Hiver') }}"
+              - condition: or
+                conditions:
+                  - condition: template
+                    value_template: >-
+                      {{ as_timestamp(states('sensor.sun_next_midnight')) >
+                      as_timestamp(states('sensor.sun_next_dawn')) }}
+                  - condition: template
+                    value_template: >-
+                      {{ as_timestamp(states('sensor.sun_next_midnight')) <
+                      as_timestamp(states('sensor.sun_next_dusk')) }}
         sequence:
           - action: input_button.press
             target:
               entity_id: !input velux_button
 
-      # Protection Thermique — trigger simple + conditions template dans l'action
-      # Les variables du blueprint (velux_target_var, temp_secondaire_var) sont bien résolues ici
+      # --- 7. Protection Thermique ---
       - conditions:
           - condition: trigger
             id: "Température"
+          - condition: template
+            value_template: "{{ is_state(velux_derogation, 'off') }}"
           - condition: template
             value_template: >-
               {% set ext = states('sensor.netatmo_exterieur_temperature') | float(0) %}

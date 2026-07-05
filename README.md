@@ -10,12 +10,12 @@
 | Entités totales | 2 156 |
 | Domaines (types d'entités) | 43 |
 | Zones / Pièces | 23 |
-| Appareils connectés | **197** |
+| Appareils connectés | **201** |
 | Automatisations | **53** |
 | Scripts | **19** |
 | Blueprints | **2** |
 | Modules complémentaires (Add-ons) | **17** |
-| Intégrations HACS | **20** |
+| Intégrations HACS | **22** |
 | Cartes Lovelace HACS | **9** |
 
 ---
@@ -33,14 +33,14 @@
 
 ---
 
-### 🔌 Appareils par technologie (197)
+### 🔌 Appareils par technologie (201)
 
 | Technologie | Appareils | Mode | Détail |
 |---|---|---|---|
 | Z-Wave | **25** | ✅ Local | [→ Détail](docs/appareils/zwave.md) |
 | Zigbee | **22** | ✅ Local | [→ Détail](docs/appareils/zigbee.md) |
 | EnOcean | **4** | ✅ Local | [→ Détail](docs/appareils/enocean.md) |
-| Intégrations (WiFi, Ethernet RJ45 & Autres) | **145** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/integrations.md) |
+| Intégrations (WiFi, Ethernet RJ45 & Autres) | **149** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/integrations.md) |
 | Thread / Matter | **1** | ✅ Local | [→ Détail](docs/appareils/matter.md) |
 
 ---

@@ -1,4 +1,4 @@
-# Intégrations (WiFi, Ethernet RJ45 & Autres) — 145 appareils
+# Intégrations (WiFi, Ethernet RJ45 & Autres) — 149 appareils
 
 [← Retour Appareils](../appareils.md)
 
@@ -29,9 +29,10 @@
 
 ---
 
-## Multimédia (4 appareils)
+## Multimédia (5 appareils)
 
 > 🏠 **Natif HA** — Intégration : **Bravia TV** (Sony) + **Apple TV**
+> 🔧 **HACS** — Intégration : **Hue Sync Box** — [GitHub](https://github.com/mvdwetering/huesyncbox)
 
 | Nb | Fabricant | Modèle | Localisation | Connexion | Intégration |
 |---|---|---|---|---|---|
@@ -39,6 +40,7 @@
 | 1 | Apple | Apple TV | Salon | 🔌 Ethernet (RJ45) | Apple TV |
 | 1 | Broadlink | RM4 Pro | Salon | 📶 WiFi | Broadlink |
 | 1 | Broadlink | RM4 Pro | Suite parentale | 📶 WiFi | Broadlink |
+| 1 | Philips | Hue Play HDMI Sync Box | Salon | 🔌 Ethernet (RJ45) | 🔧 HACS — Hue Sync Box |
 
 ---
 
@@ -59,6 +61,19 @@
 |---|---|---|---|---|---|
 | 2 | Roborock | Mi Robot Vacuum (rockrobo.vacuum.v1) | Étage, Bas | 📶 WiFi | 🏠 Natif HA (Xiaomi Miio) |
 | 1 | Husqvarna | Automower | Jardin | 📶 WiFi | 🏠 Natif HA |
+
+---
+
+## Électroménager — WashData (3 appareils)
+
+> 🔧 **HACS Communauté** — Intégration : **WashData** — [GitHub](https://github.com/3dg1luk43/ha_washdata)
+> Suivi des cycles de lavage par analyse de consommation électrique (via prises connectées).
+
+| Nb | Appareil | Nom HA |
+|---|---|---|
+| 1 | Lave-vaisselle | Lave vaisselle |
+| 1 | Lave-linge | Lave linge |
+| 1 | Sèche-linge | Sèche linge |
 
 ---
 
@@ -181,7 +196,7 @@
 | 1 | Synology | DVA1622 | slm-disk4 | Serveur NAS + Surveillance Station | 🏠 Natif HA — Synology DSM |
 | 1 | Ubiquiti | Cloud Gateway Fiber | — | Routeur | 🏠 Natif HA — UniFi Network |
 | 1 | Ubiquiti | U7 Pro | — | Point d'accès WiFi | 🏠 Natif HA — UniFi Network |
-| 1 | Ubiquiti | UNVR Instant | — | Enregistreur vidéo réseau | 🏠 Natif HA — UniFi Network |
+| 1 | Ubiquiti | UNVR Instant | — | Enregistreur vidéo réseau | 🏠 Natif HA — [UniFi Protect](https://www.home-assistant.io/integrations/unifiprotect/) |
 
 ---
 

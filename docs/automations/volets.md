@@ -10,24 +10,37 @@
 ### Gestion des Velux (3 instances)
 Blueprint : [`blueprints/Gestion_des_velux.yaml`](../../blueprints/Gestion_des_velux.yaml)
 
-Contrôle intelligent d'un Velux selon la présence, les alertes météo et la protection thermique.
+Contrôle intelligent d'un Velux selon la présence, les alertes météo, la protection thermique et la dérogation d'ouverture.
 
 **Déclencheurs :**
 - Changement de domicile, mode volets, alerte météo
+- Changement d'aube/crépuscule (`sensor.sun_next_dawn` / `sensor.sun_next_dusk`)
 - Bouton de fermeture manuelle ou `input_button.volets_reactivation`
 - Changement de température extérieure, du chauffage ou de la sonde secondaire
+- Changement de position du velux (pour détection d'ouverture manuelle)
+- Fin du timer de dérogation
 
 **Fonctionnement :**
-1. Fermeture manuelle / réactivation → ferme si absence et velux non fermé.
-2. Alerte météo Rouge → ferme le velux.
-3. Mode Vacances ou Absent → ferme le velux.
-4. Protection thermique → ferme si température extérieure > intérieure, ou intérieure < 19,5°C.
+1. Timer de dérogation terminé → désactive la dérogation.
+2. Mouvement détecté sur le velux → si position > 5 % : active la dérogation + démarre le timer 1h ; si fermé : désactive la dérogation + annule le timer.
+3. Fermeture manuelle / réactivation → reset dérogation + annule timer, puis ferme si absence et velux non fermé.
+4. Alerte météo Rouge (grêle ou vent violent) → ferme via bouton (si pas de dérogation).
+5. Mode Vacances ou Absent → ferme via bouton (si pas de dérogation).
+6. Nuit en mode Hiver → ferme via bouton (si pas de dérogation).
+7. Protection thermique → ferme si température extérieure > intérieure, ou intérieure < 19,5°C (si pas de dérogation).
+
+> La dérogation bloque toutes les fermetures automatiques pendant 1h dès qu'un velux est ouvert manuellement. Une fermeture via le bouton ou `volets_reactivation` réinitialise la dérogation.
 
 **Entités globales requises :**
 - `input_select.domicile` : Présent / Nuit / Absent / Vacances
-- `sensor.91_weather_alert` : alerte météo rouge
+- `input_select.volets_mode` : Été / Hiver
+- `sensor.91_weather_alert` : alerte météo
 - `sensor.netatmo_exterieur_temperature` : température extérieure
 - `input_button.volets_reactivation` : réactivation manuelle globale
+
+**Helpers à créer par instance :**
+- `input_boolean.velux_<nom>_derogation` : flag de dérogation (généré automatiquement depuis le nom)
+- `timer.velux_<nom>_timer` : timer de dérogation (durée 1h00)
 
 ### Gestion des Volets (9 instances)
 Blueprint : [`blueprints/Gestion_des_volets.yaml`](../../blueprints/Gestion_des_volets.yaml)
@@ -35,22 +48,32 @@ Blueprint : [`blueprints/Gestion_des_volets.yaml`](../../blueprints/Gestion_des_
 Pilote les volets selon le mode domicile, la météo, le soleil et la présence.
 
 **Déclencheurs :**
-- Changement de domicile, mode volets, alerte météo, soleil, capteur soleil, capteur porte
-- Fin de timer de dérogation
+- Changement de domicile, mode volets, alerte météo, capteur soleil, capteur porte
+- Changement de position du volet (pour détection de mouvement manuel)
+- Fin du timer de dérogation
 - Appui sur `input_button.volets_reactivation`
 
 **Fonctionnement :**
 1. Timer de dérogation terminé → désactive la dérogation.
-2. Mouvement détecté sur le volet → active/désactive la dérogation selon écart position attendue/réelle.
-3. Calcule la position attendue selon : alerte rouge → Fermé, vacances → Fermé, nuit → Fermé, mode Été/Hiver, ensoleillement, présence.
-4. Applique la position si la porte est fermée et pas de dérogation active.
+2. Mouvement détecté sur le volet (position stable 1 min) → si écart entre position réelle et attendue : active la dérogation + démarre le timer ; sinon désactive la dérogation + annule le timer.
+3. Calcule la position attendue :
+   - Alerte rouge (grêle ou vent violent) → Fermé
+   - Vacances → Fermé
+   - Nuit → Fermé
+   - Mode Été + soleil + protection solaire active + absent → Fermé ; sinon Ouvert
+   - Mode Hiver + soleil + pas Nuit → Ouvert ; si Présent + position_30 activée → Ouvert ; sinon Fermé
+4. Applique la position si porte fermée, pas de dérogation active, et (position = Fermé, OU alarme armée-absent, OU alarme désarmée avec absence/seul_a_la_maison).
+
+> L'ouverture automatique n'a lieu que si personne n'est présent dans la pièce (ou si `input_boolean.seul_a_la_maison` est actif). La fermeture s'applique toujours.
 
 **Entités globales requises :**
 - `input_select.domicile` : Présent / Nuit / Absent / Vacances
 - `input_select.volets_mode` : Été / Hiver
 - `input_boolean.volets_soleil` : activation mode protection solaire
+- `input_boolean.seul_a_la_maison` : conditionne l'ouverture automatique
 - `sensor.sun_next_dawn` / `sensor.sun_next_dusk` / `sensor.sun_next_midnight`
-- `sensor.91_weather_alert` : alerte météo rouge
+- `sensor.91_weather_alert` : alerte météo
+- `alarm_control_panel.alarme` : état alarme (conditionne l'ouverture)
 - `input_button.volets_reactivation` : réactivation manuelle globale
 
 ---
@@ -64,6 +87,8 @@ Pilote les volets selon le mode domicile, la météo, le soleil et la présence.
 - **Sonde secondaire :** `sensor.netatmo_chambre_temperature`
 - **Présence :** `input_select.presence_chambre`
 - **Bouton fermeture :** `input_button.velux_chambre_fermer`
+- **Timer dérogation :** `timer.velux_chambre_timer`
+- **Dérogation :** `input_boolean.velux_chambre_derogation`
 
 ---
 
@@ -74,6 +99,8 @@ Pilote les volets selon le mode domicile, la météo, le soleil et la présence.
 - **Sonde secondaire :** *(optionnel)*
 - **Présence :** *(optionnel)*
 - **Bouton fermeture :** `input_button.velux_sde_fermer`
+- **Timer dérogation :** `timer.velux_salle_d_eau_timer`
+- **Dérogation :** `input_boolean.velux_salle_d_eau_derogation`
 
 ---
 
@@ -84,6 +111,8 @@ Pilote les volets selon le mode domicile, la météo, le soleil et la présence.
 - **Sonde secondaire :** *(optionnel)*
 - **Présence :** *(optionnel)*
 - **Bouton fermeture :** `input_button.velux_sdb_fermer`
+- **Timer dérogation :** `timer.velux_salle_de_bain_timer`
+- **Dérogation :** `input_boolean.velux_salle_de_bain_derogation`
 
 ---
 
@@ -226,6 +255,12 @@ Pilote les volets selon le mode domicile, la météo, le soleil et la présence.
 | `input_button.velux_sde_fermer` | input_button | Fermeture manuelle |
 | `input_button.velux_sdb_fermer` | input_button | Fermeture manuelle |
 | `input_select.presence_chambre` | input_select | Présent, Absent |
+| `input_boolean.velux_chambre_derogation` | input_boolean | Flag dérogation Chambre |
+| `input_boolean.velux_salle_d_eau_derogation` | input_boolean | Flag dérogation Salle d'eau |
+| `input_boolean.velux_salle_de_bain_derogation` | input_boolean | Flag dérogation Salle de bain |
+| `timer.velux_chambre_timer` | timer | Dérogation Chambre (1h00) |
+| `timer.velux_salle_d_eau_timer` | timer | Dérogation Salle d'eau (1h00) |
+| `timer.velux_salle_de_bain_timer` | timer | Dérogation Salle de bain (1h00) |
 
 ### Volets — globales
 
