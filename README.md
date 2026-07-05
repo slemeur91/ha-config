@@ -10,7 +10,7 @@
 | Entités totales | 2 156 |
 | Domaines (types d'entités) | 43 |
 | Zones / Pièces | 23 |
-| Appareils connectés | **201** |
+| Appareils connectés | **202** |
 | Automatisations | **53** |
 | Scripts | **19** |
 | Blueprints | **2** |
@@ -33,14 +33,14 @@
 
 ---
 
-### 🔌 Appareils par technologie (201)
+### 🔌 Appareils par technologie (202)
 
 | Technologie | Appareils | Mode | Détail |
 |---|---|---|---|
 | Z-Wave | **25** | ✅ Local | [→ Détail](docs/appareils/zwave.md) |
 | Zigbee | **22** | ✅ Local | [→ Détail](docs/appareils/zigbee.md) |
 | EnOcean | **4** | ✅ Local | [→ Détail](docs/appareils/enocean.md) |
-| Intégrations (WiFi, Ethernet RJ45 & Autres) | **149** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/integrations.md) |
+| Intégrations (WiFi, Ethernet RJ45 & Autres) | **150** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/integrations.md) |
 | Thread / Matter | **1** | ✅ Local | [→ Détail](docs/appareils/matter.md) |
 
 ---
@@ -233,7 +233,7 @@ Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être captu
 
 ---
 
-## 🛠️ HACS — Intégrations (20)
+## 🛠️ HACS — Intégrations (22)
 
 [Voir la documentation complète →](docs/hacs.md)
 
@@ -250,6 +250,7 @@ Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être captu
 | Ecodevices RT2 | 1 | Mesure de consommation multi-circuits (GCE) | [pcourbin/ecodevices_rt2](https://github.com/pcourbin/ecodevices_rt2) | 🔧 HACS |
 | EcoFlow Cloud | 2 | Appareils EcoFlow (batterie DELTA Max, PowerStream) | [snell-evan-itt/hassio-ecoflow-cloud-US](https://github.com/snell-evan-itt/hassio-ecoflow-cloud-US) | 🔧 HACS |
 | HACS | — | Gestionnaire de contenu communautaire HA | [hacs/integration](https://github.com/hacs/integration) | 🔧 HACS |
+| Hue Sync Box | 1 | Synchronisation lumières Philips Hue avec l'HDMI (Hue Play HDMI Sync Box) | [mvdwetering/huesyncbox](https://github.com/mvdwetering/huesyncbox) | 🔧 HACS Communauté |
 | Local Agenda | — | Calendriers locaux enrichis pour la planification domotique | [slemeur91/local_agenda](https://github.com/slemeur91/local_agenda) | ⚠️ Dépôt perso |
 | LocalTuya | — | Contrôle local (sans cloud) des appareils Tuya | [rospogrigio/localtuya](https://github.com/rospogrigio/localtuya) | 🔧 HACS |
 | Micronova Agua IOT | — | Contrôle des poêles à granulés via Agua IOT *(désactivé)* | [vincentwolsink/home_assistant_micronova_agua_iot](https://github.com/vincentwolsink/home_assistant_micronova_agua_iot) | 🔧 HACS |
@@ -261,6 +262,7 @@ Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être captu
 | Somfy Protexial | 1 | Centrale d'alarme Somfy Protexial | [AuroreVgn/somfy-protexial](https://github.com/AuroreVgn/somfy-protexial) | 🔧 HACS Communauté |
 | Spook | — | Services supplémentaires et détection d'entités orphelines | [frenck/spook](https://github.com/frenck/spook) | 🔧 HACS |
 | Vacances Scolaires | — | Calendrier des vacances scolaires françaises (zone C) | [Master13011/vacances-scolaire-HA](https://github.com/Master13011/vacances-scolaire-HA) | 🔧 HACS |
+| WashData | 3 | Détection des cycles de lavage par analyse de consommation électrique | [3dg1luk43/ha_washdata](https://github.com/3dg1luk43/ha_washdata) | 🔧 HACS Communauté |
 | Xiaomi Miot | 2 | Appareils Xiaomi via protocole MIoT local | [al-one/hass-xiaomi-miot](https://github.com/al-one/hass-xiaomi-miot) | 🔧 HACS |
 | xsense | 4 | Détecteurs de fumée/CO X-Sense (cloud) | [Jarnsen/ha-xsense-component_test](https://github.com/Jarnsen/ha-xsense-component_test) | 🔧 HACS Communauté |
 

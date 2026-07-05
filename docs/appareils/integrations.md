@@ -1,4 +1,4 @@
-# Intégrations (WiFi, Ethernet RJ45 & Autres) — 149 appareils
+# Intégrations (WiFi, Ethernet RJ45 & Autres) — 150 appareils
 
 [← Retour Appareils](../appareils.md)
 
@@ -29,7 +29,7 @@
 
 ---
 
-## Multimédia (5 appareils)
+## Multimédia (6 appareils)
 
 > 🏠 **Natif HA** — Intégration : **Bravia TV** (Sony) + **Apple TV**
 > 🔧 **HACS** — Intégration : **Hue Sync Box** — [GitHub](https://github.com/mvdwetering/huesyncbox)
@@ -40,7 +40,8 @@
 | 1 | Apple | Apple TV | Salon | 🔌 Ethernet (RJ45) | Apple TV |
 | 1 | Broadlink | RM4 Pro | Salon | 📶 WiFi | Broadlink |
 | 1 | Broadlink | RM4 Pro | Suite parentale | 📶 WiFi | Broadlink |
-| 1 | Philips | Hue Play HDMI Sync Box | Salon | 🔌 Ethernet (RJ45) | 🔧 HACS — Hue Sync Box |
+| 1 | Philips | Hue Play HDMI Sync Box | Salon | 📶 WiFi | 🔧 HACS — Hue Sync Box |
+| 1 | Philips | Hue Gradient Lightstrip | Salon | 〰️ Zigbee (via Hue Bridge) | 🏠 Natif HA — Hue |
 
 ---
 
@@ -81,9 +82,9 @@
 
 > 🏠 **Natif HA** — Intégration : **Nuki** — [Documentation](https://www.home-assistant.io/integrations/nuki/)
 
-| Nb | Fabricant | Modèle | Localisation | Connexion |
-|---|---|---|---|---|
-| 2 | Nuki | Smart Lock 3.0 Pro | Entrée, Garage | 📶 WiFi (via Nuki Bridge) |
+| Nb | Fabricant | Modèle | Localisation | Connexion | Documentation |
+|---|---|---|---|---|---|
+| 2 | Nuki | Smart Lock 3.0 Pro | Entrée, Garage | 📶 WiFi (via Nuki Bridge) | [📄 Manuel](../hardware/installationmanual_nukismatlock.pdf) |
 
 ---
 
@@ -162,7 +163,7 @@
 
 | Nb | Fabricant | Description | Localisation | Documentation |
 |---|---|---|---|---|
-| 6 | Konyks | Multiprise 4 prises + 4 USB | Suite parentale, Salon G, Salon D, Garage, Informatique, Bureau | [📄 Manuel](<../hardware/Konyks - Manuel Polyco v1..1 Update Web.pdf>) |
+| 6 | Konyks | Multiprise 4 prises + 4 USB | Suite parentale, Salon G, Salon D, Garage, Informatique, Bureau | [📄 Manuel Konyks](<../hardware/Konyks - Manuel Polyco v1..1 Update Web.pdf>) · [📄 Manuel UseeLink SM-SO306](../hardware/UseeLink_SM-SO306_UserManual.pdf) |
 
 ---
 
@@ -180,7 +181,7 @@
 | 1 | Axis | M1065-L | slm-camera4 | Palier | [📄 Manuel](../hardware/um_m1065l_1632647_en_1704.pdf) · [📄 Installation](../hardware/ig_m1065l_1665730_en_1610.pdf) · [📄 Datasheet](../hardware/ds_m1065l_1650486_fr_1612.pdf) |
 | 1 | Hikvision | DS-2CD2142FWD-IS | slm-camera5 | Réseau | [📄 Manuel](../hardware/DS-2CD2142FWD-I\(W\)\(S\).pdf) |
 | 1 | Reolink | Duo 2 PoE | slm-camera6 | Extérieur | [📄 Manuel](../hardware/e861e2.pdf) |
-| 1 | Synology | TC500 | slm-camera7 | Garage | — |
+| 1 | Synology | TC500 | slm-camera7 | Garage | [📄 Manuel](../hardware/TC500_HIG_enu.pdf) |
 | 1 | KONX | KW02C | slm-portier | Entrée | [📄 Manuel](../hardware/KW02C-user-guide-FR-web.pdf) |
 
 ---
