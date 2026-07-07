@@ -1,8 +1,8 @@
 alias: Gestion du Domicile en fonction de la Présence
 description: >-
-  **Statut :** Finalisé sauf le problème de démarrage de l'Apple TV
+  **Statut :** Finalisé
 
-  **Evolution :** Il y a un manque de fiabilité de l'allumage de l'Apple TV
+  **Evolution :** Aucune
 
 
   **Déclencheurs :**
@@ -116,6 +116,7 @@ actions:
                 data: {}
                 target:
                   entity_id: lock.serrure_du_garage
+                continue_on_error: true
           - if:
               - condition: sun
                 before: sunrise
@@ -175,6 +176,7 @@ actions:
                 data: {}
                 target:
                   entity_id: lock.serrure_du_garage
+                continue_on_error: true
           - if:
               - condition: sun
                 before: sunrise
@@ -269,6 +271,7 @@ actions:
                     data: {}
                     target:
                       entity_id: lock.serrure_de_l_entree
+                    continue_on_error: true
               - if:
                   - condition: state
                     entity_id: lock.serrure_du_garage
@@ -278,6 +281,7 @@ actions:
                     data: {}
                     target:
                       entity_id: lock.serrure_du_garage
+                    continue_on_error: true
           - parallel:
               - action: light.turn_off
                 continue_on_error: true
@@ -383,7 +387,7 @@ actions:
                     target:
                       entity_id:
                         - light.lumiere_du_sejour
-                        - light.lumiere_du_salon_2
+                        - light.lumiere_du_salon
                 enabled: true
               - if:
                   - condition: state
