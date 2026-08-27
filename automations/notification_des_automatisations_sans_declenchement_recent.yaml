@@ -1,0 +1,48 @@
+alias: Notification des Automatisations sans déclenchement récent
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
+
+  **Déclencheurs :**
+  - Chaque jour à 9h00
+
+  **Conditions :**
+  - Au moins une automatisation jamais déclenchée, ou non déclenchée depuis 7 jours (hors exclusions)
+
+  **Fonctionnement :**
+  1. Pour chaque automatisation jamais déclenchée ou non déclenchée depuis 7 jours (en excluant `automation.alarme_declenchement`, `automation.alarme_sabotage`, `automation.gestion_de_la_telecommande_hifi`, `automation.notification_de_la_boite_aux_lettres`, `automation.gestion_de_la_charge_batterie_de_l_ipad`, `automation.suspension_des_notifications_en_mode_invites`, `automation.notification_des_alertes_de_defaut_des_onduleurs_ups`, `automation.notification_de_batterie_remplacee`, `automation.notification_du_portier`, `automation.notification_de_defaut_du_refrigerateur`, `automation.notification_de_coupure_de_courant_edf`, `automation.notification_de_capteur_deporte_du_chauffage_desactive`, `automation.gestion_de_l_activation_de_l_imprimante_canon_mf650c`, `automation.gestion_de_la_lumiere_de_l_entree`, `automation.notification_des_automatisations_desactivees`, `automation.gestion_du_cycle_du_lave_linge`, `automation.gestion_du_cycle_du_seche_linge`, `automation.gestion_du_cycle_du_lave_vaisselle`, `automation.correction_du_mi_air_purifier` et `automation.maj_auto_prises_ll_sl_zigbee2mqtt` — déclenchements normalement irréguliers ou liés à des événements peu fréquents, peuvent rester longtemps sans déclenchement sans que ce soit anormal), appelle `script.notification_ha` avec un `notification_id` stable par automatisation (mise à jour, pas de doublon si toujours sans déclenchement le lendemain) et la date du dernier déclenchement (ou mention "jamais déclenchée") dans le message.
+
+  **Entités principales :**
+  - `automation.*` : ensemble des automatisations surveillées (attribut last_triggered)
+  - `script.notification_ha` : création des notifications
+triggers:
+  - trigger: time
+    at: "09:00:00"
+conditions:
+  - condition: template
+    value_template: |
+      {% set seuil = now() - timedelta(days=7) %}
+      {% set exclusions = ['automation.alarme_declenchement', 'automation.alarme_sabotage', 'automation.gestion_de_la_telecommande_hifi', 'automation.notification_de_la_boite_aux_lettres', 'automation.gestion_de_la_charge_batterie_de_l_ipad', 'automation.suspension_des_notifications_en_mode_invites', 'automation.notification_des_alertes_de_defaut_des_onduleurs_ups', 'automation.notification_de_batterie_remplacee', 'automation.notification_du_portier', 'automation.notification_de_defaut_du_refrigerateur', 'automation.notification_de_coupure_de_courant_edf', 'automation.notification_de_capteur_deporte_du_chauffage_desactive', 'automation.gestion_de_l_activation_de_l_imprimante_canon_mf650c', 'automation.gestion_de_la_lumiere_de_l_entree', 'automation.notification_des_automatisations_desactivees', 'automation.gestion_du_cycle_du_lave_linge', 'automation.gestion_du_cycle_du_seche_linge', 'automation.gestion_du_cycle_du_lave_vaisselle', 'automation.correction_du_mi_air_purifier', 'automation.maj_auto_prises_ll_sl_zigbee2mqtt'] %}
+      {% set jamais = states.automation | rejectattr('entity_id', 'in', exclusions) | selectattr('attributes.last_triggered', 'none') | map(attribute='entity_id') | list %}
+      {% set anciennes = states.automation | rejectattr('entity_id', 'in', exclusions) | selectattr('attributes.last_triggered', 'ne', None) | selectattr('attributes.last_triggered', 'lt', seuil) | map(attribute='entity_id') | list %}
+      {{ (jamais + anciennes) | list | count > 0 }}
+actions:
+  - note: Envoie une notification HA distincte (Notification HA) pour chaque automatisation jamais déclenchée ou sans déclenchement depuis 7 jours, hors exclusions (déclenchements normalement irréguliers ou peu fréquents)
+    repeat:
+      for_each: |
+        {% set seuil = now() - timedelta(days=7) %}
+        {% set exclusions = ['automation.alarme_declenchement', 'automation.alarme_sabotage', 'automation.gestion_de_la_telecommande_hifi', 'automation.notification_de_la_boite_aux_lettres', 'automation.gestion_de_la_charge_batterie_de_l_ipad', 'automation.suspension_des_notifications_en_mode_invites', 'automation.notification_des_alertes_de_defaut_des_onduleurs_ups', 'automation.notification_de_batterie_remplacee', 'automation.notification_du_portier', 'automation.notification_de_defaut_du_refrigerateur', 'automation.notification_de_coupure_de_courant_edf', 'automation.notification_de_capteur_deporte_du_chauffage_desactive', 'automation.gestion_de_l_activation_de_l_imprimante_canon_mf650c', 'automation.gestion_de_la_lumiere_de_l_entree', 'automation.notification_des_automatisations_desactivees', 'automation.gestion_du_cycle_du_lave_linge', 'automation.gestion_du_cycle_du_seche_linge', 'automation.gestion_du_cycle_du_lave_vaisselle', 'automation.correction_du_mi_air_purifier', 'automation.maj_auto_prises_ll_sl_zigbee2mqtt'] %}
+        {% set jamais = states.automation | rejectattr('entity_id', 'in', exclusions) | selectattr('attributes.last_triggered', 'none') | map(attribute='entity_id') | list %}
+        {% set anciennes = states.automation | rejectattr('entity_id', 'in', exclusions) | selectattr('attributes.last_triggered', 'ne', None) | selectattr('attributes.last_triggered', 'lt', seuil) | map(attribute='entity_id') | list %}
+        {{ jamais + anciennes }}
+      sequence:
+        - action: script.notification_ha
+          data:
+            message_type: Automatisations sans déclenchement récent
+            message_ha: >-
+              {%- if state_attr(repeat.item, 'last_triggered') is none -%}
+              L'automatisation {{ state_attr(repeat.item, 'friendly_name') or repeat.item }} n'a jamais été déclenchée.
+              {%- else -%}
+              L'automatisation {{ state_attr(repeat.item, 'friendly_name') or repeat.item }} n'a pas été déclenchée depuis le {{ state_attr(repeat.item, 'last_triggered') | as_timestamp | timestamp_custom('%d/%m %H:%M') }}.
+              {%- endif -%}
+            notification_id: "automation_inactive-{{ repeat.item }}"

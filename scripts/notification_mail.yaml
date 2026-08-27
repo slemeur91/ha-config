@@ -1,31 +1,39 @@
 alias: Notification Mail
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
-
 
   **Rôle :** Envoie un mail de notification.
 
-
   **Paramètres :**
-
-  - `message_type` : type du message (Information, Alerte, Chauffage, etc.)
-
-  - `message_mail` : contenu du message
-
+  - message_type : type du message (Information, Alerte, Chauffage, etc.)
+  - message_mail : corps du message
 
   **Fonctionnement :**
+  1. Envoie un mail via notify.email avec le type en objet et le message en corps.
 
-  1. Envoie un mail via `notify.email` avec le type en objet et le message en
-  corps.
+  **Entités principales :**
+  - notify.email : service d'envoi de mail utilisé
+fields:
+  message_type:
+    description: Type du message (Information, Alerte, Chauffage, etc.)
+    example: Information
+    required: true
+    selector:
+      text: null
+  message_mail:
+    description: Corps du message
+    example: Message
+    required: true
+    selector:
+      text: null
 sequence:
-  - action: notify.email
+  - action: smtp.send_message
     metadata: {}
+    target:
+      entity_id: notify.email_slemeur_slm_srv_dscloud_me
     data:
+      title: "[HA] {{ message_type }}"
       message: "{{ message_mail }}"
-      title: |
-        [HA] {{ message_type }}
-      target: votre-email@domaine.fr
 mode: queued
 max: 10

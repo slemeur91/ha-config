@@ -1,0 +1,65 @@
+alias: Suspension des Notifications en Mode Invités
+description: >-
+  **Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - `input_boolean.invites` passe à "on"
+
+  - `input_boolean.invites` passe à "off"
+
+
+  **Fonctionnement :**
+
+  1. Si invités passe à on → désactive `automation.gestion_des_alertes`
+  (Notification des Alertes) et
+  `automation.notification_d_ouverture_ou_fermeture_des_fenetres`.
+
+  2. Si invités passe à off → réactive ces deux mêmes automatisations.
+
+
+  **Entités principales :**
+
+  - `input_boolean.invites` : déclencheur
+
+  - `automation.gestion_des_alertes`,
+  `automation.notification_d_ouverture_ou_fermeture_des_fenetres` : cibles
+  activées/désactivées
+triggers:
+  - trigger: state
+    entity_id: input_boolean.invites
+    to: "on"
+    id: invites_on
+  - trigger: state
+    entity_id: input_boolean.invites
+    to: "off"
+    id: invites_off
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: invites_on
+        sequence:
+          - action: automation.turn_off
+            target:
+              entity_id:
+                - automation.gestion_des_alertes
+                - automation.notification_d_ouverture_ou_fermeture_des_fenetres
+            note: >-
+              Mode invités actif : on suspend ces notifications le temps de la
+              présence des invités.
+      - conditions:
+          - condition: trigger
+            id: invites_off
+        sequence:
+          - action: automation.turn_on
+            target:
+              entity_id:
+                - automation.gestion_des_alertes
+                - automation.notification_d_ouverture_ou_fermeture_des_fenetres
+            note: "Fin du mode invités : on réactive les notifications suspendues."
+mode: single

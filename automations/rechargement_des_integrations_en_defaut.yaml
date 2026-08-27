@@ -1,45 +1,44 @@
-alias: Surveillance - Recharger les intégrations en défaut
+alias: Rechargement des intégrations en défaut
 description: >-
-  **Statut :** Finalise
+  **Statut :** Finalisé
 
   **Evolution :** Aucune
 
 
-  **Declencheurs :**
+  **Déclencheurs :**
 
-  - 12 minutes apres le demarrage de Home Assistant
+  - 12 minutes après le démarrage de Home Assistant
 
-  - Detection d'un nouveau probleme dans Repairs (`event.repair`, event_type =
+  - Détection d'un nouveau problème dans Repairs (`event.repair`, event_type =
   create)
 
-  - Verification periodique toutes les 15 minutes
+  - Vérification périodique toutes les 15 minutes
 
 
   **Fonctionnement :**
 
-  1. Recherche les entrees de configuration via les entites existantes
+  1. Recherche les entrées de configuration via les entités existantes
   (`config_entry_id`).
 
-  2. Detecte deux types de panne :
-     - Erreur officielle : etat setup_error, setup_retry, failed_unload ou migration_error.
-     - Panne silencieuse : integration declaree 'loaded' mais dont 100% des entites sont 'unavailable' depuis plus de 10 minutes (ex : Netatmo dont toutes les sondes tombent indisponibles sans que l'integration ne passe en erreur). Les integrations media/TV (dlna_dmr, cast, braviatv, apple_tv, androidtv, samsungtv, roku, webostv, kodi, lg_netcast, philips_js, firetv) sont exclues car elles s'eteignent normalement.
-  3. Recharge chaque entree en erreur ou en panne silencieuse via
+  2. Détecte deux types de panne :
+     - Erreur officielle : état setup_error, setup_retry, failed_unload ou migration_error.
+     - Panne silencieuse : intégration déclarée "loaded" mais dont 100% des entités sont "unavailable" depuis plus de 10 minutes (ex : Netatmo dont toutes les sondes tombent indisponibles sans que l'intégration ne passe en erreur). Les intégrations média/TV (dlna_dmr, cast, braviatv, apple_tv, androidtv, samsungtv, roku, webostv, kodi, lg_netcast, philips_js, firetv) sont exclues car elles s'éteignent normalement.
+  3. Recharge chaque entrée en erreur ou en panne silencieuse via
   `homeassistant.reload_config_entry`.
 
-  4. Envoie une notification HA (script.notification) pour chaque panne
-  silencieuse detectee, avec un notification_id stable par integration (pas de
-  doublon si le probleme persiste).
+  4. Envoie une notification HA (`script.notification_ha`) pour chaque panne
+  silencieuse détectée, avec un `notification_id` stable par intégration (pas de
+  doublon si le problème persiste).
 
 
-  **Entites principales :**
+  **Entités principales :**
 
-  - `event.repair` : declencheur sur detection d'un probleme Repairs
+  - `event.repair` : déclencheur sur détection d'un problème Repairs
 
-  - Liste des integrations en erreur/panne calculee dynamiquement (aucune entite
-  fixe ciblee)
+  - Liste des intégrations en erreur/panne calculée dynamiquement (aucune entité
+  fixe ciblée)
 
-  - `script.notification` (Notification HA) : notification des pannes
-  silencieuses
+  - `script.notification_ha` : notification des pannes silencieuses
 triggers:
   - trigger: homeassistant
     event: start
@@ -52,6 +51,7 @@ triggers:
   - trigger: time_pattern
     minutes: /15
     id: periodic_check
+conditions: []
 actions:
   - choose:
       - conditions:
@@ -116,10 +116,10 @@ actions:
         {{ ns2.items }}
       failed_entries: "{{ (error_entries + silent_entries) | unique | list }}"
     note: >-
-      Calcule la liste des integrations en erreur officielle
+      Calcule la liste des intégrations en erreur officielle
       (setup_error/setup_retry/failed_unload/migration_error) ET celles en panne
-      silencieuse (loaded mais 100% des entites indisponibles depuis plus de 10
-      min), hors integrations media/TV qui s'eteignent normalement
+      silencieuse (loaded mais 100% des entités indisponibles depuis plus de 10
+      min), hors intégrations média/TV qui s'éteignent normalement
   - repeat:
       for_each: "{{ failed_entries }}"
       sequence:
@@ -127,10 +127,10 @@ actions:
           data:
             entry_id: "{{ repeat.item }}"
           continue_on_error: true
-    note: Recharge chaque integration en erreur ou en panne silencieuse, une par une
+    note: Recharge chaque intégration en erreur ou en panne silencieuse, une par une
   - note: >-
-      Notifie (Notification HA) chaque integration detectee en panne
-      silencieuse, hors integrations media/TV
+      Notifie (Notification HA) chaque intégration détectée en panne
+      silencieuse, hors intégrations média/TV
     repeat:
       for_each: "{{ silent_entries }}"
       sequence:
@@ -141,13 +141,13 @@ actions:
           data:
             variables:
               message_type: >-
-                Integration en panne silencieuse — {{
+                Intégration en panne silencieuse — {{
                 config_entry_attr(repeat.item, 'title') }}
               message_ha: >-
-                L'integration {{ config_entry_attr(repeat.item, 'domain') }} ({{
-                config_entry_attr(repeat.item, 'title') }}) a toutes ses entites
+                L'intégration {{ config_entry_attr(repeat.item, 'domain') }} ({{
+                config_entry_attr(repeat.item, 'title') }}) a toutes ses entités
                 indisponibles depuis plus de 10 minutes alors qu'elle est
-                declaree chargee. Un rechargement automatique a ete tente.
+                déclarée chargée. Un rechargement automatique a été tenté.
               notification_id: integration_silent_failure-{{ repeat.item }}
 mode: queued
 max: 10

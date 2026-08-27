@@ -1,0 +1,63 @@
+alias: Correction du Mi Air Purifier
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
+
+  **Déclencheur :**
+  - `fan.zhimi_m1_6186_air_purifier` passe à indisponible (le purificateur ne répond plus)
+
+  **Fonctionnement :**
+  1. Vérifie l'état de `switch.multiprise_du_salon_droite_2_purificateur` (Prise 2 - Purificateur).
+  2. Si elle est allumée : l'éteint, attend 1mn30, puis la rallume (cycle d'alimentation pour forcer le purificateur à se reconnecter).
+  3. Si elle est déjà éteinte : ne fait rien.
+
+  **Entités principales :**
+  - `fan.zhimi_m1_6186_air_purifier` : signal de bon fonctionnement du purificateur
+  - `switch.multiprise_du_salon_droite_2_purificateur` : alimentation du purificateur (Prise 2 de la multiprise du salon droite)
+triggers:
+  - trigger: state
+    entity_id:
+      - fan.zhimi_m1_6186_air_purifier
+    to:
+      - unavailable
+    id: fault
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 30
+    note: Le purificateur ne répond plus - déclenche la vérification de la prise
+conditions:
+  - condition: state
+    entity_id: fan.zhimi_m1_6186_air_purifier
+    state:
+      - unavailable
+actions:
+  - if:
+      - condition: state
+        entity_id: switch.multiprise_du_salon_droite_2_purificateur
+        state: "on"
+    then:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.multiprise_du_salon_droite_2_purificateur
+        data: {}
+      - delay:
+          hours: 0
+          minutes: 1
+          seconds: 0
+          milliseconds: 0
+      - action: switch.turn_on
+        target:
+          entity_id: switch.multiprise_du_salon_droite_2_purificateur
+      - action: homeassistant.enable_device
+        data:
+          device_id:
+            - 968f63218de9f0eaf53c7d2a548c33bb
+      - delay:
+          hours: 0
+          minutes: 1
+          seconds: 0
+          milliseconds: 0
+    else: []
+    note: Ne fait rien si la prise est déjà éteinte
+mode: single

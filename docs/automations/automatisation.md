@@ -1,12 +1,99 @@
-# Automatisation (10)
+# Automatisation (18)
 
 [← Retour README](../../README.md)
 
 
 ---
 
-## `automation.gazpar_mise_a_jour_statistiques_journalieres` — GAZPAR – Mise à jour statistiques journalières
-> [📄 Voir le YAML](../../automations/gazpar_mise_a_jour_statistiques_journalieres.yaml) | [📄 Script pyscript](../../pyscripts/gazpar_energy.py)
+## `automation.gestion_des_statistiques_journalieres_du_linky_reecriture` — LINKY – Gestion des statistiques journalières (Réécriture)
+> [📄 Voir le YAML](../../automations/gestion_des_statistiques_journalieres_du_linky_reecriture.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- Changement de `sensor.linky_22217944914302_consumption` (nouvelles données reçues)
+
+**Conditions :** Sensor non indisponible / inconnu
+
+**Fonctionnement :**
+1. Lance `pyscript.linky_update` pour réimporter les statistiques long-terme (base_consumption / base_consumption_cost) avec les vraies dates Enedis (correction du décalage J-1).
+
+**Entités principales :**
+- `sensor.linky_22217944914302_consumption`, `pyscript.linky_update`
+
+---
+
+## `automation.gestion_du_cycle_du_lave_linge` — Gestion du Cycle du Lave Linge
+> [📄 Voir le YAML](../../automations/gestion_du_cycle_du_lave_linge.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- `sensor.etat_lave_linge` Éteint/Veille → En marche (anti-rebond 20s) : début de cycle
+- `sensor.etat_lave_linge` En marche → Éteint/Veille (anti-rebond 20s) : fin de cycle
+- `sensor.multiprise_de_la_salle_de_bain_power_1` < 5 W pendant 5mn (désactivé) : fin alternative
+- `input_boolean.cycle_lave_linge_en_cours` reste "on" 4h : filet de sécurité
+
+**Fonctionnement :**
+1. Début → active le marqueur, enregistre l'index d'énergie et l'horodatage.
+2. Fin → enregistre l'horodatage et l'index d'énergie de fin, désactive le marqueur.
+3. Trop long → désactive le marqueur sans enregistrer de fin.
+
+**Entités principales :**
+- `sensor.etat_lave_linge`, `sensor.multiprise_de_la_salle_de_bain_power_1` / `_energy_1`
+- `input_boolean.cycle_lave_linge_en_cours`, `input_datetime.dernier_cycle_lave_linge_debut` / `_fin`
+- `input_number.dernier_cycle_lave_linge_conso_au_debut` / `_a_la_ffin`
+
+---
+
+## `automation.gestion_du_cycle_du_lave_vaisselle` — Gestion du Cycle du Lave Vaisselle
+> [📄 Voir le YAML](../../automations/gestion_du_cycle_du_lave_vaisselle.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- `sensor.etat_lave_vaisselle` Éteint/Veille → En marche (anti-rebond 20s) : début de cycle
+- `sensor.etat_lave_vaisselle` En marche → Éteint/Veille (anti-rebond 20s) : fin de cycle
+- `sensor.prise_du_lave_vaisselle_power` < 3 W pendant 5mn (désactivé) : fin alternative
+- `input_boolean.cycle_lave_vaisselle_en_cours` reste "on" 4h : filet de sécurité
+
+**Fonctionnement :**
+1. Début → active le marqueur, enregistre l'index d'énergie et l'horodatage.
+2. Fin → enregistre l'horodatage et l'index d'énergie de fin, désactive le marqueur.
+3. Trop long → désactive le marqueur sans enregistrer de fin.
+
+**Entités principales :**
+- `sensor.etat_lave_vaisselle`, `sensor.prise_du_lave_vaisselle_power` / `_energy`
+- `input_boolean.cycle_lave_vaisselle_en_cours`, `input_datetime.dernier_cycle_lave_vaisselle_debut` / `_fin`
+- `input_number.dernier_cycle_lave_vaisselle_conso_au_debut` / `_a_la_ffin`
+
+---
+
+## `automation.gestion_du_cycle_du_seche_linge` — Gestion du Cycle du Sèche Linge
+> [📄 Voir le YAML](../../automations/gestion_du_cycle_du_seche_linge.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- `sensor.etat_seche_linge` Éteint/Veille → En marche (anti-rebond 20s) : début de cycle
+- `sensor.etat_seche_linge` En marche → Éteint/Veille (anti-rebond 20s) : fin de cycle
+- `sensor.multiprise_de_la_salle_de_bain_power_2` < 3 W pendant 30s (désactivé) : fin alternative
+- `input_boolean.cycle_seche_linge_en_cours` reste "on" 4h : filet de sécurité
+
+**Fonctionnement :**
+1. Début → active le marqueur, enregistre l'index d'énergie et l'horodatage.
+2. Fin → enregistre l'horodatage et l'index d'énergie de fin, désactive le marqueur.
+3. Trop long → désactive le marqueur sans enregistrer de fin.
+
+**Entités principales :**
+- `sensor.etat_seche_linge`, `sensor.multiprise_de_la_salle_de_bain_power_2` / `_energy_2`
+- `input_boolean.cycle_seche_linge_en_cours`, `input_datetime.dernier_cycle_seche_linge_debut` / `_fin`
+- `input_number.dernier_cycle_seche_linge_conso_au_debut` / `_a_la_ffin`
+
+---
+
+## `automation.gestion_des_statistiques_journalieres_de_gazpar_reecriture` — GAZPAR – Gestion des statistiques journalières (Réécriture)
+> [📄 Voir le YAML](../../automations/gestion_des_statistiques_journalieres_de_gazpar_reecriture.yaml) | [📄 Script pyscript](../../pyscripts/gazpar_energy.py)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -45,6 +132,81 @@
 
 ---
 
+
+## `automation.gestion_de_l_activation_de_l_imprimante_canon_mf650c` — Gestion de l'Activation de l'Imprimante Canon MF650C
+> [📄 Voir le YAML](../../automations/gestion_de_l_activation_de_l_imprimante_canon_mf650c.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- `device_tracker.slm_imp1_slm_imp1` passe à "home"
+- `device_tracker.slm_imp1_slm_imp1` passe à "not_home"
+
+**Fonctionnement :**
+1. Imprimante détectée à la maison → active l'intégration Canon MF650C Series.
+2. Imprimante absente → désactive l'intégration (évite les erreurs de connexion).
+
+**Entités principales :**
+- `device_tracker.slm_imp1_slm_imp1` : présence réseau de l'imprimante
+- Intégration Canon MF650C Series
+
+---
+
+## `automation.gestion_de_la_charge_batterie_de_l_ipad` — Gestion de la Charge Batterie de l'iPad
+> [📄 Voir le YAML](../../automations/gestion_de_la_charge_batterie_de_l_ipad.yaml)
+
+**Statut :** En cours | **Evolution :** Prise en compte du capteur batterie (application kiosk) pour affiner le pilotage de la charge
+
+**Déclencheurs :**
+- Le 1er de chaque mois à 1h00
+- `sensor.ipad_battery_level` passe sous 20%
+
+**Fonctionnement :**
+1. Le 1er du mois à 1h00 → éteint la prise de l'iPad (si allumée) pour forcer un cycle de décharge/recharge mensuel.
+2. Batterie < 20% → allume la prise de l'iPad (si elle n'est pas déjà allumée).
+
+**Entités principales :**
+- `switch.prise_de_l_ipad` : alimentation de l'iPad
+- `sensor.ipad_battery_level` : niveau de batterie de l'iPad
+
+---
+
+## `automation.gestion_de_la_climatisation_start_en_boost_stop` — Gestion de la Climatisation — Start en Boost / Stop
+> [📄 Voir le YAML](../../automations/gestion_de_la_climatisation_start_en_boost_stop.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- Appui sur `input_button.climatisation_boost_start`
+- Appui sur `input_button.climatisation_stop`
+
+**Fonctionnement :**
+1. Boost : pour chacune des 4 clim (Chambre, Suite parentale, Bureau, Séjour), l'allume si éteinte puis (re)lance le préréglage "boost" (même si déjà en boost), en parallèle.
+2. Stop : éteint chaque clim encore allumée parmi les 4, en parallèle.
+
+**Entités principales :**
+- `climate.climatisation_de_la_chambre`, `climate.climatisation_de_la_suite_parentale`, `climate.climatisation_du_bureau`, `climate.climatisation_du_sejour`
+- `input_button.climatisation_boost_start`, `input_button.climatisation_stop`
+
+---
+
+## `automation.gestion_de_la_livebox_w7_desactivation_du_wifi` — Gestion de la Livebox W7 : désactivation du WiFi
+> [📄 Voir le YAML](../../automations/gestion_de_la_livebox_w7_desactivation_du_wifi.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- Démarrage de Home Assistant
+- `switch.livebox_w7_wifi` passe à "on"
+
+**Fonctionnement :**
+1. Démarrage HA → attend 3 minutes puis éteint le Wi-Fi.
+2. Si la Livebox le réactive d'elle-même après un redémarrage/coupure → éteint immédiatement.
+
+**Entités principales :**
+- `switch.livebox_w7_wifi` : Wi-Fi de la Livebox W7 (redondant avec le Wi-Fi principal, non utilisé)
+
+---
 
 ## `automation.gestion_de_la_presence_dans_les_pieces` — Gestion de la Présence dans les Pièces
 > [📄 Voir le YAML](../../automations/gestion_de_la_presence_dans_les_pieces.yaml)
@@ -101,11 +263,13 @@
 - Changement velux ou portes (délai 5 min)
 
 **Fonctionnement :**
-1. Calcule `horsgel_etage` (HorsGel global, portes/velux ouverts, mode Absent).
+1. Calcule `horsgel_etage` (HorsGel global, portes via attribut `Door open`/velux ouverts, mode Absent).
 2. Ajuste consignes (Bureau, Chambre, Suite parentale, SdE, SdB) selon mode (Confort/Réduit/TéléTravail).
 3. Met à jour `input_boolean.chauffage_horsgel_etage` et envoie mail si changement.
 4. Applique consignes aux 5 thermostats Z-Wave, lance timer si mise à jour.
 5. Calcul hystérésis → pilote switch chaudière.
+
+> **Note :** `binary_sensor.do_bureau` et `binary_sensor.do_suite_parental` (Somfy Protexial) sont détectés via l'attribut `Door open` (`open`/`closed`) et non leur état principal, car celui-ci peut rester bloqué sur une valeur incorrecte.
 
 **Entrées utilisées :**
 
@@ -142,7 +306,7 @@
 - Capteurs portes RDC (délai 5 min)
 
 **Fonctionnement :**
-1. Calcule `horsgel_rdc` (HorsGel global, portes ouvertes, mode Absent).
+1. Calcule `horsgel_rdc` (HorsGel global, portes RDC via attribut `Door open` des `binary_sensor.do_*`, mode Absent).
 2. Ajuste consigne RDC selon mode (Confort+/Confort/Réduit).
 3. Met à jour `input_boolean.chauffage_horsgel_rdc`, envoie mail.
 4. Applique consigne au thermostat du cellier (RDC).
@@ -172,7 +336,7 @@
 - Changement de `input_select.presence_action`
 
 **Fonctionnement :**
-1. **Présent** → SONOS ON, réactive volets, allume prises (hotte, four, terrasse, Apple).
+1. **Présent** → SONOS ON, arrête la climatisation (`input_button.climatisation_stop`), réactive volets, allume prises (hotte, four, terrasse, Apple).
 2. **Réveil** → déverrouille serrure garage, lumières si avant l'aube, prises, machine à café, volets.
 3. **Arrivée** → déverrouille serrure garage, lumière entrée si sombre, purificateur → passe en Présent.
 4. **Extinction/Couché** → éteint HiFi, verrouille serrures, éteint lumières/prises ; Couché → veilleuses, store pergola si alarme armée, SONOS COUCHE.

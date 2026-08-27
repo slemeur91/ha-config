@@ -5,8 +5,8 @@
 
 ---
 
-## `automation.surveillance_automatisations_desactivees` — Surveillance - Automatisations désactivées
-> [📄 Voir le YAML](../../automations/surveillance_automatisations_desactivees.yaml)
+## `automation.notification_des_automatisations_desactivees` — Notification des Automatisations désactivées
+> [📄 Voir le YAML](../../automations/notification_des_automatisations_desactivees.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
@@ -22,8 +22,8 @@
 
 ---
 
-## `automation.surveillance_automatisations_et_scripts_en_defaut` — Surveillance - Automatisations et Scripts en Défaut
-> [📄 Voir le YAML](../../automations/surveillance_automatisations_et_scripts_en_defaut.yaml)
+## `automation.notification_des_automatisations_et_scripts_en_defaut` — Notification des Automatisations et Scripts en Défaut
+> [📄 Voir le YAML](../../automations/notification_des_automatisations_et_scripts_en_defaut.yaml)
 
 **Statut :** Finalisé
 
@@ -49,25 +49,25 @@ system_log:
 
 ---
 
-## `automation.surveillance_automatisations_sans_declenchement_recent` — Surveillance - Automatisations sans déclenchement récent
-> [📄 Voir le YAML](../../automations/surveillance_automatisations_sans_declenchement_recent.yaml)
+## `automation.notification_des_automatisations_sans_declenchement_recent` — Notification des Automatisations sans déclenchement récent
+> [📄 Voir le YAML](../../automations/notification_des_automatisations_sans_declenchement_recent.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
 **Déclencheurs :**
 - Chaque jour à 9h00
 
-**Conditions :** Au moins une automatisation jamais déclenchée, ou non déclenchée depuis 7 jours (hors `automation.alarme_declenchement`, `automation.alarme_sabotage` et `automation.gestion_de_la_telecommande_hifi` — déclenchée uniquement par appui sur la télécommande HiFi, peut rester longtemps sans déclenchement sans que ce soit anormal)
+**Conditions :** Au moins une automatisation jamais déclenchée, ou non déclenchée depuis 7 jours (hors 20 exclusions dont l'alarme, la télécommande HiFi, la boîte aux lettres, les cycles électroménager, et diverses automatisations à déclenchement normalement irrégulier)
 
 **Fonctionnement :**
-1. Pour chaque automatisation jamais déclenchée ou inactive depuis 7 jours (hors exclusions alarme), envoie une notification HA (`script.notification_ha`) avec un `notification_id` stable par automatisation et la date du dernier déclenchement (ou "jamais déclenchée") dans le message.
+1. Pour chaque automatisation jamais déclenchée ou inactive depuis 7 jours (hors exclusions), envoie une notification HA (`script.notification_ha`) avec un `notification_id` stable par automatisation et la date du dernier déclenchement (ou "jamais déclenchée") dans le message. Les 20 exclusions sont : `alarme_declenchement`, `alarme_sabotage`, `gestion_de_la_telecommande_hifi`, `notification_de_la_boite_aux_lettres`, `gestion_de_la_charge_batterie_de_l_ipad`, `suspension_des_notifications_en_mode_invites`, `notification_des_alertes_de_defaut_des_onduleurs_ups`, `notification_de_batterie_remplacee`, `notification_du_portier`, `notification_de_defaut_du_refrigerateur`, `notification_de_coupure_de_courant_edf`, `notification_de_capteur_deporte_du_chauffage_desactive`, `gestion_de_l_activation_de_l_imprimante_canon_mf650c`, `gestion_de_la_lumiere_de_l_entree`, `notification_des_automatisations_desactivees`, `gestion_du_cycle_du_lave_linge`, `gestion_du_cycle_du_seche_linge`, `gestion_du_cycle_du_lave_vaisselle`, `correction_du_mi_air_purifier`, `maj_auto_prises_ll_sl_zigbee2mqtt`.
 
 **Entrées utilisées :** Aucune entrée helper.
 
 ---
 
-## `automation.surveillance_recharger_les_integrations_en_defaut` — Surveillance - Recharger les intégrations en défaut
-> [📄 Voir le YAML](../../automations/surveillance_recharger_les_integrations_en_defaut.yaml)
+## `automation.rechargement_des_integrations_en_defaut` — Rechargement des intégrations en défaut
+> [📄 Voir le YAML](../../automations/rechargement_des_integrations_en_defaut.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 

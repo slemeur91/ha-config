@@ -1,0 +1,74 @@
+alias: Notification Téléphone
+description: >-
+  **Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Rôle :** Envoie une notification push sur l'iPhone de Sylvain.
+
+
+  **Paramètres :**
+
+  - message_type : type du message
+
+  - message_ha : contenu du message
+
+  - notification_id (optionnel) : tag permettant de remplacer/regrouper une
+  notification précédente sur l'iPhone
+
+
+  **Fonctionnement :**
+
+  1. Envoie une notification push via
+  notify.mobile_app_iphone_de_sylvain_le_meur avec le type en titre et le
+  message en corps.
+
+  2. Si notification_id est fourni, il est transmis en tant que tag pour
+  permettre le remplacement ciblé de la notification.
+
+
+  **Entités principales :**
+
+  - notify.mobile_app_iphone_de_sylvain_le_meur : service de notification
+  utilisé
+fields:
+  message_type:
+    description: Type du message (Information, Alerte, Chauffage, etc.)
+    example: Information
+    required: true
+    selector:
+      text: null
+  message_ha:
+    description: Corps du message
+    example: Message
+    required: true
+    selector:
+      text: null
+  notification_id:
+    description: tag permettant de remplacer/regrouper la notification
+    example: identifiant
+    required: false
+    selector:
+      text: null
+sequence:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ notification_id is defined and notification_id not in [None,
+              ''] }}
+        sequence:
+          - action: notify.mobile_app_iphone_de_sylvain_le_meur
+            data:
+              title: "[HA] {{ message_type }}"
+              message: "{{ message_ha }}"
+              data:
+                tag: "{{ notification_id }}"
+    default:
+      - action: notify.mobile_app_iphone_de_sylvain_le_meur
+        data:
+          title: "[HA] {{ message_type }}"
+          message: "{{ message_ha }}"
+mode: queued
+max: 10

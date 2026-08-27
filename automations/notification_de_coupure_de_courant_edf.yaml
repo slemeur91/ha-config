@@ -1,0 +1,85 @@
+alias: Notification de coupure de courant EDF
+description: >-
+  **Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Tension d'entrée AC de l'onduleur EcoFlow DELTA Max
+  (`sensor.ecoflow_ac_in_volts`) passe sous 100V pendant 60s (coupure)
+
+  - Tension repasse au-dessus de 100V pendant 30s (rétablissement)
+
+
+  **Fonctionnement :**
+
+  1. Coupure confirmée (60s sous 100V) → active le verrou
+  `input_boolean.coupure_edf_en_cours`, notifie le téléphone.
+
+  2. Rétablissement confirmé (30s au-dessus de 100V) ET verrou actif → désactive
+  le verrou, notifie le téléphone.
+
+
+  **Note :** le verrou évite les fausses alertes "rétabli" lors des
+  micro-coupures de communication de l'EcoFlow (reconnexion Bluetooth/cloud,
+  ~5-10s) qui ne sont pas de vraies coupures secteur.
+
+
+  **Entités principales :**
+
+  - `sensor.ecoflow_ac_in_volts` : tension secteur mesurée par l'onduleur
+
+  - `input_boolean.coupure_edf_en_cours` : verrou anti-faux-positifs
+
+  - `script.notification_telephone` : notification push iPhone
+triggers:
+  - trigger: numeric_state
+    entity_id: sensor.ecoflow_ac_in_volts
+    below: 100
+    for:
+      seconds: 60
+    id: power_out
+    note: >-
+      Tension secteur mesurée par l'EcoFlow ~230V normalement ; proche de 0
+      pendant 60s = vraie coupure EDF (les micro-coupures de communication
+      observées ne durent que 5-10s).
+  - trigger: numeric_state
+    entity_id: sensor.ecoflow_ac_in_volts
+    above: 100
+    for:
+      seconds: 30
+    id: power_restored
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: power_out
+        sequence:
+          - action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.coupure_edf_en_cours
+          - action: script.notification_telephone
+            data:
+              message_type: Alerte
+              message_ha: >-
+                Coupure secteur EDF détectée. La maison fonctionne sur batterie
+                (EcoFlow à {{ states('sensor.ecoflow_battery_level') }}%).
+              notification_id: coupure_edf
+      - conditions:
+          - condition: trigger
+            id: power_restored
+          - condition: state
+            entity_id: input_boolean.coupure_edf_en_cours
+            state: "on"
+        sequence:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.coupure_edf_en_cours
+          - action: script.notification_telephone
+            data:
+              message_type: Information
+              message_ha: Le secteur EDF est rétabli.
+              notification_id: coupure_edf
+mode: single

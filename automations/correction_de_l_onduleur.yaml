@@ -1,0 +1,72 @@
+alias: Correction de l'Onduleur
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune.
+
+  **Déclencheurs :**
+  - Démarrage de Home Assistant (`homeassistant start`), avec un délai de 4 minutes avant vérification (le temps que l'intégration NUT tente de se reconnecter à l'onduleur).
+
+  **Fonctionnement :**
+  1. 4 minutes après le démarrage de HA, vérifie l'état de l'onduleur Eaton_Usb (`sensor.eaton_usb_etat` et `sensor.eaton_usb_code_d_etat`).
+  2. Si l'un des deux est `unavailable`/`unknown` (intégration NUT en défaut), redémarre l'add-on "Network UPS Tools" (`a0d7b954_nut`).
+  3. Sinon, ne fait rien.
+
+  **Entités principales :**
+  - `sensor.eaton_usb_etat` : état de l'onduleur Eaton_Usb
+  - `sensor.eaton_usb_code_d_etat` : code d'état NUT de l'onduleur Eaton_Usb
+  - Add-on `Network UPS Tools` (`a0d7b954_nut`) : redémarré en cas de défaut
+triggers:
+  - trigger: homeassistant
+    event: start
+    id: Démarrage
+  - trigger: state
+    entity_id:
+      - sensor.eaton_usb_etat
+    to:
+      - unavailable
+      - unknown
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+  - trigger: state
+    entity_id:
+      - sensor.eaton_usb_code_d_etat
+    to:
+      - unavailable
+      - unknown
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+conditions: []
+actions:
+  - if:
+      - condition: trigger
+        id:
+          - Démarrage
+    then:
+      - delay:
+          hours: 0
+          minutes: 4
+          seconds: 0
+        note: Laisse le temps aux add-ons et intégrations de se stabiliser après le démarrage
+  - if:
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: sensor.eaton_usb_etat
+            state:
+              - unavailable
+              - unknown
+          - condition: state
+            entity_id: sensor.eaton_usb_code_d_etat
+            state:
+              - unavailable
+              - unknown
+    then:
+      - action: hassio.addon_restart
+        data:
+          addon: a0d7b954_nut
+    else: []
+mode: single

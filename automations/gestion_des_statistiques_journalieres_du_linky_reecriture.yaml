@@ -1,0 +1,33 @@
+alias: Gestion des Statistiques journalières du Linky – Réécriture
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
+
+  **Déclencheurs :**
+  - Changement de `sensor.linky_22217944914302_consumption` (nouvelles données reçues)
+
+  **Conditions :**
+  - Sensor non indisponible / inconnu
+
+  **Fonctionnement :**
+  1. Lance le script pyscript `linky_update` pour réimporter quotidiennement les statistiques long terme de base_consumption / base_consumption_cost avec les vraies dates Enedis (correction du décalage J-1).
+
+  **Entités principales :**
+  - `sensor.linky_22217944914302_consumption` : données brutes Linky
+  - `pyscript.linky_update` : réécriture des statistiques
+triggers:
+  - trigger: state
+    entity_id: sensor.linky_22217944914302_consumption
+conditions:
+  - condition: not
+    conditions:
+      - condition: state
+        entity_id: sensor.linky_22217944914302_consumption
+        state:
+          - unavailable
+          - unknown
+actions:
+  - action: pyscript.linky_update
+    data: {}
+mode: single
+max_exceeded: silent

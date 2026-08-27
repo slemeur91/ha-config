@@ -183,5 +183,5 @@ actions:
           Si tous les seuils sous les valeurs basses (PM2.5 < 35, PM10 < 45, VOC
           < 4, NO2 < 4) → éteint les purificateurs, coupe les switches physiques
           si alarme armée, désactive le flag purification
-mode: parallel
+mode: queued
 max: 10

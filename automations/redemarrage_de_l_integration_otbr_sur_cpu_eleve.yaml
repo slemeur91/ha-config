@@ -1,0 +1,72 @@
+alias: Redémarrage de l'intégration OTBR sur CPU élevé
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Démarrage de Home Assistant
+
+
+  **Conditions :**
+
+  - `sensor.system_monitor_utilisation_du_processeur` dépasse 30% (vérifié 4 minutes
+  après le démarrage)
+
+
+  **Fonctionnement :**
+
+  1. Attend 4 minutes après le démarrage de HA (laisse le temps aux add-ons/intégrations
+  de se stabiliser).
+
+  2. Si le CPU global dépasse 30% → redémarre l''add-on OpenThread Border Router (connu
+  pour parfois rester bloqué à haute consommation CPU après un redémarrage) puis envoie
+  une notification persistante.
+
+
+  **Entités principales :**
+
+  - `sensor.system_monitor_utilisation_du_processeur`
+
+  - Add-on `core_openthread_border_router`'
+triggers:
+- trigger: homeassistant
+  event: start
+  note: Démarrage complet de Home Assistant
+  id: Démarrage
+- trigger: numeric_state
+  entity_id:
+  - sensor.system_monitor_utilisation_du_processeur
+  above: 30
+  for:
+    hours: 0
+    minutes: 2
+    seconds: 0
+conditions: []
+actions:
+- if:
+  - condition: trigger
+    id:
+    - Démarrage
+  then:
+  - delay:
+      hours: 0
+      minutes: 4
+      seconds: 0
+    note: Laisse le temps aux add-ons et intégrations de se stabiliser après le démarrage
+- note: Ne redémarre OTBR que si le CPU global dépasse 30%
+  condition: numeric_state
+  entity_id: sensor.system_monitor_utilisation_du_processeur
+  above: 30
+- action: hassio.addon_restart
+  data:
+    addon: core_openthread_border_router
+  note: Redémarre l'add-on OpenThread Border Router pour libérer le CPU
+- note: Notification pour garder une trace de l'intervention
+  action: persistent_notification.create
+  data:
+    title: OTBR redémarré automatiquement
+    message: Le CPU dépassait 30% 4 minutes après le démarrage de HA. L'add-on OpenThread
+      Border Router a été redémarré automatiquement.
+mode: single

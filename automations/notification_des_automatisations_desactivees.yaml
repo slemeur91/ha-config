@@ -1,0 +1,55 @@
+alias: Notification des Automatisations désactivées
+description: >-
+  **Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Chaque jour à 8h00
+
+
+  **Conditions :**
+
+  - Au moins une automatisation désactivée
+
+
+  **Fonctionnement :**
+
+  1. Pour chaque automatisation désactivée, appelle `script.notification_ha`
+  avec un `notification_id` stable par automatisation (mise à jour, pas de
+  doublon si toujours désactivée le lendemain).
+
+
+  **Entités principales :**
+
+  - `automation.*` : ensemble des automatisations surveillées (état off)
+
+  - `script.notification_ha` : création des notifications
+triggers:
+  - trigger: time
+    at: "08:00:00"
+conditions:
+  - condition: template
+    value_template: >
+      {{ states.automation | selectattr('state', 'eq', 'off') | list | count > 0
+      }}
+actions:
+  - note: >-
+      Envoie une notification HA distincte (Notification HA) pour chaque
+      automatisation désactivée. Correctif: for_each utilise les entity_id (str)
+      plutôt que les objets State, pour éviter le bug HA de dépliage d'une liste
+      à un seul élément.
+    repeat:
+      for_each: >-
+        {{ states.automation | selectattr('state', 'eq', 'off') |
+        map(attribute='entity_id') | list }}
+      sequence:
+        - action: script.notification_ha
+          data:
+            message_type: Automatisations désactivées
+            message_ha: >-
+              L'automatisation {{ state_attr(repeat.item, 'friendly_name') or
+              repeat.item }} est désactivée.
+            notification_id: automation_disabled-{{ repeat.item }}

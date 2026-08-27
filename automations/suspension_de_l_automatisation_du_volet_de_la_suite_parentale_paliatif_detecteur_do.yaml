@@ -1,0 +1,102 @@
+alias: Suspension de l'automatisation du Volet de la Suite Parentale - paliatif détecteur
+  DO
+description: '**Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Changement d''état de `binary_sensor.do_bureau`, `binary_sensor.do_cuisine`, `binary_sensor.do_salon`,
+  `binary_sensor.do_sejour`, `binary_sensor.do_vitre_cellier`, `cover.velux_de_la_chambre`,
+  `cover.velux_de_la_salle_d_eau`, `cover.velux_de_la_salle_de_bain`
+
+
+  **Fonctionnement :**
+
+  1. Si les détecteurs des autres pièces indiquent tous une ouverture (`do_cuisine`/`do_salon`/`do_sejour`/`do_vitre_cellier`
+  via la condition native `door.is_open`, `do_bureau` via `window.is_open`) ET les
+  3 Velux (hors suite parentale) sont tous ouverts (position > 0) → désactive `automation.gestion_du_volet_suite_parentale`.
+
+  2. Sinon → réactive cette automatisation.
+
+  (L''ancienne condition `state` équivalente sur les 5 DO est conservée dans la config
+  mais désactivée — remplacée par les conditions natives door/window.is_open.)
+
+
+  **Entités principales :**
+
+  - 5 `binary_sensor.do_*` : détecteurs d''ouverture des autres pièces
+
+  - 3 `cover.velux_*` : position des Velux (hors suite parentale)
+
+  - `automation.gestion_du_volet_suite_parentale` : automatisation suspendue/réactivée'
+triggers:
+- trigger: state
+  entity_id:
+  - binary_sensor.do_bureau
+  - binary_sensor.do_cuisine
+  - binary_sensor.do_salon
+  - binary_sensor.do_sejour
+  - binary_sensor.do_vitre_cellier
+  - cover.velux_de_la_chambre
+  - cover.velux_de_la_salle_d_eau
+  - cover.velux_de_la_salle_de_bain
+  note: 'Palliatif : le détecteur d''ouverture (DO) de la Suite Parentale n''étant
+    pas fiable, on se base sur les ouvertures des autres pièces et les Velux comme
+    indicateur indirect'
+conditions: []
+actions:
+- choose:
+  - conditions:
+    - condition: state
+      entity_id:
+      - binary_sensor.do_bureau
+      - binary_sensor.do_cuisine
+      - binary_sensor.do_salon
+      - binary_sensor.do_sejour
+      - binary_sensor.do_vitre_cellier
+      state: 'on'
+      enabled: false
+    - condition: door.is_open
+      target:
+        entity_id:
+        - binary_sensor.do_cuisine
+        - binary_sensor.do_salon
+        - binary_sensor.do_sejour
+        - binary_sensor.do_vitre_cellier
+      options:
+        behavior: all
+        for: 00:00:00
+    - condition: window.is_open
+      target:
+        entity_id: binary_sensor.do_bureau
+      options:
+        behavior: any
+        for: 00:00:00
+    - condition: numeric_state
+      entity_id: cover.velux_de_la_chambre
+      attribute: current_position
+      above: 0
+    - condition: numeric_state
+      entity_id: cover.velux_de_la_salle_d_eau
+      attribute: current_position
+      above: 0
+    - condition: numeric_state
+      entity_id: cover.velux_de_la_salle_de_bain
+      attribute: current_position
+      above: 0
+    sequence:
+    - note: Toutes les autres ouvertures sont ouvertes -> suspend l'automatisation
+        du volet de la Suite Parentale
+      action: automation.turn_off
+      target:
+        entity_id: automation.gestion_du_volet_suite_parentale
+      data:
+        stop_actions: true
+  default:
+  - action: automation.turn_on
+    target:
+      entity_id: automation.gestion_du_volet_suite_parentale
+    note: Au moins une ouverture refermée -> réactive l'automatisation
+mode: single

@@ -1,4 +1,4 @@
-alias: GAZPAR – Mise à jour statistiques journalières
+alias: Gestion des Statistiques journalières de GAZPAR – Réécriture
 description: >-
   **Statut :** Finalisé
 
@@ -18,7 +18,7 @@ description: >-
 
   **Fonctionnement :**
 
-  1. Lance le script pyscript `gazpar_update` pour injecter les dernières
+  1. Lance le script pyscript `gazpar_update` pour réécrire les dernières
   données de consommation gaz dans les statistiques long-terme de HA.
 
 
@@ -26,10 +26,10 @@ description: >-
 
   - `sensor.gazpar_cheptainville_card` : données brutes GAZPAR
 
-  - `pyscript.gazpar_update` : injection statistiques
+  - `pyscript.gazpar_update` : réécriture des statistiques
 triggers:
-  - entity_id: sensor.gazpar_cheptainville_card
-    trigger: state
+  - trigger: state
+    entity_id: sensor.gazpar_cheptainville_card
 conditions:
   - condition: not
     conditions:
@@ -42,6 +42,7 @@ actions:
   - action: pyscript.gazpar_import_all
     data: {}
     enabled: false
+    note: "Désactivé : import complet, ne sert qu'en cas de reprise d'historique"
   - action: pyscript.gazpar_update
     data: {}
 mode: single

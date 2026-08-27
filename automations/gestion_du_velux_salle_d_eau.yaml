@@ -1,9 +1,29 @@
 alias: Gestion du Velux - Salle d'eau
-description: |-
-  **Statut :** Finalisé
+description: '**Statut :** Finalisé
+
   **Evolution :** Aucune
 
-  Gestion du Velux - Salle d'eau
+
+  **Fonctionnement :**
+
+  Automatisation basée sur le blueprint `Volets/Gestion_des_velux.yaml` : pilote le
+  velux selon le soleil, les alertes météo, la température (ouverture pour aération
+  l''été ou chauffage passif l''hiver, fermeture pour protection thermique), la pluie,
+  et une dérogation de 15mn en cas d''ouverture manuelle (avec anti-rebond 45s sur
+  la détection de mouvement).
+
+
+  **Entités principales :**
+
+  - `cover.velux_de_la_salle_d_eau` : velux piloté
+
+  - `climate.chauffage_de_la_salle_d_eau_nodeid_4_climate` : chauffage de la pièce
+
+  - `binary_sensor.velux_de_la_salle_d_eau_pluie` : capteur de pluie
+
+  - `input_button.velux_salle_d_eau_fermer` : réactivation manuelle
+
+  - `timer.velux_salle_d_eau_timer` : timer de dérogation'
 use_blueprint:
   path: Volets/Gestion_des_velux.yaml
   input:
@@ -11,3 +31,5 @@ use_blueprint:
     velux_target: cover.velux_de_la_salle_d_eau
     velux_button: input_button.velux_salle_d_eau_fermer
     chauffage_target: climate.chauffage_de_la_salle_d_eau_nodeid_4_climate
+    velux_timer: timer.velux_salle_d_eau_timer
+    pluie_target: binary_sensor.velux_de_la_salle_d_eau_pluie

@@ -4,7 +4,7 @@
 
 ---
 
-## Intégrations (22)
+## Intégrations (23)
 
 ### Alexa Media Player
 > [GitHub](https://github.com/alandtse/alexa_media_player) — `domain: alexa_media`
@@ -207,6 +207,15 @@ Contrôle des poêles à granulés connectés via la plateforme Agua IOT.
 
 ---
 
+### Millésime — Cave à Vin
+> [GitHub](https://github.com/Redsklns/ha-millesime) — `domain: millesime`
+
+Suivi de l'inventaire de la cave à vin (bouteilles, millésimes, emplacements).
+
+> ⚠️ Mise à jour disponible (v7.1.6).
+
+---
+
 ### My EcoWatt by RTE
 > [GitHub](https://github.com/kamaradclimber/rte-ecowatt) — `domain: rte_ecowatt`
 
@@ -317,7 +326,20 @@ Intégration des appareils X-Sense (station de sécurité SBS50, détecteurs de 
 
 ---
 
-## Cartes Lovelace (9)
+## Intégrations natives notables
+
+> Ces intégrations sont **natives Home Assistant** (non HACS) mais méritent d'être documentées.
+
+### Anthropic — Claude (IA)
+> [Documentation HA](https://www.home-assistant.io/integrations/anthropic/) — `domain: anthropic`
+
+Intégration native HA de l'IA Claude (Anthropic). Permet l'assistant conversationnel HA alimenté par Claude, ainsi que la connexion via le protocole **MCP** (Model Context Protocol) pour le pilotage de HA depuis Claude.
+
+**Configuration :** Titre : `Claude` — API Anthropic configurée.
+
+---
+
+## Cartes Lovelace (13)
 
 ### apexcharts-card
 > [GitHub](https://github.com/RomRider/apexcharts-card)
@@ -423,6 +445,13 @@ collapse: 60
 
 ![Battery State Card](../images/battery-state-card.png)
 
+### Decluttering Card
+> [GitHub](https://github.com/custom-cards/decluttering-card)
+
+Carte template permettant de définir des configurations réutilisables pour réduire la duplication dans les dashboards Lovelace.
+
+---
+
 ### card-mod
 > [GitHub](https://github.com/thomasloven/lovelace-card-mod)
 
@@ -482,9 +511,17 @@ cards:
 Templates et couleurs d'icônes personnalisés dans l'interface HA.
 
 ### expander-card
+
 > [GitHub](https://github.com/MelleD/lovelace-expander-card)
 
 Carte extensible/rétractable pour organiser les dashboards.
+
+### ha-floorplan
+> [GitHub](https://github.com/ExperienceLovelace/ha-floorplan)
+
+Plan interactif SVG de l'habitation : affichage de l'état des entités (lumières, capteurs, volets…) superposé à un plan en image vectorielle, avec styles CSS dynamiques.
+
+---
 
 ### GrDF Gazpar card
 > [GitHub](https://github.com/ssenart/lovelace-gazpar-card)
@@ -504,6 +541,13 @@ showYearlyCostHistoryChart: false
 ```
 
 ![GrDF Gazpar card](../images/grdf-gazpar-card.png)
+
+### Kiosk Mode
+> [GitHub](https://github.com/NemesisRE/kiosk-mode)
+
+Masque l'en-tête et/ou la barre latérale Home Assistant pour un affichage en mode kiosque (tablette murale, écran dédié).
+
+---
 
 ### Pollenprognos Card
 > [GitHub](https://github.com/krissen/pollenprognos-card)
@@ -630,3 +674,12 @@ entities:
 ```
 
 ![Travel Time card](../images/travel-time-card.png)
+
+---
+
+### WashData Card
+> [GitHub](https://github.com/technogrady/ha_washdata_card)
+
+Carte Lovelace dédiée à l'affichage de l'état des cycles de lavage (WashData). Affiche le programme en cours, la progression et le temps restant pour les appareils configurés (lave-linge, lave-vaisselle, sèche-linge).
+
+**Installation :** Ajouter `https://github.com/technogrady/ha_washdata_card` comme dépôt personnalisé dans HACS → Frontend.

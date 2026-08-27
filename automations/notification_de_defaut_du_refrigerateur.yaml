@@ -13,6 +13,12 @@ description: >-
   "home")
 
 
+  **Conditions :**
+
+  - Les capteurs de température et le device_tracker ne doivent pas être à
+  unknown/unavailable
+
+
   **Fonctionnement :**
 
   1. Si la température du frigo est hors plage [2-4°C], OU le congélateur hors

@@ -1,0 +1,58 @@
+alias: Gestion de l'Activation de l'imprimante Canon MF650C
+description: >-
+  **Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - `device_tracker.slm_imp1_slm_imp1` passe à "home"
+
+  - `device_tracker.slm_imp1_slm_imp1` passe à "not_home"
+
+
+  **Fonctionnement :**
+
+  1. Imprimante détectée à la maison → active l'intégration Canon MF650C Series.
+
+  2. Imprimante absente → désactive l'intégration.
+
+
+  **Entités principales :**
+
+  - `device_tracker.slm_imp1_slm_imp1` : présence réseau de l'imprimante
+
+  - Intégration Canon MF650C Series (config_entry_id
+  `01K2553QVKR4EDFKZG485BM4P8`)
+triggers:
+  - trigger: state
+    entity_id: device_tracker.slm_imp1_slm_imp1
+    to: home
+    id: home
+  - trigger: state
+    entity_id: device_tracker.slm_imp1_slm_imp1
+    to: not_home
+    id: absent
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: home
+        sequence:
+          - action: homeassistant.enable_config_entry
+            data:
+              config_entry_id: 01K2553QVKR4EDFKZG485BM4P8
+            note: Imprimante détectée à la maison -> active l'intégration
+      - conditions:
+          - condition: trigger
+            id: absent
+        sequence:
+          - action: homeassistant.disable_config_entry
+            data:
+              config_entry_id: 01K2553QVKR4EDFKZG485BM4P8
+            note: >-
+              Imprimante absente -> désactive l'intégration pour éviter les
+              erreurs de connexion
+mode: single

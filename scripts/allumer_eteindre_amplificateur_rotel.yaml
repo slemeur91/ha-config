@@ -1,0 +1,100 @@
+alias: Allumer/Éteindre Amplificateur ROTEL
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
+
+  **Rôle :** Allume ou éteint l'amplificateur ROTEL et sélectionne son entrée vidéo, en pilotant les boutons IR/réseau de l'ampli et en vérifiant l'état atteint via sa présence réseau (device_tracker). Appelé par "Gestion de la HiFi" (branche extinction avec action: "off", branche allumage/SOURCE avec action: "on") via script.turn_on (fire-and-forget).
+
+  **Paramètres :**
+  - action : "on" ou "off"
+
+  **Fonctionnement :**
+  1. action "off" → répète (presse button.rotel_off puis délai de 30s) jusqu'à ce que device_tracker.slm_rotel_slm_rotel passe à "not_home" (= ampli non détecté sur le réseau = éteint).
+  2. action "on" → répète (sélectionne l'entrée vidéo selon input_select.hifi_source : "Zappiti" → button.rotel_video1, "BluRay" → button.rotel_video2, "slm-media4" → button.rotel_video3, puis délai de 30s) jusqu'à ce que device_tracker.slm_rotel_slm_rotel passe à "home" (= ampli détecté sur le réseau = allumé).
+  3. continue_on_error : une erreur sur une étape n'interrompt pas le script.
+
+  **Entités principales :**
+  - button.rotel_off, button.rotel_video1/2/3 : commandes de l'ampli (extinction / sélection d'entrée)
+  - device_tracker.slm_rotel_slm_rotel : présence réseau de l'ampli, utilisée pour vérifier l'état atteint
+  - input_select.hifi_source : source sélectionnée, détermine l'entrée vidéo activée
+max: 5
+mode: queued
+sequence:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ action == \"off\" }}"
+        sequence:
+          - repeat:
+              sequence:
+                - action: button.press
+                  data: {}
+                  metadata: {}
+                  target:
+                    entity_id: button.rotel_off
+                - delay:
+                    hours: 0
+                    milliseconds: 0
+                    minutes: 0
+                    seconds: 30
+              until:
+                - condition: state
+                  entity_id: device_tracker.slm_rotel_slm_rotel
+                  state:
+                    - not_home
+                  for:
+                    hours: 0
+                    minutes: 4
+                    seconds: 0
+      - conditions:
+          - condition: template
+            value_template: "{{ action == \"on\" }}"
+        sequence:
+          - repeat:
+              sequence:
+                - choose:
+                    - conditions:
+                        - condition: state
+                          entity_id: input_select.hifi_source
+                          state: Zappiti
+                      sequence:
+                        - action: button.press
+                          data: {}
+                          metadata: {}
+                          target:
+                            entity_id: button.rotel_video1
+                    - conditions:
+                        - condition: state
+                          entity_id: input_select.hifi_source
+                          state: BluRay
+                      sequence:
+                        - action: button.press
+                          data: {}
+                          metadata: {}
+                          target:
+                            entity_id: button.rotel_video2
+                    - conditions:
+                        - condition: state
+                          entity_id: input_select.hifi_source
+                          state: slm-media4
+                      sequence:
+                        - action: button.press
+                          data: {}
+                          metadata: {}
+                          target:
+                            entity_id: button.rotel_video3
+                - delay:
+                    hours: 0
+                    milliseconds: 0
+                    minutes: 0
+                    seconds: 30
+              until:
+                - condition: state
+                  entity_id: device_tracker.slm_rotel_slm_rotel
+                  state:
+                    - home
+                  for:
+                    hours: 0
+                    minutes: 4
+                    seconds: 0
+    continue_on_error: true

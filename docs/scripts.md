@@ -1,4 +1,4 @@
-# 📜 Scripts (19)
+# 📜 Scripts (21)
 
 [← Retour README](../README.md)
 
@@ -76,6 +76,24 @@
 ---
 
 ## HiFi
+
+### `script.allumer_eteindre_amplificateur_rotel` — Allumer/Éteindre Amplificateur ROTEL
+> [📄 Voir le YAML](../scripts/allumer_eteindre_amplificateur_rotel.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Allume ou éteint l'amplificateur ROTEL et sélectionne son entrée vidéo, en pilotant les boutons IR/réseau et en vérifiant l'état via la présence réseau (`device_tracker`). Appelé par "Gestion de la HiFi" via `script.turn_on` (fire-and-forget).
+
+**Paramètres :**
+- `action` : `"on"` ou `"off"`
+
+**Fonctionnement :**
+1. `action: "off"` → répète (presse `button.rotel_off` + délai 30s) jusqu'à ce que `device_tracker.slm_rotel_slm_rotel` passe à "not_home" (ampli éteint).
+2. `action: "on"` → répète (sélectionne l'entrée selon `input_select.hifi_source` : Zappiti→video1, BluRay→video2, slm-media4→video3 + délai 30s) jusqu'à ce que `device_tracker.slm_rotel_slm_rotel` passe à "home" (ampli allumé).
+
+**Entités utilisées :** `button.rotel_off`, `button.rotel_video1/2/3`, `device_tracker.slm_rotel_slm_rotel`, `input_select.hifi_source`
+
+---
 
 ### `script.allumer_eteindre_apple_tv_salon` — Allumer/Éteindre Apple TV du Salon
 > [📄 Voir le YAML](../scripts/allumer_eteindre_apple_tv_salon.yaml)
@@ -249,9 +267,9 @@
 - `message_mail` : corps du message
 
 **Fonctionnement :**
-1. Appelle `notify.email` avec le type en objet et le message en corps.
+1. Appelle `smtp.send_message` ciblant `notify.email_slemeur_slm_srv_dscloud_me` avec le type en objet (`[HA] {{ message_type }}`) et le message en corps.
 
-**Destinataire :** [votre-email@domaine.fr]
+**Mode :** queued, max 10
 
 ---
 
@@ -271,6 +289,26 @@
 
 ---
 
+### `script.notification_telephone` — Notification Téléphone
+> [📄 Voir le YAML](../scripts/notification_telephone.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Envoi d'une notification push sur l'iPhone.
+
+**Paramètres :**
+- `message_type` : type du message
+- `message_ha` : contenu du message
+- `notification_id` (optionnel) : tag permettant de remplacer/regrouper une notification précédente sur l'iPhone
+
+**Fonctionnement :**
+1. Envoie une notification push via `notify.mobile_app_iphone_de_sylvain_le_meur` avec le type en titre et le message en corps.
+2. Si `notification_id` est fourni, il est transmis en tant que `tag` pour permettre le remplacement ciblé de la notification.
+
+**Entités utilisées :** `notify.mobile_app_iphone_de_sylvain_le_meur`
+
+---
+
 ### `script.notification_snapshot_du_portier` — Notification Snapshot du Portier
 > [📄 Voir le YAML](../scripts/notification_snapshot_du_portier.yaml)
 
@@ -283,10 +321,12 @@
 - `message_mail` : corps du message (ex : "Appuis sur la sonnette")
 
 **Fonctionnement :**
-1. Capture une image de `camera.exterieur_slm_portier` dans `/config/www/Snapshots/portier.jpg`.
-2. Envoie un mail `[HA] {{ message_type }}` avec l'image en pièce jointe et le message en corps.
+1. Capture une image de `camera.exterieur_slm_portier` dans `/media/Snapshots/portier.jpg`.
+2. Envoie un mail `[HA] {{ message_type }}` via `smtp.send_message` (`notify.email_slemeur_slm_srv_dscloud_me`) avec l'image en pièce jointe (`media_source`) et le message en corps.
 
-**Entités utilisées :** `camera.exterieur_slm_portier`
+**Note :** L'ancienne capture vers `/config/www/`, l'ancien envoi via `notify.email` et la notification push iPhone sont conservés dans la séquence mais désactivés (`enabled: false`).
+
+**Entités utilisées :** `camera.exterieur_slm_portier`, `notify.email_slemeur_slm_srv_dscloud_me`
 
 ---
 
@@ -298,10 +338,10 @@
 **Rôle :** Capture les images des 7 caméras et du portier, et les envoie par mail en cas d'alerte.
 
 **Fonctionnement :**
-1. Capture en parallèle les caméras `slm_camera1` à `slm_camera7` et `slm_portier` (8 snapshots, dans `/config/www/Snapshots/`).
-2. Envoie un mail `[HA] Alerte` avec toutes les images en pièces jointes.
+1. Capture en parallèle les caméras `slm_camera1` à `slm_camera7` et `slm_portier` (8 snapshots, dans `/media/Snapshots/`).
+2. Envoie un mail `[HA] Alerte` via `smtp.send_message` avec toutes les images en pièces jointes (`media_source`).
 
-**Entités utilisées :** `camera.slm_camera1` à `camera.slm_camera7`, `camera.slm_portier`
+**Entités utilisées :** `camera.slm_camera1` à `camera.slm_camera7`, `camera.exterieur_slm_portier`, `notify.email_slemeur_slm_srv_dscloud_me`
 
 ---
 
@@ -316,10 +356,11 @@
 - `message_vocal` : texte à synthétiser
 
 **Fonctionnement :**
-1. Selon le mode SONOS actif (COUCHE → Suite parentale, via `group_members` / REVEIL ou autre → Salon+Garage si TéléTravail, via `group_members`) :
-2. Diffuse le message en overlay via `media_player.play_media` (`announce: true`, `media-source://tts/tts.google_translate_fr_fr?...`).
-3. Volume d'annonce 60 (40 pour le Garage en TéléTravail), passé directement dans l'appel (`extra.volume`).
-4. Sonos gère nativement la baisse du volume en cours et sa restauration après l'annonce.
+1. Selon le mode SONOS actif :
+   - COUCHE → diffuse sur tous les membres du groupe Suite parentale (`group_members`), volume d'annonce 40.
+   - REVEIL / autre → diffuse sur tous les membres du groupe Salon, volume d'annonce 60, + Garage si TéléTravail (volume 40).
+2. Chaque diffusion utilise `media_player.play_media` avec `announce: true` et `media_content_id: media-source://tts/tts.google_translate_fr_fr?message=...`.
+3. Sonos gère nativement la baisse du volume en cours et sa restauration après l'annonce.
 
 **Entités utilisées :**
 - `input_select.sonos` / `input_select.calendrier`
@@ -330,5 +371,5 @@
 
 ## Scripts Pyscript
 
-> Les scripts pyscript sont dans `/config/pyscript/` et chargés par l'intégration **pyscript** (HACS). Ce ne sont pas des entités `script.*` : ils ne sont pas comptés dans les 18 scripts ci-dessus.
+> Les scripts pyscript sont dans `/config/pyscript/` et chargés par l'intégration **pyscript** (HACS). Ce ne sont pas des entités `script.*` : ils ne sont pas comptés dans les 20 scripts ci-dessus.
 > Sources : [`pyscripts/gazpar_energy.py`](../pyscripts/gazpar_energy.py) | [`pyscripts/surveillance_station_recording.py`](../pyscripts/surveillance_station_recording.py)

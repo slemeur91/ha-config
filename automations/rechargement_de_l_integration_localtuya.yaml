@@ -1,0 +1,36 @@
+alias: Rechargement de l'intégration LocalTuya
+description: >-
+  **Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Démarrage de Home Assistant
+
+
+  **Fonctionnement :**
+
+  1. Attend 4 minutes après le démarrage de HA (laisse le temps au réseau/aux
+  appareils Tuya locaux d'être joignables).
+
+  2. Recharge l'intégration LocalTuya (`localtuya.reload`).
+
+
+  **Entités principales :**
+
+  - Intégration LocalTuya
+triggers:
+  - trigger: homeassistant
+    event: start
+conditions: []
+actions:
+  - delay:
+      hours: 0
+      minutes: 4
+      seconds: 0
+    note: Laisse le temps au réseau/aux appareils Tuya locaux d'être joignables
+  - action: localtuya.reload
+    data: {}
+mode: single

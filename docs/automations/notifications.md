@@ -1,4 +1,4 @@
-# Notifications (10)
+# Notifications (15)
 
 [← Retour README](../../README.md)
 
@@ -57,12 +57,36 @@
 **Statut :** Finalisé | **Evolution :** Aucune
 
 **Déclencheurs :**
-- `battery_notes_battery_increased` (niveau en hausse significative)
+- `battery_notes_battery_increased` (niveau de batterie en hausse significative)
 
 **Fonctionnement :**
-1. Crée une notification persistante suggérant de marquer la batterie comme remplacée.
+1. Appelle `script.notification_ha` (fire-and-forget via `script.turn_on`) avec un message adapté selon le type de batterie : rechargeable ("rechargée") ou pile ("remplacée"), mentionnant le niveau avant/après.
+2. `notification_id` stable par appareil (`battery_increased-device_id-source_entity_id`) pour éviter les doublons si l'évènement se répète.
 
-**Entrées utilisées :** Aucune entrée helper.
+**Entités principales :** `script.notification_ha`, événement `battery_notes_battery_increased`
+
+---
+
+## `automation.notification_de_capteur_deporte_du_chauffage_desactive` — Notification de capteur déporté du chauffage désactivé
+> [📄 Voir le YAML](../../automations/notification_du_capteur_deporte_du_chauffage_desactive.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- L'un des 5 capteurs sonde de température des chauffages de l'étage passe à « Non Détecté » (off)
+- Planification hebdomadaire tous les vendredis à 08h00
+- Déclenchement manuel
+
+**Fonctionnement :**
+1. Quel que soit le déclencheur → vérifie les 5 capteurs et crée une notification pour chacun actuellement à off. Le `notification_id` évite les doublons dans l'interface.
+
+**Entités principales :**
+- `binary_sensor.chauffage_du_bureau_nodeid_2_temperature_sensor`
+- `binary_sensor.chauffage_de_la_chambre_nodeid_6_temperature_sensor`
+- `binary_sensor.chauffage_de_la_suite_parentale_nodeid_3_temperature_sensor`
+- `binary_sensor.chauffage_de_la_salle_d_eau_nodeid_4_temperature_sensor`
+- `binary_sensor.chauffage_de_la_salle_de_bain_nodeid_5_temperature_sensor`
+- `script.notification_ha` : création de la notification persistante
 
 ---
 
@@ -172,20 +196,110 @@
 ---
 
 ## `automation.notification_de_la_boite_aux_lettres` — Notification de la Boîte aux Lettres
-> [📄 Voir le YAML](../../automations/gestion_de_la_boite_aux_lettres.yaml)
+> [📄 Voir le YAML](../../automations/notification_de_la_boite_aux_lettres.yaml)
 
-**Statut :** En production | **Evolution :** Aucune
+**Statut :** En test | **Evolution :** Corrections
 
 **Déclencheurs :**
-- Changement de `sensor.p100_boite_aux_lettres_device_posture`
+- Fermeture de la porte principale (`binary_sensor.porte_boite_aux_lettres` → off) — cas colis
+- Fermeture de la trappe à lettres (`binary_sensor.trappe_boite_aux_lettres` → off), uniquement si la porte est déjà fermée — cas lettre
 
 **Fonctionnement :**
-1. `input_boolean.courrier_en_attente` ON → désactive le flag, compose "boîte vidée".
-2. Flag OFF → active le flag, compose "colis/courrier déposé".
-3. Envoie mail + SMS.
+1. Porte principale refermée → compose "colis".
+2. Trappe refermée (porte déjà fermée) → compose "lettre".
+3. Envoie mail + SMS (notification vocale désactivée).
 
-**Entrées utilisées :**
+**Entités principales :**
+- `binary_sensor.porte_boite_aux_lettres`, `binary_sensor.trappe_boite_aux_lettres`
+- `script.notification_mail`, `script.notification_sms`
 
-| Entrée | Type | Config |
-|---|---|---|
-| `input_boolean.courrier_en_attente` | input_boolean | on/off |
+---
+
+## `automation.notification_de_coupure_de_courant_edf` — Notification de coupure de courant EDF
+> [📄 Voir le YAML](../../automations/notification_de_coupure_de_courant_edf.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- `sensor.ecoflow_ac_in_volts` passe sous 100V pendant 60s (coupure confirmée)
+- `sensor.ecoflow_ac_in_volts` repasse au-dessus de 100V pendant 30s (rétablissement)
+
+**Fonctionnement :**
+1. Coupure (60s sous 100V) → active le verrou `input_boolean.coupure_edf_en_cours`, notifie le téléphone.
+2. Rétablissement (30s au-dessus de 100V) ET verrou actif → désactive le verrou, notifie.
+
+**Note :** Le verrou évite les fausses alertes "rétabli" lors des micro-coupures de communication EcoFlow (~5–10s) qui ne sont pas de vraies coupures secteur.
+
+**Entités principales :**
+- `sensor.ecoflow_ac_in_volts` : tension secteur mesurée par l'onduleur EcoFlow DELTA Max
+- `input_boolean.coupure_edf_en_cours` : verrou anti-faux-positifs
+- `script.notification_telephone` : notification push iPhone
+
+---
+
+## `automation.notification_des_alertes_de_defaut_des_onduleurs_ups` — Notification des Alertes de défaut des Onduleurs - UPS
+> [📄 Voir le YAML](../../automations/notification_des_alertes_de_defaut_des_onduleurs_ups.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- `sensor.reseau_ups_alarmes` passe à "Replace battery!" (onduleur réseau Ups)
+- Changement de `sensor.eaton_usb_code_d_etat` (onduleur Eaton_Usb, code NUT ups.status)
+
+**Conditions :**
+- Pour Eaton_Usb : le code d'état contient un flag anormal (hors OL/OB/CHRG/DISCHRG : RB, LB, BYPASS, OFF, OVER, TRIM, BOOST, FSD, CAL)
+
+**Fonctionnement :**
+1. Onduleur Ups (réseau) : "Replace battery!" détecté → notifie qu'un remplacement de batterie est nécessaire.
+2. Onduleur Eaton_Usb : code NUT anormal → traduit chaque flag (RB, LB, BYPASS…) en description lisible et notifie.
+3. Deux branches avec `notification_id` distinct pour éviter les doublons.
+
+**Entités principales :**
+- `sensor.reseau_ups_alarmes` : alarme texte de l'onduleur réseau
+- `sensor.eaton_usb_code_d_etat` : code d'état NUT de l'onduleur Eaton_Usb
+- `script.notification_ha` : envoi des notifications
+
+---
+
+## `automation.notification_d_ouverture_ou_fermeture_des_fenetres` — Notification d'Ouverture ou Fermeture des fenêtres
+> [📄 Voir le YAML](../../automations/notification_d_ouverture_ou_fermeture_des_fenetres.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- Changement des températures intérieures/extérieure, prévision Météo-France, consignes volet (chaud/froid/pluie), mode été/hiver, indicateurs de pluie (prévision + pluviomètre)
+- Changement de `input_select.domicile`
+
+**Conditions :**
+- `input_select.domicile` = "Présent"
+
+**Fonctionnement :**
+1. Calcule pour chaque pièce (Bureau, Suite parentale, Cellier, Rez-de-chaussée) si une annonce fermeture/ouverture est justifiée : comparaison intérieur/extérieur avec hystérésis à deux seuils, détection d'ouverture via l'attribut `Door open` (`open`/`closed`) des `binary_sensor.do_*` (et non leur état principal, qui peut rester bloqué), garde anti-pluie pour l'ouverture (prévision + pluviomètre), vérification que le volet n'est pas fermé.
+2. Regroupe les pièces en deux annonces vocales max (une fermeture, une ouverture), accord singulier/pluriel automatique.
+3. Anti-répétition par pièce et par sens : bloqué 15 minutes via horodatage dans des helpers `input_datetime` dédiés.
+
+**Entités principales :**
+- `sensor.netatmo_*_temperature`, `sensor.detecteur_du_cellier_nodeid_29_temperature_air` : températures
+- `binary_sensor.do_*` : détecteurs d'ouverture
+- `input_number.volet_consigne_*` : seuils de déclenchement
+- `input_datetime.annonce_fenetre_*` : anti-répétition par pièce/sens
+- `script.notification_vocale` : annonce vocale
+
+---
+
+## `automation.suspension_des_notifications_en_mode_invites` — Suspension des Notifications en Mode Invités
+> [📄 Voir le YAML](../../automations/suspension_des_notifications_en_mode_invites.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- `input_boolean.invites` passe à "on"
+- `input_boolean.invites` passe à "off"
+
+**Fonctionnement :**
+1. Invités actifs → désactive `automation.gestion_des_alertes` et `automation.notification_d_ouverture_ou_fermeture_des_fenetres`.
+2. Fin mode invités → réactive ces deux automatisations.
+
+**Entités principales :**
+- `input_boolean.invites` : déclencheur mode invités
+- `automation.gestion_des_alertes`, `automation.notification_d_ouverture_ou_fermeture_des_fenetres` : cibles

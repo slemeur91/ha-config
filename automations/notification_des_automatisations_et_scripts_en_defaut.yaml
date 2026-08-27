@@ -1,4 +1,4 @@
-alias: Surveillance - Automatisations et Scripts en Défaut
+alias: Notification des Automatisations et Scripts en Défaut
 description: >-
   **Statut :** Finalisé
 
@@ -12,6 +12,12 @@ description: >-
   - Erreur d'exécution loggée par le composant `script`
 
 
+  **Conditions :**
+
+  - L'événement concerne une erreur (`level == 'ERROR'`) provenant du composant
+  `automation` ou `script`
+
+
   **Fonctionnement :**
 
   1. Détecte chaque erreur loggée (événement `system_log_event`, niveau `ERROR`)
@@ -21,6 +27,11 @@ description: >-
   (Automatisation/Script) et le message d'erreur, avec un `notification_id`
   stable basé sur le contenu du message pour éviter les doublons en cas de
   répétition rapide de la même erreur.
+
+
+  **Entités principales :**
+
+  - `script.notification_ha` : création des notifications
 triggers:
   - trigger: event
     event_type: system_log_event

@@ -15,6 +15,9 @@
 - Détection mouvement / ouverture porte-fenêtre
 - Fin de `timer.alarme_declenchement`
 
+**Conditions :**
+- Alarme non désarmée (`alarm_control_panel.is_disarmed` = false) — évite les faux déclenchements lors d'une désactivation rapide juste après l'alerte
+
 **Fonctionnement :**
 1. Déclenchement → reset compteur, SMS+mail+vocal, enregistrement caméras 1/2/4, snapshots.
 2. Timer → incrémente compteur, nouveaux snapshots, relance timer (1 min).
@@ -37,6 +40,9 @@
 **Déclencheurs :**
 - `binary_sensor.boitier` → ON (sabotage boîtier)
 - Fin de `timer.alarme_sabotage`
+
+**Conditions :**
+- Alarme non désarmée (`alarm_control_panel.is_disarmed` = false)
 
 **Fonctionnement :**
 1. Sabotage → reset compteur, SMS+mail+vocal, enregistrement caméras 1/2/4, snapshots.

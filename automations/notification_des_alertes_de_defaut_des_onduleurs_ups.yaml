@@ -1,0 +1,100 @@
+alias: Notification des Alertes de défaut des Onduleurs - UPS
+description: >-
+  **Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - `sensor.reseau_ups_alarmes` passe à "Replace battery!" (onduleur réseau Ups)
+
+  - Changement d'état de `sensor.eaton_usb_code_d_etat` (onduleur Eaton_Usb,
+  code d'état NUT ups.status)
+
+
+  **Conditions :**
+
+  - Pour Eaton_Usb : le code d'état ne doit contenir aucun flag hors
+  OL/OB/CHRG/DISCHRG (donc un flag anormal : RB, LB, BYPASS, OFF, OVER, TRIM,
+  BOOST, FSD, CAL)
+
+
+  **Fonctionnement :**
+
+  1. Onduleur Ups (réseau, dispose d'un capteur d'alarmes texte) → si "Replace
+  battery!" détecté, notifie qu'un remplacement de batterie est nécessaire.
+
+  2. Onduleur Eaton_Usb (USB, pas de capteur d'alarmes natif) → surveille son
+  code d'état `ups.status` ; si un flag anormal est présent, traduit chaque code
+  (RB, LB, BYPASS, OFF, OVER, TRIM, BOOST, FSD, CAL) en description lisible et
+  notifie.
+
+  3. Les deux branches utilisent `script.notification_ha` avec un
+  `notification_id` distinct pour éviter les doublons.
+
+
+  **Entités principales :**
+
+  - `sensor.reseau_ups_alarmes` : alarme texte de l'onduleur réseau Ups
+
+  - `sensor.eaton_usb_code_d_etat` : code d'état NUT de l'onduleur Eaton_Usb
+
+  - `script.notification_ha` : envoi des notifications
+triggers:
+  - trigger: state
+    entity_id: sensor.reseau_ups_alarmes
+    to: Replace battery!
+    id: ups_reseau
+  - trigger: state
+    entity_id: sensor.eaton_usb_code_d_etat
+    id: ups_eaton_usb
+    note: >-
+      ups.status NUT : chaîne de flags séparés par espace (ex: 'OL', 'OL RB',
+      'OB LB'...).
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: ups_reseau
+        sequence:
+          - action: script.turn_on
+            target:
+              entity_id: script.notification_ha
+            data:
+              variables:
+                message_type: UPS
+                message_ha: >-
+                  L'onduleur Ups signale "Replace battery!" : la batterie doit
+                  être remplacée.
+                notification_id: ups_reseau_defaut
+      - conditions:
+          - condition: trigger
+            id: ups_eaton_usb
+          - condition: template
+            value_template: >-
+              {% set normal = ['OL','OB','CHRG','DISCHRG'] %}{{
+              trigger.to_state.state.split() | reject('in', normal) | list |
+              count > 0 }}
+        sequence:
+          - action: script.turn_on
+            target:
+              entity_id: script.notification_ha
+            data:
+              variables:
+                message_type: UPS
+                message_ha: >-
+                  {% set desc = {'RB': 'remplacement de la batterie nécessaire',
+                  'LB': 'batterie faible', 'BYPASS': 'fonctionnement en bypass
+                  (protection non assurée)', 'OFF': 'onduleur éteint', 'OVER':
+                  'surcharge', 'TRIM': 'correction de tension (baisse)',
+                  'BOOST': 'correction de tension (hausse)', 'FSD': 'arrêt forcé
+                  imminent', 'CAL': 'calibration en cours'} %}{% set normal =
+                  ['OL','OB','CHRG','DISCHRG'] %}{% set codes =
+                  trigger.to_state.state.split() | reject('in', normal) | list
+                  %}L'onduleur Eaton_Usb signale : {% for c in codes %}{{
+                  desc.get(c, c) }}{% if not loop.last %}, {% endif %}{% endfor
+                  %} (code brut : {{ trigger.to_state.state }}).
+                notification_id: eaton_usb_defaut
+mode: single

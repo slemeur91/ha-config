@@ -23,6 +23,13 @@ description: >-
   2. Batterie revenue à la normale → supprime automatiquement la notification
   persistante correspondante via `persistent_notification.dismiss` (même
   notification_id).
+
+
+  **Entités principales :**
+
+  - Événement `battery_notes_battery_threshold` (intégration Battery Notes)
+
+  - `script.notification_ha` : création des notifications
 triggers:
   - event_type: battery_notes_battery_threshold
     event_data:

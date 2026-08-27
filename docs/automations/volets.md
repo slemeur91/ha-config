@@ -1,4 +1,4 @@
-# Volets (12)
+# Volets (14)
 
 [← Retour README](../../README.md)
 
@@ -89,6 +89,7 @@ Pilote les volets selon le mode domicile, la météo, le soleil et la présence.
 - **Bouton fermeture :** `input_button.velux_chambre_fermer`
 - **Timer dérogation :** `timer.velux_chambre_timer`
 - **Dérogation :** `input_boolean.velux_chambre_derogation`
+- **Seuil pluie :** `input_number.volet_consigne_risque_de_pluie`
 
 ---
 
@@ -101,6 +102,7 @@ Pilote les volets selon le mode domicile, la météo, le soleil et la présence.
 - **Bouton fermeture :** `input_button.velux_sde_fermer`
 - **Timer dérogation :** `timer.velux_salle_d_eau_timer`
 - **Dérogation :** `input_boolean.velux_salle_d_eau_derogation`
+- **Seuil pluie :** `input_number.volet_consigne_risque_de_pluie`
 
 ---
 
@@ -113,6 +115,7 @@ Pilote les volets selon le mode domicile, la météo, le soleil et la présence.
 - **Bouton fermeture :** `input_button.velux_sdb_fermer`
 - **Timer dérogation :** `timer.velux_salle_de_bain_timer`
 - **Dérogation :** `input_boolean.velux_salle_de_bain_derogation`
+- **Seuil pluie :** `input_number.volet_consigne_risque_de_pluie`
 
 ---
 
@@ -242,6 +245,41 @@ Pilote les volets selon le mode domicile, la météo, le soleil et la présence.
 **Entrées dédiées :**
 - `input_select.volet_suite_parentale_attendu`
 - `input_boolean.volet_suite_parentale_derogation`
+
+---
+
+## `automation.suspension_de_l_automatisation_du_volet_de_la_suite_parentale_paliatif_detecteur_do` — Suspension du Volet Suite Parentale — Palliatif détecteur DO
+> [📄 Voir le YAML](../../automations/suspension_de_l_automatisation_du_volet_de_la_suite_parentale_paliatif_detecteur_do.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- Changement d'état des ouvertures : `binary_sensor.do_bureau`, `do_cuisine`, `do_salon`, `do_sejour`, `do_vitre_cellier` + `cover.velux_de_la_chambre`, `velux_de_la_salle_d_eau`, `velux_de_la_salle_de_bain`
+
+**Fonctionnement :**
+1. Toutes les ouvertures ouvertes (`do_cuisine`/`do_salon`/`do_sejour`/`do_vitre_cellier` via condition native `door.is_open`, `do_bureau` via `window.is_open`, + 3 velux en position > 0) → désactive `automation.gestion_du_volet_suite_parentale`.
+2. Dès qu'une ouverture se ferme → réactive `automation.gestion_du_volet_suite_parentale`.
+
+> **Contexte :** Palliatif en l'absence de capteur DO sur la suite parentale. Quand toutes les autres fenêtres sont ouvertes, il est probable que la suite parentale l'est aussi — on suspend l'automatisation du volet pour éviter une fermeture indésirable. Les conditions natives `door.is_open` / `window.is_open` sont utilisées à la place de l'état principal des `binary_sensor.do_*` (qui peut rester bloqué sur une valeur incorrecte, cas observé sur `binary_sensor.do_suite_parental`).
+
+**Entrées utilisées :** Aucune entrée helper.
+
+---
+
+## `automation.volets_ouvrir` — Volets Ouvrir
+> [📄 Voir le YAML](../../automations/volets_ouvrir.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheur :**
+- Appui sur `input_button.volets_ouvrir`
+
+**Fonctionnement :**
+Ouvre les 6 volets non liés à un velux (Cuisine, Suite parentale, Bureau, Cellier, Salon, Séjour) — Chambre, Salle de bain, Salle d'eau exclus.
+
+**Entités principales :**
+- `input_button.volets_ouvrir`
+- 6 `cover.volet_*` (Cellier, Cuisine, Séjour, Salon, Bureau, Suite parentale)
 
 ---
 

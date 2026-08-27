@@ -1,0 +1,57 @@
+alias: "Gestion de la Livebox W7 : désactivation du WiFi"
+description: >-
+  **Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Démarrage de Home Assistant
+
+  - `switch.livebox_w7_wifi` passe à "on"
+
+
+  **Fonctionnement :**
+
+  1. Démarrage HA → attend 3 minutes (laisse le temps à HA de finir de
+  démarrer).
+
+  2. Dans tous les cas → éteint `switch.livebox_w7_wifi` (y compris
+  immédiatement si la Livebox l'a réactivé elle-même après un redémarrage/une
+  coupure).
+
+
+  **Entités principales :**
+
+  - `switch.livebox_w7_wifi` : Wi-Fi de la Livebox W7
+triggers:
+  - trigger: homeassistant
+    event: start
+    id: demarrage
+  - trigger: state
+    entity_id: switch.livebox_w7_wifi
+    to: "on"
+    id: wifi_actif
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: demarrage
+        sequence:
+          - delay:
+              hours: 0
+              minutes: 3
+              seconds: 0
+            note: >-
+              Laisse le temps à HA de finir de démarrer avant de couper le Wi-Fi
+              de la Livebox
+    default: []
+  - action: switch.turn_off
+    target:
+      entity_id: switch.livebox_w7_wifi
+    note: >-
+      Coupe le Wi-Fi (redondant avec le Wi-Fi principal de la maison, non
+      utilisé)
+mode: restart

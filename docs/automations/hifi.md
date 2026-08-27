@@ -15,9 +15,9 @@
 - Appui sur `input_button.hifi`
 
 **Fonctionnement :**
-1. OFF → extinction (Sony, Rotel, Apple TV, Zappiti si allumé), gestion SONOS selon contexte.
-2. ON → vérification horaires/présence, sélection source, passe en SOURCE.
-3. SOURCE → SONOS, notification vocale, allumage (Sony, Rotel, HDMI3, Apple TV, lumière salon).
+1. OFF → extinction en parallèle (Sony, Rotel via `script.allumer_eteindre_amplificateur_rotel`, Apple TV via `script.allumer_eteindre_apple_tv_salon`, Zappiti si allumé, Sync Box), gestion SONOS selon contexte (alarme armée ou heure).
+2. ON → vérification horaires/présence, sélection source BluRay si iPhone présent, passe en SOURCE.
+3. SOURCE → SONOS, notification vocale, allumage en parallèle (TV HDMI3, Rotel + Apple TV via scripts, Zappiti/slm-media4 selon source, lumière salon si après coucher du soleil, Sync Box).
 
 **Entrées utilisées :**
 

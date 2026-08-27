@@ -1,0 +1,61 @@
+alias: Sécurité KLF200 - Remise sous tension
+description: >-
+  **Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheur :**
+
+  - `switch.reseau_multiprise_de_l_informatique_2_klf_200` reste éteinte 5
+  minutes
+
+
+  **Fonctionnement :**
+
+  Filet de sécurité totalement indépendant de `Correction de l'intégration du
+  KLF200`. Dès que la prise reste éteinte 5mn (coupure délibérée par
+  l'automatisation de correction, coupure secteur, ou toute autre cause), la
+  rallume, attend 3 minutes, puis recharge l'intégration KLF200.
+
+
+  **Pourquoi une automatisation séparée :** avant le 9 août 2026, cette logique
+  faisait partie de `Correction de l'intégration du KLF200` (mode `queued`). Le
+  déclencheur de remise sous tension pouvait arriver alors que la file d'attente
+  de cette automatisation était déjà pleine (plusieurs signaux de défaut
+  simultanés), et était alors silencieusement perdu — la prise est restée éteinte
+  plusieurs heures dans la nuit du 9 août. En isolant ce filet de sécurité dans
+  sa propre automatisation, mode `single`, il n'est plus jamais mis en
+  concurrence avec l'autre file d'attente : il se déclenche systématiquement,
+  quoi qu'il arrive dans l'automatisation de correction.
+
+
+  **Entités principales :**
+
+  - `switch.reseau_multiprise_de_l_informatique_2_klf_200` : alimentation de la
+  passerelle KLF200
+
+  - Intégration KLF200 (entry_id `01K2GS1XM2TFEEMYCJBXSQQJHQ`)
+triggers:
+  - trigger: state
+    entity_id: switch.reseau_multiprise_de_l_informatique_2_klf_200
+    to: "off"
+    for:
+      minutes: 5
+    id: switch_off_5min
+    note: >-
+      Filet de sécurité indépendant : remet sous tension dans tous les cas après
+      5mn d'extinction
+conditions: []
+actions:
+  - action: switch.turn_on
+    target:
+      entity_id: switch.reseau_multiprise_de_l_informatique_2_klf_200
+    note: Remise sous tension inconditionnelle
+  - delay:
+      minutes: 3
+  - action: homeassistant.reload_config_entry
+    data:
+      entry_id: 01K2GS1XM2TFEEMYCJBXSQQJHQ
+    note: Recharge l'intégration une fois la prise réalimentée
+mode: single

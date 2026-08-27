@@ -1,28 +1,36 @@
 alias: Notification SMS
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
-
 
   **Rôle :** Envoie un message Telegram (SMS).
 
-
   **Paramètres :**
-
-  - `message_type` : type du message
-
-  - `message_sms` : contenu du message
-
+  - message_type : type du message
+  - message_sms : corps du message
 
   **Fonctionnement :**
+  1. Envoie un message via telegram_bot.send_message avec le type en titre et le message en corps.
 
-  1. Envoie un message via `telegram_bot.send_message` avec le type en titre et
-  le message en corps.
+  **Entités principales :**
+  - telegram_bot.send_message : service utilisé pour l'envoi
+fields:
+  message_type:
+    description: Type du message (Information, Alerte, Chauffage, etc.)
+    example: Information
+    required: true
+    selector:
+      text: null
+  message_sms:
+    description: Corps du message
+    example: Message
+    required: true
+    selector:
+      text: null
 sequence:
   - action: telegram_bot.send_message
     data:
-      config_entry_id: VOTRE_CONFIG_ENTRY_ID_TELEGRAM
+      config_entry_id: 01JZXD726MRMA3EMYH1G0SYRW5
       message: "{{ message_sms }}"
       title: "[HA] {{ message_type }}"
 mode: queued

@@ -1,0 +1,158 @@
+alias: Gestion du Cycle du Sèche Linge
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
+
+  **Déclencheurs :**
+  - `sensor.etat_seche_linge` passe de Éteint/Veille à En marche (anti-rebond 20s) → début de cycle
+  - `sensor.etat_seche_linge` passe de En marche à Éteint/Veille (anti-rebond 20s) → fin de cycle
+  - `sensor.multiprise_de_la_salle_de_bain_power_2` repasse sous 3 W pendant 30s (désactivé) → détection alternative de fin de cycle par consommation
+  - `input_boolean.cycle_seche_linge_en_cours` resté à "on" 4h → filet de sécurité (cycle trop long / fin non détectée)
+
+  **Fonctionnement :**
+  1. Début : si le cycle n'est pas déjà marqué en cours, l'active, enregistre l'index d'énergie de départ et l'horodatage de début.
+  2. Fin : si le cycle est marqué en cours, enregistre l'horodatage et l'index d'énergie de fin, puis désactive le marqueur "en cours".
+  3. Trop Long : désactive le marqueur "en cours" sans enregistrer de fin (filet de sécurité si la fin n'a pas été détectée dans les 4h).
+
+  **Entités principales :**
+  - `sensor.etat_seche_linge` : état de l'appareil
+  - `sensor.multiprise_de_la_salle_de_bain_power_2` / `_energy_2` : puissance / énergie
+  - `input_boolean.cycle_seche_linge_en_cours` : marqueur de cycle en cours
+  - `input_datetime.dernier_cycle_seche_linge_debut` / `_fin` : horodatages du dernier cycle
+  - `input_number.dernier_cycle_seche_linge_conso_au_debut` / `_a_la_ffin` : index d'énergie au début/fin du dernier cycle
+triggers:
+  - trigger: state
+    entity_id:
+      - sensor.etat_seche_linge
+    from:
+      - Éteint
+      - Veille
+    to:
+      - En marche
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 20
+    id: Début
+    note: Anti-rebond 20s ; démarrage détecté via l'état rapporté par l'appareil.
+  - trigger: state
+    entity_id:
+      - sensor.etat_seche_linge
+    from:
+      - En marche
+    to:
+      - Éteint
+      - Veille
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 20
+    id: Fin
+    note: Anti-rebond 20s ; fin détectée via l'état rapporté par l'appareil.
+  - trigger: power.crossed_threshold
+    target:
+      entity_id:
+        - sensor.multiprise_de_la_salle_de_bain_power_2
+    options:
+      behavior: each
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 30
+      threshold:
+        type: below
+        value:
+          active_choice: number
+          number: 3
+          unit_of_measurement: W
+    id: Fin
+    enabled: false
+    note: Détection alternative de fin par chute de consommation sous le seuil — désactivée, l'état rapporté par l'appareil suffit actuellement.
+  - trigger: state
+    entity_id:
+      - input_boolean.cycle_seche_linge_en_cours
+    to:
+      - "on"
+    for:
+      hours: 4
+      minutes: 0
+      seconds: 0
+    id: Trop Long
+    note: Filet de sécurité : évite que le marqueur "en cours" reste bloqué si la fin de cycle n'est jamais détectée.
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - Début
+        sequence:
+          - if:
+              - condition: switch.is_off
+                target:
+                  entity_id: input_boolean.cycle_seche_linge_en_cours
+                options:
+                  behavior: any
+                  for: "00:00:00"
+            then:
+              - action: input_boolean.turn_on
+                metadata: {}
+                target:
+                  entity_id: input_boolean.cycle_seche_linge_en_cours
+                data: {}
+              - action: input_number.set_value
+                target:
+                  entity_id: input_number.dernier_cycle_seche_linge_conso_au_debut
+                data:
+                  value: "{{ states('sensor.multiprise_de_la_salle_de_bain_energy_2') | float }}"
+              - action: input_datetime.set_datetime
+                metadata: {}
+                target:
+                  entity_id: input_datetime.dernier_cycle_seche_linge_debut
+                data:
+                  datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+            note: N'active que si pas déjà en cours (évite d'écraser l'horodatage de départ sur un redéclenchement).
+        note: Début de cycle détecté
+      - conditions:
+          - condition: trigger
+            id:
+              - Fin
+        sequence:
+          - if:
+              - condition: switch.is_on
+                target:
+                  entity_id: input_boolean.cycle_seche_linge_en_cours
+                options:
+                  behavior: any
+                  for: "00:00:00"
+            then:
+              - action: input_datetime.set_datetime
+                metadata: {}
+                target:
+                  entity_id: input_datetime.dernier_cycle_seche_linge_fin
+                data:
+                  datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+              - action: input_number.set_value
+                target:
+                  entity_id:
+                    - input_number.dernier_cycle_seche_linge_conso_a_la_ffin
+                data:
+                  value: "{{ states('sensor.multiprise_de_la_salle_de_bain_energy_2') | float }}"
+              - action: input_boolean.turn_off
+                metadata: {}
+                target:
+                  entity_id: input_boolean.cycle_seche_linge_en_cours
+                data: {}
+            note: N'enregistre la fin que si un cycle était bien marqué en cours.
+        note: Fin de cycle détectée
+      - conditions:
+          - condition: trigger
+            id:
+              - Trop Long
+        sequence:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.cycle_seche_linge_en_cours
+            data: {}
+        note: Réinitialisation forcée sans enregistrement de fin — la détection normale a échoué.
+mode: single

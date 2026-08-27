@@ -1,0 +1,171 @@
+alias: Correction de l'intégration du KLF200 - passerelle des Volets/Velux
+description: "**Statut :** Finalisé\n**Evolution :** Remise sous tension après coupure\
+  \ prolongée déplacée dans une automatisation dédiée (`automation.securite_klf200_remise_sous_tension`),\
+  \ indépendante de cette file d'attente, pour garantir qu'elle se déclenche toujours\
+  \ même si cette automatisation est occupée/saturée.\n\n**Déclencheurs :**\n- Démarrage\
+  \ de Home Assistant\n- Vérification périodique toutes les 15 minutes\n- `binary_sensor.192_168_52_67`\
+  \ (ping KLF200) passe à off/unknown/unavailable\n- `button.klf_200_gateway_redemarrer`\
+  \ passe à indisponible\n- Une des 7 entités Velux/volets passe à indisponible\n\n\
+  **Fonctionnement :**\n1. Démarrage HA → attend 3 minutes, puis si la prise est éteinte\
+  \ la rallume directement (cas redémarrage HA pendant une coupure de prise).\n2.\
+  \ Déclenchement par un signal de défaut (ping/bouton/volets) → attend 1 minute.\n\
+  3. Vérifie si la passerelle est réellement en défaut (ping perdu OU bouton indisponible\
+  \ OU les 7 volets/Velux tous indisponibles) :\n   - Si oui : recharge l'intégration,\
+  \ attend 2 minutes, revérifie ; si toujours en défaut, coupe la prise et arrête\
+  \ — la remise sous tension est désormais gérée par l'automatisation dédiée `Sécurité\
+  \ KLF200 - Remise sous tension`.\n   - Si non : ne fait rien de plus.\n\n**Mode\
+  \ `queued` (max 10, avertissement si dépassement) :** cette automatisation contient\
+  \ des délais (jusqu'à 3mn). En cas d'événements simultanés (ex. les 7 volets/Velux\
+  \ qui passent tous indisponibles en même temps), plusieurs déclenchements peuvent\
+  \ arriver quasi simultanément ; `queued` les exécute l'un après l'autre au lieu\
+  \ de les perdre (`failed_single`). Le plafond a été relevé de 5 à 10 et `max_exceeded`\
+  \ passé de `silent` à `warning` pour qu'un dépassement reste visible dans le journal\
+  \ plutôt que d'être avalé silencieusement.\n\n**Important :** la remise sous tension\
+  \ de la prise après coupure prolongée (5mn) est gérée exclusivement par l'automatisation\
+  \ séparée `Sécurité KLF200 - Remise sous tension`, afin qu'elle ne soit jamais bloquée\
+  \ par la file d'attente de celle-ci (c'est cette compétition pour la file `queued`\
+  \ qui a empêché la prise de se rallumer le 9 août vers 3h33).\n\n**Entités principales\
+  \ :**\n- `switch.reseau_multiprise_de_l_informatique_2_klf_200` : alimentation de\
+  \ la passerelle KLF200\n- `binary_sensor.192_168_52_67` : ping réseau du KLF200\n\
+  - `button.klf_200_gateway_redemarrer` : indicateur d'état de la gateway\n- 7 `cover.*`\
+  \ (Velux/volets/pergola) : signal de bon fonctionnement de l'intégration\n- Intégration\
+  \ KLF200 (entry_id `01K2GS1XM2TFEEMYCJBXSQQJHQ`)"
+triggers:
+- trigger: homeassistant
+  event: start
+  id: ha_start
+  note: Laisse le temps aux intégrations de s'établir au démarrage
+- trigger: time_pattern
+  minutes: /15
+  id: periodic
+  note: Vérification périodique de santé de la passerelle
+- trigger: state
+  entity_id: binary_sensor.192_168_52_67
+  to:
+  - 'off'
+  - unknown
+  - unavailable
+  id: fault
+  note: Ping réseau du KLF200 perdu
+- trigger: state
+  entity_id: button.klf_200_gateway_redemarrer
+  to: unavailable
+  id: fault
+  note: Bouton de la gateway devenu indisponible
+- trigger: state
+  entity_id:
+  - cover.velux_de_la_chambre
+  - cover.velux_de_la_salle_d_eau
+  - cover.velux_de_la_salle_de_bain
+  - cover.volet_de_la_chambre
+  - cover.volet_de_la_salle_d_eau
+  - cover.volet_de_la_salle_de_bain
+  - cover.store_pergola
+  to: unavailable
+  id: fault
+  note: Une des 7 entités Velux/volets passe à indisponible
+conditions: []
+actions:
+- choose:
+  - conditions:
+    - condition: trigger
+      id: ha_start
+    sequence:
+    - delay:
+        minutes: 3
+    - if:
+      - condition: state
+        entity_id: switch.reseau_multiprise_de_l_informatique_2_klf_200
+        state: 'off'
+      then:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.reseau_multiprise_de_l_informatique_2_klf_200
+        note: Prise KLF200 éteinte au démarrage de HA → remise sous tension
+      - delay:
+          hours: 0
+          minutes: 2
+          seconds: 0
+          milliseconds: 0
+      - action: homeassistant.reload_config_entry
+        data:
+          entry_id: 01K2GS1XM2TFEEMYCJBXSQQJHQ
+      - stop: Prise KLF200 rallumée au démarrage de HA (était éteinte).
+  - conditions:
+    - condition: trigger
+      id: fault
+    sequence:
+    - delay:
+        hours: 0
+        minutes: 4
+        seconds: 0
+        milliseconds: 0
+- note: Vérifie que la passerelle est réellement en défaut avant d'agir
+  if:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: binary_sensor.192_168_52_67
+      state:
+      - 'off'
+      - unknown
+      - unavailable
+    - condition: state
+      entity_id: button.klf_200_gateway_redemarrer
+      state: unavailable
+    - condition: state
+      entity_id:
+      - cover.velux_de_la_chambre
+      - cover.velux_de_la_salle_d_eau
+      - cover.velux_de_la_salle_de_bain
+      - cover.volet_de_la_chambre
+      - cover.volet_de_la_salle_d_eau
+      - cover.volet_de_la_salle_de_bain
+      - cover.store_pergola
+      state: unavailable
+  then:
+  - action: homeassistant.reload_config_entry
+    data:
+      entry_id: 01K2GS1XM2TFEEMYCJBXSQQJHQ
+    note: 'Étape 1 : rechargement logiciel de l''intégration'
+  - delay:
+      hours: 0
+      minutes: 3
+      seconds: 0
+      milliseconds: 0
+  - if:
+    - condition: or
+      conditions:
+      - condition: state
+        entity_id: binary_sensor.192_168_52_67
+        state:
+        - 'off'
+        - unknown
+        - unavailable
+      - condition: state
+        entity_id: button.klf_200_gateway_redemarrer
+        state: unavailable
+      - condition: state
+        entity_id:
+        - cover.velux_de_la_chambre
+        - cover.velux_de_la_salle_d_eau
+        - cover.velux_de_la_salle_de_bain
+        - cover.volet_de_la_chambre
+        - cover.volet_de_la_salle_d_eau
+        - cover.volet_de_la_salle_de_bain
+        - cover.store_pergola
+        state: unavailable
+    then:
+    - action: switch.turn_off
+      target:
+        entity_id: switch.reseau_multiprise_de_l_informatique_2_klf_200
+      note: 'Étape 2 : rechargement logiciel insuffisant → coupure physique de la
+        prise ; l''automatisation dédiée Sécurité KLF200 la rallumera dans 5mn'
+      data: {}
+    - stop: Coupure prise KLF200 effectuée ; l'automatisation dédiée Sécurité KLF200
+        la rallumera dans 5mn.
+    note: Toujours en défaut après 2mn → coupure physique puis relais à l'automatisation
+      dédiée pour remise sous tension
+mode: queued
+max: 10
+max_exceeded: warning

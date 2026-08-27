@@ -1,0 +1,30 @@
+alias: Volets Ouvrir
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
+
+  **Déclencheur :**
+  - Appui sur `input_button.volets_ouvrir`
+
+  **Fonctionnement :**
+  Ouvre tous les volets qui ne sont pas liés à un velux (donc hors Chambre, Salle de bain, Salle d'eau) : Cuisine, Suite parentale, Bureau, Cellier, Salon, Séjour.
+
+  **Entités principales :**
+  - `input_button.volets_ouvrir`
+  - `cover.volet_de_la_cuisine_nodeid_34_position`, `cover.volet_de_la_suite_parentale_nodeid_35_position`, `cover.volet_du_bureau_nodeid_36_position`, `cover.volet_du_cellier_nodeid_31_position`, `cover.volet_du_salon_nodeid_32_position`, `cover.volet_du_sejour_nodeid_33_position`
+triggers:
+  - trigger: state
+    entity_id: input_button.volets_ouvrir
+conditions: []
+actions:
+  - action: cover.open_cover
+    target:
+      entity_id:
+        - cover.volet_du_cellier_nodeid_31_position
+        - cover.volet_de_la_cuisine_nodeid_34_position
+        - cover.volet_du_sejour_nodeid_33_position
+        - cover.volet_du_salon_nodeid_32_position
+        - cover.volet_du_bureau_nodeid_36_position
+        - cover.volet_de_la_suite_parentale_nodeid_35_position
+    data: {}
+mode: restart

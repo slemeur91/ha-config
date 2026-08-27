@@ -1,0 +1,83 @@
+alias: Rechargement de l'intégration Netatmo
+description: >-
+  **Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - Démarrage de Home Assistant
+
+  - Vérification périodique toutes les 15 minutes
+
+
+  **Conditions :**
+
+  - Les 7 entités Connectivité (une par module Netatmo) sont toutes
+  indisponibles
+
+
+  **Fonctionnement :**
+
+  1. Démarrage HA → attend 3 minutes (laisse le temps à l'intégration Netatmo de
+  remonter son état).
+
+  2. Si les 7 entités Connectivité sont indisponibles → recharge l'intégration
+  Netatmo puis envoie une notification persistante pour garder une trace de
+  l'intervention.
+
+
+  **Entités principales :**
+
+  - `binary_sensor.netatmo_*_connectivite` (7 modules)
+
+  - Intégration Netatmo (entry_id `01K2GB6B0C5TYCYEY0VTVRH7NW`)
+triggers:
+  - trigger: homeassistant
+    event: start
+    id: start
+    note: Démarrage de Home Assistant
+  - trigger: time_pattern
+    minutes: /15
+    id: recurring
+    note: Vérification périodique toutes les 15 minutes
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: start
+        sequence:
+          - note: >-
+              Laisse le temps à l'intégration Netatmo de remonter son état après
+              le démarrage
+            delay:
+              hours: 0
+              minutes: 3
+              seconds: 0
+  - condition: state
+    entity_id:
+      - binary_sensor.netatmo_anemometre_connectivite
+      - binary_sensor.netatmo_bureau_connectivite
+      - binary_sensor.netatmo_chambre_connectivite
+      - binary_sensor.netatmo_exterieur_connectivite
+      - binary_sensor.netatmo_pluviometre_connectivite
+      - binary_sensor.netatmo_suite_parentale_connectivite
+      - binary_sensor.netatmo_salon_connectivite
+    state: unavailable
+    note: >-
+      Les 7 entités Connectivité (une par module Netatmo) doivent être
+      indisponibles
+  - action: homeassistant.reload_config_entry
+    data:
+      entry_id: 01K2GB6B0C5TYCYEY0VTVRH7NW
+    note: Recharge l'entrée de configuration Netatmo
+  - action: persistent_notification.create
+    data:
+      title: Netatmo rechargé automatiquement
+      message: >-
+        Toutes les entités Netatmo étaient indisponibles. L'intégration a été
+        rechargée automatiquement.
+    note: Notification pour garder une trace de l'intervention
+mode: single

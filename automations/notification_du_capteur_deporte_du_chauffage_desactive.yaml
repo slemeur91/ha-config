@@ -1,0 +1,71 @@
+alias: Notification de capteur déporté du chauffage désactivé
+description: |-
+  **Statut :** Finalisé
+
+  **Evolution :** Aucune
+
+
+  **Déclencheurs :**
+
+  - L'un des 5 capteurs de sonde de température des chauffages de l'étage passe
+  à « Non Détecté » (off)
+
+  - Planification hebdomadaire tous les vendredis à 08h00
+
+  - Déclenchement manuel
+
+
+  **Fonctionnement :**
+
+  1. Quel que soit le déclencheur → vérifie les 5 capteurs et crée une
+  notification pour chacun actuellement à off. Le `notification_id` évite les
+  doublons dans l'interface.
+
+
+  **Entités principales :**
+
+  - 5 `binary_sensor.*_temperature_sensor` : sondes des chauffages Bureau,
+  Chambre, Suite parentale, Salle d'eau, Salle de bain
+
+  - `script.notification_ha` : création de la notification persistante
+triggers:
+  - trigger: state
+    entity_id:
+      - binary_sensor.chauffage_du_bureau_nodeid_2_temperature_sensor
+      - binary_sensor.chauffage_de_la_chambre_nodeid_6_temperature_sensor
+      - >-
+        binary_sensor.chauffage_de_la_suite_parentale_nodeid_3_temperature_sensor
+      - binary_sensor.chauffage_de_la_salle_d_eau_nodeid_4_temperature_sensor
+      - binary_sensor.chauffage_de_la_salle_de_bain_nodeid_5_temperature_sensor
+    to: "off"
+    id: capteur_off
+  - trigger: time
+    at: "08:00:00"
+    id: vendredi
+    weekday:
+      - fri
+conditions: []
+actions:
+  - repeat:
+      for_each:
+        - binary_sensor.chauffage_du_bureau_nodeid_2_temperature_sensor
+        - binary_sensor.chauffage_de_la_chambre_nodeid_6_temperature_sensor
+        - >-
+          binary_sensor.chauffage_de_la_suite_parentale_nodeid_3_temperature_sensor
+        - binary_sensor.chauffage_de_la_salle_d_eau_nodeid_4_temperature_sensor
+        - >-
+          binary_sensor.chauffage_de_la_salle_de_bain_nodeid_5_temperature_sensor
+      sequence:
+        - if:
+            - condition: template
+              value_template: "{{ is_state(repeat.item, 'off') }}"
+          then:
+            - action: script.notification_ha
+              data:
+                message_type: Chauffage
+                message_ha: >-
+                  Le capteur déporté {{ state_attr(repeat.item, 'friendly_name')
+                  | default(repeat.item) }} est désactivé (Non Détecté).
+                notification_id: capteur_chauffage_desactive-{{ repeat.item }}
+mode: queued
+max: 5

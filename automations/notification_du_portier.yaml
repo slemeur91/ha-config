@@ -1,12 +1,14 @@
 alias: Notification du Portier
 description: >-
-  **Statut :** Finalisé | **Evolution :** Aucune
+  **Statut :** Finalisé
+
+  **Evolution :** Aucune
 
 
   **Déclencheurs :**
 
   - Sonnette du portier (`binary_sensor.exterieur_slm_portier_visiteur` → on) —
-  **actif**
+  actif
 
   - Présence devant le portier (`binary_sensor.exterieur_slm_portier_personne` →
   on) — désactivé
@@ -24,10 +26,13 @@ description: >-
   (fire-and-forget) avec le type et le message.
 
 
-  **Entités utilisées :** `binary_sensor.exterieur_slm_portier_visiteur`,
+  **Entités principales :**
+
+  - `binary_sensor.exterieur_slm_portier_visiteur`,
   `binary_sensor.exterieur_slm_portier_personne`,
-  `binary_sensor.exterieur_slm_portier_mouvement_2`,
-  `script.notification_snapshot_du_portier`
+  `binary_sensor.exterieur_slm_portier_mouvement_2` : détection
+
+  - `script.notification_snapshot_du_portier` : notification avec capture
 triggers:
   - trigger: state
     entity_id:

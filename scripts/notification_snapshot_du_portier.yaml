@@ -1,29 +1,36 @@
 alias: Notification Snapshot du Portier
-description: >-
-  **Statut :** Finalisé | **Evolution :** Aucune
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
 
-
-  **Rôle :** Capture un snapshot du portier et l'envoie par mail avec le message
-  et le type fournis en paramètres.
-
+  **Rôle :** Capture un snapshot du portier et l'envoie par mail avec le message et le type fournis en paramètres.
 
   **Paramètres :**
-
-  - `message_type` : type du message (ex : "Portier")
-
-  - `message_mail` : corps du message (ex : "Appuis sur la sonnette")
-
+  - message_type : type du message (ex : "Portier")
+  - message_mail : corps du message (ex : "Appuis sur la sonnette")
 
   **Fonctionnement :**
+  1. Capture une image de camera.exterieur_slm_portier dans /media/Snapshots/portier.jpg.
+  2. Envoie un mail [HA] {{ message_type }} avec l'image en pièce jointe et le message en corps (via smtp.send_message).
 
-  1. Capture une image de `camera.slm_portier` dans
-  `/config/www/Snapshots/portier.jpg`.
+  **Note :** l'ancien chemin de snapshot vers /config/www/, l'ancien envoi via notify.email et la notification push vers l'iPhone de Sylvain (notify.mobile_app_iphone_de_sylvain_le_meur) sont conservés dans la séquence mais actuellement désactivés (enabled: false).
 
-  2. Envoie un mail `[HA] {{ message_type }}` avec l'image en pièce jointe et le
-  message en corps.
-
-
-  **Entités utilisées :** `camera.slm_portier`
+  **Entités principales :**
+  - camera.exterieur_slm_portier : caméra capturée
+  - notify.email_slemeur_slm_srv_dscloud_me (smtp.send_message) : service de notification actif
+fields:
+  message_type:
+    description: Type du message (ex : "Portier")
+    example: Portier
+    required: true
+    selector:
+      text: null
+  message_mail:
+    description: Corps du message (ex : "Appuis sur la sonnette")
+    example: Appuis sur la sonnette
+    required: true
+    selector:
+      text: null
 sequence:
   - action: camera.snapshot
     target:
@@ -31,29 +38,57 @@ sequence:
         - camera.exterieur_slm_portier
     data:
       filename: /config/www/Snapshots/portier.jpg
-  - note: Envoie de la capture du portier en pièces jointes par mail [HA] Portier
+    enabled: false
+    note: Ancien chemin de capture (désactivé) — remplacé par la capture vers /media/Snapshots/ ci-dessous
+  - action: camera.snapshot
+    target:
+      entity_id:
+        - camera.exterieur_slm_portier
+    data:
+      filename: /media/Snapshots/portier.jpg
+  - note: Ancien envoi via notify.email (désactivé) — remplacé par smtp.send_message ci-dessous
     action: notify.email
     metadata: {}
     data:
       message: "{{ message_mail }}"
-      title: |
-        [HA] {{ message_type }}
+      title: "[HA] {{ message_type }}\n"
       target: slemeur@slm-srv.dscloud.me
       data:
         images:
           - /config/www/Snapshots/portier.jpg
+    enabled: false
+  - note: Envoie de la capture du portier en pièce jointe par mail [HA] {{ message_type }}
+    action: smtp.send_message
+    metadata: {}
+    target:
+      entity_id: notify.email_slemeur_slm_srv_dscloud_me
+    data:
+      title: "[HA] {{ message_type }}"
+      message: "{{ message_mail }}"
+      attachments:
+        - media_source:
+            media_content_id: media-source://media_source/local/Snapshots/portier.jpg
+            media_content_type: image/jpeg
+            metadata:
+              title: portier.jpg
+              thumbnail: null
+              media_class: image
+              children_media_class: null
+              navigateIds:
+                - {}
+                - media_content_type: app
+                  media_content_id: media-source://media_source
+                - media_content_type: ""
+                  media_content_id: media-source://media_source/local/Snapshots
+  - note: Notification push vers l'iPhone de Sylvain — actuellement désactivée
+    action: notify.mobile_app_iphone_de_sylvain_le_meur
+    data:
+      title: "{{ message_type }}"
+      message: "{{ message_mail }}"
+      data:
+        image: /media/Snapshots/portier.jpg
+        push:
+          sound: default
+    enabled: false
 mode: queued
 max: 10
-fields:
-  message_type:
-    description: "Type du message (ex : \"Portier\")"
-    example: Portier
-    required: true
-    selector:
-      text: null
-  message_mail:
-    description: "Corps du message (ex : \"Appuis sur la sonnette\")"
-    example: Appuis sur la sonnette
-    required: true
-    selector:
-      text: null

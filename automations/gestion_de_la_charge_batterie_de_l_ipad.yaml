@@ -1,0 +1,81 @@
+alias: Gestion de la charge batterie de l'iPad
+description: >-
+  **Statut :** En cours
+
+  **Evolution :** Prise en compte du capteur batterie (en fonction de
+  l'application kiosk) pour affiner le pilotage de la charge
+
+
+  **Déclencheurs :**
+
+  - Le 1er de chaque mois à 1h00
+
+  - `sensor.ipad_battery_level` passe sous 20%
+
+
+  **Fonctionnement :**
+
+  1. Le 1er du mois à 1h00 → éteint la prise de l'iPad (si elle est allumée),
+  pour forcer un cycle de décharge/recharge mensuel.
+
+  2. Batterie < 20% → allume la prise de l'iPad (si elle n'est pas déjà
+  allumée).
+
+
+  **Entités principales :**
+
+  - `switch.prise_de_l_ipad` : alimentation de l'iPad
+
+  - `sensor.ipad_battery_level` : niveau de batterie de l'iPad
+triggers:
+  - trigger: time
+    at: "01:00:00"
+    id: monthly
+    note: >-
+      Se déclenche tous les jours à 1h00 ; la condition template ci-dessous
+      restreint l'action au 1er du mois (pas d'alternative native pour un
+      déclenchement mensuel par date)
+  - trigger: numeric_state
+    entity_id: sensor.ipad_battery_level
+    below: 20
+    id: low
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: monthly
+          - condition: template
+            value_template: "{{ now().day == 1 }}"
+            note: Restreint le déclenchement quotidien de 1h00 au seul 1er du mois
+        sequence:
+          - note: >-
+              Coupure mensuelle : n'éteint que si la prise est actuellement
+              allumée
+            if:
+              - condition: state
+                entity_id: switch.prise_de_l_ipad
+                state: "on"
+            then:
+              - action: switch.turn_off
+                target:
+                  entity_id:
+                    - switch.prise_de_l_ipad
+                data: {}
+      - conditions:
+          - condition: trigger
+            id: low
+        sequence:
+          - if:
+              - condition: not
+                conditions:
+                  - condition: state
+                    entity_id: switch.prise_de_l_ipad
+                    state: "on"
+            then:
+              - action: switch.turn_on
+                target:
+                  entity_id: switch.prise_de_l_ipad
+                data: {}
+            note: N'allume que si la prise n'est pas déjà allumée
+mode: single

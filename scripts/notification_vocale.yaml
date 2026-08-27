@@ -1,31 +1,30 @@
 alias: Notification Vocale
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
-  **Rôle :** Diffuse un message TTS en overlay (announce) sur les enceintes
-  SONOS actives selon le mode en cours, sans interrompre une lecture en cours.
-
+  **Rôle :** Diffuse un message TTS en overlay (announce) sur les enceintes SONOS actives selon le mode en cours, sans interrompre une lecture en cours.
 
   **Paramètres :**
-
-  - `message_vocal` : texte à synthétiser
-
+  - message_vocal : texte à synthétiser
 
   **Fonctionnement :**
-
   1. Selon le mode SONOS actif :
-     - COUCHE → diffuse sur tous les membres du groupe Suite parentale (`group_members`), volume d'annonce 60.
-     - REVEIL / autre → diffuse sur tous les membres du groupe Salon (`group_members`), volume d'annonce 60, + Garage si TéléTravail (volume d'annonce 40).
-  2. Chaque diffusion utilise `media_player.play_media` avec `announce: true` et
-  `media_content_id:
-  media-source://tts/tts.google_translate_fr_fr?message=...&language=fr&cache=true`.
+     - COUCHE → diffuse sur tous les membres du groupe Suite parentale (group_members), volume d'annonce 40.
+     - REVEIL / autre → diffuse sur tous les membres du groupe Salon (group_members), volume d'annonce 60, + Garage si TéléTravail (volume d'annonce 40).
+  2. Chaque diffusion utilise media_player.play_media avec announce: true et media_content_id: media-source://tts/tts.google_translate_fr_fr?message=...&language=fr&cache=true.
+  3. Sonos gère nativement la baisse du volume en cours, la lecture de l'annonce, puis la restauration — aucune action de restauration explicite n'est nécessaire.
 
-  3. Sonos gère nativement la baisse du volume en cours, la lecture de
-  l'annonce, puis la restauration — aucune action de restauration explicite
-  n'est nécessaire.
+  **Entités principales :**
+  - media_player.suite_parentale, media_player.salon, media_player.garage : enceintes SONOS ciblées
+  - input_select.sonos, input_select.calendrier : sélecteurs de mode
+fields:
+  message_vocal:
+    description: Corps du message
+    example: Message
+    required: true
+    selector:
+      text: null
 sequence:
   - choose:
       - conditions:
@@ -35,22 +34,16 @@ sequence:
         sequence:
           - action: media_player.play_media
             target:
-              entity_id: >-
-                {{ state_attr('media_player.suite_parentale', 'group_members')
-                }}
+              entity_id: "{{ state_attr('media_player.suite_parentale', 'group_members') }}"
             data:
               announce: true
               extra:
-                volume: 60
+                volume: 40
               media:
-                media_content_id: >-
-                  media-source://tts/tts.google_translate_fr_fr?message={{
-                  message_vocal | urlencode }}&language=fr&cache=true
+                media_content_id: "media-source://tts/tts.google_translate_fr_fr?message={{ message_vocal | urlencode }}&language=fr&cache=true"
                 media_content_type: music
                 metadata: {}
-        note: >-
-          Mode COUCHE → diffuse en overlay (announce) sur tous les membres du
-          groupe Suite parentale, volume d'annonce 60
+        note: Mode COUCHE → diffuse en overlay (announce) sur tous les membres du groupe Suite parentale, volume d'annonce 40
     default:
       - parallel:
           - if:
@@ -71,9 +64,7 @@ sequence:
                   extra:
                     volume: 40
                   media:
-                    media_content_id: >-
-                      media-source://tts/tts.google_translate_fr_fr?message={{
-                      message_vocal | urlencode }}&language=fr&cache=true
+                    media_content_id: "media-source://tts/tts.google_translate_fr_fr?message={{ message_vocal | urlencode }}&language=fr&cache=true"
                     media_content_type: music
                     metadata: {}
           - action: media_player.play_media
@@ -84,15 +75,10 @@ sequence:
               extra:
                 volume: 60
               media:
-                media_content_id: >-
-                  media-source://tts/tts.google_translate_fr_fr?message={{
-                  message_vocal | urlencode }}&language=fr&cache=true
+                media_content_id: "media-source://tts/tts.google_translate_fr_fr?message={{ message_vocal | urlencode }}&language=fr&cache=true"
                 media_content_type: music
                 metadata: {}
-        note: >-
-          Mode REVEIL ou autre (défaut) → diffuse en overlay (announce) sur tous
-          les membres du groupe Salon (+ Garage si TéléTravail), volumes
-          d'annonce 60/40
+        note: Mode REVEIL ou autre (défaut) → diffuse en overlay (announce) sur tous les membres du groupe Salon (+ Garage si TéléTravail), volumes d'annonce 60/40
   - delay:
       hours: 0
       minutes: 0

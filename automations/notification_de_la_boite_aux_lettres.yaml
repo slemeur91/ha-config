@@ -1,51 +1,86 @@
-alias: Gestion de la lumière du Garage
-description: >-
-  **Statut :** Finalisé
+alias: Notification de la Boîte aux Lettres
+description: '**Statut :** En test
 
-  **Evolution :** Aucune
+  **Evolution :** Corrections
 
 
   **Déclencheurs :**
 
-  - Ouverture de la porte du garage (`binary_sensor.do_gar_porte_garage` passe à
-  ON)
+  - Fermeture de la porte principale de la boîte aux lettres (`binary_sensor.porte_boite_aux_lettres`
+  → off) — cas colis
+
+  - Fermeture de la trappe à lettres (`binary_sensor.trappe_boite_aux_lettres` → off),
+  uniquement si la porte principale est déjà fermée — cas lettre
 
 
   **Fonctionnement :**
 
-  1. Si le soleil est couché (ou dans l'heure avant le lever) ET que l'alarme
-  est désarmée → allume la lumière du garage.
+  1. Porte principale refermée → compose le message "colis".
+
+  2. Trappe à lettres refermée (porte déjà fermée) → compose le message "lettre".
+
+  3. Envoie mail et SMS avec le message composé (notification vocale actuellement
+  désactivée).
 
 
   **Entités principales :**
 
-  - `light.lumiere_du_garage` : lumière commandée
+  - `binary_sensor.porte_boite_aux_lettres` : porte principale (colis)
 
-  - `alarm_control_panel.alarme` : condition de sécurité
+  - `binary_sensor.trappe_boite_aux_lettres` : trappe à lettres
+
+  - `script.notification_mail` / `script.notification_sms` : envoi des alertes'
 triggers:
-  - trigger: state
-    entity_id:
-      - binary_sensor.do_gar_porte_garage
-    to: "on"
-    id: Garage_door
-    from: "off"
+- trigger: state
+  entity_id:
+  - binary_sensor.porte_boite_aux_lettres
+  to:
+  - 'off'
+  id: Porte
+- trigger: state
+  entity_id:
+  - binary_sensor.trappe_boite_aux_lettres
+  to:
+  - 'off'
+  id: Trappe
 conditions: []
 actions:
-  - if:
-      - condition: and
-        conditions:
-          - condition: sun
-            before: sunrise
-            before_offset: "1800"
-            after: sunset
-            after_offset: "-1800"
-          - condition: state
-            entity_id: alarm_control_panel.alarme
-            state: disarmed
-    then:
-      - action: light.turn_on
-        data: {}
-        target:
-          entity_id:
-            - light.lumiere_du_garage
-mode: restart
+- choose:
+  - conditions:
+    - condition: trigger
+      id:
+      - Porte
+    sequence:
+    - variables:
+        message_courrier: 'La boîte aux lettres a été ouverte : colis'
+    note: Porte principale refermée → compose le message 'colis'
+  - conditions:
+    - condition: trigger
+      id:
+      - Trappe
+    sequence:
+    - condition: state
+      state:
+      - 'off'
+      entity_id: binary_sensor.porte_boite_aux_lettres
+    - variables:
+        message_courrier: 'La trappe de la boîte aux lettres a été ouverte : lettre'
+    note: Trappe à lettres refermée, uniquement si la porte principale est déjà fermée
+      → compose le message 'lettre'
+- if:
+  - condition: template
+    value_template: '{{ message_courrier != null }}'
+  then:
+  - action: script.notification_vocale
+    data:
+      message_vocal: '{{ message_courrier }}'
+    enabled: false
+  - action: script.notification_mail
+    data:
+      message_type: Boite aux lettres
+      message_mail: '{{ message_courrier }}'
+  - action: script.notification_sms
+    data:
+      message_type: Boite aux lettres
+      message_sms: '{{ message_courrier }}'
+mode: single

@@ -1,92 +1,189 @@
 alias: Notification Snapshot des Caméras
-description: >-
-  **Statut :** Finalisé | **Evolution :** Aucune
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
 
-
-  **Rôle :** Capture les images des 7 caméras et du portier, et les envoie par
-  mail en cas d'alerte.
-
+  **Rôle :** Capture les images des 7 caméras et du portier, et les envoie par mail en cas d'alerte.
 
   **Fonctionnement :**
+  1. Capture en parallèle les caméras slm_camera1 à slm_camera7 et slm_portier (8 snapshots, dans /media/Snapshots/).
+  2. Envoie un mail [HA] Alerte avec toutes les images en pièces jointes.
 
-  1. Capture en parallèle les caméras `slm_camera1` à `slm_camera7` et
-  `slm_portier` (8 snapshots, dans `/config/www/Snapshots/`).
-
-  2. Envoie un mail `[HA] Alerte` avec toutes les images en pièces jointes.
-
-
-  **Entités utilisées :** `camera.slm_camera1` à `camera.slm_camera7`,
-  `camera.slm_portier`
+  **Entités principales :**
+  - camera.slm_camera1 à camera.slm_camera7, camera.exterieur_slm_portier : caméras capturées
+  - notify.email_slemeur_slm_srv_dscloud_me (smtp.send_message) : envoi du mail
 sequence:
-  - note: >-
-      Capture en parallèle les 7 caméras (slm_camera1 à slm_camera7 + portier)
-      dans /config/www/Snapshots/
+  - note: Capture en parallèle les 7 caméras (slm_camera1 à slm_camera7 + portier) dans /media/Snapshots/
     parallel:
       - action: camera.snapshot
         target:
           entity_id:
             - camera.slm_camera1
         data:
-          filename: /config/www/Snapshots/camera1.jpg
+          filename: /media/Snapshots/camera1.jpg
       - action: camera.snapshot
         target:
           entity_id:
             - camera.slm_camera2
         data:
-          filename: /config/www/Snapshots/camera2.jpg
+          filename: /media/Snapshots/camera2.jpg
       - action: camera.snapshot
         target:
           entity_id:
             - camera.slm_camera3
         data:
-          filename: /config/www/Snapshots/camera3.jpg
+          filename: /media/Snapshots/camera3.jpg
       - action: camera.snapshot
         target:
           entity_id:
             - camera.slm_camera4
         data:
-          filename: /config/www/Snapshots/camera4.jpg
+          filename: /media/Snapshots/camera4.jpg
       - action: camera.snapshot
         target:
           entity_id:
             - camera.slm_camera5
         data:
-          filename: /config/www/Snapshots/camera5.jpg
+          filename: /media/Snapshots/camera5.jpg
       - action: camera.snapshot
         target:
           entity_id:
             - camera.slm_camera6
         data:
-          filename: /config/www/Snapshots/camera6.jpg
+          filename: /media/Snapshots/camera6.jpg
       - action: camera.snapshot
         target:
           entity_id:
             - camera.slm_camera7
         data:
-          filename: /config/www/Snapshots/camera7.jpg
+          filename: /media/Snapshots/camera7.jpg
       - action: camera.snapshot
         target:
           entity_id:
             - camera.exterieur_slm_portier
         data:
-          filename: /config/www/Snapshots/portier.jpg
+          filename: /media/Snapshots/portier.jpg
   - note: Envoie toutes les captures en pièces jointes par mail [HA] Alerte
-    action: notify.email
+    action: smtp.send_message
     metadata: {}
+    target:
+      entity_id: notify.email_slemeur_slm_srv_dscloud_me
     data:
-      title: |
-        [HA] Alerte
-      target: slemeur@slm-srv.dscloud.me
-      data:
-        images:
-          - /config/www/Snapshots/camera1.jpg
-          - /config/www/Snapshots/camera2.jpg
-          - /config/www/Snapshots/camera3.jpg
-          - /config/www/Snapshots/camera4.jpg
-          - /config/www/Snapshots/camera5.jpg
-          - /config/www/Snapshots/camera6.jpg
-          - /config/www/Snapshots/camera7.jpg
-          - /config/www/Snapshots/portier.jpg
+      title: "[HA] Alerte"
       message: "Snapshots des caméra :"
+      attachments:
+        - media_source:
+            media_content_id: media-source://media_source/local/Snapshots/camera1.jpg
+            media_content_type: image/jpeg
+            metadata:
+              title: camera1.jpg
+              thumbnail: null
+              media_class: image
+              children_media_class: null
+              navigateIds:
+                - {}
+                - media_content_type: app
+                  media_content_id: media-source://media_source
+                - media_content_type: ""
+                  media_content_id: media-source://media_source/local/Snapshots
+        - media_source:
+            media_content_id: media-source://media_source/local/Snapshots/camera2.jpg
+            media_content_type: image/jpeg
+            metadata:
+              title: camera2.jpg
+              thumbnail: null
+              media_class: image
+              children_media_class: null
+              navigateIds:
+                - {}
+                - media_content_type: app
+                  media_content_id: media-source://media_source
+                - media_content_type: ""
+                  media_content_id: media-source://media_source/local/Snapshots
+        - media_source:
+            media_content_id: media-source://media_source/local/Snapshots/camera3.jpg
+            media_content_type: image/jpeg
+            metadata:
+              title: camera3.jpg
+              thumbnail: null
+              media_class: image
+              children_media_class: null
+              navigateIds:
+                - {}
+                - media_content_type: app
+                  media_content_id: media-source://media_source
+                - media_content_type: ""
+                  media_content_id: media-source://media_source/local/Snapshots
+        - media_source:
+            media_content_id: media-source://media_source/local/Snapshots/camera4.jpg
+            media_content_type: image/jpeg
+            metadata:
+              title: camera4.jpg
+              thumbnail: null
+              media_class: image
+              children_media_class: null
+              navigateIds:
+                - {}
+                - media_content_type: app
+                  media_content_id: media-source://media_source
+                - media_content_type: ""
+                  media_content_id: media-source://media_source/local/Snapshots
+        - media_source:
+            media_content_id: media-source://media_source/local/Snapshots/camera5.jpg
+            media_content_type: image/jpeg
+            metadata:
+              title: camera5.jpg
+              thumbnail: null
+              media_class: image
+              children_media_class: null
+              navigateIds:
+                - {}
+                - media_content_type: app
+                  media_content_id: media-source://media_source
+                - media_content_type: ""
+                  media_content_id: media-source://media_source/local/Snapshots
+        - media_source:
+            media_content_id: media-source://media_source/local/Snapshots/camera6.jpg
+            media_content_type: image/jpeg
+            metadata:
+              title: camera6.jpg
+              thumbnail: null
+              media_class: image
+              children_media_class: null
+              navigateIds:
+                - {}
+                - media_content_type: app
+                  media_content_id: media-source://media_source
+                - media_content_type: ""
+                  media_content_id: media-source://media_source/local/Snapshots
+        - media_source:
+            media_content_id: media-source://media_source/local/Snapshots/camera7.jpg
+            media_content_type: image/jpeg
+            metadata:
+              title: camera7.jpg
+              thumbnail: null
+              media_class: image
+              children_media_class: null
+              navigateIds:
+                - {}
+                - media_content_type: app
+                  media_content_id: media-source://media_source
+                - media_content_type: ""
+                  media_content_id: media-source://media_source/local/Snapshots
+        - media_source:
+            media_content_id: media-source://media_source/local/Snapshots/portier.jpg
+            media_content_type: image/jpeg
+            metadata:
+              title: portier.jpg
+              thumbnail: null
+              media_class: image
+              children_media_class: null
+              navigateIds:
+                - {}
+                - media_content_type: app
+                  media_content_id: media-source://media_source
+                - media_content_type: ""
+                  media_content_id: media-source://media_source/local/Snapshots
+    enabled: true
 mode: queued
 max: 10

@@ -15,6 +15,11 @@ description: >-
   1. Lance le service `battery_notes.check_battery_low` pour forcer une
   vérification hebdomadaire de toutes les batteries et générer les notifications
   manquantes.
+
+
+  **Entités principales :**
+
+  - `battery_notes.check_battery_low` : service de vérification forcée
 triggers:
   - trigger: time
     at: "19:00:00"

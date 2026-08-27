@@ -1,0 +1,179 @@
+alias: Notification d'Ouverture ou Fermeture des fenêtres
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
+
+  **Déclencheurs :**
+  - Changement des températures intérieures/extérieure, de la prévision Météo-France, des consignes volet (chaud/froid/pluie), du mode été/hiver, ou des indicateurs de pluie (prévision + pluviomètre)
+  - Changement de `input_select.domicile`
+
+  **Conditions :**
+  - `input_select.domicile` = "Présent"
+
+  **Fonctionnement :**
+  1. Calcule pour chaque pièce (Bureau, Suite parentale, Cellier, Rez de chaussée = Cuisine+Salon+Séjour) si une annonce de fermeture ou d'ouverture de fenêtre est justifiée : détection d'ouverture via l'attribut `Door open` (`open`/`closed`) des `binary_sensor.do_*`, comparaison intérieur/extérieur avec hystérésis à deux seuils et mémoire de la dernière annonce ; pour l'ouverture, ajoute une garde anti-pluie (prévision + pas de pluie actuelle) et vérifie que le volet correspondant n'est pas fermé.
+  2. Regroupe les pièces concernées en deux annonces vocales au maximum par déclenchement (une pour les fermetures, une pour les ouvertures), avec accord singulier/pluriel automatique (ex : "C'est le moment de fermer les fenêtres du Bureau, de la Suite parentale et du Rez de chaussée").
+  3. Anti-répétition : chaque sens (fermer/ouvrir) est bloqué par pièce si la même annonce a déjà été faite il y a moins de 15 minutes (horodatage par pièce et par sens dans des helpers `input_datetime` dédiés, mis à jour uniquement pour les pièces citées).
+
+  **Note :** Les détecteurs `binary_sensor.do_*` (Somfy Protexial) ont un état principal (on/off) qui ne reflète pas fiablement l'ouverture réelle. Toutes les vérifications testent l'attribut `Door open` plutôt que l'état principal du binary_sensor.
+
+  **Entités principales :**
+  - `sensor.netatmo_*_temperature`, `sensor.detecteur_du_cellier_nodeid_29_temperature_air` : températures
+  - `binary_sensor.do_*` (attribut `Door open`) : détecteurs d'ouverture
+  - `input_number.volet_consigne_*` : seuils de déclenchement
+  - `input_datetime.annonce_fenetre_*` : anti-répétition par pièce/sens
+  - `script.notification_vocale` : annonce
+triggers:
+  - trigger: state
+    entity_id:
+      - sensor.netatmo_exterieur_temperature
+      - sensor.netatmo_bureau_temperature
+      - sensor.netatmo_suite_parentale_temperature
+      - sensor.detecteur_du_cellier_nodeid_29_temperature_air
+      - sensor.netatmo_salon_temperature
+      - input_number.volet_consigne_froid
+      - input_number.volet_consigne_chaud
+      - input_number.volet_consigne_risque_de_pluie
+      - input_select.volets_mode
+      - sensor.cheptainville_rain_chance
+      - sensor.cheptainville_temperature
+      - sensor.netatmo_pluviometre_precipitation
+    id: temperature_changed
+    note: Réaction à toute variation des températures intérieures/extérieure, de la prévision Météo-France, des consignes volet (chaud/froid/pluie), du mode été/hiver, ou des indicateurs de pluie (prévision + pluviomètre)
+  - trigger: state
+    entity_id: input_select.domicile
+conditions:
+  - condition: state
+    entity_id: input_select.domicile
+    state:
+      - Présent
+actions:
+  - variables:
+      anti_repetition_secondes: 900
+      hysteresis_marge: 0.5
+    note: Constantes
+  - note: Calcul des 8 booléens fermer/ouvrir par pièce (détection ouverture via l'attribut Door open, hystérésis été, anti-répétition, garde volet+pluie pour l'ouverture)
+    variables:
+      bureau_fermer: |-
+        {% set ext = states('sensor.netatmo_exterieur_temperature') | float(0) %}
+        {% set int = states('sensor.netatmo_bureau_temperature') | float(0) %}
+        {% set ete = is_state('input_select.volets_mode', 'Eté') %}
+        {% set ts_fermer = state_attr('input_datetime.annonce_fenetre_bureau_fermer', 'timestamp') %}
+        {% set ts_ouvrir = state_attr('input_datetime.annonce_fenetre_bureau_ouvrir', 'timestamp') %}
+        {% set latch_fermer = ts_fermer is not none and (ts_ouvrir is none or ts_fermer > ts_ouvrir) %}
+        {% set temp_ferme = (ete and ((latch_fermer and ext >= int) or (not latch_fermer and ext >= int + hysteresis_marge))) or (int <= states('input_number.volet_consigne_froid') | float(0)) %}
+        {% set anti_rep = ts_fermer is none or (now().timestamp() - ts_fermer) >= anti_repetition_secondes %}
+        {{ state_attr('binary_sensor.do_bureau', 'Door open') == 'open' and temp_ferme and anti_rep }}
+      bureau_ouvrir: |-
+        {% set ext = states('sensor.netatmo_exterieur_temperature') | float(0) %}
+        {% set int = states('sensor.netatmo_bureau_temperature') | float(0) %}
+        {% set ete = is_state('input_select.volets_mode', 'Eté') %}
+        {% set ts_fermer = state_attr('input_datetime.annonce_fenetre_bureau_fermer', 'timestamp') %}
+        {% set ts_ouvrir = state_attr('input_datetime.annonce_fenetre_bureau_ouvrir', 'timestamp') %}
+        {% set latch_fermer = ts_fermer is not none and (ts_ouvrir is none or ts_fermer > ts_ouvrir) %}
+        {% set temp_ouvre = (ete and int >= states('input_number.volet_consigne_chaud') | float(0) and ((not latch_fermer and ext < int) or (latch_fermer and ext <= int - hysteresis_marge))) or (not ete and ext > int) %}
+        {% set anti_rep = ts_ouvrir is none or (now().timestamp() - ts_ouvrir) >= anti_repetition_secondes %}
+        {{ state_attr('binary_sensor.do_bureau', 'Door open') == 'closed' and (states('sensor.cheptainville_rain_chance') | float(999) < states('input_number.volet_consigne_risque_de_pluie') | float(0)) and (states('sensor.netatmo_pluviometre_precipitation') | float(999) < 0.1) and temp_ouvre and (states('cover.volet_du_bureau_nodeid_36_position') != 'closed') and anti_rep }}
+      suite_parentale_fermer: |-
+        {% set ext = states('sensor.netatmo_exterieur_temperature') | float(0) %}
+        {% set int = states('sensor.netatmo_suite_parentale_temperature') | float(0) %}
+        {% set ete = is_state('input_select.volets_mode', 'Eté') %}
+        {% set ts_fermer = state_attr('input_datetime.annonce_fenetre_suite_parentale_fermer', 'timestamp') %}
+        {% set ts_ouvrir = state_attr('input_datetime.annonce_fenetre_suite_parentale_ouvrir', 'timestamp') %}
+        {% set latch_fermer = ts_fermer is not none and (ts_ouvrir is none or ts_fermer > ts_ouvrir) %}
+        {% set temp_ferme = (ete and ((latch_fermer and ext >= int) or (not latch_fermer and ext >= int + hysteresis_marge))) or (int <= states('input_number.volet_consigne_froid') | float(0)) %}
+        {% set anti_rep = ts_fermer is none or (now().timestamp() - ts_fermer) >= anti_repetition_secondes %}
+        {{ is_state('automation.gestion_du_volet_suite_parentale', 'on') and state_attr('binary_sensor.do_suite_parental', 'Door open') == 'open' and temp_ferme and anti_rep }}
+      suite_parentale_ouvrir: |-
+        {% set ext = states('sensor.netatmo_exterieur_temperature') | float(0) %}
+        {% set int = states('sensor.netatmo_suite_parentale_temperature') | float(0) %}
+        {% set ete = is_state('input_select.volets_mode', 'Eté') %}
+        {% set ts_fermer = state_attr('input_datetime.annonce_fenetre_suite_parentale_fermer', 'timestamp') %}
+        {% set ts_ouvrir = state_attr('input_datetime.annonce_fenetre_suite_parentale_ouvrir', 'timestamp') %}
+        {% set latch_fermer = ts_fermer is not none and (ts_ouvrir is none or ts_fermer > ts_ouvrir) %}
+        {% set temp_ouvre = (ete and int >= states('input_number.volet_consigne_chaud') | float(0) and ((not latch_fermer and ext < int) or (latch_fermer and ext <= int - hysteresis_marge))) or (not ete and ext > int) %}
+        {% set anti_rep = ts_ouvrir is none or (now().timestamp() - ts_ouvrir) >= anti_repetition_secondes %}
+        {{ is_state('automation.gestion_du_volet_suite_parentale', 'on') and state_attr('binary_sensor.do_suite_parental', 'Door open') == 'closed' and (states('sensor.cheptainville_rain_chance') | float(999) < states('input_number.volet_consigne_risque_de_pluie') | float(0)) and (states('sensor.netatmo_pluviometre_precipitation') | float(999) < 0.1) and temp_ouvre and (states('cover.volet_de_la_suite_parentale_nodeid_35_position') != 'closed') and anti_rep }}
+      cellier_fermer: |-
+        {% set ext = states('sensor.netatmo_exterieur_temperature') | float(0) %}
+        {% set int = states('sensor.detecteur_du_cellier_nodeid_29_temperature_air') | float(0) %}
+        {% set ete = is_state('input_select.volets_mode', 'Eté') %}
+        {% set ts_fermer = state_attr('input_datetime.annonce_fenetre_cellier_fermer', 'timestamp') %}
+        {% set ts_ouvrir = state_attr('input_datetime.annonce_fenetre_cellier_ouvrir', 'timestamp') %}
+        {% set latch_fermer = ts_fermer is not none and (ts_ouvrir is none or ts_fermer > ts_ouvrir) %}
+        {% set temp_ferme = (ete and ((latch_fermer and ext >= int) or (not latch_fermer and ext >= int + hysteresis_marge))) or (int <= states('input_number.volet_consigne_froid') | float(0)) %}
+        {% set anti_rep = ts_fermer is none or (now().timestamp() - ts_fermer) >= anti_repetition_secondes %}
+        {{ state_attr('binary_sensor.do_vitre_cellier', 'Door open') == 'open' and temp_ferme and anti_rep }}
+      cellier_ouvrir: |-
+        {% set ext = states('sensor.netatmo_exterieur_temperature') | float(0) %}
+        {% set int = states('sensor.detecteur_du_cellier_nodeid_29_temperature_air') | float(0) %}
+        {% set ete = is_state('input_select.volets_mode', 'Eté') %}
+        {% set ts_fermer = state_attr('input_datetime.annonce_fenetre_cellier_fermer', 'timestamp') %}
+        {% set ts_ouvrir = state_attr('input_datetime.annonce_fenetre_cellier_ouvrir', 'timestamp') %}
+        {% set latch_fermer = ts_fermer is not none and (ts_ouvrir is none or ts_fermer > ts_ouvrir) %}
+        {% set temp_ouvre = (ete and int >= states('input_number.volet_consigne_chaud') | float(0) and ((not latch_fermer and ext < int) or (latch_fermer and ext <= int - hysteresis_marge))) or (not ete and ext > int) %}
+        {% set anti_rep = ts_ouvrir is none or (now().timestamp() - ts_ouvrir) >= anti_repetition_secondes %}
+        {{ state_attr('binary_sensor.do_vitre_cellier', 'Door open') == 'closed' and (states('sensor.cheptainville_rain_chance') | float(999) < states('input_number.volet_consigne_risque_de_pluie') | float(0)) and (states('sensor.netatmo_pluviometre_precipitation') | float(999) < 0.1) and temp_ouvre and (states('cover.volet_du_cellier_nodeid_31_position') != 'closed') and anti_rep }}
+      rdc_fermer: |-
+        {% set ext = states('sensor.netatmo_exterieur_temperature') | float(0) %}
+        {% set int = states('sensor.netatmo_salon_temperature') | float(0) %}
+        {% set ete = is_state('input_select.volets_mode', 'Eté') %}
+        {% set ts_fermer = state_attr('input_datetime.annonce_fenetres_rdc_fermer', 'timestamp') %}
+        {% set ts_ouvrir = state_attr('input_datetime.annonce_fenetres_rdc_ouvrir', 'timestamp') %}
+        {% set latch_fermer = ts_fermer is not none and (ts_ouvrir is none or ts_fermer > ts_ouvrir) %}
+        {% set temp_ferme = (ete and ((latch_fermer and ext >= int) or (not latch_fermer and ext >= int + hysteresis_marge))) or (int <= states('input_number.volet_consigne_froid') | float(0)) %}
+        {% set anti_rep = ts_fermer is none or (now().timestamp() - ts_fermer) >= anti_repetition_secondes %}
+        {{ (state_attr('binary_sensor.do_cuisine', 'Door open') == 'open' or state_attr('binary_sensor.do_salon', 'Door open') == 'open' or state_attr('binary_sensor.do_sejour', 'Door open') == 'open') and temp_ferme and anti_rep }}
+      rdc_ouvrir: |-
+        {% set ext = states('sensor.netatmo_exterieur_temperature') | float(0) %}
+        {% set int = states('sensor.netatmo_salon_temperature') | float(0) %}
+        {% set ete = is_state('input_select.volets_mode', 'Eté') %}
+        {% set ts_fermer = state_attr('input_datetime.annonce_fenetres_rdc_fermer', 'timestamp') %}
+        {% set ts_ouvrir = state_attr('input_datetime.annonce_fenetres_rdc_ouvrir', 'timestamp') %}
+        {% set latch_fermer = ts_fermer is not none and (ts_ouvrir is none or ts_fermer > ts_ouvrir) %}
+        {% set temp_ouvre = (ete and int >= states('input_number.volet_consigne_chaud') | float(0) and ((not latch_fermer and ext < int) or (latch_fermer and ext <= int - hysteresis_marge))) or (not ete and ext > int) %}
+        {% set anti_rep = ts_ouvrir is none or (now().timestamp() - ts_ouvrir) >= anti_repetition_secondes %}
+        {{ state_attr('binary_sensor.do_cuisine', 'Door open') == 'closed' and state_attr('binary_sensor.do_salon', 'Door open') == 'closed' and state_attr('binary_sensor.do_sejour', 'Door open') == 'closed' and (states('sensor.cheptainville_rain_chance') | float(999) < states('input_number.volet_consigne_risque_de_pluie') | float(0)) and (states('sensor.netatmo_pluviometre_precipitation') | float(999) < 0.1) and temp_ouvre and (states('cover.volet_de_la_cuisine_nodeid_34_position') != 'closed' or states('cover.volet_du_salon_nodeid_32_position') != 'closed' or states('cover.volet_du_sejour_nodeid_33_position') != 'closed') and anti_rep }}
+  - note: Listes des pièces concernées (phrases avec article) et des helpers input_datetime à mettre à jour, par sens
+    variables:
+      fermer_rooms: "{{ (['du Bureau'] if bureau_fermer else []) + (['de la Suite parentale'] if suite_parentale_fermer else []) + (['du Cellier'] if cellier_fermer else []) + (['du Rez de chaussée'] if rdc_fermer else []) }}"
+      ouvrir_rooms: "{{ (['du Bureau'] if bureau_ouvrir else []) + (['de la Suite parentale'] if suite_parentale_ouvrir else []) + (['du Cellier'] if cellier_ouvrir else []) + (['du Rez de chaussée'] if rdc_ouvrir else []) }}"
+      fermer_stamp_entities: "{{ (['input_datetime.annonce_fenetre_bureau_fermer'] if bureau_fermer else []) + (['input_datetime.annonce_fenetre_suite_parentale_fermer'] if suite_parentale_fermer else []) + (['input_datetime.annonce_fenetre_cellier_fermer'] if cellier_fermer else []) + (['input_datetime.annonce_fenetres_rdc_fermer'] if rdc_fermer else []) }}"
+      ouvrir_stamp_entities: "{{ (['input_datetime.annonce_fenetre_bureau_ouvrir'] if bureau_ouvrir else []) + (['input_datetime.annonce_fenetre_suite_parentale_ouvrir'] if suite_parentale_ouvrir else []) + (['input_datetime.annonce_fenetre_cellier_ouvrir'] if cellier_ouvrir else []) + (['input_datetime.annonce_fenetres_rdc_ouvrir'] if rdc_ouvrir else []) }}"
+  - note: Construction des 2 messages combinés en une seule expression Jinja (singulier/pluriel géré automatiquement, RDC toujours pluriel car 3 fenêtres)
+    variables:
+      message_fermer: "{{ '' if fermer_rooms | length == 0 else (\"C'est le moment de fermer \" ~ ('les fenêtres ' if (fermer_rooms | length > 1 or 'du Rez de chaussée' in fermer_rooms) else 'la fenêtre ') ~ (fermer_rooms[0] if fermer_rooms | length == 1 else (fermer_rooms[:-1] | join(', ') ~ ' et ' ~ fermer_rooms[-1]))) }}"
+      message_ouvrir: "{{ '' if ouvrir_rooms | length == 0 else (\"C'est le moment d'ouvrir \" ~ ('les fenêtres ' if (ouvrir_rooms | length > 1 or 'du Rez de chaussée' in ouvrir_rooms) else 'la fenêtre ') ~ (ouvrir_rooms[0] if ouvrir_rooms | length == 1 else (ouvrir_rooms[:-1] | join(', ') ~ ' et ' ~ ouvrir_rooms[-1]))) }}"
+  - note: Annonce groupée de fermeture (une seule fois pour toutes les pièces concernées) + horodatage
+    if:
+      - condition: template
+        value_template: "{{ fermer_rooms | length > 0 }}"
+    then:
+      - action: script.notification_vocale
+        data:
+          message_vocal: "{{ message_fermer }}"
+      - note: Laisse le temps à l'annonce de fermeture de se terminer avant celle d'ouverture, si les deux se déclenchent le même run
+        delay:
+          hours: 0
+          minutes: 0
+          seconds: 2
+          milliseconds: 0
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: "{{ fermer_stamp_entities }}"
+        data:
+          datetime: "{{ now() }}"
+  - note: Annonce groupée d'ouverture (une seule fois pour toutes les pièces concernées) + horodatage
+    if:
+      - condition: template
+        value_template: "{{ ouvrir_rooms | length > 0 }}"
+    then:
+      - action: script.notification_vocale
+        data:
+          message_vocal: "{{ message_ouvrir }}"
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: "{{ ouvrir_stamp_entities }}"
+        data:
+          datetime: "{{ now() }}"
+mode: single
