@@ -1,4 +1,4 @@
-# Intégrations (WiFi, Ethernet RJ45 & Autres) — 150 appareils
+# Intégrations (WiFi, Ethernet RJ45 & Autres) — 151 appareils
 
 [← Retour Appareils](../appareils.md)
 
@@ -289,7 +289,7 @@
 
 ---
 
-## Autres appareils (26 appareils)
+## Autres appareils (27 appareils)
 
 ### Somfy io-homecontrol — KLF200 (14 appareils)
 
@@ -353,3 +353,14 @@
 | 2 | DCL | Plafonnier connecté | Salle de bain, Salle d'eau | [📄 Manuel](../hardware/notice_DCL.pdf) |
 | 2 | Switch | Interrupteur armoire de toilette | Salle de bain, Salle d'eau | [📄 Manuel](../hardware/GDE33208-0026Sept19.pdf) |
 | 2 | Switch | Interrupteur plafonnier | Salle de bain, Salle d'eau | [📄 Manuel](../hardware/GDE33208-0026Sept19.pdf) |
+
+---
+
+### Micronova Agua IOT — Poêle Jolly Mec (1 appareil)
+
+> ☁️ **Cloud** — Intégration : **Micronova Agua IOT** — [GitHub](https://github.com/vincentscode/MicronovaAguaIOT)
+> Module WiFi intégré au poêle à granulés Jolly Mec — connexion via cloud Micronova
+
+| Nb | Fabricant | Modèle | Description | Localisation |
+|---|---|---|---|---|
+| 1 | Jolly Mec / Micronova | Agua IOT | Module WiFi poêle à granulés | Salon |
