@@ -358,7 +358,7 @@
 
 ### Micronova Agua IOT — Poêle Jolly Mec (1 appareil)
 
-> ☁️ **Cloud** — Intégration : **Micronova Agua IOT** — [GitHub](https://github.com/vincentscode/MicronovaAguaIOT)
+> 🔧 **HACS** — Intégration : **Micronova Agua IOT** — [GitHub](https://github.com/vincentwolsink/home_assistant_micronova_agua_iot)
 > Module WiFi intégré au poêle à granulés Jolly Mec — connexion via cloud Micronova
 
 | Nb | Fabricant | Modèle | Description | Localisation |

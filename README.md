@@ -280,7 +280,7 @@ Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être captu
 | Hue Sync Box | 1 | Synchronisation lumières Philips Hue avec l'HDMI (Hue Play HDMI Sync Box) | [mvdwetering/huesyncbox](https://github.com/mvdwetering/huesyncbox) | 🔧 HACS Communauté |
 | Local Agenda | 5 | Calendriers locaux enrichis pour la planification domotique | [slemeur91/local_agenda](https://github.com/slemeur91/local_agenda) | ⚠️ Dépôt perso |
 | LocalTuya | 6 | Contrôle local (sans cloud) des appareils Tuya | [rospogrigio/localtuya](https://github.com/rospogrigio/localtuya) | 🔧 HACS |
-| Micronova Agua IOT | — | Contrôle des poêles à granulés via Agua IOT *(désactivé)* | [vincentwolsink/home_assistant_micronova_agua_iot](https://github.com/vincentwolsink/home_assistant_micronova_agua_iot) | 🔧 HACS |
+| Micronova Agua IOT | 1 | Contrôle du poêle à granulés Jolly Mec via Agua IOT | [vincentwolsink/home_assistant_micronova_agua_iot](https://github.com/vincentwolsink/home_assistant_micronova_agua_iot) | 🔧 HACS |
 | Millésime — Cave à Vin | 1 | Inventaire de la cave à vin ⚠️ MàJ disponible | [Redsklns/ha-millesime](https://github.com/Redsklns/ha-millesime) | 🔧 HACS Communauté |
 | My EcoWatt by RTE | — | Signaux de sobriété électrique RTE | [kamaradclimber/rte-ecowatt](https://github.com/kamaradclimber/rte-ecowatt) | 🔧 HACS |
 | Orange Livebox | 1 | Supervision de la Livebox Orange | [cyr-ius/hass-livebox-component](https://github.com/cyr-ius/hass-livebox-component) | 🔧 HACS |
