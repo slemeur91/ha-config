@@ -33,7 +33,7 @@
 
 ---
 
-### 🔌 Appareils par technologie (202)
+### 🔌 Appareils par technologie (203)
 
 | Technologie | Appareils | Mode | Détail |
 |---|---|---|---|
