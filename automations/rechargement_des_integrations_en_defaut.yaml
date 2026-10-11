@@ -27,7 +27,7 @@ description: >-
   `homeassistant.reload_config_entry`.
 
   4. Envoie une notification HA (`script.notification_ha`) pour chaque panne
-  silencieuse détectée, avec un `notification_id` stable par intégration (pas de
+  silencieuse détectée, avec un `message_id` stable par intégration (pas de
   doublon si le problème persiste).
 
 
@@ -143,11 +143,11 @@ actions:
               message_type: >-
                 Intégration en panne silencieuse — {{
                 config_entry_attr(repeat.item, 'title') }}
-              message_ha: >-
+              message_corp: >-
                 L'intégration {{ config_entry_attr(repeat.item, 'domain') }} ({{
                 config_entry_attr(repeat.item, 'title') }}) a toutes ses entités
                 indisponibles depuis plus de 10 minutes alors qu'elle est
                 déclarée chargée. Un rechargement automatique a été tenté.
-              notification_id: integration_silent_failure-{{ repeat.item }}
+              message_id: integration_silent_failure-{{ repeat.item }}
 mode: queued
 max: 10

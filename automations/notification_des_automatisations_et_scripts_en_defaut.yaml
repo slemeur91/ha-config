@@ -24,7 +24,7 @@ description: >-
   provenant des composants `automation` ou `script`.
 
   2. Envoie une notification HA (`script.notification_ha`) avec le type
-  (Automatisation/Script) et le message d'erreur, avec un `notification_id`
+  (Automatisation/Script) et le message d'erreur, avec un `message_id`
   stable basé sur le contenu du message pour éviter les doublons en cas de
   répétition rapide de la même erreur.
 
@@ -60,10 +60,10 @@ actions:
   - action: script.notification_ha
     data:
       message_type: "{{ log_type }} en défaut"
-      message_ha: "{{ log_message }}"
-      notification_id: automation_script_error-{{ (log_type ~ log_message) | md5 }}
+      message_corp: "{{ log_message }}"
+      message_id: automation_script_error-{{ (log_type ~ log_message) | md5 }}
     note: >-
-      Notifie via Notification HA, avec un notification_id stable basé sur le
+      Notifie via Notification HA, avec un message_id stable basé sur le
       contenu pour éviter les doublons si la même erreur se répète rapidement
 mode: queued
 max: 10

@@ -12,10 +12,11 @@ description: >-
 
   - message_type : type du message
 
-  - message_ha : contenu du message
+  - message_corp : contenu du message
 
-  - notification_id (optionnel) : tag permettant de remplacer/regrouper une
-  notification précédente sur l'iPhone
+  - message_id (optionnel) : tag permettant de remplacer/regrouper une
+  notification précédente sur l'iPhone. Si non fourni, calculé automatiquement
+  à partir de message_type et message_corp (hash) pour éviter les doublons.
 
 
   **Fonctionnement :**
@@ -24,8 +25,8 @@ description: >-
   notify.mobile_app_iphone_de_sylvain_le_meur avec le type en titre et le
   message en corps.
 
-  2. Si notification_id est fourni, il est transmis en tant que tag pour
-  permettre le remplacement ciblé de la notification.
+  2. L'identifiant (fourni ou calculé automatiquement si absent) est transmis
+  en tant que tag pour permettre le remplacement ciblé de la notification.
 
 
   **Entités principales :**
@@ -39,36 +40,30 @@ fields:
     required: true
     selector:
       text: null
-  message_ha:
+  message_corp:
     description: Corps du message
     example: Message
     required: true
     selector:
       text: null
-  notification_id:
-    description: tag permettant de remplacer/regrouper la notification
+  message_id:
+    description: >-
+      Tag permettant de remplacer/regrouper une notification précédente sur
+      l'iPhone. Si non fourni, calculé automatiquement à partir de message_type
+      et message_corp (hash) pour éviter les doublons.
     example: identifiant
     required: false
     selector:
       text: null
 sequence:
-  - choose:
-      - conditions:
-          - condition: template
-            value_template: >-
-              {{ notification_id is defined and notification_id not in [None,
-              ''] }}
-        sequence:
-          - action: notify.mobile_app_iphone_de_sylvain_le_meur
-            data:
-              title: "[HA] {{ message_type }}"
-              message: "{{ message_ha }}"
-              data:
-                tag: "{{ notification_id }}"
-    default:
-      - action: notify.mobile_app_iphone_de_sylvain_le_meur
-        data:
-          title: "[HA] {{ message_type }}"
-          message: "{{ message_ha }}"
+  - variables:
+      message_id_final: "{{ message_id if (message_id is defined and message_id not in [None,\
+        \ '']) else (message_type ~ message_corp) | md5 }}"
+  - action: notify.mobile_app_iphone_de_sylvain_le_meur
+    data:
+      title: "[HA] {{ message_type }}"
+      message: "{{ message_corp }}"
+      data:
+        tag: "{{ message_id_final }}"
 mode: queued
 max: 10

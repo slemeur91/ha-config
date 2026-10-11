@@ -61,7 +61,7 @@
 
 **Fonctionnement :**
 1. Appelle `script.notification_ha` (fire-and-forget via `script.turn_on`) avec un message adapté selon le type de batterie : rechargeable ("rechargée") ou pile ("remplacée"), mentionnant le niveau avant/après.
-2. `notification_id` stable par appareil (`battery_increased-device_id-source_entity_id`) pour éviter les doublons si l'évènement se répète.
+2. `message_id` stable par appareil (`battery_increased-device_id-source_entity_id`) pour éviter les doublons si l'évènement se répète.
 
 **Entités principales :** `script.notification_ha`, événement `battery_notes_battery_increased`
 
@@ -78,7 +78,7 @@
 - Déclenchement manuel
 
 **Fonctionnement :**
-1. Quel que soit le déclencheur → vérifie les 5 capteurs et crée une notification pour chacun actuellement à off. Le `notification_id` évite les doublons dans l'interface.
+1. Quel que soit le déclencheur → vérifie les 5 capteurs et crée une notification pour chacun actuellement à off. Le `message_id` évite les doublons dans l'interface.
 
 **Entités principales :**
 - `binary_sensor.chauffage_du_bureau_nodeid_2_temperature_sensor`
@@ -252,7 +252,7 @@
 **Fonctionnement :**
 1. Onduleur Ups (réseau) : "Replace battery!" détecté → notifie qu'un remplacement de batterie est nécessaire.
 2. Onduleur Eaton_Usb : code NUT anormal → traduit chaque flag (RB, LB, BYPASS…) en description lisible et notifie.
-3. Deux branches avec `notification_id` distinct pour éviter les doublons.
+3. Deux branches avec `message_id` distinct pour éviter les doublons.
 
 **Entités principales :**
 - `sensor.reseau_ups_alarmes` : alarme texte de l'onduleur réseau

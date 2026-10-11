@@ -31,7 +31,7 @@ description: >-
   notifie.
 
   3. Les deux branches utilisent `script.notification_ha` avec un
-  `notification_id` distinct pour éviter les doublons.
+  `message_id` distinct pour éviter les doublons.
 
 
   **Entités principales :**
@@ -65,10 +65,10 @@ actions:
             data:
               variables:
                 message_type: UPS
-                message_ha: >-
+                message_corp: >-
                   L'onduleur Ups signale "Replace battery!" : la batterie doit
                   être remplacée.
-                notification_id: ups_reseau_defaut
+                message_id: ups_reseau_defaut
       - conditions:
           - condition: trigger
             id: ups_eaton_usb
@@ -84,7 +84,7 @@ actions:
             data:
               variables:
                 message_type: UPS
-                message_ha: >-
+                message_corp: >-
                   {% set desc = {'RB': 'remplacement de la batterie nécessaire',
                   'LB': 'batterie faible', 'BYPASS': 'fonctionnement en bypass
                   (protection non assurée)', 'OFF': 'onduleur éteint', 'OVER':
@@ -96,5 +96,5 @@ actions:
                   %}L'onduleur Eaton_Usb signale : {% for c in codes %}{{
                   desc.get(c, c) }}{% if not loop.last %}, {% endif %}{% endfor
                   %} (code brut : {{ trigger.to_state.state }}).
-                notification_id: eaton_usb_defaut
+                message_id: eaton_usb_defaut
 mode: single

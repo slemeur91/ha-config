@@ -18,7 +18,7 @@ description: >-
   **Fonctionnement :**
 
   1. Pour chaque automatisation désactivée, appelle `script.notification_ha`
-  avec un `notification_id` stable par automatisation (mise à jour, pas de
+  avec un `message_id` stable par automatisation (mise à jour, pas de
   doublon si toujours désactivée le lendemain).
 
 
@@ -49,7 +49,7 @@ actions:
         - action: script.notification_ha
           data:
             message_type: Automatisations désactivées
-            message_ha: >-
+            message_corp: >-
               L'automatisation {{ state_attr(repeat.item, 'friendly_name') or
               repeat.item }} est désactivée.
-            notification_id: automation_disabled-{{ repeat.item }}
+            message_id: automation_disabled-{{ repeat.item }}

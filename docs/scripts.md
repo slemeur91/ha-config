@@ -82,16 +82,16 @@
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Allume ou éteint l'amplificateur ROTEL et sélectionne son entrée vidéo, en pilotant les boutons IR/réseau et en vérifiant l'état via la présence réseau (`device_tracker`). Appelé par "Gestion de la HiFi" via `script.turn_on` (fire-and-forget).
+**Rôle :** Allume ou éteint l'amplificateur ROTEL et sélectionne son entrée vidéo, en pilotant les boutons IR/réseau et en vérifiant l'état via la présence réseau (`device_tracker`) et un ping réseau (`binary_sensor`). Appelé par "Gestion de la HiFi" via `script.turn_on` (fire-and-forget).
 
 **Paramètres :**
 - `action` : `"on"` ou `"off"`
 
 **Fonctionnement :**
-1. `action: "off"` → répète (presse `button.rotel_off` + délai 30s) jusqu'à ce que `device_tracker.slm_rotel_slm_rotel` passe à "not_home" (ampli éteint).
-2. `action: "on"` → répète (sélectionne l'entrée selon `input_select.hifi_source` : Zappiti→video1, BluRay→video2, slm-media4→video3 + délai 30s) jusqu'à ce que `device_tracker.slm_rotel_slm_rotel` passe à "home" (ampli allumé).
+1. `action: "off"` → répète (presse 3× `button.rotel_off` avec délai 3s entre chaque, puis 20s, puis force update de `binary_sensor.192_168_51_55`, puis 10s) jusqu'à ce que `device_tracker.slm_rotel_slm_rotel` passe à "not_home" OU `binary_sensor.192_168_51_55` passe à "off" (ampli éteint).
+2. `action: "on"` → répète (sélectionne 3× l'entrée selon `input_select.hifi_source` : Zappiti→video1, BluRay→video2, slm-media4→video3 avec délai 3s entre chaque, puis 20s, puis force update de `binary_sensor.192_168_51_55`, puis 10s) jusqu'à ce que `device_tracker.slm_rotel_slm_rotel` passe à "home" OU `binary_sensor.192_168_51_55` passe à "on" (ampli allumé).
 
-**Entités utilisées :** `button.rotel_off`, `button.rotel_video1/2/3`, `device_tracker.slm_rotel_slm_rotel`, `input_select.hifi_source`
+**Entités utilisées :** `button.rotel_off`, `button.rotel_video1/2/3`, `device_tracker.slm_rotel_slm_rotel`, `binary_sensor.192_168_51_55`, `input_select.hifi_source`
 
 ---
 
@@ -246,12 +246,12 @@
 
 **Paramètres :**
 - `message_type` : type du message
-- `message_ha` : contenu du message
-- `notification_id` (optionnel) : identifiant permettant de mettre à jour ou de dismiss la notification ensuite (`persistent_notification.dismiss`)
+- `message_corp` : contenu du message
+- `message_id` (optionnel) : identifiant permettant de mettre à jour ou de dismiss la notification ensuite (`persistent_notification.dismiss`). Si absent, calculé automatiquement via MD5 de `message_type ~ message_corp` pour éviter les doublons.
 
 **Fonctionnement :**
-1. Envoie une notification persistante via `notify.persistent_notification` avec le type en titre et le message en corps.
-2. Si `notification_id` est fourni, il est transmis pour permettre la mise à jour ou la suppression ciblée de la notification.
+1. Calcule `message_id_final` : utilise `message_id` s'il est fourni, sinon génère un hash MD5 de `message_type ~ message_corp`.
+2. Envoie une notification persistante via `notify.persistent_notification` avec le type en titre, le message en corps, et `notification_id: message_id_final` pour permettre la mise à jour ou la suppression ciblée.
 
 ---
 
@@ -264,7 +264,7 @@
 
 **Paramètres :**
 - `message_type` : type (Information, Alerte, Chauffage Etage, Chauffage RDC…)
-- `message_mail` : corps du message
+- `message_corp` : corps du message
 
 **Fonctionnement :**
 1. Appelle `smtp.send_message` ciblant `notify.email_slemeur_slm_srv_dscloud_me` avec le type en objet (`[HA] {{ message_type }}`) et le message en corps.
@@ -298,12 +298,12 @@
 
 **Paramètres :**
 - `message_type` : type du message
-- `message_ha` : contenu du message
-- `notification_id` (optionnel) : tag permettant de remplacer/regrouper une notification précédente sur l'iPhone
+- `message_corp` : contenu du message
+- `message_id` (optionnel) : tag permettant de remplacer/regrouper une notification précédente sur l'iPhone. Si non fourni, calculé automatiquement à partir de `message_type` et `message_corp` (hash) pour éviter les doublons.
 
 **Fonctionnement :**
-1. Envoie une notification push via `notify.mobile_app_iphone_de_sylvain_le_meur` avec le type en titre et le message en corps.
-2. Si `notification_id` est fourni, il est transmis en tant que `tag` pour permettre le remplacement ciblé de la notification.
+1. Calcule `message_id_final` : utilise `message_id` si fourni, sinon génère un hash MD5 de `message_type ~ message_corp`.
+2. Envoie une notification push via `notify.mobile_app_iphone_de_sylvain_le_meur` avec le type en titre, le message en corps, et `message_id_final` en tant que `tag` pour permettre le remplacement ciblé.
 
 **Entités utilisées :** `notify.mobile_app_iphone_de_sylvain_le_meur`
 

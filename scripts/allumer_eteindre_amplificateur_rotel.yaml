@@ -3,19 +3,20 @@ description: |-
   **Statut :** Finalisé
   **Evolution :** Aucune
 
-  **Rôle :** Allume ou éteint l'amplificateur ROTEL et sélectionne son entrée vidéo, en pilotant les boutons IR/réseau de l'ampli et en vérifiant l'état atteint via sa présence réseau (device_tracker). Appelé par "Gestion de la HiFi" (branche extinction avec action: "off", branche allumage/SOURCE avec action: "on") via script.turn_on (fire-and-forget).
+  **Rôle :** Allume ou éteint l'amplificateur ROTEL et sélectionne son entrée vidéo, en pilotant les boutons IR/réseau de l'ampli et en vérifiant l'état atteint via sa présence réseau (device_tracker) et un ping réseau (binary_sensor). Appelé par "Gestion de la HiFi" (branche extinction avec action: "off", branche allumage/SOURCE avec action: "on") via script.turn_on (fire-and-forget).
 
   **Paramètres :**
   - action : "on" ou "off"
 
   **Fonctionnement :**
-  1. action "off" → répète (presse button.rotel_off puis délai de 30s) jusqu'à ce que device_tracker.slm_rotel_slm_rotel passe à "not_home" (= ampli non détecté sur le réseau = éteint).
-  2. action "on" → répète (sélectionne l'entrée vidéo selon input_select.hifi_source : "Zappiti" → button.rotel_video1, "BluRay" → button.rotel_video2, "slm-media4" → button.rotel_video3, puis délai de 30s) jusqu'à ce que device_tracker.slm_rotel_slm_rotel passe à "home" (= ampli détecté sur le réseau = allumé).
+  1. action "off" → répète (presse 3× button.rotel_off avec délai 3s entre chaque, puis délai 20s, puis force update de binary_sensor.192_168_51_55, puis délai 10s) jusqu'à ce que device_tracker.slm_rotel_slm_rotel passe à "not_home" OU binary_sensor.192_168_51_55 passe à "off" (= ampli non détecté sur le réseau = éteint).
+  2. action "on" → répète (sélectionne 3× l'entrée vidéo selon input_select.hifi_source : "Zappiti" → button.rotel_video1, "BluRay" → button.rotel_video2, "slm-media4" → button.rotel_video3, avec délai 3s entre chaque, puis délai 20s, puis force update de binary_sensor.192_168_51_55, puis délai 10s) jusqu'à ce que device_tracker.slm_rotel_slm_rotel passe à "home" OU binary_sensor.192_168_51_55 passe à "on" (= ampli détecté sur le réseau = allumé).
   3. continue_on_error : une erreur sur une étape n'interrompt pas le script.
 
   **Entités principales :**
   - button.rotel_off, button.rotel_video1/2/3 : commandes de l'ampli (extinction / sélection d'entrée)
   - device_tracker.slm_rotel_slm_rotel : présence réseau de l'ampli, utilisée pour vérifier l'état atteint
+  - binary_sensor.192_168_51_55 : ping réseau de l'ampli, alternative au device_tracker pour la détection d'état
   - input_select.hifi_source : source sélectionnée, détermine l'entrée vidéo activée
 max: 5
 mode: queued
@@ -27,74 +28,114 @@ sequence:
         sequence:
           - repeat:
               sequence:
-                - action: button.press
-                  data: {}
-                  metadata: {}
-                  target:
-                    entity_id: button.rotel_off
+                - repeat:
+                    count: 3
+                    sequence:
+                      - action: button.press
+                        data: {}
+                        metadata: {}
+                        target:
+                          entity_id: button.rotel_off
+                      - delay:
+                          hours: 0
+                          minutes: 0
+                          seconds: 3
+                          milliseconds: 0
                 - delay:
                     hours: 0
-                    milliseconds: 0
                     minutes: 0
-                    seconds: 30
-              until:
-                - condition: state
-                  entity_id: device_tracker.slm_rotel_slm_rotel
-                  state:
-                    - not_home
-                  for:
+                    seconds: 20
+                    milliseconds: 0
+                - action: homeassistant.update_entity
+                  metadata: {}
+                  data:
+                    entity_id:
+                      - binary_sensor.192_168_51_55
+                - delay:
                     hours: 0
-                    minutes: 4
-                    seconds: 0
+                    minutes: 0
+                    seconds: 10
+                    milliseconds: 0
+              until:
+                - condition: or
+                  conditions:
+                    - condition: state
+                      entity_id: device_tracker.slm_rotel_slm_rotel
+                      state:
+                        - not_home
+                    - condition: state
+                      entity_id: binary_sensor.192_168_51_55
+                      state:
+                        - "off"
       - conditions:
           - condition: template
             value_template: "{{ action == \"on\" }}"
         sequence:
           - repeat:
               sequence:
-                - choose:
-                    - conditions:
-                        - condition: state
-                          entity_id: input_select.hifi_source
-                          state: Zappiti
-                      sequence:
-                        - action: button.press
-                          data: {}
-                          metadata: {}
-                          target:
-                            entity_id: button.rotel_video1
-                    - conditions:
-                        - condition: state
-                          entity_id: input_select.hifi_source
-                          state: BluRay
-                      sequence:
-                        - action: button.press
-                          data: {}
-                          metadata: {}
-                          target:
-                            entity_id: button.rotel_video2
-                    - conditions:
-                        - condition: state
-                          entity_id: input_select.hifi_source
-                          state: slm-media4
-                      sequence:
-                        - action: button.press
-                          data: {}
-                          metadata: {}
-                          target:
-                            entity_id: button.rotel_video3
+                - repeat:
+                    count: 3
+                    sequence:
+                      - choose:
+                          - conditions:
+                              - condition: state
+                                entity_id: input_select.hifi_source
+                                state: Zappiti
+                            sequence:
+                              - action: button.press
+                                data: {}
+                                metadata: {}
+                                target:
+                                  entity_id: button.rotel_video1
+                          - conditions:
+                              - condition: state
+                                entity_id: input_select.hifi_source
+                                state: BluRay
+                            sequence:
+                              - action: button.press
+                                data: {}
+                                metadata: {}
+                                target:
+                                  entity_id: button.rotel_video2
+                          - conditions:
+                              - condition: state
+                                entity_id: input_select.hifi_source
+                                state: slm-media4
+                            sequence:
+                              - action: button.press
+                                data: {}
+                                metadata: {}
+                                target:
+                                  entity_id: button.rotel_video3
+                      - delay:
+                          hours: 0
+                          minutes: 0
+                          seconds: 3
+                          milliseconds: 0
                 - delay:
                     hours: 0
-                    milliseconds: 0
                     minutes: 0
-                    seconds: 30
-              until:
-                - condition: state
-                  entity_id: device_tracker.slm_rotel_slm_rotel
-                  state:
-                    - home
-                  for:
+                    seconds: 20
+                    milliseconds: 0
+                - action: homeassistant.update_entity
+                  metadata: {}
+                  data:
+                    entity_id:
+                      - binary_sensor.192_168_51_55
+                - delay:
                     hours: 0
-                    minutes: 4
-                    seconds: 0
+                    minutes: 0
+                    seconds: 10
+                    milliseconds: 0
+              until:
+                - condition: or
+                  conditions:
+                    - condition: state
+                      entity_id: device_tracker.slm_rotel_slm_rotel
+                      state:
+                        - home
+                    - condition: state
+                      entity_id: binary_sensor.192_168_51_55
+                      state:
+                        - "on"
     continue_on_error: true

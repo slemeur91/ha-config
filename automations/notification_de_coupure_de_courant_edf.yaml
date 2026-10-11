@@ -63,10 +63,10 @@ actions:
           - action: script.notification_telephone
             data:
               message_type: Alerte
-              message_ha: >-
+              message_corp: >-
                 Coupure secteur EDF détectée. La maison fonctionne sur batterie
                 (EcoFlow à {{ states('sensor.ecoflow_battery_level') }}%).
-              notification_id: coupure_edf
+              message_id: coupure_edf
       - conditions:
           - condition: trigger
             id: power_restored
@@ -80,6 +80,6 @@ actions:
           - action: script.notification_telephone
             data:
               message_type: Information
-              message_ha: Le secteur EDF est rétabli.
-              notification_id: coupure_edf
+              message_corp: Le secteur EDF est rétabli.
+              message_id: coupure_edf
 mode: single

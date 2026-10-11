@@ -10,10 +10,10 @@ description: |-
   - message_mail : corps du message
 
   **Fonctionnement :**
-  1. Envoie un mail via notify.email avec le type en objet et le message en corps.
+  1. Envoie un mail via smtp.send_message (target: notify.email_slemeur_slm_srv_dscloud_me) avec le type en objet et le message en corps.
 
   **Entités principales :**
-  - notify.email : service d'envoi de mail utilisé
+  - notify.email_slemeur_slm_srv_dscloud_me (smtp.send_message) : service d'envoi de mail utilisé
 fields:
   message_type:
     description: Type du message (Information, Alerte, Chauffage, etc.)

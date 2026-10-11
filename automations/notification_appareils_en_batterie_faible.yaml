@@ -18,11 +18,11 @@ description: >-
 
   1. Batterie faible → appelle le script Notification HA
   (`script.notification_ha`) avec le nom de l'appareil, le niveau de batterie et
-  le type de pile nécessaire, en passant un notification_id stable.
+  le type de pile nécessaire, en passant un message_id stable.
 
   2. Batterie revenue à la normale → supprime automatiquement la notification
   persistante correspondante via `persistent_notification.dismiss` (même
-  notification_id).
+  message_id).
 
 
   **Entités principales :**
@@ -58,12 +58,12 @@ actions:
             data:
               variables:
                 message_type: Batterie faible — {{ trigger.event.data.device_name }}
-                message_ha: >
+                message_corp: >
                   L'appareil a un niveau de batterie de {{
                   trigger.event.data.battery_level }}% {{ '\n' -}} Il vous faut
                   {{ trigger.event.data.battery_quantity }}× {{
                   trigger.event.data.battery_type }}
-                notification_id: >-
+                message_id: >-
                   {{ trigger.event.data.device_id }}-{{
                   trigger.event.data.source_entity_id }}
             enabled: true
