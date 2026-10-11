@@ -10,12 +10,12 @@
 | Entités totales | 2 986 |
 | Domaines (types d'entités) | 47 |
 | Zones / Pièces | 23 |
-| Appareils connectés | **203** |
+| Appareils connectés | **201** |
 | Automatisations | **64** |
 | Scripts | **21** |
 | Modules complémentaires (Add-ons) | **19** |
-| Intégrations HACS | **37** |
-| Cartes Lovelace HACS | **21** |
+| Intégrations HACS | **37** (35 configurées) |
+| Cartes Lovelace HACS | **21** (14 utilisées) |
 
 ---
 
@@ -32,14 +32,14 @@
 
 ---
 
-### 🔌 Appareils par technologie (203)
+### 🔌 Appareils par technologie (201)
 
 | Technologie | Appareils | Mode | Détail |
 |---|---|---|---|
 | Z-Wave | **25** | ✅ Local | [→ Détail](docs/appareils/zwave.md) |
 | Zigbee | **22** | ✅ Local | [→ Détail](docs/appareils/zigbee.md) |
 | EnOcean | **4** | ✅ Local | [→ Détail](docs/appareils/enocean.md) |
-| Intégrations (WiFi, Ethernet RJ45 & Autres) | **151** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/integrations.md) |
+| Intégrations (WiFi, Ethernet RJ45 & Autres) | **149** | ✅ Local + ☁️ Cloud | [→ Détail](docs/appareils/integrations.md) |
 | Thread / Matter | **1** | ✅ Local | [→ Détail](docs/appareils/matter.md) |
 
 ---
@@ -230,13 +230,15 @@
 
 [Voir la documentation complète →](docs/hacs.md)
 
+**37 intégrations installées, dont 35 configurées** (L'eau d'Ile-de-France et PDF Scrape sont téléchargées mais sans configuration).
+
 > 🔧 **HACS** = disponible dans le catalogue HACS standard, sans dépôt personnalisé
 > 🔧 **HACS Communauté** = dépôt tiers à ajouter manuellement dans les sources HACS
 > ⚠️ **Dépôt perso** = dépôt GitHub personnel à ajouter manuellement dans HACS
 
 | Intégration | Appareils | Rôle | GitHub | Source |
 |---|---|---|---|---|
-| Alexa Media Player | 1 | Contrôle des appareils Amazon Alexa | [alandtse/alexa_media_player](https://github.com/alandtse/alexa_media_player) | 🔧 HACS |
+| Alexa Media Player | 2 | Contrôle des appareils Amazon Alexa | [alandtse/alexa_media_player](https://github.com/alandtse/alexa_media_player) | 🔧 HACS |
 | Atmo France | 1 | Qualité de l'air (Cheptainville) | [sebcaps/atmofrance](https://github.com/sebcaps/atmofrance) | 🔧 HACS |
 | Battery Notes | — | Suivi des types et dates de remplacement de piles | [andrew-codechimp/HA-Battery-Notes](https://github.com/andrew-codechimp/HA-Battery-Notes) | 🔧 HACS |
 | Cork Dork | — | Suivi de la cave à vin par lecture de codes-barres, avec plan des étagères | [BaconWappedBitcoin/ha-wine-cellar](https://github.com/BaconWappedBitcoin/ha-wine-cellar) | 🔧 HACS Communauté |
@@ -253,17 +255,17 @@
 | Hue Sync Box | 1 | Synchronisation lumières Philips Hue avec l'HDMI (Hue Play HDMI Sync Box) | [mvdwetering/huesyncbox](https://github.com/mvdwetering/huesyncbox) | 🔧 HACS |
 | L'eau d'Ile-de-France | — | Consommation d'eau depuis l'espace client Eau d'Île-de-France *(installée, non configurée)* | [TimoPtr/ha_eauidf](https://github.com/TimoPtr/ha_eauidf) | 🔧 HACS |
 | Local Agenda | 5 | Calendriers locaux enrichis pour la planification domotique | [slemeur91/local_agenda](https://github.com/slemeur91/local_agenda) | ⚠️ Dépôt perso |
-| LocalTuya | 6 | Contrôle local (sans cloud) des appareils Tuya | [rospogrigio/localtuya](https://github.com/rospogrigio/localtuya) | 🔧 HACS |
+| LocalTuya | 7 | Contrôle local (sans cloud) des appareils Tuya | [rospogrigio/localtuya](https://github.com/rospogrigio/localtuya) | 🔧 HACS |
 | Micronova Agua IOT | 1 | Contrôle du poêle à granulés Jolly Mec via Agua IOT | [vincentwolsink/home_assistant_micronova_agua_iot](https://github.com/vincentwolsink/home_assistant_micronova_agua_iot) | 🔧 HACS |
-| Millésime — Cave à Vin | 1 | Inventaire de la cave à vin | [Redsklns/ha-millesime](https://github.com/Redsklns/ha-millesime) | 🔧 HACS Communauté |
+| Millésime — Cave à Vin | — | Inventaire de la cave à vin | [Redsklns/ha-millesime](https://github.com/Redsklns/ha-millesime) | 🔧 HACS Communauté |
 | My EcoWatt by RTE | — | Signaux de sobriété électrique RTE | [kamaradclimber/rte-ecowatt](https://github.com/kamaradclimber/rte-ecowatt) | 🔧 HACS |
 | Orange Livebox | 1 | Supervision de la Livebox Orange | [cyr-ius/hass-livebox-component](https://github.com/cyr-ius/hass-livebox-component) | 🔧 HACS |
 | PDF Scrape | — | Création de capteurs à partir de fichiers PDF en ligne *(installée, non configurée)* | [iluvdata/pdf_scrape](https://github.com/iluvdata/pdf_scrape) | 🔧 HACS |
 | Powercalc | 16 | Estimation de la consommation électrique des lumières | [bramstroker/homeassistant-powercalc](https://github.com/bramstroker/homeassistant-powercalc) | 🔧 HACS |
 | pyscript | 3 | Scripts Python avancés dans HA (gazpar_energy, linky_energy, surveillance_station_recording) | [custom-components/pyscript](https://github.com/custom-components/pyscript) | 🔧 HACS |
-| Remote Home-Assistant | 4 | Liaison entre deux instances Home Assistant | [custom-components/remote_homeassistant](https://github.com/custom-components/remote_homeassistant) | 🔧 HACS |
+| Remote Home-Assistant | 8 | Liaison entre deux instances Home Assistant | [custom-components/remote_homeassistant](https://github.com/custom-components/remote_homeassistant) | 🔧 HACS |
 | Restart Guard | — | Avertit avant un redémarrage de HA si une automatisation planifiée est en cours ou imminente | [igraph100/ha-restart-guard](https://github.com/igraph100/ha-restart-guard) | 🔧 HACS Communauté |
-| RfPlayer | 2 | Récepteur/émetteur RF 433/868 MHz (GCE RFPlayer) | [gce-electronics/HA_RFPlayer](https://github.com/gce-electronics/HA_RFPlayer) | 🔧 HACS Communauté |
+| RfPlayer | 3 | Récepteur/émetteur RF 433/868 MHz (GCE RFPlayer) | [gce-electronics/HA_RFPlayer](https://github.com/gce-electronics/HA_RFPlayer) | 🔧 HACS Communauté |
 | Somfy Protexial | 1 | Centrale d'alarme Somfy Protexial | [AuroreVgn/somfy-protexial](https://github.com/AuroreVgn/somfy-protexial) | 🔧 HACS Communauté |
 | Spook | — | Services supplémentaires et détection d'entités orphelines | [frenck/spook](https://github.com/frenck/spook) | 🔧 HACS |
 | Streaming Top FR | — | Classement des films et séries des plateformes de streaming françaises | [PourLePlaisir-HA/Streaming-Top-FR](https://github.com/PourLePlaisir-HA/Streaming-Top-FR) | 🔧 HACS Communauté |
@@ -276,28 +278,30 @@
 
 ### Cartes Lovelace HACS (21)
 
+**21 cartes installées, dont 14 utilisées** dans les tableaux de bord. La colonne « Utilisation » donne le nombre de cartes posées ; `0` = installée mais utilisée nulle part.
+
 | Carte | Utilisation | Rôle | GitHub | Source |
 |---|---|---|---|---|
 | apexcharts-card | 4 | Graphiques avancés (consommation énergie) | [RomRider/apexcharts-card](https://github.com/RomRider/apexcharts-card) | 🔧 HACS |
 | Battery State Card | 1 | Tableau de bord des niveaux de batteries | [maxwroc/battery-state-card](https://github.com/maxwroc/battery-state-card) | 🔧 HACS |
 | button-card | 3 | Bouton personnalisable (état animé des appareils de lavage) | [custom-cards/button-card](https://github.com/custom-cards/button-card) | 🔧 HACS |
 | card-mod | 1 | CSS personnalisé sur n'importe quelle carte Lovelace | [thomasloven/lovelace-card-mod](https://github.com/thomasloven/lovelace-card-mod) | 🔧 HACS |
-| Custom-ui | — | Templates et couleurs d'icônes personnalisés | [Mariusthvdb/custom-ui](https://github.com/Mariusthvdb/custom-ui) | 🔧 HACS |
-| Decluttering Card | — | Templates réutilisables pour réduire la duplication dans les dashboards | [custom-cards/decluttering-card](https://github.com/custom-cards/decluttering-card) | 🔧 HACS |
-| expander-card | — | Carte extensible/rétractable pour les dashboards | [MelleD/lovelace-expander-card](https://github.com/MelleD/lovelace-expander-card) | 🔧 HACS |
+| Custom-ui | 0 | Templates et couleurs d'icônes personnalisés | [Mariusthvdb/custom-ui](https://github.com/Mariusthvdb/custom-ui) | 🔧 HACS |
+| Decluttering Card | 0 | Templates réutilisables pour réduire la duplication dans les dashboards | [custom-cards/decluttering-card](https://github.com/custom-cards/decluttering-card) | 🔧 HACS |
+| expander-card | 0 | Carte extensible/rétractable pour les dashboards | [MelleD/lovelace-expander-card](https://github.com/MelleD/lovelace-expander-card) | 🔧 HACS |
 | GrDF Gazpar card | 1 | Affichage des données de consommation GAZPAR | [ssenart/lovelace-gazpar-card](https://github.com/ssenart/lovelace-gazpar-card) | 🔧 HACS Communauté |
 | HA Appliance Card | 4 | Carte pour lave-linge, sèche-linge, lave-vaisselle et réfrigérateur | [ADNPolymerase/ha-appliance-card](https://github.com/ADNPolymerase/ha-appliance-card) | 🔧 HACS |
 | HA Printer Card | 1 | Carte d'imprimante (état, niveaux de toner) | [ADNPolymerase/ha-printer-card](https://github.com/ADNPolymerase/ha-printer-card) | 🔧 HACS Communauté |
-| ha-floorplan | — | Plan interactif SVG avec états d'entités superposés | [ExperienceLovelace/ha-floorplan](https://github.com/ExperienceLovelace/ha-floorplan) | 🔧 HACS |
+| ha-floorplan | 0 | Plan interactif SVG avec états d'entités superposés | [ExperienceLovelace/ha-floorplan](https://github.com/ExperienceLovelace/ha-floorplan) | 🔧 HACS |
 | Helios | 1 | Visualisation 2.5D de la maison et de la course du soleil | [ReikanYsora/Helios](https://github.com/ReikanYsora/Helios) | 🔧 HACS |
-| Kiosk Mode | — | Masque l'en-tête/sidebar HA pour affichage kiosque | [NemesisRE/kiosk-mode](https://github.com/NemesisRE/kiosk-mode) | 🔧 HACS |
+| Kiosk Mode | 0 | Masque l'en-tête/sidebar HA pour affichage kiosque | [NemesisRE/kiosk-mode](https://github.com/NemesisRE/kiosk-mode) | 🔧 HACS |
 | Linky Content Card | 1 | Affichage de la consommation Linky (avec EcoWatt et Tempo) | [MyElectricalData/content-card-linky](https://github.com/MyElectricalData/content-card-linky) | 🔧 HACS Communauté |
 | Mushroom | 15 | Cartes épurées (cycles des appareils de lavage) | [piitaya/lovelace-mushroom](https://github.com/piitaya/lovelace-mushroom) | 🔧 HACS |
 | Pollenprognos Card | 1 | Prévisions des pollens et qualité de l'air (Atmo France) | [krissen/pollenprognos-card](https://github.com/krissen/pollenprognos-card) | 🔧 HACS |
-| Somfy Protexial Card | 1 | Contrôle de l'alarme Somfy Protexial (capteurs, GSM) | [developpeurbox/somfy-protexial-card](https://github.com/developpeurbox/somfy-protexial-card) | 🔧 HACS Communauté |
-| Stack In Card | — | Regroupe plusieurs cartes en une seule sans bordures | [custom-cards/stack-in-card](https://github.com/custom-cards/stack-in-card) | 🔧 HACS |
+| Somfy Protexial Card | 2 | Contrôle de l'alarme Somfy Protexial (capteurs, GSM) | [developpeurbox/somfy-protexial-card](https://github.com/developpeurbox/somfy-protexial-card) | 🔧 HACS Communauté |
+| Stack In Card | 0 | Regroupe plusieurs cartes en une seule sans bordures | [custom-cards/stack-in-card](https://github.com/custom-cards/stack-in-card) | 🔧 HACS |
 | Travel Time Card | 1 | Temps de trajet (durée, distance, itinéraire) — remplace Waze Travel Time Card | [ljmerza/travel-time-card](https://github.com/ljmerza/travel-time-card) | 🔧 HACS |
-| WallPanel | — | Mode panneau mural et économiseur d'écran photo | [j-a-n/lovelace-wallpanel](https://github.com/j-a-n/lovelace-wallpanel) | 🔧 HACS |
+| WallPanel | 0 | Mode panneau mural et économiseur d'écran photo | [j-a-n/lovelace-wallpanel](https://github.com/j-a-n/lovelace-wallpanel) | 🔧 HACS |
 | WashData Card | 3 | Affichage des cycles de lavage (lave-linge, lave-vaisselle, sèche-linge) | [technogrady/ha_washdata_card](https://github.com/technogrady/ha_washdata_card) | 🔧 HACS Communauté |
 
 ---

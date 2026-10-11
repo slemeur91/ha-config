@@ -1,4 +1,4 @@
-# Intégrations (WiFi, Ethernet RJ45 & Autres) — 151 appareils
+# Intégrations (WiFi, Ethernet RJ45 & Autres) — 149 appareils
 
 [← Retour README](../../README.md)
 
@@ -158,14 +158,16 @@
 
 ---
 
-## Prises connectées — Multiprises (6 appareils)
+## Prises connectées — Tuya (7 appareils)
 
-> 🏠 **Natif HA** — Intégration : **Tuya** — [Documentation](https://www.home-assistant.io/integrations/tuya/)
-> 📶 WiFi → ☁️ Cloud
+> 🔧 **HACS** — Intégration : **LocalTuya** — [GitHub](https://github.com/rospogrigio/localtuya)
+> 📶 WiFi → ✅ Local (sans cloud). L'intégration native Tuya (cloud) est désactivée.
 
 | Nb | Fabricant | Description | Localisation | Documentation |
 |---|---|---|---|---|
-| 6 | Konyks | Multiprise 4 prises + 4 USB | Suite parentale, Salon G, Salon D, Garage, Informatique, Bureau | [📄 Manuel Konyks](<../hardware/Konyks - Manuel Polyco v1..1 Update Web.pdf>) · [📄 Manuel UseeLink SM-SO306](../hardware/UseeLink_SM-SO306_UserManual.pdf) |
+| 5 | Konyks | Multiprise 4 prises + 4 USB | Suite parentale, Salon gauche, Informatique, Bureau, Garage | [📄 Manuel Konyks](<../hardware/Konyks - Manuel Polyco v1..1 Update Web.pdf>) · [📄 Manuel UseeLink SM-SO306](../hardware/UseeLink_SM-SO306_UserManual.pdf) |
+| 1 | Konyks | Pluviose — prise extérieure | Terrasse | — |
+| 1 | Tuya | Multi-mode Gateway — passerelle | Informatique | — |
 
 ---
 
@@ -269,7 +271,7 @@
 
 ## Sécurité & Détection (6 appareils)
 
-### Sure Petcare (1 appareil)
+### Sure Petcare (2 appareils)
 
 > 🏠 **Natif HA** — Intégration : **Sure Petcare** — ☁️ Cloud
 

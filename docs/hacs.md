@@ -6,6 +6,8 @@
 
 ## Intégrations (37)
 
+> 37 intégrations installées, dont 35 configurées (L'eau d'Ile-de-France et PDF Scrape ne le sont pas).
+
 ### Alexa Media Player
 > [GitHub](https://github.com/alandtse/alexa_media_player) — `domain: alexa_media`
 
@@ -266,7 +268,9 @@ Intégration de calendriers locaux enrichis pour la planification de l'agenda do
 ### LocalTuya
 > [GitHub](https://github.com/rospogrigio/localtuya) — `domain: localtuya`
 
-Contrôle local (sans cloud) des appareils Tuya, en complément de l'intégration Tuya native.
+Contrôle local (sans cloud) des appareils Tuya. Remplace l'intégration Tuya native (cloud), désormais désactivée.
+
+**Appareils :** 5 multiprises Konyks, la prise extérieure Konyks Pluviose (Terrasse) et la passerelle Multi-mode Gateway.
 
 ---
 
@@ -463,6 +467,8 @@ Intégration native HA de l'IA Claude (Anthropic). Permet l'assistant conversati
 ---
 
 ## Cartes Lovelace (21)
+
+> 21 cartes installées, dont 14 utilisées dans les tableaux de bord. Non utilisées : Custom-ui, Decluttering Card, expander-card, ha-floorplan, Kiosk Mode, Stack In Card, WallPanel.
 
 ### apexcharts-card
 > [GitHub](https://github.com/RomRider/apexcharts-card)
