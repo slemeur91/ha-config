@@ -1,34 +1,18 @@
 alias: Notification appareils en batterie faible
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
-  - Événement `battery_notes_battery_threshold` (batterie passée en dessous du
-  seuil)
-
-  - Événement `battery_notes_battery_threshold` (batterie revenue au-dessus du
-  seuil)
-
+  - Événement `battery_notes_battery_threshold` (batterie passée en dessous du seuil)
+  - Événement `battery_notes_battery_threshold` (batterie revenue au-dessus du seuil)
 
   **Fonctionnement :**
-
-  1. Batterie faible → appelle le script Notification HA
-  (`script.notification_ha`) avec le nom de l'appareil, le niveau de batterie et
-  le type de pile nécessaire, en passant un message_id stable.
-
-  2. Batterie revenue à la normale → supprime automatiquement la notification
-  persistante correspondante via `persistent_notification.dismiss` (même
-  message_id).
-
+  1. Batterie faible → appelle le script Notification HA (`script.notification_ha`) avec le nom de l'appareil, le niveau de batterie et le type de pile nécessaire, en passant un message_id stable.
+  2. Batterie revenue à la normale → supprime automatiquement la notification persistante correspondante via `persistent_notification.dismiss` (même message_id).
 
   **Entités principales :**
-
   - Événement `battery_notes_battery_threshold` (intégration Battery Notes)
-
   - `script.notification_ha` : création des notifications
 triggers:
   - event_type: battery_notes_battery_threshold
@@ -58,18 +42,11 @@ actions:
             data:
               variables:
                 message_type: Batterie faible — {{ trigger.event.data.device_name }}
-                message_corp: >
-                  L'appareil a un niveau de batterie de {{
-                  trigger.event.data.battery_level }}% {{ '\n' -}} Il vous faut
-                  {{ trigger.event.data.battery_quantity }}× {{
-                  trigger.event.data.battery_type }}
-                message_id: >-
-                  {{ trigger.event.data.device_id }}-{{
-                  trigger.event.data.source_entity_id }}
+                message_corp: |-
+                  L'appareil a un niveau de batterie de {{ trigger.event.data.battery_level }}% {{ '\n' -}} Il vous faut {{ trigger.event.data.battery_quantity }}× {{ trigger.event.data.battery_type }}
+                message_id: '{{ trigger.event.data.device_id }}-{{ trigger.event.data.source_entity_id }}'
             enabled: true
-        note: >-
-          Batterie sous le seuil -> appelle script.notification_ha (Notification
-          HA) avec le nom de l'appareil, niveau et type de pile requis
+        note: Batterie sous le seuil -> appelle script.notification_ha (Notification HA) avec le nom de l'appareil, niveau et type de pile requis
       - conditions:
           - condition: trigger
             id:
@@ -77,10 +54,6 @@ actions:
         sequence:
           - action: persistent_notification.dismiss
             data:
-              notification_id: >-
-                {{ trigger.event.data.device_id }}-{{
-                trigger.event.data.source_entity_id }}
-        note: >-
-          Batterie revenue à la normale → supprime automatiquement la
-          notification persistante correspondante
+              notification_id: '{{ trigger.event.data.device_id }}-{{ trigger.event.data.source_entity_id }}'
+        note: Batterie revenue à la normale → supprime automatiquement la notification persistante correspondante
 mode: queued

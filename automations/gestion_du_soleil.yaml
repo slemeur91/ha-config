@@ -1,39 +1,22 @@
 alias: Gestion du Soleil
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
   - Lever et coucher du soleil
-
   - Température extérieure franchit un seuil (< 7°C ou > 20°C)
-
   - Changement de l'indice UV ou de la condition météo journalière
 
-
   **Fonctionnement :**
-
   1. Envoie un mail d'information au lever et au coucher du soleil.
-
-  2. Recalcule en parallèle le compteur soleil (3 critères : température > 20°C,
-  UV > 4, condition = Ensoleillé).
-
-  3. Active `input_boolean.volets_soleil` si le compteur atteint au moins 2
-  critères, le désactive sinon.
-
-  4. Positionne `input_select.volets_mode` selon la température : Hiver si <
-  7°C, Été si > 23°C.
-
+  2. Recalcule en parallèle le compteur soleil (3 critères : température > 20°C, UV > 4, condition = Ensoleillé).
+  3. Active `input_boolean.volets_soleil` si le compteur atteint au moins 2 critères, le désactive sinon.
+  4. Positionne `input_select.volets_mode` selon la température : Hiver si < 7°C, Été si > 23°C.
 
   **Entités principales :**
-
   - `counter.compteur_soleil` : accumulation des critères soleil
-
   - `input_boolean.volets_soleil` : activation du mode protection solaire
-
   - `input_select.volets_mode` : mode Été / Hiver des volets
 triggers:
   - event: sunrise
@@ -73,7 +56,7 @@ actions:
             data:
               variables:
                 message_type: Information
-                message_mail: Levé du soleil
+                message_corp: Levé du soleil
         note: Lever du soleil → envoie mail d'information
       - conditions:
           - condition: trigger
@@ -87,7 +70,7 @@ actions:
             data:
               variables:
                 message_type: Information
-                message_mail: Couché du soleil
+                message_corp: Couché du soleil
         note: Coucher du soleil → envoie mail d'information
   - sequence:
       - action: counter.reset
@@ -142,9 +125,7 @@ actions:
             data: {}
             target:
               entity_id: input_boolean.volets_soleil
-    note: >-
-      Recalcule le compteur soleil (température, UV, météo) et active/désactive
-      volets_soleil si ≥2 critères remplis
+    note: Recalcule le compteur soleil (température, UV, météo) et active/désactive volets_soleil si ≥2 critères remplis
   - choose:
       - conditions:
           - condition: numeric_state

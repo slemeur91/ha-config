@@ -6,7 +6,10 @@ description: |-
   **Rôle :** Recharge l'intégration pyscript sans redémarrer HA.
 
   **Fonctionnement :**
-  1. Appelle `pyscript.reload` pour recharger tous les scripts Python.
+  1. Appelle pyscript.reload pour recharger tous les scripts Python.
+
+  **Entités principales :**
+  - pyscript.reload : service appelé
 sequence:
   - action: pyscript.reload
     metadata: {}

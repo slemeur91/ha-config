@@ -6,7 +6,10 @@ description: |-
   **Rôle :** Action rapide iOS pour verrouiller la serrure Nuki de l'entrée.
 
   **Fonctionnement :**
-  1. Appelle `lock.lock` sur `lock.serrure_de_l_entree`.
+  1. Appelle lock.lock sur lock.serrure_de_l_entree.
+
+  **Entités principales :**
+  - lock.serrure_de_l_entree : serrure pilotée
 sequence:
   - action: lock.lock
     data: {}

@@ -1,23 +1,16 @@
 alias: Gestion du Bouton Hue de l'Etage
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** En cours d'affectation des actions
 
-
   **Déclencheurs :**
-
   - Appui sur les 4 boutons du Tap Dial de l'Étage (événements Hue)
-
+  - Rotation de la molette (`event.tap_dial_de_letage_rotatif`) : détectée, aucune action affectée
 
   **Fonctionnement :**
-
-  Les appuis courts et longs sont détectés mais aucune action n'est encore
-  affectée (séquences vides).
-
+  Les appuis courts et longs sont détectés mais aucune action n'est encore affectée : séquences vides pour les appuis longs, action `light.toggle` désactivée et sans cible pour les appuis courts.
 
   **Entités principales :**
-
   - `event.tap_dial_de_letage_bouton_*` : événements boutons Hue
 triggers:
   - trigger: state
@@ -58,16 +51,10 @@ actions:
                 data: {}
                 enabled: false
           - conditions:
-              - condition: or
-                conditions:
-                  - condition: state
-                    entity_id: event.tap_dial_de_letage_bouton_1
-                    attribute: event_type
-                    state: long_press
-                  - condition: state
-                    entity_id: event.tap_dial_de_letage_bouton_1
-                    attribute: event_type
-                    state: long_release
+              - condition: state
+                entity_id: event.tap_dial_de_letage_bouton_1
+                attribute: event_type
+                state: long_press
             sequence: []
   - if:
       - condition: trigger
@@ -85,16 +72,10 @@ actions:
                 data: {}
                 enabled: false
           - conditions:
-              - condition: or
-                conditions:
-                  - condition: state
-                    entity_id: event.tap_dial_de_letage_bouton_2
-                    attribute: event_type
-                    state: long_press
-                  - condition: state
-                    entity_id: event.tap_dial_de_letage_bouton_2
-                    attribute: event_type
-                    state: long_release
+              - condition: state
+                entity_id: event.tap_dial_de_letage_bouton_2
+                attribute: event_type
+                state: long_press
             sequence: []
   - if:
       - condition: trigger
@@ -112,16 +93,10 @@ actions:
                 data: {}
                 enabled: false
           - conditions:
-              - condition: or
-                conditions:
-                  - condition: state
-                    entity_id: event.tap_dial_de_letage_bouton_3
-                    attribute: event_type
-                    state: long_press
-                  - condition: state
-                    entity_id: event.tap_dial_de_letage_bouton_3
-                    attribute: event_type
-                    state: long_release
+              - condition: state
+                entity_id: event.tap_dial_de_letage_bouton_3
+                attribute: event_type
+                state: long_press
             sequence: []
   - if:
       - condition: trigger
@@ -139,15 +114,9 @@ actions:
                 data: {}
                 enabled: false
           - conditions:
-              - condition: or
-                conditions:
-                  - condition: state
-                    entity_id: event.tap_dial_de_letage_bouton_4
-                    attribute: event_type
-                    state: long_press
-                  - condition: state
-                    entity_id: event.tap_dial_de_letage_bouton_4
-                    attribute: event_type
-                    state: long_release
+              - condition: state
+                entity_id: event.tap_dial_de_letage_bouton_4
+                attribute: event_type
+                state: long_press
             sequence: []
 mode: restart

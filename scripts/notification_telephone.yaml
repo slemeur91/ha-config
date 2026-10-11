@@ -1,38 +1,21 @@
 alias: Notification Téléphone
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
-
 
   **Rôle :** Envoie une notification push sur l'iPhone de Sylvain.
 
-
   **Paramètres :**
-
   - message_type : type du message
-
   - message_corp : contenu du message
-
-  - message_id (optionnel) : tag permettant de remplacer/regrouper une
-  notification précédente sur l'iPhone. Si non fourni, calculé automatiquement
-  à partir de message_type et message_corp (hash) pour éviter les doublons.
-
+  - message_id (optionnel) : tag permettant de remplacer/regrouper une notification précédente sur l'iPhone. Si non fourni, calculé automatiquement à partir de message_type et message_corp (hash) pour éviter les doublons.
 
   **Fonctionnement :**
-
-  1. Envoie une notification push via
-  notify.mobile_app_iphone_de_sylvain_le_meur avec le type en titre et le
-  message en corps.
-
-  2. L'identifiant (fourni ou calculé automatiquement si absent) est transmis
-  en tant que tag pour permettre le remplacement ciblé de la notification.
-
+  1. Envoie une notification push via notify.mobile_app_iphone_de_sylvain_le_meur avec le type en titre et le message en corps.
+  2. L'identifiant (fourni ou calculé automatiquement si absent) est transmis en tant que tag pour permettre le remplacement ciblé de la notification.
 
   **Entités principales :**
-
-  - notify.mobile_app_iphone_de_sylvain_le_meur : service de notification
-  utilisé
+  - notify.mobile_app_iphone_de_sylvain_le_meur : service de notification utilisé
 fields:
   message_type:
     description: Type du message (Information, Alerte, Chauffage, etc.)
@@ -47,23 +30,19 @@ fields:
     selector:
       text: null
   message_id:
-    description: >-
-      Tag permettant de remplacer/regrouper une notification précédente sur
-      l'iPhone. Si non fourni, calculé automatiquement à partir de message_type
-      et message_corp (hash) pour éviter les doublons.
+    description: Tag permettant de remplacer/regrouper une notification précédente sur l'iPhone. Si non fourni, calculé automatiquement à partir de message_type et message_corp (hash) pour éviter les doublons.
     example: identifiant
     required: false
     selector:
       text: null
 sequence:
   - variables:
-      message_id_final: "{{ message_id if (message_id is defined and message_id not in [None,\
-        \ '']) else (message_type ~ message_corp) | md5 }}"
+      message_id_final: '{{ message_id if (message_id is defined and message_id not in [None, '''']) else (message_type ~ message_corp) | md5 }}'
   - action: notify.mobile_app_iphone_de_sylvain_le_meur
     data:
-      title: "[HA] {{ message_type }}"
-      message: "{{ message_corp }}"
+      title: '[HA] {{ message_type }}'
+      message: '{{ message_corp }}'
       data:
-        tag: "{{ message_id_final }}"
+        tag: '{{ message_id_final }}'
 mode: queued
 max: 10

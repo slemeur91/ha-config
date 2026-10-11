@@ -1,29 +1,23 @@
 alias: SONOS Radio sur la Suite parentale
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
-  **Rôle :** Lance la radio sur la suite parentale avec sélection automatique
-  selon l'heure et repli.
-
+  **Rôle :** Lance la radio sur la suite parentale avec sélection automatique selon l'heure et repli.
 
   **Fonctionnement :**
-
-  1. Entre 4h et 20h30 → lance Voltage ; sinon → lance Évasion FM Essonne (radio
-  de nuit).
-
+  1. Entre 4h et 20h30 → lance Voltage ; sinon → lance Évasion FM Essonne (radio de nuit).
   2. Attend 5 secondes.
+  3. Si la lecture n'a pas démarré → repli sur le flux direct Évasion FM Essonne via Radio Browser.
 
-  3. Si la lecture n'a pas démarré → repli sur le flux direct Évasion FM Essonne
-  via Radio Browser.
+  **Entités principales :**
+  - media_player.suite_parentale : enceinte SONOS ciblée
 sequence:
   - sequence:
       - if:
           - condition: time
-            after: "04:00:00"
-            before: "20:30:00"
+            after: 04:00:00
+            before: '20:30:00'
         then:
           - action: media_player.play_media
             continue_on_error: true
@@ -35,14 +29,13 @@ sequence:
                 media_content_type: favorite_item_id
                 metadata:
                   title: VOLTAGE
-                  thumbnail: >-
-                    https://sali.sonos.superhi.fi/image?w=60&image=https://cdn-profiles.tunein.com/s25257/images/logog.png%3Ft%3D1&partnerId=tunein
+                  thumbnail: https://sali.sonos.superhi.fi/image?w=60&image=https://cdn-profiles.tunein.com/s25257/images/logog.png%3Ft%3D1&partnerId=tunein
                   media_class: genre
                   children_media_class: null
                   navigateIds:
                     - {}
                     - media_content_type: favorites
-                      media_content_id: ""
+                      media_content_id: ''
                     - media_content_type: favorites_folder
                       media_content_id: object.item.audioItem.audioBroadcast
         else:
@@ -56,19 +49,16 @@ sequence:
                 media_content_type: favorite_item_id
                 metadata:
                   title: Évasion FM Essonne
-                  thumbnail: >-
-                    https://sali.sonos.radio/image?w=60&image=https://cdn-radiotime-logos.tunein.com/s2930g.png&partnerId=tunein
+                  thumbnail: https://sali.sonos.radio/image?w=60&image=https://cdn-radiotime-logos.tunein.com/s2930g.png&partnerId=tunein
                   media_class: genre
                   children_media_class: null
                   navigateIds:
                     - {}
                     - media_content_type: favorites
-                      media_content_id: ""
+                      media_content_id: ''
                     - media_content_type: favorites_folder
                       media_content_id: object.item.audioItem.audioBroadcast
-        note: >-
-          Entre 4h et 20h30 → lance Voltage ; sinon → lance Évasion FM Essonne
-          (radio de nuit)
+        note: Entre 4h et 20h30 → lance Voltage ; sinon → lance Évasion FM Essonne (radio de nuit)
       - delay:
           hours: 0
           minutes: 0
@@ -87,13 +77,11 @@ sequence:
               entity_id: media_player.suite_parentale
             data:
               media:
-                media_content_id: >-
-                  media-source://radio_browser/9614c299-0601-11e8-ae97-52543be04c81
+                media_content_id: media-source://radio_browser/9614c299-0601-11e8-ae97-52543be04c81
                 media_content_type: audio/mpeg
                 metadata:
                   title: Evasion FM Essonne
-                  thumbnail: >-
-                    http://i2.cdn-image.com/__media__/pics/468/netsol-favicon-2020.jpg
+                  thumbnail: http://i2.cdn-image.com/__media__/pics/468/netsol-favicon-2020.jpg
                   media_class: music
                   children_media_class: null
                   navigateIds:
@@ -102,7 +90,5 @@ sequence:
                       media_content_id: media-source://radio_browser
                     - media_content_type: music
                       media_content_id: media-source://radio_browser/country/FR
-        note: >-
-          Repli après 5s si lecture non démarrée → flux direct Radio Browser
-          Évasion FM Essonne
+        note: Repli après 5s si lecture non démarrée → flux direct Radio Browser Évasion FM Essonne
 mode: restart

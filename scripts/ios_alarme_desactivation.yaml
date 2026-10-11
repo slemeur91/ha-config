@@ -1,17 +1,15 @@
 alias: iOS - Alarme Désactivation
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
-
 
   **Rôle :** Action rapide iOS pour désarmer l'alarme.
 
-
   **Fonctionnement :**
+  1. Appelle alarm_control_panel.alarm_disarm sur alarm_control_panel.alarme.
 
-  1. Appelle `alarm_control_panel.alarm_disarm` sur
-  `alarm_control_panel.alarme`.
+  **Entités principales :**
+  - alarm_control_panel.alarme : panneau d'alarme piloté
 sequence:
   - action: alarm_control_panel.alarm_disarm
     target:

@@ -1,35 +1,28 @@
 alias: Notification appareils en batterie faible - Mail hebdomadaire
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
-  - Déclenchement hebdomadaire (selon configuration)
-
+  - Chaque vendredi à 19h00
 
   **Fonctionnement :**
-
-  1. Envoie un mail récapitulatif des appareils dont la batterie est en dessous
-  du seuil d'alerte.
-
+  1. Parcourt les capteurs de l'intégration Battery Notes et retient ceux dont l'attribut `battery_low` est vrai (nom de l'appareil, niveau, type et quantité de piles).
+  2. S'arrête sans rien envoyer si aucun appareil n'est en batterie faible.
+  3. Sinon, compose la liste et envoie un mail récapitulatif (type 'Batteries') via `script.notification_mail`.
 
   **Entités principales :**
-
   - Intégration `battery_notes` : source des niveaux de batterie
-
   - `script.notification_mail` : envoi du mail récapitulatif
 triggers:
-  - at: "19:00:00"
+  - at: '19:00:00'
     weekday:
       - fri
     trigger: time
 conditions: []
 actions:
   - variables:
-      low_battery_devices: |
+      low_battery_devices: |-
         {% set devices = namespace(list=[]) %}
         {% for entity_id in integration_entities('battery_notes') %}
           {% set state = states[entity_id] %}
@@ -42,10 +35,12 @@ actions:
           {% endif %}
         {% endfor %}
         {{ devices.list }}
+    note: Construit la liste des appareils Battery Notes en batterie faible
   - condition: template
-    value_template: "{{ low_battery_devices | length > 0 }}"
+    value_template: '{{ low_battery_devices | length > 0 }}'
+    note: Arrêt si aucun appareil en batterie faible
   - variables:
-      message_mail: |
+      message_corp: |-
         Liste des appareils avec batterie faible :
         {% for device in low_battery_devices -%}
           - {{ device.name }} à {{ device.battery_level | int }}% : {{ device.battery_type_and_quantity }}
@@ -57,5 +52,6 @@ actions:
     data:
       variables:
         message_type: Batteries
-        message_mail: "{{ message_mail }}"
+        message_corp: '{{ message_corp }}'
+    note: Envoi du mail récapitulatif
 mode: restart

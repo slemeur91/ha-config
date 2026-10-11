@@ -37,12 +37,12 @@ fields:
       text: null
 sequence:
   - variables:
-      message_id_final: "{{ message_id if (message_id is defined and message_id not in [None, '']) else (message_type ~ message_corp) | md5 }}"
+      message_id_final: '{{ message_id if (message_id is defined and message_id not in [None, '''']) else (message_type ~ message_corp) | md5 }}'
   - action: notify.persistent_notification
     data:
-      title: "[HA] {{ message_type }}"
-      message: "{{ message_corp }}"
+      title: '[HA] {{ message_type }}'
+      message: '{{ message_corp }}'
       data:
-        notification_id: "{{ message_id_final }}"
+        notification_id: '{{ message_id_final }}'
 mode: queued
 max: 10

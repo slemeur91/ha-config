@@ -72,13 +72,13 @@ triggers:
     entity_id:
       - input_boolean.cycle_lave_linge_en_cours
     to:
-      - "on"
+      - 'on'
     for:
       hours: 4
       minutes: 0
       seconds: 0
     id: Trop Long
-    note: Filet de sécurité : évite que le marqueur "en cours" reste bloqué si la fin de cycle n'est jamais détectée.
+    note: 'Filet de sécurité : évite que le marqueur "en cours" reste bloqué si la fin de cycle n''est jamais détectée.'
 conditions: []
 actions:
   - choose:
@@ -93,7 +93,7 @@ actions:
                   entity_id: input_boolean.cycle_lave_linge_en_cours
                 options:
                   behavior: any
-                  for: "00:00:00"
+                  for: 00:00:00
             then:
               - action: input_boolean.turn_on
                 metadata: {}
@@ -104,13 +104,13 @@ actions:
                 target:
                   entity_id: input_number.dernier_cycle_lave_linge_conso_au_debut
                 data:
-                  value: "{{ states('sensor.multiprise_de_la_salle_de_bain_energy_1') | float }}"
+                  value: '{{ states(''sensor.multiprise_de_la_salle_de_bain_energy_1'') | float }}'
               - action: input_datetime.set_datetime
                 metadata: {}
                 target:
                   entity_id: input_datetime.dernier_cycle_lave_linge_debut
                 data:
-                  datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+                  datetime: '{{ now().strftime(''%Y-%m-%d %H:%M:%S'') }}'
             note: N'active que si pas déjà en cours (évite d'écraser l'horodatage de départ sur un redéclenchement).
         note: Début de cycle détecté
       - conditions:
@@ -124,20 +124,20 @@ actions:
                   entity_id: input_boolean.cycle_lave_linge_en_cours
                 options:
                   behavior: any
-                  for: "00:00:00"
+                  for: 00:00:00
             then:
               - action: input_datetime.set_datetime
                 metadata: {}
                 target:
                   entity_id: input_datetime.dernier_cycle_lave_linge_fin
                 data:
-                  datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+                  datetime: '{{ now().strftime(''%Y-%m-%d %H:%M:%S'') }}'
               - action: input_number.set_value
                 target:
                   entity_id:
                     - input_number.dernier_cycle_lave_linge_conso_a_la_ffin
                 data:
-                  value: "{{ states('sensor.multiprise_de_la_salle_de_bain_energy_1') | float }}"
+                  value: '{{ states(''sensor.multiprise_de_la_salle_de_bain_energy_1'') | float }}'
               - action: input_boolean.turn_off
                 metadata: {}
                 target:
@@ -151,6 +151,7 @@ actions:
               - Trop Long
         sequence:
           - action: input_boolean.turn_off
+            metadata: {}
             target:
               entity_id: input_boolean.cycle_lave_linge_en_cours
             data: {}

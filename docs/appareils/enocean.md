@@ -1,6 +1,6 @@
 # EnOcean (4 appareils)
 
-[← Retour Appareils](../appareils.md)
+[← Retour README](../../README.md)
 
 > 📦 **Add-on Apps** — [GitHub EnOcean MQTT](https://github.com/asera-corp/ha-enoceanmqtt)
 > Flux : EnOcean MQTT add-on → Mosquitto MQTT → HA

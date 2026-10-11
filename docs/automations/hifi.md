@@ -2,7 +2,6 @@
 
 [← Retour README](../../README.md)
 
-
 ---
 
 ## `automation.gestion_de_la_hifi` — Gestion de la HiFi
@@ -11,13 +10,25 @@
 **Statut :** Finalisé | **Evolution :** Aucune
 
 **Déclencheurs :**
-- Changement de `input_select.hifi_action`
+- Changement de `input_select.hifi_action` (ON / SOURCE / OFF)
 - Appui sur `input_button.hifi`
 
 **Fonctionnement :**
-1. OFF → extinction en parallèle (Sony, Rotel via `script.allumer_eteindre_amplificateur_rotel`, Apple TV via `script.allumer_eteindre_apple_tv_salon`, Zappiti si allumé, Sync Box), gestion SONOS selon contexte (alarme armée ou heure).
-2. ON → vérification horaires/présence, sélection source BluRay si iPhone présent, passe en SOURCE.
-3. SOURCE → SONOS, notification vocale, allumage en parallèle (TV HDMI3, Rotel + Apple TV via scripts, Zappiti/slm-media4 selon source, lumière salon si après coucher du soleil, Sync Box).
+1. Action OFF → notification vocale, puis extinction en parallèle : télécommande TV Sony (si allumée), ampli Rotel (`script.allumer_eteindre_amplificateur_rotel`, action off), Apple TV (`media_player.turn_off` direct), Zappiti si allumé, alimentation de la Sync Box et bandeau Hue Play. Gestion SONOS selon contexte : alarme armée (absent) → SONOS OFF ; alarme désarmée entre 05:30 et 22:30 → SONOS ON. Enfin `input_select.hifi` passe à OFF.
+2. Action ON → s'arrête sans rien faire avant 10:30 (et selon présence salon/bureau la nuit) ; sinon, si l'iPhone de Sylvain est au domicile, sélectionne la source BluRay et passe en SOURCE ; sinon attend 1 min et réessaie une fois.
+3. Action SOURCE → notification vocale, puis en parallèle : SONOS OFF, allumage du Zappiti ou de slm-media4 selon la source, TV sur HDMI3, ampli Rotel (`script.allumer_eteindre_amplificateur_rotel`, action on), Apple TV (`media_player.turn_on` direct), lumière du salon à partir de 30 min avant le coucher du soleil, synchronisation des lumières de la Sync Box sur la sortie HDMI 4. Enfin `input_select.hifi` prend la valeur de la source.
+
+**Remarque :** l'appel groupé à `script.allumer_eteindre_apple_tv_salon` est désactivé dans les deux branches ; l'Apple TV est pilotée directement via `media_player.apple_tv_du_salon`.
+
+**Entités principales :**
+- `input_select.hifi` : état courant de la HiFi
+- `input_select.hifi_action` : commande entrante
+- `input_select.hifi_source` : source active (Zappiti / BluRay / slm-media4)
+- `remote.sony_kd_55a1`, `button.tv_hdmi3` : TV Sony
+- `script.allumer_eteindre_amplificateur_rotel` : ampli Rotel
+- `media_player.apple_tv_du_salon` : Apple TV
+- `switch.sync_box_alimentation`, `switch.sync_box_synchronisation_des_lumieres`, `select.sync_box_sortie_hdmi`, `light.hue_play_gradient_lightstrip_1` : Sync Box et bandeau Hue
+- `input_select.sonos` / `input_select.sonos_action` : coordination avec les SONOS
 
 **Entrées utilisées :**
 

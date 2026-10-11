@@ -1,0 +1,69 @@
+alias: Scénario coverAutomatic
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
+
+  **Déclencheurs :**
+  - Changement de `input_select.volets_mode` (Eté / Hiver)
+  - Changement de `input_select.domicile`
+
+  **Fonctionnement :**
+  Sélectionne le scénario de l'intégration Cover Automatic via `select.cuisine_volet_de_la_cuisine_auto_scenario`, par ordre de priorité :
+  1. Domicile = Vacances → scénario `vacation`.
+  2. Sinon, volets en mode Eté → scénario `summer`.
+  3. Sinon, volets en mode Hiver → scénario `winter`.
+
+  **Remarque :** seul le sélecteur de scénario du volet de la cuisine est piloté ici ; au retour de vacances, le scénario saisonnier est rétabli puisque le changement de `input_select.domicile` relance l'évaluation.
+
+  **Entités principales :**
+  - `input_select.volets_mode` : mode saisonnier des volets
+  - `input_select.domicile` : état du domicile
+  - `select.cuisine_volet_de_la_cuisine_auto_scenario` : scénario Cover Automatic
+triggers:
+  - trigger: state
+    entity_id:
+      - input_select.volets_mode
+      - input_select.domicile
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: input_select.domicile
+            state:
+              - Vacances
+        sequence:
+          - action: select.select_option
+            metadata: {}
+            target:
+              entity_id: select.cuisine_volet_de_la_cuisine_auto_scenario
+            data:
+              option: vacation
+        note: Domicile en Vacances → scénario vacation (prioritaire)
+      - conditions:
+          - condition: state
+            entity_id: input_select.volets_mode
+            state:
+              - Eté
+        sequence:
+          - action: select.select_option
+            metadata: {}
+            target:
+              entity_id: select.cuisine_volet_de_la_cuisine_auto_scenario
+            data:
+              option: summer
+        note: Volets en mode Eté → scénario summer
+      - conditions:
+          - condition: state
+            entity_id: input_select.volets_mode
+            state:
+              - Hiver
+        sequence:
+          - action: select.select_option
+            metadata: {}
+            target:
+              entity_id: select.cuisine_volet_de_la_cuisine_auto_scenario
+            data:
+              option: winter
+        note: Volets en mode Hiver → scénario winter
+mode: single

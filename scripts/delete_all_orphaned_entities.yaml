@@ -1,17 +1,15 @@
 alias: Delete all orphaned entities
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
-  **Rôle :** Nettoie le registre des entités en supprimant toutes les entités
-  orphelines (sans intégration active).
-
+  **Rôle :** Nettoie le registre des entités en supprimant toutes les entités orphelines (sans intégration active).
 
   **Fonctionnement :**
+  1. Appelle homeassistant.delete_all_orphaned_entities.
 
-  1. Appelle `homeassistant.delete_all_orphaned_entities`.
+  **Entités principales :**
+  - homeassistant.delete_all_orphaned_entities : service de nettoyage appelé
 sequence:
   - action: homeassistant.delete_all_orphaned_entities
     metadata: {}

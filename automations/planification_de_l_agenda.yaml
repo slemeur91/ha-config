@@ -1,43 +1,32 @@
 alias: Planification de l'Agenda
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
-  - 00:15
-
-  - Changement de `input_boolean.alarme`
-
+  - Chaque jour à 00:15
+  - Changement de `input_boolean.alarme` — id: Désactivation Alarme
   - Appui sur `input_button.planification_agenda`
+  - Changement de `input_select.volets_mode` (Été / Hiver)
 
-
-  **Fonctionnement :**
-
-  1. Si déclenché par changement d'alarme et calendrier action = Absent →
-  maintient ou bascule vers Repos selon l'état de l'alarme.
-
-  2. Sinon → interroge le calendrier du jour, extrait les résumés d'événements.
-
-  3. Selon les mots-clés trouvés (Absent/Vacances, TéléTravail, ARTT/Congé, jour
-  non travaillé) → positionne `input_select.calendrier`, `chauffage_action` et
-  `calendrier_action`, active/désactive les calendriers correspondants.
-
-  4. Gère le mode HorsGel selon la période de l'année (mai–oct), la température
-  extérieure ou le mode absent.
-
+  **Fonctionnement (deux blocs exécutés en parallèle) :**
+  1. Calendrier, si déclenché par l'alarme et que `input_select.calendrier_action` vaut Absent → `input_select.calendrier` passe à Absent si l'alarme est active, à Repos sinon.
+  2. Calendrier, autres déclencheurs → interroge `calendar.agenda` pour la journée, extrait les résumés d'événements, puis selon les mots-clés :
+     - Absent / Vacance(s) → `chauffage_action` et `calendrier_action` = Absent ; `calendrier` = Absent si l'alarme est armée (absent), sinon Repos ;
+     - TéléTravail → les trois sélecteurs = TéléTravail ;
+     - jour non travaillé (`binary_sensor.workday_sensor` à off), ARTT ou Congé(s) → les trois sélecteurs = Repos ;
+     - sinon → Travail.
+     Dans chaque cas, active le sous-calendrier correspondant (`calendar.agenda_absent` / `_teletravail` / `_we_ferie_repos` / `_travail`) et désactive les trois autres, puis envoie un mail avec le mode retenu.
+  3. HorsGel → activé si l'une des conditions est vraie : (période du 16 avril au 14 octobre ET `input_select.volets_mode` = Eté), OU température extérieure > 22°C, OU (alarme armée absent ET calendrier = Absent). Désactivé sinon. Lorsqu'il est activé et que l'alarme est armée (absent), met aussi `input_select.domicile` à Vacances (calendrier Absent) ou Absent.
 
   **Entités principales :**
-
   - `calendar.agenda` : source de la planification journalière
-
-  - `input_select.calendrier` / `input_select.chauffage_action` : modes actifs
-
+  - `input_select.calendrier` / `input_select.calendrier_action` / `input_select.chauffage_action` : modes actifs
+  - `binary_sensor.workday_sensor` : jour travaillé ou non
   - `input_boolean.chauffage_horsgel` : activation du mode hors-gel global
+  - `input_select.domicile` : mis à jour en cas d'absence
 triggers:
-  - at: "00:15:00"
+  - at: 00:15:00
     trigger: time
   - entity_id:
       - input_boolean.alarme
@@ -47,13 +36,12 @@ triggers:
   - entity_id:
       - input_button.planification_agenda
     trigger: state
+  - trigger: state
+    entity_id: input_select.volets_mode
 conditions: []
 actions:
   - parallel:
-      - note: >-
-          Logique calendrier → si trigger alarme: maintient Absent ou bascule
-          Repos ; sinon: interroge calendar.agenda et positionne le mode selon
-          mots-clés (Absent/TéléTravail/ARTT/Congé/Repos/Travail)
+      - note: 'Logique calendrier → si trigger alarme: maintient Absent ou bascule Repos ; sinon: interroge calendar.agenda et positionne le mode selon mots-clés (Absent/TéléTravail/ARTT/Congé/Repos/Travail)'
         if:
           - condition: trigger
             id:
@@ -67,7 +55,7 @@ actions:
               - if:
                   - condition: state
                     entity_id: input_boolean.alarme
-                    state: "on"
+                    state: 'on'
                 then:
                   - action: input_select.select_option
                     data:
@@ -87,19 +75,19 @@ actions:
             target:
               entity_id: calendar.agenda
             data:
-              start_date_time: "{{ now().strftime('%Y-%m-%d') }} 00:00:00Z"
-              end_date_time: "{{ now().strftime('%Y-%m-%d') }} 23:59:59Z"
+              start_date_time: '{{ now().strftime(''%Y-%m-%d'') }} 00:00:00Z'
+              end_date_time: '{{ now().strftime(''%Y-%m-%d'') }} 23:59:59Z'
             response_variable: events_today
           - variables:
-              today: "{{ now().strftime('%Y-%m-%d') }}"
-              summaries: |
+              today: '{{ now().strftime(''%Y-%m-%d'') }}'
+              summaries: |-
                 {{ events_today['calendar.agenda']['events']
                    | selectattr('start', '>=', today)
                    | map(attribute='summary') | list }}
             enabled: false
           - variables:
-              today: "{{ now().strftime('%Y-%m-%d') }}"
-              summaries: |
+              today: '{{ now().strftime(''%Y-%m-%d'') }}'
+              summaries: |-
                 {{ events_today['calendar.agenda']['events']
                    | map(attribute='summary') | list }}
           - choose:
@@ -107,11 +95,11 @@ actions:
                   - condition: or
                     conditions:
                       - condition: template
-                        value_template: "{{ summaries | contains('Absent') }}"
+                        value_template: '{{ summaries | contains(''Absent'') }}'
                       - condition: template
-                        value_template: "{{ summaries | contains('Vacance') }}"
+                        value_template: '{{ summaries | contains(''Vacance'') }}'
                       - condition: template
-                        value_template: "{{ summaries | contains('Vacances') }}"
+                        value_template: '{{ summaries | contains(''Vacances'') }}'
                 sequence:
                   - parallel:
                       - action: homeassistant.disable_entity
@@ -151,7 +139,7 @@ actions:
                             - input_select.calendrier
               - conditions:
                   - condition: template
-                    value_template: "{{ summaries | contains('TéléTravail') }}"
+                    value_template: '{{ summaries | contains(''TéléTravail'') }}'
                 sequence:
                   - parallel:
                       - action: homeassistant.disable_entity
@@ -177,14 +165,14 @@ actions:
                     conditions:
                       - condition: state
                         entity_id: binary_sensor.workday_sensor
-                        state: "off"
+                        state: 'off'
                         enabled: true
                       - condition: template
-                        value_template: "{{ summaries | contains('ARTT') }}"
+                        value_template: '{{ summaries | contains(''ARTT'') }}'
                       - condition: template
-                        value_template: "{{ summaries | contains('Congé') }}"
+                        value_template: '{{ summaries | contains(''Congé'') }}'
                       - condition: template
-                        value_template: "{{ summaries | contains('Congés') }}"
+                        value_template: '{{ summaries | contains(''Congés'') }}'
                     enabled: true
                 sequence:
                   - parallel:
@@ -218,9 +206,7 @@ actions:
                     data:
                       entity_id:
                         - calendar.agenda_travail
-                note: >-
-                  Jour de travail par défaut → active calendar.agenda_travail,
-                  positionne mode Travail
+                note: Jour de travail par défaut → active calendar.agenda_travail, positionne mode Travail
               - action: input_select.select_option
                 data:
                   option: Travail
@@ -236,20 +222,21 @@ actions:
             data:
               variables:
                 message_type: Information
-                message_mail: "{{ states('input_select.calendrier') }}"
-      - if:
+                message_corp: '{{ states(''input_select.calendrier'') }}'
+      - note: Logique HorsGel → actif si (16 avril–14 octobre ET volets en mode Eté), ou température extérieure > 22°C, ou alarme armée absent avec calendrier Absent ; désactivé sinon
+        if:
           - condition: or
             conditions:
               - condition: and
                 conditions:
                   - condition: template
-                    value_template: >-
-                      {{ now().month > 4 or (now().month == 4 and now().day >
-                      15) }}
+                    value_template: '{{ now().month > 4 or (now().month == 4 and now().day > 15) }}'
                   - condition: template
-                    value_template: >-
-                      {{ now().month < 10 or (now().month == 10 and now().day <
-                      15) }}
+                    value_template: '{{ now().month < 10 or (now().month == 10 and now().day < 15) }}'
+                  - condition: state
+                    entity_id: input_select.volets_mode
+                    state:
+                      - Eté
               - condition: numeric_state
                 entity_id: sensor.netatmo_exterieur_temperature
                 above: 22
@@ -266,6 +253,31 @@ actions:
                       option:
                         - Absent
         then:
+          - if:
+              - condition: alarm_control_panel.is_armed_away
+                target:
+                  entity_id: alarm_control_panel.alarme
+                options: {}
+            then:
+              - if:
+                  - condition: state
+                    entity_id: input_select.calendrier
+                    state: Absent
+                then:
+                  - action: input_select.select_option
+                    metadata: {}
+                    data:
+                      option: Vacances
+                    target:
+                      entity_id:
+                        - input_select.domicile
+                else:
+                  - action: input_select.select_option
+                    metadata: {}
+                    data:
+                      option: Absent
+                    target:
+                      entity_id: input_select.domicile
           - action: input_boolean.turn_on
             data: {}
             target:
@@ -275,7 +287,4 @@ actions:
             data: {}
             target:
               entity_id: input_boolean.chauffage_horsgel
-        note: >-
-          Logique HorsGel → active si période mai-oct, température > 22°C, ou
-          mode Absent ; désactive sinon
 mode: restart

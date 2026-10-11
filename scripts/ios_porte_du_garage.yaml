@@ -6,7 +6,10 @@ description: |-
   **Rôle :** Action rapide iOS pour ouvrir ou fermer la porte du garage.
 
   **Fonctionnement :**
-  1. Déclenche `cover.toggle` sur `cover.rts_4_portal` (Somfy RTS).
+  1. Déclenche cover.toggle sur cover.rts_4_portal (Somfy RTS).
+
+  **Entités principales :**
+  - cover.rts_4_portal : porte de garage pilotée
 sequence:
   - action: cover.toggle
     data: {}

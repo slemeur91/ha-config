@@ -1,34 +1,26 @@
 alias: Gestion de la lumière du Garage
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
-  - Ouverture de la porte du garage (`binary_sensor.do_gar_porte_garage` passe à
-  ON)
-
+  - Ouverture de la porte du garage (`binary_sensor.do_gar_porte_garage` passe de off à on)
 
   **Fonctionnement :**
-
-  1. Si le soleil est couché (ou dans l'heure avant le lever) ET que l'alarme
-  est désarmée → allume la lumière du garage.
-
+  1. Si période sombre (de 30 min avant le coucher du soleil à 30 min après le lever) ET que l'alarme est désarmée → allume la lumière du garage.
+  2. Aucune extinction automatique n'est prévue dans cette automatisation.
 
   **Entités principales :**
-
+  - `binary_sensor.do_gar_porte_garage` : porte du garage
   - `light.lumiere_du_garage` : lumière commandée
-
   - `alarm_control_panel.alarme` : condition de sécurité
 triggers:
   - trigger: state
     entity_id:
       - binary_sensor.do_gar_porte_garage
-    to: "on"
+    to: 'on'
     id: Garage_door
-    from: "off"
+    from: 'off'
 conditions: []
 actions:
   - if:
@@ -36,9 +28,9 @@ actions:
         conditions:
           - condition: sun
             before: sunrise
-            before_offset: "1800"
+            before_offset: '1800'
             after: sunset
-            after_offset: "-1800"
+            after_offset: '-1800'
           - condition: state
             entity_id: alarm_control_panel.alarme
             state: disarmed
@@ -48,4 +40,5 @@ actions:
         target:
           entity_id:
             - light.lumiere_du_garage
+    note: Période sombre et alarme désarmée → allume la lumière du garage
 mode: restart

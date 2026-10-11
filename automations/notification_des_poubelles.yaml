@@ -1,28 +1,17 @@
 alias: Notification des Poubelles
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
-  - Changement de `input_select.poubelles` (déclenché par le calendrier
-  permanent)
-
+  - Changement de `input_select.poubelles` (déclenché par le calendrier permanent)
 
   **Fonctionnement :**
-
-  1. Selon l'option sélectionnée (Sortir/Rentrer Marron, Verte ou Jaune),
-  compose le message vocal approprié.
-
+  1. Selon l'option sélectionnée (Sortir/Rentrer Marron, Verte ou Jaune), compose le message vocal approprié.
   2. Diffuse la notification vocale et envoie un SMS.
-
   3. Remet automatiquement le sélecteur à "Aucune" après notification.
 
-
   **Entités principales :**
-
   - `input_select.poubelles` : sélecteur d'action poubelle piloté par l'agenda
 triggers:
   - target:
@@ -99,21 +88,17 @@ actions:
         note: Rentrer Jaune → compose message 'rentrer poubelle jaune'
   - if:
       - condition: template
-        value_template: "{{ message_poubelle != null }}"
+        value_template: '{{ message_poubelle != null }}'
     then:
       - action: script.turn_on
         target:
-          entity_id: script.notification_vocale
-        data:
-          variables:
-            message_vocal: "{{ message_poubelle }}"
-      - action: script.turn_on
-        target:
-          entity_id: script.notification_sms
+          entity_id:
+            - script.notification_vocale
+            - script.notification_sms
         data:
           variables:
             message_type: Information
-            message_sms: "{{ message_poubelle }}"
+            message_corp: '{{ message_poubelle }}'
       - action: input_select.select_option
         metadata: {}
         target:

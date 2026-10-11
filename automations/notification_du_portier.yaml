@@ -1,50 +1,32 @@
 alias: Notification du Portier
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
-  - Sonnette du portier (`binary_sensor.exterieur_slm_portier_visiteur` → on) —
-  actif
-
-  - Présence devant le portier (`binary_sensor.exterieur_slm_portier_personne` →
-  on) — désactivé
-
-  - Mouvement devant le portier
-  (`binary_sensor.exterieur_slm_portier_mouvement_2`) — désactivé
-
+  - Sonnette du portier (`binary_sensor.exterieur_slm_portier_visiteur` → on) — actif
+  - Présence devant le portier (`binary_sensor.exterieur_slm_portier_personne` → on) — désactivé
+  - Mouvement devant le portier (`binary_sensor.exterieur_slm_portier_mouvement_2`) — désactivé
 
   **Fonctionnement :**
-
-  1. Selon le déclencheur, compose la variable `message_portier` : "Appuis sur
-  la sonnette", "Présence devant le portier" ou "Mouvement devant le portier".
-
-  2. Appelle `script.notification_snapshot_du_portier` via `script.turn_on`
-  (fire-and-forget) avec le type et le message.
-
+  1. Selon le déclencheur, compose la variable `message_portier` : "Appuis sur la sonnette", "Présence devant le portier" ou "Mouvement devant le portier".
+  2. Appelle `script.notification_snapshot_du_portier` via `script.turn_on` (fire-and-forget) avec le type et le message.
 
   **Entités principales :**
-
-  - `binary_sensor.exterieur_slm_portier_visiteur`,
-  `binary_sensor.exterieur_slm_portier_personne`,
-  `binary_sensor.exterieur_slm_portier_mouvement_2` : détection
-
+  - `binary_sensor.exterieur_slm_portier_visiteur`, `binary_sensor.exterieur_slm_portier_personne`, `binary_sensor.exterieur_slm_portier_mouvement_2` : détection
   - `script.notification_snapshot_du_portier` : notification avec capture
 triggers:
   - trigger: state
     entity_id:
       - binary_sensor.exterieur_slm_portier_visiteur
     to:
-      - "on"
+      - 'on'
     id: Sonette
   - trigger: state
     entity_id:
       - binary_sensor.exterieur_slm_portier_personne
     to:
-      - "on"
+      - 'on'
     id: Détéction
     enabled: false
   - trigger: motion.detected
@@ -53,7 +35,7 @@ triggers:
         - binary_sensor.exterieur_slm_portier_mouvement_2
     options:
       behavior: each
-      for: "00:00:00"
+      for: 00:00:00
     id: Mouvement
     enabled: false
 conditions: []
@@ -66,6 +48,7 @@ actions:
         sequence:
           - variables:
               message_portier: Appuis sur la sonnette
+        note: Sonnette appuyée → message 'Appuis sur la sonnette'
       - conditions:
           - condition: trigger
             id:
@@ -73,6 +56,7 @@ actions:
         sequence:
           - variables:
               message_portier: Présence devant le portier
+        note: Présence détectée (déclencheur désactivé) → message 'Présence devant le portier'
       - conditions:
           - condition: trigger
             id:
@@ -80,6 +64,7 @@ actions:
         sequence:
           - variables:
               message_portier: Mouvement devant le portier
+        note: Mouvement détecté (déclencheur désactivé) → message 'Mouvement devant le portier'
   - action: script.turn_on
     target:
       entity_id:
@@ -87,5 +72,5 @@ actions:
     data:
       variables:
         message_type: Portier
-        message_mail: "{{ message_portier }}"
+        message_corp: '{{ message_portier }}'
 mode: single

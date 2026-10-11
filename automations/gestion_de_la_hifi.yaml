@@ -8,16 +8,21 @@ description: |-
   - Appui sur `input_button.hifi`
 
   **Fonctionnement :**
-  1. Action OFF → notification vocale, extinction en parallèle (télécommande Sony, ampli Rotel, Apple TV (`script.allumer_eteindre_apple_tv_salon`), Zappiti si allumé), gestion SONOS selon contexte (alarme armée ou heure).
-  2. Action ON → vérifie les conditions horaires et de présence ; si iPhone présent, sélectionne la source BluRay et passe en SOURCE ; sinon attend 1 min et réessaie.
-  3. Action SOURCE → arrête ou configure les SONOS, notification vocale, allume en parallèle (télécommande Sony, source Rotel selon sélection, TV HDMI3, Apple TV (`script.allumer_eteindre_apple_tv_salon`), lumière salon si après coucher du soleil).
+  1. Action OFF → notification vocale, puis extinction en parallèle : télécommande TV Sony (si allumée), ampli Rotel (`script.allumer_eteindre_amplificateur_rotel`, action off), Apple TV (`media_player.turn_off` direct), Zappiti si allumé, alimentation de la Sync Box et bandeau Hue Play. Gestion SONOS selon contexte : alarme armée (absent) → SONOS OFF ; alarme désarmée entre 05:30 et 22:30 → SONOS ON. Enfin `input_select.hifi` passe à OFF.
+  2. Action ON → s'arrête sans rien faire avant 10:30 (et selon présence salon/bureau la nuit) ; sinon, si l'iPhone de Sylvain est au domicile, sélectionne la source BluRay et passe en SOURCE ; sinon attend 1 min et réessaie une fois.
+  3. Action SOURCE → notification vocale, puis en parallèle : SONOS OFF, allumage du Zappiti ou de slm-media4 selon la source, TV sur HDMI3, ampli Rotel (`script.allumer_eteindre_amplificateur_rotel`, action on), Apple TV (`media_player.turn_on` direct), lumière du salon à partir de 30 min avant le coucher du soleil, synchronisation des lumières de la Sync Box sur la sortie HDMI 4. Enfin `input_select.hifi` prend la valeur de la source.
+
+  **Remarque :** l'appel groupé à `script.allumer_eteindre_apple_tv_salon` est désactivé dans les deux branches ; l'Apple TV est pilotée directement via `media_player.apple_tv_du_salon`.
 
   **Entités principales :**
   - `input_select.hifi` : état courant de la HiFi
   - `input_select.hifi_action` : commande entrante
   - `input_select.hifi_source` : source active (Zappiti / BluRay / slm-media4)
-  - `remote.sony_kd_55a1` : télécommande TV Sony
-  - `button.rotel_*` : commandes ampli Rotel
+  - `remote.sony_kd_55a1`, `button.tv_hdmi3` : TV Sony
+  - `script.allumer_eteindre_amplificateur_rotel` : ampli Rotel
+  - `media_player.apple_tv_du_salon` : Apple TV
+  - `switch.sync_box_alimentation`, `switch.sync_box_synchronisation_des_lumieres`, `select.sync_box_sortie_hdmi`, `light.hue_play_gradient_lightstrip_1` : Sync Box et bandeau Hue
+  - `input_select.sonos` / `input_select.sonos_action` : coordination avec les SONOS
 triggers:
   - entity_id:
       - input_select.hifi_action
@@ -31,14 +36,14 @@ actions:
       - conditions:
           - condition: state
             entity_id: input_select.hifi_action
-            state: "OFF"
+            state: 'OFF'
         sequence:
           - action: script.turn_on
             target:
               entity_id: script.notification_vocale
             data:
               variables:
-                message_vocal: Extinction de la HiFi
+                message_corp: Extinction de la HiFi
             enabled: true
           - parallel:
               - parallel:
@@ -50,13 +55,13 @@ actions:
                               entity_id: remote.kd_55a1
                             options:
                               behavior: any
-                              for: "00:00:00"
+                              for: 00:00:00
                           - condition: remote.is_on
                             target:
                               entity_id: remote.sony_kd_55a1
                             options:
                               behavior: any
-                              for: "00:00:00"
+                              for: 00:00:00
                     then:
                       - action: remote.turn_off
                         metadata: {}
@@ -84,13 +89,28 @@ actions:
                     - script.allumer_eteindre_apple_tv_salon
                 data:
                   variables:
-                    action: "off"
+                    action: 'off'
                 continue_on_error: true
+                enabled: false
+              - action: script.turn_on
+                target:
+                  entity_id:
+                    - script.allumer_eteindre_amplificateur_rotel
+                data:
+                  variables:
+                    action: 'off'
+                continue_on_error: true
+              - action: media_player.turn_off
+                continue_on_error: true
+                data: {}
+                metadata: {}
+                target:
+                  entity_id: media_player.apple_tv_du_salon
               - if:
                   - condition: state
                     entity_id: binary_sensor.slm_zappiti
                     state:
-                      - "on"
+                      - 'on'
                 then:
                   - action: button.press
                     metadata: {}
@@ -116,7 +136,7 @@ actions:
                       - if:
                           - condition: state
                             entity_id: input_select.sonos_action
-                            state: "OFF"
+                            state: 'OFF'
                         then:
                           - action: automation.trigger
                             metadata: {}
@@ -129,7 +149,7 @@ actions:
                           - action: input_select.select_option
                             metadata: {}
                             data:
-                              option: "OFF"
+                              option: 'OFF'
                             target:
                               entity_id: input_select.sonos_action
                   - conditions:
@@ -139,13 +159,13 @@ actions:
                             entity_id: alarm_control_panel.alarme
                             state: disarmed
                           - condition: time
-                            before: "22:30:00"
-                            after: "05:30:00"
+                            before: '22:30:00'
+                            after: 05:30:00
                     sequence:
                       - if:
                           - condition: state
                             entity_id: input_select.sonos
-                            state: "ON"
+                            state: 'ON'
                         then:
                           - action: automation.trigger
                             metadata: {}
@@ -158,25 +178,25 @@ actions:
                           - action: input_select.select_option
                             metadata: {}
                             data:
-                              option: "ON"
+                              option: 'ON'
                             target:
                               entity_id: input_select.sonos_action
           - action: input_select.select_option
             metadata: {}
             data:
-              option: "OFF"
+              option: 'OFF'
             target:
               entity_id: input_select.hifi
         note: Extinction HiFi → éteint TV, Rotel, Apple TV, Zappiti en parallèle ; gère les SONOS selon contexte (alarme armée ou heure)
       - conditions:
           - condition: state
             entity_id: input_select.hifi_action
-            state: "ON"
+            state: 'ON'
         sequence:
           - choose:
               - conditions:
                   - condition: time
-                    before: "10:30:00"
+                    before: '10:30:00'
                 sequence:
                   - stop: Fin normal
               - conditions:
@@ -186,8 +206,8 @@ actions:
                         entity_id: input_select.presence_salon
                         state: Présent
                       - condition: time
-                        before: "10:30:00"
-                        after: "23:30:00"
+                        before: '10:30:00'
+                        after: '23:30:00'
                 sequence:
                   - stop: Fin normal
               - conditions:
@@ -197,8 +217,8 @@ actions:
                         entity_id: input_select.presence_bureau
                         state: Présent
                       - condition: time
-                        before: "05:30:00"
-                        after: "23:30:00"
+                        before: 05:30:00
+                        after: '23:30:00'
                 sequence:
                   - stop: Fin normal
           - if:
@@ -252,13 +272,13 @@ actions:
               entity_id: script.notification_vocale
             data:
               variables:
-                message_vocal: "Allumage de la HiFi sur {{ states('input_select.hifi_source') }}"
+                message_corp: Allumage de la HiFi sur {{ states('input_select.hifi_source') }}
             enabled: true
           - parallel:
               - if:
                   - condition: state
                     entity_id: input_select.sonos
-                    state: "OFF"
+                    state: 'OFF'
                 then:
                   - action: automation.trigger
                     metadata: {}
@@ -271,7 +291,7 @@ actions:
                   - action: input_select.select_option
                     metadata: {}
                     data:
-                      option: "OFF"
+                      option: 'OFF'
                     target:
                       entity_id: input_select.sonos_action
               - choose:
@@ -284,7 +304,7 @@ actions:
                           - condition: state
                             entity_id: binary_sensor.slm_zappiti
                             state:
-                              - "off"
+                              - 'off'
                         then:
                           - action: button.press
                             metadata: {}
@@ -319,12 +339,27 @@ actions:
                     - script.allumer_eteindre_apple_tv_salon
                 data:
                   variables:
-                    action: "on"
+                    action: 'on'
                 continue_on_error: true
+                enabled: false
+              - action: script.turn_on
+                target:
+                  entity_id:
+                    - script.allumer_eteindre_amplificateur_rotel
+                data:
+                  variables:
+                    action: 'on'
+                continue_on_error: true
+              - action: media_player.turn_on
+                continue_on_error: true
+                data: {}
+                metadata: {}
+                target:
+                  entity_id: media_player.apple_tv_du_salon
               - if:
                   - condition: sun
                     after: sunset
-                    after_offset: "-1800"
+                    after_offset: '-1800'
                 then:
                   - action: light.turn_on
                     metadata: {}
@@ -347,7 +382,7 @@ actions:
           - action: input_select.select_option
             metadata: {}
             data:
-              option: "{{ states('input_select.hifi_source') }}"
+              option: '{{ states(''input_select.hifi_source'') }}'
             target:
               entity_id: input_select.hifi
         note: Source HiFi → arrête ou configure les SONOS, allume TV+Rotel (source selon sélection)+Apple TV, lumière salon si après coucher du soleil

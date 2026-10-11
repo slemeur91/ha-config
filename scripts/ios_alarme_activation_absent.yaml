@@ -1,17 +1,15 @@
 alias: iOS - Alarme Activation (Absent)
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
-
 
   **Rôle :** Action rapide iOS pour armer l'alarme en mode absent.
 
-
   **Fonctionnement :**
+  1. Appelle alarm_control_panel.alarm_arm_away sur alarm_control_panel.alarme.
 
-  1. Appelle `alarm_control_panel.alarm_arm_away` sur
-  `alarm_control_panel.alarme`.
+  **Entités principales :**
+  - alarm_control_panel.alarme : panneau d'alarme piloté
 sequence:
   - action: alarm_control_panel.alarm_arm_away
     target:

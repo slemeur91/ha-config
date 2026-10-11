@@ -1,0 +1,28 @@
+alias: KLF200 - Redémarrage de la passerelle à l'arrêt de HA
+description: |-
+  **Statut :** Nouveau (créé le 11/10/2026, désactivé en attente de validation) — à vérifier sur un redémarrage réel
+  **Evolution :** Aucune
+
+  **Rôle :** prévention. Le KLF200 n'accepte qu'une ou deux connexions et ne libère pas toujours celle de Home Assistant quand celui-ci s'arrête ; il peut alors refuser la reconnexion au démarrage suivant. Redémarrer la passerelle au moment où HA s'arrête la laisse propre pour le retour. C'est l'ancien correctif de la documentation officielle (`velux.reboot_gateway`), adapté au bouton qui a remplacé cette action.
+
+  **Déclencheurs :**
+  - Arrêt de Home Assistant (`homeassistant shutdown`)
+
+  **Fonctionnement :**
+  1. Appuie sur `button.klf_200_gateway_redemarrer`.
+
+  **Limite :** à l'arrêt, HA ne laisse qu'environ 20 secondes aux automatisations ; il faut vérifier sur un redémarrage que l'appui a bien le temps d'aboutir (horodatage du bouton mis à jour).
+
+  **Entités principales :**
+  - `button.klf_200_gateway_redemarrer` : redémarrage logiciel de la passerelle
+triggers:
+  - trigger: homeassistant
+    event: shutdown
+    note: Arrêt ou redémarrage de Home Assistant
+conditions: []
+actions:
+  - action: button.press
+    target:
+      entity_id: button.klf_200_gateway_redemarrer
+    note: Redémarre la passerelle pour libérer sa connexion avant le retour de HA
+mode: single

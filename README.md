@@ -7,16 +7,15 @@
 | Élément | Valeur |
 |---|---|
 | Version HA | 2026.x.x |
-| Entités totales | 2 156 |
-| Domaines (types d'entités) | 43 |
+| Entités totales | 2 986 |
+| Domaines (types d'entités) | 47 |
 | Zones / Pièces | 23 |
 | Appareils connectés | **203** |
-| Automatisations | **74** |
+| Automatisations | **64** |
 | Scripts | **21** |
-| Blueprints | **2** |
-| Modules complémentaires (Add-ons) | **17** |
-| Intégrations HACS | **23** |
-| Cartes Lovelace HACS | **13** |
+| Modules complémentaires (Add-ons) | **19** |
+| Intégrations HACS | **37** |
+| Cartes Lovelace HACS | **21** |
 
 ---
 
@@ -45,24 +44,24 @@
 
 ---
 
-## 🤖 Automations (74)
+## 🤖 Automations (64)
 
 
 | Catégorie | Nb | Détail |
 |---|---|---|
 | Alarme | 3 | [→ Détail](docs/automations/alarme.md) |
-| Automatisation | 18 | [→ Détail](docs/automations/automatisation.md) |
-| Corrections | 9 | [→ Détail](docs/automations/corrections.md) |
+| Automatisation | 20 | [→ Détail](docs/automations/automatisation.md) |
+| Corrections | 10 | [→ Détail](docs/automations/corrections.md) |
 | HiFi | 3 | [→ Détail](docs/automations/hifi.md) |
 | Lumières | 8 | [→ Détail](docs/automations/lumieres.md) |
 | Notifications | 15 | [→ Détail](docs/automations/notifications.md) |
 | Surveillance HA | 4 | [→ Détail](docs/automations/surveillance_ha.md) |
-| Volets | 14 | [→ Détail](docs/automations/volets.md) |
+| Volets | 1 | [→ Détail](docs/automations/volets.md) |
 
 ### Résumé des automations actives
 
 <details>
-<summary>Voir la liste complète (74) — triée par catégorie puis alphabétiquement</summary>
+<summary>Voir la liste complète (64) — triée par catégorie puis alphabétiquement</summary>
 
 #### Alarme
 | Alias | Entity ID | Résumé |
@@ -90,21 +89,24 @@
 | Gestion du Chauffage du RDC | `automation.gestion_du_chauffage_du_rdc` | Pilote le chauffage du rez-de-chaussée |
 | Gestion du Domicile en fonction de la Présence | `automation.gestion_du_domicile_en_fonction_de_la_presence` | Actions selon la présence (Réveil/Arrivée/Couché/Extinction) |
 | Gestion du Poêle et de la Climatisation | `automation.gestion_du_poele_et_de_la_climatisation` | Gère les flags poêle/clim et le contacteur selon l'alarme |
+| Gestion emplacement Sylvain Domicile/Absent | `automation.gestion_emplacement_sylvain_domicile_absent` | Adapte l'interrogation de l'alarme et coupe/rallume des prises selon la présence de l'iPhone au domicile |
+| MAJ Auto Prises LL/SL (Zigbee2MQTT) | `automation.maj_auto_prises_ll_sl_zigbee2mqtt` | Force la relecture de la puissance des multiprises lave-linge/sèche-linge (contournement Zigbee2MQTT) |
 | Gestion du Soleil | `automation.gestion_du_soleil` | Calcule le mode soleil et positionne les volets en Été/Hiver |
 | Planification de l'Agenda | `automation.planification_de_l_agenda` | Positionne les modes calendrier/chauffage selon l'agenda |
 
 #### Corrections
 | Alias | Entity ID | Résumé |
 |---|---|---|
-| Correction de l'intégration du KLF200 - Passerelle des Volets/Velux | `automation.correction_de_l_integration_du_klf200_passerelle_des_volets_velux` | Détecte les défauts KLF200 et recharge/coupe la passerelle |
 | Correction de l'Onduleur | `automation.correction_de_l_onduleur` | Redémarre l'add-on NUT si l'onduleur est indisponible |
 | Correction du Mi Air Purifier | `automation.correction_du_mi_air_purifier` | Cycle d'alimentation du purificateur si indisponible |
 | Corrections des Appareils EcoFlow | `automation.corrections_des_appareils_ecoflow` | Redémarre les intégrations EcoFlow si hors ligne |
+| KLF200 - Filet de sécurité de la prise | `automation.klf200_filet_de_securite_de_la_prise` | Rallume la prise du KLF200 si elle reste éteinte 5 mn, puis recharge l'intégration Velux |
+| KLF200 - Redémarrage de la passerelle à l'arrêt de HA | `automation.klf200_redemarrage_de_la_passerelle_a_l_arret_de_ha` | Redémarre la passerelle KLF200 à l'arrêt de HA *(désactivée, en validation)* |
+| KLF200 - Surveillance et réparation graduée | `automation.klf200_surveillance_et_reparation_graduee` | Détecte les défauts KLF200 et répare par étapes : rechargement, redémarrage, coupure de la prise *(désactivée, en validation)* |
 | Maintien des Prises et Appareils allumés | `automation.maintien_des_prises_et_appareils_allumes` | Garde les prises critiques allumées et surveille les serveurs |
 | Rechargement de l'intégration LocalTuya | `automation.rechargement_de_l_integration_localtuya` | Recharge LocalTuya 4 min après le démarrage de HA |
 | Rechargement de l'intégration Netatmo | `automation.rechargement_de_l_integration_netatmo` | Recharge Netatmo si tous les modules sont indisponibles |
 | Redémarrage de l'intégration OTBR sur CPU élevé | `automation.redemarrage_de_l_integration_otbr_sur_cpu_eleve` | Redémarre l'add-on OTBR si CPU > 25% au démarrage |
-| Sécurité KLF200 - Remise sous tension | `automation.securite_klf200_remise_sous_tension` | Remet la prise KLF200 sous tension après 5mn d'extinction (indépendant) |
 
 #### HiFi
 | Alias | Entity ID | Résumé |
@@ -152,31 +154,12 @@
 | Notification des Automatisations sans déclenchement récent | `automation.notification_des_automatisations_sans_declenchement_recent` | Notifie chaque jour les automatisations jamais/peu déclenchées |
 | Rechargement des intégrations en défaut | `automation.rechargement_des_integrations_en_defaut` | Détecte et recharge les intégrations en erreur ou en panne silencieuse |
 
-#### Volets — Velux `Volets/Gestion_des_velux.yaml`
-| Alias | Entity ID | Pièce |
-|---|---|---|
-| Gestion du Velux - Chambre | `automation.gestion_du_velux_chambre` | Chambre |
-| Gestion du Velux - Salle d'eau | `automation.gestion_du_velux_salle_d_eau` | Salle d'eau |
-| Gestion du Velux - Salle de bain | `automation.gestion_du_velux_salle_de_bain` | Salle de bain |
-
-#### Volets — Volet `Volets/Gestion_des_volets.yaml`
-| Alias | Entity ID | Pièce |
-|---|---|---|
-| Gestion du Volet - Bureau | `automation.gestion_du_volet_bureau` | Bureau |
-| Gestion du Volet - Cellier | `automation.gestion_du_volet_cellier` | Cellier |
-| Gestion du Volet - Chambre | `automation.gestion_du_volet_chambre` | Chambre |
-| Gestion du Volet - Cuisine | `automation.gestion_du_volet_cuisine` | Cuisine |
-| Gestion du Volet - Salle d'eau | `automation.gestion_du_volet_salle_d_eau` | Salle d'eau |
-| Gestion du Volet - Salle de bain | `automation.gestion_du_volet_salle_de_bain` | Salle de bain |
-| Gestion du Volet - Salon | `automation.gestion_du_volet_salon` | Salon |
-| Gestion du Volet - Séjour | `automation.gestion_du_volet_sejour` | Séjour |
-| Gestion du Volet - Suite parentale | `automation.gestion_du_volet_suite_parentale` | Suite parentale |
-
-#### Volets — Divers
+#### Volets
 | Alias | Entity ID | Résumé |
 |---|---|---|
-| Suspension de l'automatisation du Volet de la Suite Parentale - paliatif détecteur DO | `automation.suspension_de_l_automatisation_du_volet_de_la_suite_parentale_paliatif_detecteur_do` | Suspend l'automatisation volet suite parentale si toutes les ouvertures sont ouvertes |
-| Volets Ouvrir | `automation.volets_ouvrir` | Ouvre les 6 volets (hors velux) en un clic |
+| Scénario coverAutomatic | `automation.scenario_coverautomatic` | Sélectionne le scénario CoverAutomatic (vacation / summer / winter) selon le domicile et le mode des volets |
+
+> Le pilotage des volets, velux et store est désormais assuré par l'intégration **CoverAutomatic** (voir [Volets](docs/automations/volets.md)) : les 12 automatisations par volet et velux ont été supprimées.
 
 </details>
 
@@ -212,26 +195,7 @@
 
 ---
 
-## 📐 Blueprints (2)
-
-| Blueprint | Instances | Description |
-|---|---|---|
-| [Gestion des Velux](docs/automations/volets.md#gestion-des-velux-3-instances) | 3 | Fermeture selon présence, météo, protection thermique |
-| [Gestion des Volets](docs/automations/volets.md#gestion-des-volets-9-instances) | 9 | Pilotage intelligent selon mode, météo, soleil, présence |
-
-### Points d'attention lors de la création de blueprints
-
-Deux limitations importantes rencontrées lors du développement :
-
-**Les triggers ne peuvent pas utiliser les variables de la section `variables:`**
-Les variables déclarées dans la section `variables:` du blueprint ne sont pas encore évaluées au moment où les triggers sont définis. Il faut donc utiliser directement les `!input` dans les triggers, ou des entités statiques.
-
-**L'accès aux inputs dans les templates**
-Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être capturés au préalable dans la section `variables:` pour être accessibles. Un accès direct à `!input` dans un template imbriqué peut échouer selon le contexte d'évaluation.
-
----
-
-## 📦 Modules complémentaires — Add-ons (17)
+## 📦 Modules complémentaires — Add-ons (19)
 
 [Voir la documentation complète →](docs/addons.md)
 
@@ -242,15 +206,17 @@ Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être captu
 |---|---|---|---|---|
 | EnOcean MQTT | 4 | Passerelle EnOcean | [asera-corp/ha-enoceanmqtt](https://github.com/asera-corp/ha-enoceanmqtt) | 📦 Communauté |
 | File editor | — | Éditeur de fichiers | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/configurator) | 🏠 Officiel HA |
+| Frigate (Full Access) | — | NVR avec détection d'objets locale pour caméras IP *(arrêté)* | [blakeblackshear/frigate-hass-addons](https://github.com/blakeblackshear/frigate-hass-addons) | 📦 Communauté |
 | Gazpar2MQTT | 1 | Données GAZPAR vers MQTT | [ssenart/gazpar2mqtt](https://github.com/ssenart/gazpar2mqtt) | 📦 Communauté |
 | Get HACS | — | Installateur HACS | [hacs/get](https://github.com/hacs/get) | 📦 Communauté |
 | Home Assistant MCP Server | — | Intégration IA via MCP | [voska/hass-mcp](https://github.com/voska/hass-mcp) | 📦 Communauté |
 | Home-Assistant-Matter-Hub | — | Pont Matter vers Alexa/Apple/Google | [t0bst4r/home-assistant-matter-hub](https://github.com/t0bst4r/home-assistant-matter-hub) | 📦 Communauté |
 | Homebridge | — | Support HomeKit | [homebridge/homebridge-hassio](https://github.com/homebridge/homebridge-hassio) | 📦 Communauté |
-| Linky | 1 | Compteur Linky | [bokub/linky](https://github.com/bokub/linky) | 📦 Communauté |
 | Matter Server | — | Support Matter | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/matter_server) | 🏠 Officiel HA |
 | Mosquitto broker | — | Broker MQTT | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/mosquitto) | 🏠 Officiel HA |
 | MQTT Explorer | — | Explorateur MQTT | [thomasloven/hassio-mqtt-explorer](https://github.com/thomasloven/hassio-mqtt-explorer) | 📦 Communauté |
+| MyElectricalData | 1 | Données du compteur Linky (Enedis) vers MQTT | [MyElectricalData/myelectricaldata_import](https://github.com/MyElectricalData/myelectricaldata_import) | 📦 Communauté |
+| Network UPS Tools | 2 | Supervision des onduleurs (NUT) | [hassio-addons/addon-nut](https://github.com/hassio-addons/addon-nut) | 📦 Communauté |
 | OpenThread Border Router | — | Thread/Matter | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/openthread_border_router) | 🏠 Officiel HA |
 | Studio Code Server | — | VSCode intégré | [hassio-addons/addon-vscode](https://github.com/hassio-addons/addon-vscode) | 📦 Communauté |
 | Terminal & SSH | — | Accès terminal | [home-assistant/addons](https://github.com/home-assistant/addons/tree/master/ssh) | 🏠 Officiel HA |
@@ -260,7 +226,7 @@ Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être captu
 
 ---
 
-## 🛠️ HACS — Intégrations (23)
+## 🛠️ HACS — Intégrations (37)
 
 [Voir la documentation complète →](docs/hacs.md)
 
@@ -273,43 +239,65 @@ Dans les templates Jinja2 des actions, les inputs (`!input`) doivent être captu
 | Alexa Media Player | 1 | Contrôle des appareils Amazon Alexa | [alandtse/alexa_media_player](https://github.com/alandtse/alexa_media_player) | 🔧 HACS |
 | Atmo France | 1 | Qualité de l'air (Cheptainville) | [sebcaps/atmofrance](https://github.com/sebcaps/atmofrance) | 🔧 HACS |
 | Battery Notes | — | Suivi des types et dates de remplacement de piles | [andrew-codechimp/HA-Battery-Notes](https://github.com/andrew-codechimp/HA-Battery-Notes) | 🔧 HACS |
+| Cork Dork | — | Suivi de la cave à vin par lecture de codes-barres, avec plan des étagères | [BaconWappedBitcoin/ha-wine-cellar](https://github.com/BaconWappedBitcoin/ha-wine-cellar) | 🔧 HACS Communauté |
+| CoverAutomatic | 13 | Pilotage automatique des volets, velux et store selon soleil, heure, température et scénario | [slemeur91/CoverAutomatic](https://github.com/slemeur91/CoverAutomatic) | ⚠️ Dépôt perso |
+| DomoLink-Mistral IA | — | Diagnostic HA, agent Assist et analyse des journaux par Mistral AI | [SocrateMobile/DomoLink-Mistral](https://github.com/SocrateMobile/DomoLink-Mistral) | 🔧 HACS Communauté |
 | Dyson Local | 2 | Intégration locale (sans cloud) des appareils Dyson | [libdyson-wg/ha-dyson](https://github.com/libdyson-wg/ha-dyson) | 🔧 HACS |
 | Ecodevices RT2 | 1 | Mesure de consommation multi-circuits (GCE) | [pcourbin/ecodevices_rt2](https://github.com/pcourbin/ecodevices_rt2) | 🔧 HACS |
 | EcoFlow Cloud | 2 | Appareils EcoFlow (batterie DELTA Max, PowerStream) | [snell-evan-itt/hassio-ecoflow-cloud-US](https://github.com/snell-evan-itt/hassio-ecoflow-cloud-US) | 🔧 HACS |
+| Frigate | 1 | Intégration du NVR Frigate (détection de personnes sur caméra) | [blakeblackshear/frigate-hass-integration](https://github.com/blakeblackshear/frigate-hass-integration) | 🔧 HACS |
 | HACS | — | Gestionnaire de contenu communautaire HA | [hacs/integration](https://github.com/hacs/integration) | 🔧 HACS |
-| Hue Sync Box | 1 | Synchronisation lumières Philips Hue avec l'HDMI (Hue Play HDMI Sync Box) | [mvdwetering/huesyncbox](https://github.com/mvdwetering/huesyncbox) | 🔧 HACS Communauté |
+| HAGHS | — | Score global de santé de l'instance Home Assistant | [HA-Pulse/home-assistant-global-health-score](https://github.com/HA-Pulse/home-assistant-global-health-score) | 🔧 HACS |
+| Heating & Cooling Degree Days | 1 | Degrés-jours de chauffage et de climatisation (base 18 °C) | [alepee/hass-heating_cooling_degree_days](https://github.com/alepee/hass-heating_cooling_degree_days) | 🔧 HACS Communauté |
+| Home Architect | — | Éditeur de plan de la maison et tableau de bord associé | [SocrateMobile/home-architect](https://github.com/SocrateMobile/home-architect) | 🔧 HACS Communauté |
+| Hue Sync Box | 1 | Synchronisation lumières Philips Hue avec l'HDMI (Hue Play HDMI Sync Box) | [mvdwetering/huesyncbox](https://github.com/mvdwetering/huesyncbox) | 🔧 HACS |
+| L'eau d'Ile-de-France | — | Consommation d'eau depuis l'espace client Eau d'Île-de-France *(installée, non configurée)* | [TimoPtr/ha_eauidf](https://github.com/TimoPtr/ha_eauidf) | 🔧 HACS |
 | Local Agenda | 5 | Calendriers locaux enrichis pour la planification domotique | [slemeur91/local_agenda](https://github.com/slemeur91/local_agenda) | ⚠️ Dépôt perso |
 | LocalTuya | 6 | Contrôle local (sans cloud) des appareils Tuya | [rospogrigio/localtuya](https://github.com/rospogrigio/localtuya) | 🔧 HACS |
 | Micronova Agua IOT | 1 | Contrôle du poêle à granulés Jolly Mec via Agua IOT | [vincentwolsink/home_assistant_micronova_agua_iot](https://github.com/vincentwolsink/home_assistant_micronova_agua_iot) | 🔧 HACS |
-| Millésime — Cave à Vin | 1 | Inventaire de la cave à vin ⚠️ MàJ disponible | [Redsklns/ha-millesime](https://github.com/Redsklns/ha-millesime) | 🔧 HACS Communauté |
+| Millésime — Cave à Vin | 1 | Inventaire de la cave à vin | [Redsklns/ha-millesime](https://github.com/Redsklns/ha-millesime) | 🔧 HACS Communauté |
 | My EcoWatt by RTE | — | Signaux de sobriété électrique RTE | [kamaradclimber/rte-ecowatt](https://github.com/kamaradclimber/rte-ecowatt) | 🔧 HACS |
 | Orange Livebox | 1 | Supervision de la Livebox Orange | [cyr-ius/hass-livebox-component](https://github.com/cyr-ius/hass-livebox-component) | 🔧 HACS |
-| pyscript | 2 | Scripts Python avancés dans HA (gazpar_update, surveillance_station_recording) | [custom-components/pyscript](https://github.com/custom-components/pyscript) | 🔧 HACS |
+| PDF Scrape | — | Création de capteurs à partir de fichiers PDF en ligne *(installée, non configurée)* | [iluvdata/pdf_scrape](https://github.com/iluvdata/pdf_scrape) | 🔧 HACS |
+| Powercalc | 16 | Estimation de la consommation électrique des lumières | [bramstroker/homeassistant-powercalc](https://github.com/bramstroker/homeassistant-powercalc) | 🔧 HACS |
+| pyscript | 3 | Scripts Python avancés dans HA (gazpar_energy, linky_energy, surveillance_station_recording) | [custom-components/pyscript](https://github.com/custom-components/pyscript) | 🔧 HACS |
 | Remote Home-Assistant | 4 | Liaison entre deux instances Home Assistant | [custom-components/remote_homeassistant](https://github.com/custom-components/remote_homeassistant) | 🔧 HACS |
+| Restart Guard | — | Avertit avant un redémarrage de HA si une automatisation planifiée est en cours ou imminente | [igraph100/ha-restart-guard](https://github.com/igraph100/ha-restart-guard) | 🔧 HACS Communauté |
 | RfPlayer | 2 | Récepteur/émetteur RF 433/868 MHz (GCE RFPlayer) | [gce-electronics/HA_RFPlayer](https://github.com/gce-electronics/HA_RFPlayer) | 🔧 HACS Communauté |
 | Somfy Protexial | 1 | Centrale d'alarme Somfy Protexial | [AuroreVgn/somfy-protexial](https://github.com/AuroreVgn/somfy-protexial) | 🔧 HACS Communauté |
 | Spook | — | Services supplémentaires et détection d'entités orphelines | [frenck/spook](https://github.com/frenck/spook) | 🔧 HACS |
+| Streaming Top FR | — | Classement des films et séries des plateformes de streaming françaises | [PourLePlaisir-HA/Streaming-Top-FR](https://github.com/PourLePlaisir-HA/Streaming-Top-FR) | 🔧 HACS Communauté |
+| Suivi Stock Pellet | 1 | Stock, consommation et achats de granulés de bois | [cyclope205/suivi-stock-pellet](https://github.com/cyclope205/suivi-stock-pellet) | 🔧 HACS Communauté |
 | Vacances Scolaires | — | Calendrier des vacances scolaires françaises (zone C) | [Master13011/vacances-scolaire-HA](https://github.com/Master13011/vacances-scolaire-HA) | 🔧 HACS |
-| WashData | 3 | Détection des cycles de lavage par analyse de consommation électrique | [3dg1luk43/ha_washdata](https://github.com/3dg1luk43/ha_washdata) | 🔧 HACS Communauté |
+| Vigilance Météo France | 1 | Vigilance Météo-France par département (Essonne) avec carte Lovelace intégrée | [Pulpyyyy/meteo_france_vigilance](https://github.com/Pulpyyyy/meteo_france_vigilance) | 🔧 HACS Communauté |
+| WashData | 3 | Détection des cycles de lavage par analyse de consommation électrique | [3dg1luk43/ha_washdata](https://github.com/3dg1luk43/ha_washdata) | 🔧 HACS |
 | Xiaomi Miot | 2 | Appareils Xiaomi via protocole MIoT local | [al-one/hass-xiaomi-miot](https://github.com/al-one/hass-xiaomi-miot) | 🔧 HACS |
 | xsense | 4 | Détecteurs de fumée/CO X-Sense (cloud) | [Jarnsen/ha-xsense-component_test](https://github.com/Jarnsen/ha-xsense-component_test) | 🔧 HACS Communauté |
 
-### Cartes Lovelace HACS (13)
+### Cartes Lovelace HACS (21)
 
 | Carte | Utilisation | Rôle | GitHub | Source |
 |---|---|---|---|---|
-| apexcharts-card | 1 | Graphiques avancés (consommation énergie) | [RomRider/apexcharts-card](https://github.com/RomRider/apexcharts-card) | 🔧 HACS |
+| apexcharts-card | 4 | Graphiques avancés (consommation énergie) | [RomRider/apexcharts-card](https://github.com/RomRider/apexcharts-card) | 🔧 HACS |
 | Battery State Card | 1 | Tableau de bord des niveaux de batteries | [maxwroc/battery-state-card](https://github.com/maxwroc/battery-state-card) | 🔧 HACS |
+| button-card | 3 | Bouton personnalisable (état animé des appareils de lavage) | [custom-cards/button-card](https://github.com/custom-cards/button-card) | 🔧 HACS |
 | card-mod | 1 | CSS personnalisé sur n'importe quelle carte Lovelace | [thomasloven/lovelace-card-mod](https://github.com/thomasloven/lovelace-card-mod) | 🔧 HACS |
 | Custom-ui | — | Templates et couleurs d'icônes personnalisés | [Mariusthvdb/custom-ui](https://github.com/Mariusthvdb/custom-ui) | 🔧 HACS |
 | Decluttering Card | — | Templates réutilisables pour réduire la duplication dans les dashboards | [custom-cards/decluttering-card](https://github.com/custom-cards/decluttering-card) | 🔧 HACS |
 | expander-card | — | Carte extensible/rétractable pour les dashboards | [MelleD/lovelace-expander-card](https://github.com/MelleD/lovelace-expander-card) | 🔧 HACS |
 | GrDF Gazpar card | 1 | Affichage des données de consommation GAZPAR | [ssenart/lovelace-gazpar-card](https://github.com/ssenart/lovelace-gazpar-card) | 🔧 HACS Communauté |
+| HA Appliance Card | 4 | Carte pour lave-linge, sèche-linge, lave-vaisselle et réfrigérateur | [ADNPolymerase/ha-appliance-card](https://github.com/ADNPolymerase/ha-appliance-card) | 🔧 HACS |
+| HA Printer Card | 1 | Carte d'imprimante (état, niveaux de toner) | [ADNPolymerase/ha-printer-card](https://github.com/ADNPolymerase/ha-printer-card) | 🔧 HACS Communauté |
 | ha-floorplan | — | Plan interactif SVG avec états d'entités superposés | [ExperienceLovelace/ha-floorplan](https://github.com/ExperienceLovelace/ha-floorplan) | 🔧 HACS |
+| Helios | 1 | Visualisation 2.5D de la maison et de la course du soleil | [ReikanYsora/Helios](https://github.com/ReikanYsora/Helios) | 🔧 HACS |
 | Kiosk Mode | — | Masque l'en-tête/sidebar HA pour affichage kiosque | [NemesisRE/kiosk-mode](https://github.com/NemesisRE/kiosk-mode) | 🔧 HACS |
-| Pollenprognos Card | 1 | Prévisions des pollens et qualité de l'air (Atmo France) | [krissen/pollenprognos-card](https://github.com/krissen/pollenprognos-card) | 🔧 HACS Communauté |
+| Linky Content Card | 1 | Affichage de la consommation Linky (avec EcoWatt et Tempo) | [MyElectricalData/content-card-linky](https://github.com/MyElectricalData/content-card-linky) | 🔧 HACS Communauté |
+| Mushroom | 15 | Cartes épurées (cycles des appareils de lavage) | [piitaya/lovelace-mushroom](https://github.com/piitaya/lovelace-mushroom) | 🔧 HACS |
+| Pollenprognos Card | 1 | Prévisions des pollens et qualité de l'air (Atmo France) | [krissen/pollenprognos-card](https://github.com/krissen/pollenprognos-card) | 🔧 HACS |
 | Somfy Protexial Card | 1 | Contrôle de l'alarme Somfy Protexial (capteurs, GSM) | [developpeurbox/somfy-protexial-card](https://github.com/developpeurbox/somfy-protexial-card) | 🔧 HACS Communauté |
+| Stack In Card | — | Regroupe plusieurs cartes en une seule sans bordures | [custom-cards/stack-in-card](https://github.com/custom-cards/stack-in-card) | 🔧 HACS |
 | Travel Time Card | 1 | Temps de trajet (durée, distance, itinéraire) — remplace Waze Travel Time Card | [ljmerza/travel-time-card](https://github.com/ljmerza/travel-time-card) | 🔧 HACS |
+| WallPanel | — | Mode panneau mural et économiseur d'écran photo | [j-a-n/lovelace-wallpanel](https://github.com/j-a-n/lovelace-wallpanel) | 🔧 HACS |
 | WashData Card | 3 | Affichage des cycles de lavage (lave-linge, lave-vaisselle, sèche-linge) | [technogrady/ha_washdata_card](https://github.com/technogrady/ha_washdata_card) | 🔧 HACS Communauté |
 
 ---
@@ -321,6 +309,7 @@ Réseau Z-Wave    → Z-Wave JS UI (zwavejs2mqtt) → MQTT → HA
 Réseau Zigbee    → Zigbee2MQTT               → MQTT → HA
 EnOcean          → EnOcean MQTT              → MQTT → HA
 GAZPAR           → Gazpar2MQTT               → MQTT → HA
+Linky            → MyElectricalData          → MQTT → HA
 Appareils locaux → Intégrations natives HA
 Appareils cloud  → Intégrations HACS
 ```

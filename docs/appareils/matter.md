@@ -1,6 +1,6 @@
 # Thread / Matter (1 appareil)
 
-[← Retour Appareils](../appareils.md)
+[← Retour README](../../README.md)
 
 > 🏠 **Natif HA** via add-ons Matter Server + Home-Assistant-Matter-Hub
 > Infrastructure : OpenThread Border Router actif

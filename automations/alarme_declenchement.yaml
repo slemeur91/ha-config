@@ -1,206 +1,202 @@
 alias: Alarme Déclenchement
-description: '**Statut :** Finalisé
-
+description: |-
+  **Statut :** Finalisé
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
   - Alarme déclenchée (`alarm_control_panel.alarme` → triggered)
-
-  - Détection de mouvement ou ouverture porte/fenêtre
-
+  - Ouverture détectée (`binary_sensor.porte_ou_fenetre` → on) ou mouvement détecté (`binary_sensor.mouvement_detecte` → on)
   - Fin de `timer.alarme_declenchement`
 
+  **Condition :** l'alarme ne doit pas être désarmée (aucune action si elle l'est).
 
   **Fonctionnement :**
+  1. Déclenchement initial → remet le compteur à zéro, envoie vocal + mail + SMS, démarre l'enregistrement des caméras 1/2/4, lance `script.notification_snapshot_des_cameras`, démarre le timer pour 1 minute.
+  2. Timer terminé et compteur ≤ 8 → incrémente le compteur, envoie de nouveaux snapshots, relance le timer pour 1 minute.
+  3. Timer terminé et compteur > 8, ou alarme revenue en armé → snapshot final, notifications de fin d'alerte, arrêt de l'enregistrement des caméras 1/2/4 si l'alarme est en mode nuit.
 
-  1. Déclenchement initial → remet le compteur à zéro, envoie SMS + mail + vocal,
-  démarre l''enregistrement caméras 1/2/4, envoie les snapshots.
-
-  2. Timer terminé → incrémente le compteur, envoie de nouveaux snapshots, relance
-  le timer (répétition toutes les minutes).
-
-  3. Si compteur > 8 ou alarme revenue en armé → envoie snapshot final + notifications
-  de fin d''alerte, arrête l''enregistrement si mode nuit.
-
+  **Cycle de répétition (corrigé le 11/10/2026) :** le déclenchement initial démarre `timer.alarme_declenchement` pour 1 minute ; chaque fin de timer envoie un snapshot et relance le timer, soit un snapshot par minute pendant 10 minutes (11 mails au total, snapshot initial et final compris), puis les notifications de fin. Le cycle s'arrête plus tôt, dès la première fin de timer, si la centrale n'est plus à l'état déclenché (revenue à armé). Mode `restart` : un nouveau déclenchement pendant le cycle le reprend à zéro.
 
   **Entités principales :**
-
-  - `counter.compteur_alarme` : comptage des cycles d''alerte (max 10 min)
-
+  - `counter.compteur_alarme` : comptage des cycles d'alerte (environ 10 min)
   - `timer.alarme_declenchement` : rythme des notifications
-
-  - `script.notification_snapshot` : captures caméras'
+  - `script.notification_snapshot_des_cameras` : captures caméras
+  - `script.notification_vocale` / `script.notification_mail` / `script.notification_sms` : notifications
 triggers:
-- entity_id:
-  - alarm_control_panel.alarme
-  to: triggered
-  id: Déclenchement
-  trigger: state
-- entity_id:
-  - binary_sensor.porte_ou_fenetre
-  to: 'on'
-  id: Déclenchement
-  trigger: state
-  enabled: true
-- entity_id:
-  - binary_sensor.mouvement_detecte
-  to: 'on'
-  id: Déclenchement
-  trigger: state
-- event_type: timer.finished
-  event_data:
-    entity_id: timer.alarme_declenchement
-  id: Timer
-  trigger: event
+  - entity_id:
+      - alarm_control_panel.alarme
+    to: triggered
+    id: Déclenchement
+    trigger: state
+  - entity_id:
+      - binary_sensor.porte_ou_fenetre
+    to: 'on'
+    id: Déclenchement
+    trigger: state
+    enabled: true
+  - entity_id:
+      - binary_sensor.mouvement_detecte
+    to: 'on'
+    id: Déclenchement
+    trigger: state
+  - event_type: timer.finished
+    event_data:
+      entity_id: timer.alarme_declenchement
+    id: Timer
+    trigger: event
 conditions:
-- condition: not
-  conditions:
-  - condition: alarm_control_panel.is_disarmed
-    target:
-      device_id: 931a2603d9d9d9e0d83dc35e2f80524d
-    options:
-      behavior: any
+  - condition: not
+    conditions:
+      - condition: alarm_control_panel.is_disarmed
+        target:
+          device_id: 931a2603d9d9d9e0d83dc35e2f80524d
+        options:
+          behavior: any
 actions:
-- choose:
-  - conditions:
-    - condition: trigger
-      id:
-      - Déclenchement
-    sequence:
-    - action: counter.reset
-      metadata: {}
-      data: {}
-      target:
-        entity_id: counter.compteur_alarme
-    - parallel:
-      - action: script.turn_on
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - Déclenchement
+        sequence:
+          - action: counter.reset
+            metadata: {}
+            data: {}
+            target:
+              entity_id: counter.compteur_alarme
+          - parallel:
+              - action: script.turn_on
+                target:
+                  entity_id: script.notification_vocale
+                data:
+                  variables:
+                    message_corp: Déclenchement de l'alarme
+              - action: script.turn_on
+                target:
+                  entity_id:
+                    - script.notification_mail
+                data:
+                  variables:
+                    message_type: Alerte
+                    message_corp: Déclenchement de l'alarme
+              - action: script.turn_on
+                target:
+                  entity_id:
+                    - script.notification_sms
+                data:
+                  variables:
+                    message_type: Alerte
+                    message_corp: Déclenchement de l'alarme
+          - action: pyscript.surveillance_station_recording
+            data:
+              actionRecord: start
+              camerasNum:
+                - 1
+                - 2
+                - 4
+          - action: select.select_option
+            metadata: {}
+            data:
+              option: always
+            target:
+              entity_id:
+                - select.slm_camera1_mode_enregistrement
+                - select.slm_camera2_mode_enregistrement
+                - select.slm_camera4_mode_enregistrement
+          - action: script.turn_on
+            target:
+              entity_id:
+                - script.notification_snapshot_des_cameras
+            data: {}
+          - action: timer.start
+            metadata: {}
+            data:
+              duration: 00:01:00
+            target:
+              entity_id:
+                - timer.alarme_declenchement
+            note: 'Démarre le cycle de répétition : un snapshot par minute pendant 10 minutes'
+        note: Déclenchement initial → reset compteur, SMS+mail+vocal, caméras 1/2/4 ON, snapshots, démarrage du timer de répétition
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: numeric_state
+                entity_id: counter.compteur_alarme
+                above: 8
+              - condition: state
+                entity_id: alarm_control_panel.alarme
+                state:
+                  - armed_away
+                  - armed_night
+        sequence:
+          - action: script.turn_on
+            target:
+              entity_id:
+                - script.notification_snapshot_des_cameras
+            data: {}
+          - parallel:
+              - action: script.turn_on
+                target:
+                  entity_id: script.notification_vocale
+                data:
+                  variables:
+                    message_corp: Fin de l'alerte du déclenchement de l'alarme
+              - action: script.turn_on
+                target:
+                  entity_id:
+                    - script.notification_mail
+                data:
+                  variables:
+                    message_type: Alerte
+                    message_corp: Fin de l'alerte du déclenchement de l'alarme
+              - action: script.turn_on
+                target:
+                  entity_id:
+                    - script.notification_sms
+                data:
+                  variables:
+                    message_type: Alerte
+                    message_corp: Fin de l'alerte du déclenchement de l'alarme
+          - if:
+              - condition: state
+                entity_id: alarm_control_panel.alarme
+                state: armed_night
+            then:
+              - action: pyscript.surveillance_station_recording
+                data:
+                  actionRecord: stop
+                  camerasNum:
+                    - 1
+                    - 2
+                    - 4
+              - action: select.select_option
+                metadata: {}
+                data:
+                  option: never
+                target:
+                  entity_id:
+                    - select.slm_camera1_mode_enregistrement
+                    - select.slm_camera2_mode_enregistrement
+                    - select.slm_camera4_mode_enregistrement
+        note: Fin d'alerte (compteur > 8 ou alarme re-armée) → snapshot final, notifications de fin, arrêt caméras si mode nuit
+    default:
+      - action: counter.increment
+        metadata: {}
+        data: {}
         target:
-          entity_id: script.notification_vocale
-        data:
-          variables:
-            message_vocal: Déclenchement de l'alarme
+          entity_id: counter.compteur_alarme
+        note: Timer en cours (compteur ≤ 8) → incrémente le compteur, envoie snapshot, relance le timer pour 1 minute supplémentaire
       - action: script.turn_on
         target:
           entity_id:
-          - script.notification_mail
-        data:
-          variables:
-            message_type: Alerte
-            message_mail: Déclenchement de l'alarme
-      - action: script.turn_on
-        target:
-          entity_id:
-          - script.notification_sms
-        data:
-          variables:
-            message_type: Alerte
-            message_sms: Déclenchement de l'alarme
-    - action: pyscript.surveillance_station_recording
-      data:
-        actionRecord: start
-        camerasNum:
-        - 1
-        - 2
-        - 4
-    - action: select.select_option
-      metadata: {}
-      data:
-        option: always
-      target:
-        entity_id:
-        - select.slm_camera1_mode_enregistrement
-        - select.slm_camera2_mode_enregistrement
-        - select.slm_camera4_mode_enregistrement
-    - action: script.turn_on
-      target:
-        entity_id:
-        - script.notification_snapshot_des_cameras
-      data: {}
-    note: Déclenchement initial → reset compteur, SMS+mail+vocal, caméras 1/2/4 ON,
-      snapshots
-  - conditions:
-    - condition: or
-      conditions:
-      - condition: numeric_state
-        entity_id: counter.compteur_alarme
-        above: 8
-      - condition: state
-        entity_id: alarm_control_panel.alarme
-        state:
-        - armed_away
-        - armed_night
-    sequence:
-    - action: script.turn_on
-      target:
-        entity_id:
-        - script.notification_snapshot_des_cameras
-      data: {}
-    - parallel:
-      - action: script.turn_on
-        target:
-          entity_id: script.notification_vocale
-        data:
-          variables:
-            message_vocal: Fin de l'alerte du déclenchement de l'alarme
-      - action: script.turn_on
-        target:
-          entity_id:
-          - script.notification_mail
-        data:
-          variables:
-            message_type: Alerte
-            message_mail: Fin de l'alerte du déclenchement de l'alarme
-      - action: script.turn_on
-        target:
-          entity_id:
-          - script.notification_sms
-        data:
-          variables:
-            message_type: Alerte
-            message_sms: Fin de l'alerte du déclenchement de l'alarme
-    - if:
-      - condition: state
-        entity_id: alarm_control_panel.alarme
-        state: armed_night
-      then:
-      - action: pyscript.surveillance_station_recording
-        data:
-          actionRecord: stop
-          camerasNum:
-          - 1
-          - 2
-          - 4
-      - action: select.select_option
+            - script.notification_snapshot_des_cameras
+        data: {}
+      - action: timer.start
         metadata: {}
         data:
-          option: never
+          duration: 00:01:00
         target:
           entity_id:
-          - select.slm_camera1_mode_enregistrement
-          - select.slm_camera2_mode_enregistrement
-          - select.slm_camera4_mode_enregistrement
-    note: Fin d'alerte (compteur > 8 ou alarme re-armée) → snapshot final, notifications
-      de fin, arrêt caméras si mode nuit
-  default:
-  - action: counter.increment
-    metadata: {}
-    data: {}
-    target:
-      entity_id: counter.compteur_alarme
-    note: Timer en cours (compteur ≤ 8) → incrémente le compteur, envoie snapshot,
-      relance le timer pour 1 minute supplémentaire
-  - action: script.turn_on
-    target:
-      entity_id:
-      - script.notification_snapshot_des_cameras
-    data: {}
-  - action: timer.start
-    metadata: {}
-    data:
-      duration: '1'
-    target:
-      entity_id:
-      - timer.alarme_declenchement
+            - timer.alarme_declenchement
+        note: Relance le timer pour 1 minute
 mode: restart

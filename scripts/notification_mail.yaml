@@ -7,13 +7,13 @@ description: |-
 
   **Paramètres :**
   - message_type : type du message (Information, Alerte, Chauffage, etc.)
-  - message_mail : corps du message
+  - message_corp : corps du message
 
   **Fonctionnement :**
-  1. Envoie un mail via smtp.send_message (target: notify.email_slemeur_slm_srv_dscloud_me) avec le type en objet et le message en corps.
+  1. Envoie un mail via l'action smtp.send_message sur notify.email_slemeur_slm_srv_dscloud_me, avec '[HA] ' suivi du type en objet et le message en corps.
 
   **Entités principales :**
-  - notify.email_slemeur_slm_srv_dscloud_me (smtp.send_message) : service d'envoi de mail utilisé
+  - notify.email_slemeur_slm_srv_dscloud_me : entité de notification SMTP utilisée (action smtp.send_message)
 fields:
   message_type:
     description: Type du message (Information, Alerte, Chauffage, etc.)
@@ -21,7 +21,7 @@ fields:
     required: true
     selector:
       text: null
-  message_mail:
+  message_corp:
     description: Corps du message
     example: Message
     required: true
@@ -33,7 +33,7 @@ sequence:
     target:
       entity_id: notify.email_slemeur_slm_srv_dscloud_me
     data:
-      title: "[HA] {{ message_type }}"
-      message: "{{ message_mail }}"
+      title: '[HA] {{ message_type }}'
+      message: '{{ message_corp }}'
 mode: queued
 max: 10

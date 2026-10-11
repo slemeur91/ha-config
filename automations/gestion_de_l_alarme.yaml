@@ -1,44 +1,25 @@
 alias: Gestion de l'Alarme
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
-  - `alarm_control_panel.alarme` passe de désarmé à armé (absent ou nuit) — id:
-  Activation
-
+  - `alarm_control_panel.alarme` passe de désarmé à armé (absent ou nuit) — id: Activation
   - `alarm_control_panel.alarme` passe d'armé à désarmé — id: Désactivation
-
-  - Appui sur les boutons `input_button.alarme_activee` /
-  `input_button.alarme_desactivee`
-
+  - Appui sur `input_button.alarme_desactivee` — id: Désactivation
+  - Appui sur `input_button.alarme_activee` — id: BoutonActivation (traité comme une activation en mode absent)
 
   **Fonctionnement :**
-
-  1. Activation (absent) → met le domicile en Absent ou Vacances, démarre
-  l'enregistrement caméras 1/2/4, active le flag `input_boolean.alarme`.
-
-  2. Activation (nuit) → met le domicile en Nuit, arrête l'enregistrement
-  caméras 1/2/4 (mode présent), active le flag.
-
-  3. Désactivation → met le domicile en Présent, arrête l'enregistrement caméras
-  1/2/4, désactive le flag.
-
-  4. Dans tous les cas → réactive les volets, lance l'enregistrement caméras
-  3/5/6/7, met à jour `input_select.presence_action` selon le nouvel état du
-  domicile.
-
+  1. Activation (absent ou bouton), si le flag `input_boolean.alarme` est à off → met le domicile en Vacances si `input_select.calendrier` vaut Absent, sinon en Absent ; démarre l'enregistrement des caméras 1/2/4 (pyscript Surveillance Station + mode `always`) ; active le flag.
+  2. Activation (nuit) → met le domicile en Nuit, arrête l'enregistrement des caméras 1/2/4 (mode `never`), active le flag.
+  3. Désactivation, si le flag est à on → met le domicile en Présent, arrête l'enregistrement des caméras 1/2/4, désactive le flag.
+  4. Dans tous les cas → lance l'enregistrement permanent des caméras extérieures (pyscript : caméras 3/5/6/7/8/10 ; mode `always` sur les caméras 3/5/6/7 et le portier), puis met à jour `input_select.presence_action` selon l'état du domicile (Nuit → Couché ; Absent/Vacances → Extinction ; Présent → Réveil si on était Couché, Arrivée si on était en Extinction, sinon Présent).
 
   **Entités principales :**
-
   - `alarm_control_panel.alarme` : centrale d'alarme Somfy Protexial
-
   - `input_boolean.alarme` / `input_select.domicile` : flags d'état
-
-  - `select.slm_camera*_mode_enregistrement` : mode enregistrement caméras
+  - `input_select.presence_action` : action de présence transmise aux autres automatisations
+  - `pyscript.surveillance_station_recording` et `select.slm_camera*_mode_enregistrement` : enregistrement des caméras
 triggers:
   - entity_id:
       - alarm_control_panel.alarme
@@ -78,7 +59,7 @@ actions:
           - if:
               - condition: state
                 entity_id: input_boolean.alarme
-                state: "off"
+                state: 'off'
             then:
               - if:
                   - condition: or
@@ -154,9 +135,7 @@ actions:
                 data: {}
                 target:
                   entity_id: input_boolean.alarme
-        note: >-
-          Activation → mode Absent/Vacances ou Nuit selon l'état armé,
-          démarre/arrête caméras 1/2/4, active le flag alarme
+        note: Activation → mode Absent/Vacances ou Nuit selon l'état armé, démarre/arrête caméras 1/2/4, active le flag alarme
       - conditions:
           - condition: trigger
             id:
@@ -165,7 +144,7 @@ actions:
           - if:
               - condition: state
                 entity_id: input_boolean.alarme
-                state: "on"
+                state: 'on'
             then:
               - action: input_select.select_option
                 metadata: {}
@@ -194,14 +173,7 @@ actions:
                 data: {}
                 target:
                   entity_id: input_boolean.alarme
-        note: >-
-          Désactivation → mode Présent, arrête les caméras 1/2/4, désactive le
-          flag alarme
-  - action: button.press
-    metadata: {}
-    data: {}
-    target:
-      entity_id: input_button.volets_reactivation
+        note: Désactivation → mode Présent, arrête les caméras 1/2/4, désactive le flag alarme
   - action: pyscript.surveillance_station_recording
     data:
       actionRecord: start
@@ -212,6 +184,7 @@ actions:
         - 8
         - 5
         - 10
+    note: 'Dans tous les cas → enregistrement permanent des caméras extérieures (Surveillance Station : 3/5/6/7/8/10)'
   - action: select.select_option
     metadata: {}
     data:
@@ -285,7 +258,5 @@ actions:
                   option: Présent
                 target:
                   entity_id: input_select.presence_action
-        note: >-
-          Mode Présent → presence_action adaptée selon l'état précédent
-          (Couché→Réveil, Extinction→Arrivée, sinon Présent)
+        note: Mode Présent → presence_action adaptée selon l'état précédent (Couché→Réveil, Extinction→Arrivée, sinon Présent)
 mode: restart

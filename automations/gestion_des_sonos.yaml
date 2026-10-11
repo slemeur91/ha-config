@@ -1,53 +1,27 @@
 alias: Gestion des SONOS
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
   - Changement de `input_select.sonos_action` (ON / OFF / COUCHE / REVEIL)
-
   - Fin de `timer.sonos_timer`
-
   - Appui sur `input_button.sonos`
 
-
   **Fonctionnement :**
-
   1. Annule le timer sonos si actif en début d'exécution.
-
-  2. Timer terminé → bascule sur l'action différée
-  (`input_select.sonos_delay_action`) si état COUCHE ou REVEIL.
-
-  3. Action ON → dégroupage si nécessaire, réglage volumes, lancement radio
-  salon (+ garage si TéléTravail), état = ON.
-
-  4. Action OFF → arrêt musique selon contexte (ON/COUCHE/REVEIL/OFF), démute
-  toutes les enceintes, état = OFF.
-
-  5. Guard iPhone absent → court-circuite les actions COUCHE et REVEIL si le
-  téléphone n'est pas détecté à la maison.
-
-  6. Action COUCHE → volumes, jointure suite parentale + salle d'eau, radio
-  suite parentale, timer 90 min.
-
-  7. Action REVEIL → volumes, jointure salon + suite + salle d'eau, radio salon
-  (+ garage si TéléTravail), timer variable (80 min TéléTravail / 135 min autres
-  jours).
-
+  2. Timer terminé → bascule sur l'action différée (`input_select.sonos_delay_action`) si état COUCHE ou REVEIL.
+  3. Action ON → dégroupage si nécessaire, réglage volumes, lancement radio salon (+ garage si TéléTravail), état = ON.
+  4. Action OFF → arrêt musique selon contexte (ON/COUCHE/REVEIL/OFF), démute toutes les enceintes, état = OFF.
+  5. Guard iPhone absent → court-circuite les actions COUCHE et REVEIL si le téléphone n'est pas détecté à la maison.
+  6. Action COUCHE → volumes, jointure suite parentale + salle d'eau, radio suite parentale, timer 90 min.
+  7. Action REVEIL → volumes, jointure salon + suite + salle d'eau, radio salon (+ garage si TéléTravail), timer variable (80 min TéléTravail / 135 min autres jours).
 
   **Entités principales :**
-
   - `input_select.sonos` : état courant (ON/COUCHE/REVEIL/OFF)
-
   - `input_select.sonos_action` : commande entrante
-
   - `input_select.sonos_delay_action` : action différée post-timer
-
   - `timer.sonos_timer` : extinction automatique
-
   - `device_tracker.iphone_de_sylvain_le_meur` : guard présence
 triggers:
   - entity_id:
@@ -90,16 +64,14 @@ actions:
             then:
               - action: input_select.select_option
                 data:
-                  option: "{{ states('input_select.sonos_delay_action') }}"
+                  option: '{{ states(''input_select.sonos_delay_action'') }}'
                 target:
                   entity_id: input_select.sonos_action
-        note: >-
-          Timer terminé → bascule sur l'action différée (sonos_delay_action) si
-          état COUCHE ou REVEIL
+        note: Timer terminé → bascule sur l'action différée (sonos_delay_action) si état COUCHE ou REVEIL
       - conditions:
           - condition: state
             entity_id: input_select.sonos_action
-            state: "ON"
+            state: 'ON'
         sequence:
           - choose:
               - conditions:
@@ -149,12 +121,12 @@ actions:
                         - media_player.suite_parentale
           - action: media_player.volume_set
             data:
-              volume_level: "{{ states('input_number.volume_sonos_base') | float - 0.04 }}"
+              volume_level: '{{ states(''input_number.volume_sonos_base'') | float - 0.04 }}'
             target:
               entity_id: media_player.garage
           - action: media_player.volume_set
             data:
-              volume_level: "{{ states('input_number.volume_sonos_base') | float + 0.01 }}"
+              volume_level: '{{ states(''input_number.volume_sonos_base'') | float + 0.01 }}'
             target:
               entity_id: media_player.salon
           - action: media_player.volume_mute
@@ -175,22 +147,20 @@ actions:
                 data: {}
           - action: input_select.select_option
             data:
-              option: "ON"
+              option: 'ON'
             target:
               entity_id: input_select.sonos
-        note: >-
-          Action ON → dégroupage éventuel, réglage volumes Salon+Garage, lance
-          radio salon (+ garage si TéléTravail), état = ON
+        note: Action ON → dégroupage éventuel, réglage volumes Salon+Garage, lance radio salon (+ garage si TéléTravail), état = ON
       - conditions:
           - condition: state
             entity_id: input_select.sonos_action
-            state: "OFF"
+            state: 'OFF'
         sequence:
           - choose:
               - conditions:
                   - condition: state
                     entity_id: input_select.sonos
-                    state: "ON"
+                    state: 'ON'
                 sequence:
                   - if:
                       - condition: or
@@ -287,7 +257,7 @@ actions:
               - conditions:
                   - condition: state
                     entity_id: input_select.sonos
-                    state: "OFF"
+                    state: 'OFF'
                 sequence:
                   - if:
                       - condition: state
@@ -316,20 +286,16 @@ actions:
                 - media_player.salon
           - action: input_select.select_option
             data:
-              option: "OFF"
+              option: 'OFF'
             target:
               entity_id: input_select.sonos
-        note: >-
-          Action OFF → arrêt musique selon état précédent
-          (ON/COUCHE/REVEIL/OFF), démute toutes les enceintes, état = OFF
+        note: Action OFF → arrêt musique selon état précédent (ON/COUCHE/REVEIL/OFF), démute toutes les enceintes, état = OFF
       - conditions:
           - condition: state
             entity_id: device_tracker.iphone_de_sylvain_le_meur
             state: not_home
         sequence: []
-        note: >-
-          Guard iPhone absent → séquence vide : court-circuite les actions
-          COUCHE et REVEIL si le téléphone n'est pas à la maison
+        note: 'Guard iPhone absent → séquence vide : court-circuite les actions COUCHE et REVEIL si le téléphone n''est pas à la maison'
       - conditions:
           - condition: state
             entity_id: input_select.sonos_action
@@ -343,7 +309,7 @@ actions:
                     state: REVEIL
                   - condition: state
                     entity_id: input_select.sonos
-                    state: "ON"
+                    state: 'ON'
             then:
               - if:
                   - condition: state
@@ -393,7 +359,7 @@ actions:
                     - media_player.salon
           - action: media_player.volume_set
             data:
-              volume_level: "{{ states('input_number.volume_sonos_base') | float }}"
+              volume_level: '{{ states(''input_number.volume_sonos_base'') | float }}'
             target:
               entity_id:
                 - media_player.salle_d_eau
@@ -422,17 +388,15 @@ actions:
               entity_id: input_select.sonos
           - action: input_select.select_option
             data:
-              option: "OFF"
+              option: 'OFF'
             target:
               entity_id: input_select.sonos_delay_action
           - action: timer.start
             data:
-              duration: "5400"
+              duration: '5400'
             target:
               entity_id: timer.sonos_timer
-        note: >-
-          Action COUCHE → volumes suite+sde, join suite+sde, radio suite
-          parentale, timer 90min (extinction automatique)
+        note: Action COUCHE → volumes suite+sde, join suite+sde, radio suite parentale, timer 90min (extinction automatique)
       - conditions:
           - condition: state
             entity_id: input_select.sonos_action
@@ -466,21 +430,19 @@ actions:
                         - media_player.salle_d_eau
               - action: media_player.volume_set
                 data:
-                  volume_level: "{{ states('input_number.volume_sonos_base') | float - 0.04}}"
+                  volume_level: '{{ states(''input_number.volume_sonos_base'') | float - 0.04}}'
                 target:
                   entity_id: media_player.garage
               - action: media_player.volume_set
                 data:
-                  volume_level: "{{ states('input_number.volume_sonos_base') | float }}"
+                  volume_level: '{{ states(''input_number.volume_sonos_base'') | float }}'
                 target:
                   entity_id:
                     - media_player.salle_d_eau
                     - media_player.salle_de_bain
               - action: media_player.volume_set
                 data:
-                  volume_level: >-
-                    {{ states('input_number.volume_sonos_base') | float + 0.01
-                    }}
+                  volume_level: '{{ states(''input_number.volume_sonos_base'') | float + 0.01 }}'
                 target:
                   entity_id:
                     - media_player.suite_parentale
@@ -526,7 +488,7 @@ actions:
               entity_id: input_select.sonos
           - action: input_select.select_option
             data:
-              option: "ON"
+              option: 'ON'
             target:
               entity_id:
                 - input_select.sonos_delay_action
@@ -537,17 +499,15 @@ actions:
             then:
               - action: timer.start
                 data:
-                  duration: "4800"
+                  duration: '4800'
                 target:
                   entity_id: timer.sonos_timer
             else:
               - action: timer.start
                 data:
-                  duration: "8100"
+                  duration: '8100'
                 target:
                   entity_id: timer.sonos_timer
-        note: >-
-          Action REVEIL → volumes toutes enceintes, join salon+suite+sde, radio
-          salon+garage si TéléTravail, timer 80min (TéléTravail) ou 135min
+        note: Action REVEIL → volumes toutes enceintes, join salon+suite+sde, radio salon+garage si TéléTravail, timer 80min (TéléTravail) ou 135min
 mode: queued
 max: 10

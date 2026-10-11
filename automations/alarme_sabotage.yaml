@@ -1,191 +1,191 @@
 alias: Alarme Sabotage
-description: '**Statut :** Finalisé
-
+description: |-
+  **Statut :** Finalisé
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
-  - `binary_sensor.boitier` passe à ON (sabotage boîtier alarme)
-
+  - `binary_sensor.boitier` passe à ON (sabotage du boîtier d'alarme)
   - Fin de `timer.alarme_sabotage`
 
+  **Condition :** l'alarme ne doit pas être désarmée (aucune action si elle l'est).
 
   **Fonctionnement :**
+  1. Sabotage initial → remet le compteur à zéro, envoie vocal + mail + SMS, démarre l'enregistrement des caméras 1/2/4, lance `script.notification_snapshot_des_cameras`, démarre le timer pour 1 minute.
+  2. Timer terminé et compteur ≤ 8 → incrémente le compteur, envoie de nouveaux snapshots, relance le timer pour 1 minute.
+  3. Timer terminé et compteur > 8, ou alarme revenue en armé → snapshot final, notifications de fin, arrêt de l'enregistrement des caméras 1/2/4 si l'alarme est en mode nuit.
 
-  1. Déclenchement → remet le compteur à zéro, envoie SMS + mail + vocal, démarre
-  l''enregistrement caméras 1/2/4, envoie les snapshots.
-
-  2. Timer terminé → incrémente le compteur, envoie nouveaux snapshots, relance le
-  timer.
-
-  3. Si compteur > 8 ou alarme revenue en armé → notifications de fin, arrête l''enregistrement
-  si mode nuit.
-
+  **Cycle de répétition (corrigé le 11/10/2026) :** le sabotage initial démarre `timer.alarme_sabotage` pour 1 minute ; chaque fin de timer envoie un snapshot et relance le timer, soit un snapshot par minute pendant 10 minutes (11 mails au total, snapshot initial et final compris), puis les notifications de fin. Le cycle s'arrête plus tôt, dès la première fin de timer, si la centrale est à l'état armé (et non déclenché). Mode `restart` : un nouveau sabotage pendant le cycle le reprend à zéro.
 
   **Entités principales :**
-
-  - `counter.compteur_sabotage` : comptage des cycles (max 10 min)
-
-  - `timer.alarme_sabotage` : rythme des notifications'
+  - `counter.compteur_sabotage` : comptage des cycles (environ 10 min)
+  - `timer.alarme_sabotage` : rythme des notifications
+  - `script.notification_snapshot_des_cameras` : captures caméras
+  - `script.notification_vocale` / `script.notification_mail` / `script.notification_sms` : notifications
 triggers:
-- entity_id:
-  - binary_sensor.boitier
-  to:
-  - 'on'
-  id: Sabotage
-  trigger: state
-- event_type: timer.finished
-  event_data:
-    entity_id: timer.alarme_sabotage
-  id: Timer
-  trigger: event
+  - entity_id:
+      - binary_sensor.boitier
+    to:
+      - 'on'
+    id: Sabotage
+    trigger: state
+  - event_type: timer.finished
+    event_data:
+      entity_id: timer.alarme_sabotage
+    id: Timer
+    trigger: event
 conditions:
-- condition: not
-  conditions:
-  - condition: alarm_control_panel.is_disarmed
-    target:
-      device_id: 931a2603d9d9d9e0d83dc35e2f80524d
-    options:
-      behavior: any
+  - condition: not
+    conditions:
+      - condition: alarm_control_panel.is_disarmed
+        target:
+          device_id: 931a2603d9d9d9e0d83dc35e2f80524d
+        options:
+          behavior: any
 actions:
-- choose:
-  - conditions:
-    - condition: trigger
-      id:
-      - Sabotage
-    sequence:
-    - action: counter.reset
-      metadata: {}
-      data: {}
-      target:
-        entity_id: counter.compteur_sabotage
-    - parallel:
-      - action: script.turn_on
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - Sabotage
+        sequence:
+          - action: counter.reset
+            metadata: {}
+            data: {}
+            target:
+              entity_id: counter.compteur_sabotage
+          - parallel:
+              - action: script.turn_on
+                target:
+                  entity_id: script.notification_vocale
+                data:
+                  variables:
+                    message_corp: Sabotage de l'alarme
+              - action: script.turn_on
+                target:
+                  entity_id:
+                    - script.notification_mail
+                data:
+                  variables:
+                    message_type: Alerte
+                    message_corp: Sabotage de l'alarme
+              - action: script.turn_on
+                target:
+                  entity_id:
+                    - script.notification_sms
+                data:
+                  variables:
+                    message_type: Alerte
+                    message_corp: Sabotage de l'alarme
+          - action: pyscript.surveillance_station_recording
+            data:
+              actionRecord: start
+              camerasNum:
+                - 1
+                - 2
+                - 4
+          - action: select.select_option
+            metadata: {}
+            data:
+              option: always
+            target:
+              entity_id:
+                - select.slm_camera1_mode_enregistrement
+                - select.slm_camera2_mode_enregistrement
+                - select.slm_camera4_mode_enregistrement
+          - action: script.turn_on
+            target:
+              entity_id:
+                - script.notification_snapshot_des_cameras
+            data: {}
+          - action: timer.start
+            metadata: {}
+            data:
+              duration: 00:01:00
+            target:
+              entity_id:
+                - timer.alarme_sabotage
+            note: 'Démarre le cycle de répétition : un snapshot par minute pendant 10 minutes'
+        note: Sabotage initial → reset compteur, SMS+mail+vocal, caméras 1/2/4 ON, snapshots, démarrage du timer de répétition
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: numeric_state
+                entity_id: counter.compteur_sabotage
+                above: 8
+              - condition: state
+                entity_id: alarm_control_panel.alarme
+                state:
+                  - armed_away
+                  - armed_night
+        sequence:
+          - action: script.turn_on
+            target:
+              entity_id:
+                - script.notification_snapshot_des_cameras
+            data: {}
+          - parallel:
+              - action: script.turn_on
+                target:
+                  entity_id: script.notification_vocale
+                data:
+                  variables:
+                    message_corp: Fin de l'alerte du sabotage de l'alarme
+              - action: script.turn_on
+                target:
+                  entity_id:
+                    - script.notification_mail
+                data:
+                  variables:
+                    message_type: Alerte
+                    message_corp: Fin de l'alerte du sabotage de l'alarme
+              - action: script.turn_on
+                target:
+                  entity_id:
+                    - script.notification_sms
+                data:
+                  variables:
+                    message_type: Alerte
+                    message_corp: Fin de l'alerte du sabotage de l'alarme
+          - if:
+              - condition: state
+                entity_id: alarm_control_panel.alarme
+                state: armed_night
+            then:
+              - action: pyscript.surveillance_station_recording
+                data:
+                  actionRecord: stop
+                  camerasNum:
+                    - 1
+                    - 2
+                    - 4
+              - action: select.select_option
+                metadata: {}
+                data:
+                  option: never
+                target:
+                  entity_id:
+                    - select.slm_camera1_mode_enregistrement
+                    - select.slm_camera2_mode_enregistrement
+                    - select.slm_camera4_mode_enregistrement
+        note: Fin de sabotage (compteur > 8 ou alarme re-armée) → snapshot final, notifications de fin, arrêt caméras si mode nuit
+    default:
+      - action: counter.increment
+        metadata: {}
+        data: {}
         target:
-          entity_id: script.notification_vocale
-        data:
-          variables:
-            message_vocal: Sabotage de l'alarme
+          entity_id: counter.compteur_sabotage
+        note: Timer en cours (compteur ≤ 8) → incrémente le compteur, envoie snapshot, relance le timer pour 1 minute supplémentaire
       - action: script.turn_on
         target:
           entity_id:
-          - script.notification_mail
-        data:
-          variables:
-            message_type: Alerte
-            message_mail: Sabotage de l'alarme
-      - action: script.turn_on
-        target:
-          entity_id:
-          - script.notification_sms
-        data:
-          variables:
-            message_type: Alerte
-            message_sms: Sabotage de l'alarme
-    - action: pyscript.surveillance_station_recording
-      data:
-        actionRecord: start
-        camerasNum:
-        - 1
-        - 2
-        - 4
-    - action: select.select_option
-      metadata: {}
-      data:
-        option: always
-      target:
-        entity_id:
-        - select.slm_camera1_mode_enregistrement
-        - select.slm_camera2_mode_enregistrement
-        - select.slm_camera4_mode_enregistrement
-    - action: script.turn_on
-      target:
-        entity_id:
-        - script.notification_snapshot_des_cameras
-      data: {}
-    note: Sabotage initial → reset compteur, SMS+mail+vocal, caméras 1/2/4 ON, snapshots
-  - conditions:
-    - condition: or
-      conditions:
-      - condition: numeric_state
-        entity_id: counter.compteur_sabotage
-        above: 8
-      - condition: state
-        entity_id: alarm_control_panel.alarme
-        state:
-        - armed_away
-        - armed_night
-    sequence:
-    - action: script.turn_on
-      target:
-        entity_id:
-        - script.notification_snapshot_des_cameras
-      data: {}
-    - parallel:
-      - action: script.turn_on
-        target:
-          entity_id: script.notification_vocale
-        data:
-          variables:
-            message_vocal: Fin de l'alerte du sabotage de l'alarme
-      - action: script.turn_on
-        target:
-          entity_id:
-          - script.notification_mail
-        data:
-          variables:
-            message_type: Alerte
-            message_mail: Fin de l'alerte du sabotage de l'alarme
-      - action: script.turn_on
-        target:
-          entity_id:
-          - script.notification_sms
-        data:
-          variables:
-            message_type: Alerte
-            message_sms: Fin de l'alerte du sabotage de l'alarme
-    - if:
-      - condition: state
-        entity_id: alarm_control_panel.alarme
-        state: armed_night
-      then:
-      - action: pyscript.surveillance_station_recording
-        data:
-          actionRecord: stop
-          camerasNum:
-          - 1
-          - 2
-          - 4
-      - action: select.select_option
+            - script.notification_snapshot_des_cameras
+        data: {}
+      - action: timer.start
         metadata: {}
         data:
-          option: never
+          duration: 00:01:00
         target:
           entity_id:
-          - select.slm_camera1_mode_enregistrement
-          - select.slm_camera2_mode_enregistrement
-          - select.slm_camera4_mode_enregistrement
-    note: Fin de sabotage (compteur > 8 ou alarme re-armée) → snapshot final, notifications
-      de fin, arrêt caméras si mode nuit
-  default:
-  - action: counter.increment
-    metadata: {}
-    data: {}
-    target:
-      entity_id: counter.compteur_sabotage
-    note: Timer en cours (compteur ≤ 8) → incrémente le compteur, envoie snapshot,
-      relance le timer pour 1 minute supplémentaire
-  - action: script.turn_on
-    target:
-      entity_id:
-      - script.notification_snapshot_des_cameras
-    data: {}
-  - action: timer.start
-    metadata: {}
-    data:
-      duration: '1'
-    target:
-      entity_id:
-      - timer.alarme_sabotage
+            - timer.alarme_sabotage
+        note: Relance le timer pour 1 minute
 mode: restart

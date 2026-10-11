@@ -1,37 +1,36 @@
 alias: Allumer/Éteindre Apple TV du Salon
 description: |-
-  **Statut :** Finalisé
+  **Statut :** Finalisé — plus appelé par 'Gestion de la HiFi'
   **Evolution :** Aucune
 
-  **Rôle :** Allume ou éteint l'Apple TV du Salon en contournant les limites HomeKit/AirPlay (reload + commandes remote directes). Appelé par "Gestion de la HiFi" (branche extinction avec action: "off", branche allumage/SOURCE avec action: "on") via script.turn_on (fire-and-forget).
+  **Rôle :** Allume ou éteint l'Apple TV du Salon en fiabilisant la commande (rechargement de l'intégration puis vérification de l'état atteint). Dans 'Gestion de la HiFi', l'appel à ce script est actuellement désactivé au profit d'un `media_player.turn_on` / `turn_off` direct ; le script reste disponible pour un appel manuel.
 
   **Paramètres :**
-  - action : "on" ou "off"
+  - action : 'on' ou 'off'
 
   **Fonctionnement :**
-  1. Recharge l'intégration, puis attend (jusqu'à 20s) que remote.apple_tv_du_salon repasse à "on" (= connexion pyatv rétablie) au lieu d'un délai fixe.
-  2. action "off" → envoie "suspend" via remote.send_command (contourne le garde power_state de media_player.turn_off), puis vérifie que media_player passe à "off".
-  3. action "on" → envoie "wakeup" via remote.send_command (contourne le garde FeatureName.TurnOn de media_player.turn_on), puis vérifie que media_player quitte l'état "off".
+  1. Recharge l'intégration Apple TV, puis attend (jusqu'à 20s) que remote.apple_tv_du_salon repasse à 'on' (= connexion pyatv rétablie) au lieu d'un délai fixe.
+  2. action 'off' → envoie 'suspend' via remote.send_command (contourne le garde power_state de media_player.turn_off), puis attend jusqu'à 15s que media_player passe à 'off'.
+  3. action 'on' → appelle media_player.turn_on, puis attend jusqu'à 20s que media_player quitte l'état 'off'.
   4. Si l'état attendu n'est pas atteint, une entrée logbook est créée pour rendre l'échec visible (au lieu d'un échec totalement silencieux).
 
   **Entités principales :**
-  - media_player.apple_tv_du_salon : état vérifié
-  - remote.apple_tv_du_salon : cible de la commande
-max: 5
-mode: queued
+  - media_player.apple_tv_du_salon : état vérifié, cible de l'allumage
+  - remote.apple_tv_du_salon : cible du rechargement et de la commande d'extinction
 sequence:
   - action: homeassistant.reload_config_entry
     data: {}
     target:
       entity_id: remote.apple_tv_du_salon
+    note: Recharge l'intégration Apple TV pour rétablir la connexion avant d'envoyer la commande
   - continue_on_timeout: true
     timeout:
       seconds: 20
-    wait_template: "{{ is_state('remote.apple_tv_du_salon', 'on') }}"
+    wait_template: '{{ is_state(''remote.apple_tv_du_salon'', ''on'') }}'
   - choose:
       - conditions:
           - condition: template
-            value_template: "{{ action == \"off\" }}"
+            value_template: '{{ action == "off" }}'
         sequence:
           - action: remote.send_command
             continue_on_error: true
@@ -42,23 +41,24 @@ sequence:
           - continue_on_timeout: true
             timeout:
               seconds: 15
-            wait_template: "{{ is_state('media_player.apple_tv_du_salon', 'off') }}"
+            wait_template: '{{ is_state(''media_player.apple_tv_du_salon'', ''off'') }}'
           - wait_for_trigger:
               - trigger: media_player.turned_off
                 target:
                   entity_id: media_player.apple_tv_du_salon
                 options:
                   behavior: each
-                  for: "00:00:00"
+                  for: 00:00:00
             timeout:
               hours: 0
               minutes: 0
               seconds: 15
               milliseconds: 0
             enabled: false
+        note: Extinction → commande suspend via remote, puis attente de l'état off (15s max)
       - conditions:
           - condition: template
-            value_template: "{{ action == \"on\" }}"
+            value_template: '{{ action == "on" }}'
         sequence:
           - action: media_player.turn_on
             continue_on_error: true
@@ -69,10 +69,10 @@ sequence:
           - continue_on_timeout: true
             timeout:
               seconds: 20
-            wait_template: "{{ not is_state('media_player.apple_tv_du_salon', 'off') }}"
+            wait_template: '{{ not is_state(''media_player.apple_tv_du_salon'', ''off'') }}'
           - wait_for_trigger:
               - trigger: template
-                value_template: "{{ not is_state('media_player.apple_tv_du_salon', 'off') }}"
+                value_template: '{{ not is_state(''media_player.apple_tv_du_salon'', ''off'') }}'
                 for:
                   hours: 0
                   minutes: 4
@@ -83,13 +83,17 @@ sequence:
               seconds: 15
               milliseconds: 0
             enabled: false
+        note: Allumage → media_player.turn_on, puis attente de la sortie de l'état off (20s max)
     continue_on_error: true
   - if:
       - condition: template
-        value_template: "{{ not wait.completed }}"
+        value_template: '{{ not wait.completed }}'
     then:
       - action: logbook.log
         data:
           entity_id: remote.apple_tv_du_salon
-          message: "Échec probable de la commande \"{{ action }}\" : l'état attendu n'a pas été observé après reload + commande."
+          message: 'Échec probable de la commande "{{ action }}" de l''Apple TV : l''état attendu n''a pas été observé après reload + commande.'
           name: Apple TV du Salon
+    note: État attendu non observé → trace dans le journal
+mode: queued
+max: 5

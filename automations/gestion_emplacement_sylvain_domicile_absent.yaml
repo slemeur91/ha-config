@@ -1,0 +1,90 @@
+alias: Gestion emplacement Sylvain Domicile/Absent
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
+
+  **Déclencheurs :**
+  - L'iPhone de Sylvain entre dans la zone Domicile (immédiat) — id: Entrée
+  - L'iPhone de Sylvain a quitté la zone Domicile depuis 30 minutes — id: Sortie
+
+  **Fonctionnement :**
+  1. Entrée → ramène l'intervalle d'actualisation de l'alarme Somfy Protexial à 15 s et rallume les prises 2/3/4 de la multiprise du séjour ainsi que la prise de la Sonos Beam de la suite parentale.
+  2. Sortie → passe l'intervalle d'actualisation Somfy Protexial à 3600 s (allège les requêtes vers la centrale en cas d'absence), éteint ces mêmes prises, puis déclenche `MAJ Auto Prises LL/SL (Zigbee2MQTT)`.
+
+  **Entités principales :**
+  - `device_tracker.iphone_de_sylvain_le_meur` : localisation de Sylvain
+  - `number.reseau_somfy_protexial_intervalle_dactualisation` : fréquence d'interrogation de l'alarme
+  - `switch.multiprise_du_sejour_2` / `_3` / `_4`, `switch.suite_parentale_multiprise_de_la_suite_parentale_2_sonos_beam` : prises coupées en cas d'absence
+  - `automation.maj_auto_prises_ll_sl_zigbee2mqtt` : déclenchée au départ
+triggers:
+  - trigger: zone.entered
+    target:
+      entity_id: device_tracker.iphone_de_sylvain_le_meur
+    options:
+      behavior: each
+      for: 00:00:00
+      zone: zone.home
+    id: Entrée
+  - trigger: zone.left
+    target:
+      entity_id: device_tracker.iphone_de_sylvain_le_meur
+    options:
+      behavior: each
+      for:
+        hours: 0
+        minutes: 30
+        seconds: 0
+      zone: zone.home
+    id: Sortie
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - Entrée
+        sequence:
+          - action: number.set_value
+            metadata: {}
+            target:
+              entity_id: number.reseau_somfy_protexial_intervalle_dactualisation
+            data:
+              value: '15'
+          - action: switch.turn_on
+            metadata: {}
+            target:
+              entity_id:
+                - switch.multiprise_du_sejour_3
+                - switch.multiprise_du_sejour_2
+                - switch.multiprise_du_sejour_4
+                - switch.suite_parentale_multiprise_de_la_suite_parentale_2_sonos_beam
+            data: {}
+        note: Retour au domicile → actualisation Somfy toutes les 15 s, rallume les prises du séjour et la Sonos Beam
+      - conditions:
+          - condition: trigger
+            id:
+              - Sortie
+        sequence:
+          - action: number.set_value
+            metadata: {}
+            target:
+              entity_id: number.reseau_somfy_protexial_intervalle_dactualisation
+            data:
+              value: '3600'
+          - action: switch.turn_off
+            metadata: {}
+            target:
+              entity_id:
+                - switch.multiprise_du_sejour_2
+                - switch.multiprise_du_sejour_4
+                - switch.multiprise_du_sejour_3
+                - switch.suite_parentale_multiprise_de_la_suite_parentale_2_sonos_beam
+            data: {}
+          - action: automation.trigger
+            metadata: {}
+            target:
+              entity_id: automation.maj_auto_prises_ll_sl_zigbee2mqtt
+            data:
+              skip_condition: true
+        note: Absent depuis 30 min → actualisation Somfy toutes les heures, coupe les prises, lance la MAJ auto des prises LL/SL
+mode: single

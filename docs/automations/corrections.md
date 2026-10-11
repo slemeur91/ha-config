@@ -1,7 +1,6 @@
-# Corrections (9)
+# Corrections (10)
 
 [← Retour README](../../README.md)
-
 
 ---
 
@@ -23,50 +22,78 @@
 
 ---
 
-## `automation.correction_de_l_integration_du_klf200_passerelle_des_volets_velux` — Correction de l'intégration KLF200 — Passerelle des Volets/Velux
-> [📄 Voir le YAML](../../automations/correction_de_l_integration_du_klf200_passerelle_des_volets_velux.yaml)
+## `automation.klf200_filet_de_securite_de_la_prise` — KLF200 - Filet de sécurité de la prise
+> [📄 Voir le YAML](../../automations/klf200_filet_de_securite_de_la_prise.yaml)
 
-**Statut :** Finalisé | **Evolution :** Remise sous tension après coupure prolongée déplacée dans `automation.securite_klf200_remise_sous_tension` pour garantir qu'elle se déclenche toujours même si cette file d'attente est saturée.
+**Statut :** Nouveau (créé le 11/10/2026, désactivé en attente de validation) — remplace `Sécurité KLF200 - Remise sous tension` | **Evolution :** Aucune
+
+**Rôle :** garantit que la prise du KLF200 ne reste jamais éteinte, quelle qu'en soit la cause (coupure manuelle oubliée, échec de la remise sous tension dans `KLF200 - Surveillance et réparation graduée`, redémarrage de HA pendant une coupure). Totalement indépendante de l'automatisation de réparation : celle-ci ne coupe que 30 secondes, donc les deux n'entrent jamais en concurrence.
 
 **Déclencheurs :**
-- Démarrage de Home Assistant
-- Vérification périodique toutes les 15 minutes
-- `binary_sensor.192_168_52_67` (ping KLF200) passe à off/unknown/unavailable
-- `button.klf_200_gateway_redemarrer` passe à indisponible
-- Une des 7 entités Velux/volets passe à indisponible
+- `switch.reseau_multiprise_de_l_informatique_2_klf_200` éteinte depuis 5 minutes — id: off_5min
+- Démarrage de Home Assistant — id: start
 
 **Fonctionnement :**
-1. Démarrage HA → attend 3 minutes ; si la prise est éteinte → la rallume, attend 2 mn, recharge l'intégration, arrête.
-2. Signal de défaut → attend 4 minutes.
-3. Vérifie si la passerelle est réellement en défaut (ping perdu OU bouton indisponible OU les 7 volets/Velux tous indisponibles) :
-   - Si oui : recharge l'intégration, attend 3 minutes, revérifie ; si toujours en défaut → coupe la prise et arrête (la remise sous tension est prise en charge par `Sécurité KLF200`).
-   - Si non : rien.
-
-**Mode :** `queued`, max 10, `max_exceeded: warning` — plusieurs signaux simultanés (7 volets qui passent indisponibles en même temps) sont mis en file et exécutés séquentiellement.
+1. Démarrage HA → attend 5 minutes (le temps que la multiprise soit joignable).
+2. Si la prise est éteinte → la rallume, attend 3 minutes, puis recharge l'intégration Velux.
+3. Si elle est allumée → ne fait rien.
 
 **Entités principales :**
-- `switch.reseau_multiprise_de_l_informatique_2_klf_200`, `binary_sensor.192_168_52_67`, `button.klf_200_gateway_redemarrer`
-- 7 `cover.*` (Velux/volets/pergola)
-- Intégration KLF200 (entry_id `01K2GS1XM2TFEEMYCJBXSQQJHQ`)
+- `switch.reseau_multiprise_de_l_informatique_2_klf_200` : alimentation de la passerelle KLF200
+- Intégration Velux (entry_id `01K2GS1XM2TFEEMYCJBXSQQJHQ`)
 
 ---
 
-## `automation.securite_klf200_remise_sous_tension` — Sécurité KLF200 - Remise sous tension
-> [📄 Voir le YAML](../../automations/securite_klf200_remise_sous_tension.yaml)
+## `automation.klf200_redemarrage_de_la_passerelle_a_l_arret_de_ha` — KLF200 - Redémarrage de la passerelle à l'arrêt de HA
+> [📄 Voir le YAML](../../automations/klf200_redemarrage_de_la_passerelle_a_l_arret_de_ha.yaml)
 
-**Statut :** Finalisé | **Evolution :** Aucune
+**Statut :** Nouveau (créé le 11/10/2026, désactivé en attente de validation) — à vérifier sur un redémarrage réel | **Evolution :** Aucune
 
-**Déclencheur :**
-- `switch.reseau_multiprise_de_l_informatique_2_klf_200` reste éteinte 5 minutes
+**Rôle :** prévention. Le KLF200 n'accepte qu'une ou deux connexions et ne libère pas toujours celle de Home Assistant quand celui-ci s'arrête ; il peut alors refuser la reconnexion au démarrage suivant. Redémarrer la passerelle au moment où HA s'arrête la laisse propre pour le retour. C'est l'ancien correctif de la documentation officielle (`velux.reboot_gateway`), adapté au bouton qui a remplacé cette action.
+
+**Déclencheurs :**
+- Arrêt de Home Assistant (`homeassistant shutdown`)
 
 **Fonctionnement :**
-Filet de sécurité totalement indépendant de `Correction de l'intégration du KLF200`. Dès que la prise reste éteinte 5mn (coupure délibérée par l'automatisation de correction, coupure secteur, ou toute autre cause) → rallume, attend 3 minutes, recharge l'intégration KLF200.
+1. Appuie sur `button.klf_200_gateway_redemarrer`.
 
-**Pourquoi une automatisation séparée :** avant le 9 août 2026, cette logique faisait partie de `Correction KLF200` (mode `queued`). Le déclencheur de remise sous tension pouvait être perdu si la file était pleine — la prise est restée éteinte plusieurs heures dans la nuit du 9 août. En mode `single` indépendant, il ne peut plus être mis en concurrence.
+**Limite :** à l'arrêt, HA ne laisse qu'environ 20 secondes aux automatisations ; il faut vérifier sur un redémarrage que l'appui a bien le temps d'aboutir (horodatage du bouton mis à jour).
 
 **Entités principales :**
-- `switch.reseau_multiprise_de_l_informatique_2_klf_200`
-- Intégration KLF200 (entry_id `01K2GS1XM2TFEEMYCJBXSQQJHQ`)
+- `button.klf_200_gateway_redemarrer` : redémarrage logiciel de la passerelle
+
+---
+
+## `automation.klf200_surveillance_et_reparation_graduee` — KLF200 - Surveillance et réparation graduée
+> [📄 Voir le YAML](../../automations/klf200_surveillance_et_reparation_graduee.yaml)
+
+**Statut :** Nouveau (créé le 11/10/2026, désactivé en attente de validation) — remplace `Correction de l'intégration du KLF200` et `KLF200 - Surveillance et réparation automatique` | **Evolution :** À l'activation, exclure l'intégration Velux de `Rechargement des intégrations en défaut` pour qu'une seule automatisation s'en occupe.
+
+**Principe :** détection patiente (5 min), réparation du plus doux au plus fort, nombre d'essais limité. Les anciennes versions coupaient la prise avant que la passerelle ait fini de se reconnecter (environ 3 min après remise sous tension), ce qui entretenait des cycles de coupure.
+
+**Déclencheurs :**
+- Démarrage de Home Assistant — id: start
+- Ping du KLF200 (`binary_sensor.192_168_52_67`) à off depuis 5 minutes — id: fault
+- Un des 7 volets/Velux indisponible depuis 5 minutes — id: fault
+
+**Défaut avéré :** ping perdu OU les 7 volets/Velux tous indisponibles. Ce test est refait avant chaque étape ; dès qu'il est faux, l'automatisation s'arrête.
+
+**Fonctionnement :**
+1. Démarrage HA → attend 10 minutes avant tout contrôle (en mode `single`, les signaux de défaut reçus pendant ce délai sont ignorés).
+2. Étape 1, si le ping répond → recharge l'intégration Velux, attend 5 minutes.
+3. Étape 2, si le ping répond et que le bouton est disponible → redémarre la passerelle par `button.klf_200_gateway_redemarrer`, attend 5 minutes.
+4. Étape 3, jusqu'à 3 fois tant que le défaut persiste → coupe la prise 30 secondes, la rallume, attend 2 minutes, recharge l'intégration, puis attend 5, 10 puis 15 minutes selon l'essai.
+5. Bilan → si le défaut persiste : notification HA + téléphone et arrêt (pas de nouvel essai tant qu'un nouveau signal de défaut n'apparaît pas) ; sinon : notification HA de réparation réussie.
+
+**Mode `single` (max_exceeded silencieux) :** un seul cycle à la fois, d'une durée maximale d'environ 1 heure.
+
+**Entités principales :**
+- `switch.reseau_multiprise_de_l_informatique_2_klf_200` : alimentation de la passerelle KLF200
+- `binary_sensor.192_168_52_67` : ping réseau du KLF200
+- `button.klf_200_gateway_redemarrer` : redémarrage logiciel de la passerelle
+- 7 `cover.*` (Velux/volets/pergola) : signal de bon fonctionnement de l'intégration
+- Intégration Velux (entry_id `01K2GS1XM2TFEEMYCJBXSQQJHQ`)
+- `script.notification_ha` / `script.notification_telephone` : bilan
 
 ---
 
@@ -115,19 +142,21 @@ Filet de sécurité totalement indépendant de `Correction de l'intégration du 
 **Statut :** Finalisé | **Evolution :** Aucune
 
 **Déclencheurs :**
-- Démarrage de Home Assistant
-- `sensor.system_monitor_utilisation_du_processeur` dépasse 30% pendant 2 minutes (surveillance continue)
+- Démarrage de Home Assistant — id: Démarrage
+- `sensor.system_monitor_utilisation_du_processeur` au-dessus de 30% pendant 2 minutes (à tout moment)
 
 **Conditions :**
-- `sensor.system_monitor_utilisation_du_processeur` dépasse 30% au moment d'agir
+- `sensor.system_monitor_utilisation_du_processeur` dépasse 30% au moment du contrôle
 
 **Fonctionnement :**
-1. Si démarrage HA → attend 4 minutes (laisse le temps aux add-ons/intégrations de se stabiliser).
-2. Si CPU > 30% → redémarre l'add-on OpenThread Border Router (connu pour rester bloqué à haute consommation après certains redémarrages) puis envoie une notification persistante.
+1. Si le déclencheur est le démarrage de HA, attend 4 minutes (laisse le temps aux apps/intégrations de se stabiliser).
+2. Si le CPU global dépasse 30% → redémarre l'app OpenThread Border Router (connue pour parfois rester bloquée à haute consommation CPU) puis envoie une notification persistante.
+
+**Remarque :** le texte de la notification mentionne '4 minutes après le démarrage de HA' même lorsque le déclencheur est le dépassement CPU en cours de fonctionnement.
 
 **Entités principales :**
 - `sensor.system_monitor_utilisation_du_processeur`
-- Add-on `core_openthread_border_router`
+- App `core_openthread_border_router`
 
 ---
 
@@ -137,32 +166,41 @@ Filet de sécurité totalement indépendant de `Correction de l'intégration du 
 **Statut :** Finalisé | **Evolution :** Aucune
 
 **Déclencheur :**
-- `fan.zhimi_m1_6186_air_purifier` passe à indisponible 30s (le purificateur ne répond plus)
+- `fan.zhimi_m1_6186_air_purifier` reste indisponible pendant 30 secondes (le purificateur ne répond plus)
+
+**Condition :** le purificateur est toujours indisponible au moment de l'exécution.
 
 **Fonctionnement :**
-1. Si `switch.multiprise_du_salon_droite_2_purificateur` est allumée → l'éteint, attend 1mn, la rallume puis réactive le device (cycle d'alimentation pour forcer la reconnexion).
-2. Si déjà éteinte → ne fait rien.
+1. Vérifie l'état de `switch.multiprise_du_salon_droite_2_purificateur` (Prise 2 - Purificateur).
+2. Si elle est allumée : l'éteint, attend 1 minute, la rallume, réactive l'appareil dans Home Assistant (`homeassistant.enable_device`), puis attend encore 1 minute (temporisation qui, en mode `single`, bloque tout nouveau cycle pendant ce temps).
+3. Si elle est déjà éteinte : ne fait rien.
 
 **Entités principales :**
-- `fan.zhimi_m1_6186_air_purifier`, `switch.multiprise_du_salon_droite_2_purificateur`
+- `fan.zhimi_m1_6186_air_purifier` : signal de bon fonctionnement du purificateur
+- `switch.multiprise_du_salon_droite_2_purificateur` : alimentation du purificateur (Prise 2 de la multiprise du salon droite)
 
 ---
 
 ## `automation.correction_de_l_onduleur` — Correction de l'Onduleur
 > [📄 Voir le YAML](../../automations/correction_de_l_onduleur.yaml)
 
-**Statut :** Finalisé | **Evolution :** Aucune
+**Statut :** Finalisé | **Evolution :** Aucune.
 
 **Déclencheurs :**
-- Démarrage de Home Assistant (avec délai 4 mn)
-- `sensor.eaton_usb_etat` ou `sensor.eaton_usb_code_d_etat` passe à unavailable/unknown 2mn
+- Démarrage de Home Assistant (`homeassistant start`) — id: Démarrage
+- `sensor.eaton_usb_etat` reste `unavailable`/`unknown` pendant 2 minutes
+- `sensor.eaton_usb_code_d_etat` reste `unavailable`/`unknown` pendant 2 minutes
 
 **Fonctionnement :**
-1. Vérifie si l'un des deux sensors est en défaut.
-2. Si oui → redémarre l'add-on Network UPS Tools (`a0d7b954_nut`).
+1. Si le déclencheur est le démarrage de HA, attend 4 minutes (le temps que l'intégration NUT tente de se reconnecter à l'onduleur).
+2. Vérifie l'état de l'onduleur Eaton_Usb (`sensor.eaton_usb_etat` et `sensor.eaton_usb_code_d_etat`).
+3. Si l'un des deux est `unavailable`/`unknown` (intégration NUT en défaut), redémarre l'app 'Network UPS Tools' (`a0d7b954_nut`).
+4. Sinon, ne fait rien.
 
 **Entités principales :**
-- `sensor.eaton_usb_etat`, `sensor.eaton_usb_code_d_etat`, add-on `a0d7b954_nut`
+- `sensor.eaton_usb_etat` : état de l'onduleur Eaton_Usb
+- `sensor.eaton_usb_code_d_etat` : code d'état NUT de l'onduleur Eaton_Usb
+- App `Network UPS Tools` (`a0d7b954_nut`) : redémarrée en cas de défaut
 
 ---
 
@@ -172,13 +210,24 @@ Filet de sécurité totalement indépendant de `Correction de l'intégration du 
 **Statut :** Finalisé | **Evolution :** Aucune
 
 **Déclencheurs :**
-- Switches critiques éteints 30 s (réfrigérateur, multimédia, informatique, cellier, routeur, ventilateur, ZappitiNAS)
-- Changement d'état purificateur ou ventilateur
-- Changement device tracker ZappitiNAS
+- Prises critiques éteintes depuis 30 secondes (réfrigérateur, multimédia, informatique, cellier)
+- Changement d'état stable 30 secondes des prises routeur 4G et ZappitiNAS ; changement immédiat de la prise du ventilateur de l'informatique
+- Changement d'état stable 30 secondes de la prise du purificateur (id: Purificateur) ou du ventilateur du salon (id: Ventilateur)
+- Changement du device tracker ZappitiNAS
 
 **Fonctionnement :**
-1. Après 5 s, vérifie et rallume tout switch critique éteint.
-2. ZappitiNAS absent 2 min → Wake-on-LAN.
-3. Active/désactive intégrations purificateur et ventilateur selon leur switch physique.
+1. Après 5 secondes de délai, vérifie en parallèle chaque appareil.
+2. Rallume automatiquement tout switch critique qui serait éteint (protection coupures accidentelles).
+3. Si ZappitiNAS ne répond plus depuis 2 min alors que le switch est allumé → force le Wake-on-LAN via `switch.zappitinas`.
+4. Sur déclencheur Purificateur : active/désactive l'appareil purificateur (Mi Air) dans HA selon l'état de sa prise.
+5. Sur déclencheur Ventilateur : active/désactive l'intégration du ventilateur (Dyson) selon l'état de sa prise.
+
+**Entités principales :**
+- `switch.prise_du_refrigerateur_switch` / `prise_du_multimedia_switch` / `prise_de_l_informatique` : prises critiques
+- `switch.zappitinas` : Wake-on-LAN NAS
+- `device_tracker.zappitinas_zappitinas` : supervision réseau NAS
 
 **Entrées utilisées :** Aucune entrée helper.
+
+---
+

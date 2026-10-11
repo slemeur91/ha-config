@@ -3,17 +3,17 @@ description: |-
   **Statut :** Finalisé
   **Evolution :** Aucune
 
-  **Rôle :** Capture les images des 7 caméras et du portier, et les envoie par mail en cas d'alerte.
+  **Rôle :** Capture les images des 7 caméras et du portier, et les envoie par mail en cas d'alerte. Appelé par 'Alarme Déclenchement' et 'Alarme Sabotage' via script.turn_on.
 
   **Fonctionnement :**
-  1. Capture en parallèle les caméras slm_camera1 à slm_camera7 et slm_portier (8 snapshots, dans /media/Snapshots/).
-  2. Envoie un mail [HA] Alerte avec toutes les images en pièces jointes.
+  1. Capture en parallèle les caméras slm_camera1 à slm_camera7 et le portier (8 snapshots, dans /media/Snapshots/).
+  2. Envoie un mail '[HA] Alerte' avec les 8 images en pièces jointes (smtp.send_message, médias locaux Snapshots/).
 
   **Entités principales :**
   - camera.slm_camera1 à camera.slm_camera7, camera.exterieur_slm_portier : caméras capturées
   - notify.email_slemeur_slm_srv_dscloud_me (smtp.send_message) : envoi du mail
 sequence:
-  - note: Capture en parallèle les 7 caméras (slm_camera1 à slm_camera7 + portier) dans /media/Snapshots/
+  - note: Capture en parallèle les 7 caméras (slm_camera1 à slm_camera7) et le portier dans /media/Snapshots/
     parallel:
       - action: camera.snapshot
         target:
@@ -69,8 +69,8 @@ sequence:
     target:
       entity_id: notify.email_slemeur_slm_srv_dscloud_me
     data:
-      title: "[HA] Alerte"
-      message: "Snapshots des caméra :"
+      title: '[HA] Alerte'
+      message: 'Snapshots des caméra :'
       attachments:
         - media_source:
             media_content_id: media-source://media_source/local/Snapshots/camera1.jpg
@@ -84,7 +84,7 @@ sequence:
                 - {}
                 - media_content_type: app
                   media_content_id: media-source://media_source
-                - media_content_type: ""
+                - media_content_type: ''
                   media_content_id: media-source://media_source/local/Snapshots
         - media_source:
             media_content_id: media-source://media_source/local/Snapshots/camera2.jpg
@@ -98,7 +98,7 @@ sequence:
                 - {}
                 - media_content_type: app
                   media_content_id: media-source://media_source
-                - media_content_type: ""
+                - media_content_type: ''
                   media_content_id: media-source://media_source/local/Snapshots
         - media_source:
             media_content_id: media-source://media_source/local/Snapshots/camera3.jpg
@@ -112,7 +112,7 @@ sequence:
                 - {}
                 - media_content_type: app
                   media_content_id: media-source://media_source
-                - media_content_type: ""
+                - media_content_type: ''
                   media_content_id: media-source://media_source/local/Snapshots
         - media_source:
             media_content_id: media-source://media_source/local/Snapshots/camera4.jpg
@@ -126,7 +126,7 @@ sequence:
                 - {}
                 - media_content_type: app
                   media_content_id: media-source://media_source
-                - media_content_type: ""
+                - media_content_type: ''
                   media_content_id: media-source://media_source/local/Snapshots
         - media_source:
             media_content_id: media-source://media_source/local/Snapshots/camera5.jpg
@@ -140,7 +140,7 @@ sequence:
                 - {}
                 - media_content_type: app
                   media_content_id: media-source://media_source
-                - media_content_type: ""
+                - media_content_type: ''
                   media_content_id: media-source://media_source/local/Snapshots
         - media_source:
             media_content_id: media-source://media_source/local/Snapshots/camera6.jpg
@@ -154,7 +154,7 @@ sequence:
                 - {}
                 - media_content_type: app
                   media_content_id: media-source://media_source
-                - media_content_type: ""
+                - media_content_type: ''
                   media_content_id: media-source://media_source/local/Snapshots
         - media_source:
             media_content_id: media-source://media_source/local/Snapshots/camera7.jpg
@@ -168,7 +168,7 @@ sequence:
                 - {}
                 - media_content_type: app
                   media_content_id: media-source://media_source
-                - media_content_type: ""
+                - media_content_type: ''
                   media_content_id: media-source://media_source/local/Snapshots
         - media_source:
             media_content_id: media-source://media_source/local/Snapshots/portier.jpg
@@ -182,7 +182,7 @@ sequence:
                 - {}
                 - media_content_type: app
                   media_content_id: media-source://media_source
-                - media_content_type: ""
+                - media_content_type: ''
                   media_content_id: media-source://media_source/local/Snapshots
     enabled: true
 mode: queued

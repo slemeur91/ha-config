@@ -1,0 +1,227 @@
+alias: KLF200 - Surveillance et réparation graduée
+description: |-
+  **Statut :** Nouveau (créé le 11/10/2026, désactivé en attente de validation) — remplace `Correction de l'intégration du KLF200` et `KLF200 - Surveillance et réparation automatique`
+  **Evolution :** À l'activation, exclure l'intégration Velux de `Rechargement des intégrations en défaut` pour qu'une seule automatisation s'en occupe.
+
+  **Principe :** détection patiente (5 min), réparation du plus doux au plus fort, nombre d'essais limité. Les anciennes versions coupaient la prise avant que la passerelle ait fini de se reconnecter (environ 3 min après remise sous tension), ce qui entretenait des cycles de coupure.
+
+  **Déclencheurs :**
+  - Démarrage de Home Assistant — id: start
+  - Ping du KLF200 (`binary_sensor.192_168_52_67`) à off depuis 5 minutes — id: fault
+  - Un des 7 volets/Velux indisponible depuis 5 minutes — id: fault
+
+  **Défaut avéré :** ping perdu OU les 7 volets/Velux tous indisponibles. Ce test est refait avant chaque étape ; dès qu'il est faux, l'automatisation s'arrête.
+
+  **Fonctionnement :**
+  1. Démarrage HA → attend 10 minutes avant tout contrôle (en mode `single`, les signaux de défaut reçus pendant ce délai sont ignorés).
+  2. Étape 1, si le ping répond → recharge l'intégration Velux, attend 5 minutes.
+  3. Étape 2, si le ping répond et que le bouton est disponible → redémarre la passerelle par `button.klf_200_gateway_redemarrer`, attend 5 minutes.
+  4. Étape 3, jusqu'à 3 fois tant que le défaut persiste → coupe la prise 30 secondes, la rallume, attend 2 minutes, recharge l'intégration, puis attend 5, 10 puis 15 minutes selon l'essai.
+  5. Bilan → si le défaut persiste : notification HA + téléphone et arrêt (pas de nouvel essai tant qu'un nouveau signal de défaut n'apparaît pas) ; sinon : notification HA de réparation réussie.
+
+  **Mode `single` (max_exceeded silencieux) :** un seul cycle à la fois, d'une durée maximale d'environ 1 heure.
+
+  **Entités principales :**
+  - `switch.reseau_multiprise_de_l_informatique_2_klf_200` : alimentation de la passerelle KLF200
+  - `binary_sensor.192_168_52_67` : ping réseau du KLF200
+  - `button.klf_200_gateway_redemarrer` : redémarrage logiciel de la passerelle
+  - 7 `cover.*` (Velux/volets/pergola) : signal de bon fonctionnement de l'intégration
+  - Intégration Velux (entry_id `01K2GS1XM2TFEEMYCJBXSQQJHQ`)
+  - `script.notification_ha` / `script.notification_telephone` : bilan
+triggers:
+  - trigger: homeassistant
+    event: start
+    id: start
+    note: Contrôle après démarrage de HA (les états restaurés ne déclenchent pas les deux autres déclencheurs)
+  - trigger: state
+    entity_id: binary_sensor.192_168_52_67
+    to: 'off'
+    for:
+      minutes: 5
+    id: fault
+    note: 'Ping perdu depuis 5 minutes : ignore les micro-coupures réseau'
+  - trigger: state
+    entity_id:
+      - cover.velux_de_la_chambre
+      - cover.velux_de_la_salle_d_eau
+      - cover.velux_de_la_salle_de_bain
+      - cover.volet_de_la_chambre
+      - cover.volet_de_la_salle_d_eau
+      - cover.volet_de_la_salle_de_bain
+      - cover.store_pergola
+    to: unavailable
+    for:
+      minutes: 5
+    id: fault
+    note: Un volet/Velux indisponible depuis 5 minutes ; le défaut n'est retenu que si les 7 le sont
+conditions: []
+actions:
+  - if:
+      - condition: trigger
+        id: start
+    then:
+      - delay:
+          minutes: 10
+    note: Démarrage HA → laisse 10 minutes à l'intégration pour se connecter seule
+  - condition: or
+    conditions:
+      - condition: state
+        entity_id: binary_sensor.192_168_52_67
+        state: 'off'
+      - condition: state
+        entity_id:
+          - cover.velux_de_la_chambre
+          - cover.velux_de_la_salle_d_eau
+          - cover.velux_de_la_salle_de_bain
+          - cover.volet_de_la_chambre
+          - cover.volet_de_la_salle_d_eau
+          - cover.volet_de_la_salle_de_bain
+          - cover.store_pergola
+        state: unavailable
+    note: Défaut avéré ? (ping perdu OU les 7 volets indisponibles) — sinon arrêt
+  - if:
+      - condition: state
+        entity_id: binary_sensor.192_168_52_67
+        state: 'on'
+    then:
+      - action: homeassistant.reload_config_entry
+        data:
+          entry_id: 01K2GS1XM2TFEEMYCJBXSQQJHQ
+        continue_on_error: true
+      - delay:
+          minutes: 5
+    note: 'Étape 1 : la passerelle répond au ping → rechargement de l''intégration, puis 5 minutes d''attente'
+  - condition: or
+    conditions:
+      - condition: state
+        entity_id: binary_sensor.192_168_52_67
+        state: 'off'
+      - condition: state
+        entity_id:
+          - cover.velux_de_la_chambre
+          - cover.velux_de_la_salle_d_eau
+          - cover.velux_de_la_salle_de_bain
+          - cover.volet_de_la_chambre
+          - cover.volet_de_la_salle_d_eau
+          - cover.volet_de_la_salle_de_bain
+          - cover.store_pergola
+        state: unavailable
+    note: Toujours en défaut après l'étape 1 ? — sinon arrêt
+  - if:
+      - condition: state
+        entity_id: binary_sensor.192_168_52_67
+        state: 'on'
+      - condition: not
+        conditions:
+          - condition: state
+            entity_id: button.klf_200_gateway_redemarrer
+            state: unavailable
+    then:
+      - action: button.press
+        target:
+          entity_id: button.klf_200_gateway_redemarrer
+        continue_on_error: true
+      - delay:
+          minutes: 5
+    note: 'Étape 2 : redémarrage logiciel de la passerelle par son bouton (si disponible), puis 5 minutes d''attente'
+  - condition: or
+    conditions:
+      - condition: state
+        entity_id: binary_sensor.192_168_52_67
+        state: 'off'
+      - condition: state
+        entity_id:
+          - cover.velux_de_la_chambre
+          - cover.velux_de_la_salle_d_eau
+          - cover.velux_de_la_salle_de_bain
+          - cover.volet_de_la_chambre
+          - cover.volet_de_la_salle_d_eau
+          - cover.volet_de_la_salle_de_bain
+          - cover.store_pergola
+        state: unavailable
+    note: Toujours en défaut après l'étape 2 ? — sinon arrêt
+  - repeat:
+      for_each:
+        - 5
+        - 10
+        - 15
+      sequence:
+        - if:
+            - condition: or
+              conditions:
+                - condition: state
+                  entity_id: binary_sensor.192_168_52_67
+                  state: 'off'
+                - condition: state
+                  entity_id:
+                    - cover.velux_de_la_chambre
+                    - cover.velux_de_la_salle_d_eau
+                    - cover.velux_de_la_salle_de_bain
+                    - cover.volet_de_la_chambre
+                    - cover.volet_de_la_salle_d_eau
+                    - cover.volet_de_la_salle_de_bain
+                    - cover.store_pergola
+                  state: unavailable
+          then:
+            - action: switch.turn_off
+              target:
+                entity_id: switch.reseau_multiprise_de_l_informatique_2_klf_200
+              continue_on_error: true
+            - delay:
+                seconds: 30
+              note: 'Coupure courte : 30 secondes suffisent et restent sous le seuil du filet de sécurité (5 minutes)'
+            - action: switch.turn_on
+              target:
+                entity_id: switch.reseau_multiprise_de_l_informatique_2_klf_200
+              continue_on_error: true
+            - delay:
+                minutes: 2
+              note: Laisse la passerelle démarrer avant de recharger l'intégration
+            - action: homeassistant.reload_config_entry
+              data:
+                entry_id: 01K2GS1XM2TFEEMYCJBXSQQJHQ
+              continue_on_error: true
+            - delay:
+                minutes: '{{ repeat.item }}'
+              note: 'Attente croissante avant de juger le résultat : 5, 10 puis 15 minutes'
+    note: 'Étape 3 : coupure/remise sous tension, 3 essais au maximum, seulement tant que le défaut persiste'
+  - if:
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: binary_sensor.192_168_52_67
+            state: 'off'
+          - condition: state
+            entity_id:
+              - cover.velux_de_la_chambre
+              - cover.velux_de_la_salle_d_eau
+              - cover.velux_de_la_salle_de_bain
+              - cover.volet_de_la_chambre
+              - cover.volet_de_la_salle_d_eau
+              - cover.volet_de_la_salle_de_bain
+              - cover.store_pergola
+            state: unavailable
+    then:
+      - action: script.turn_on
+        target:
+          entity_id:
+            - script.notification_ha
+            - script.notification_telephone
+        data:
+          variables:
+            message_type: KLF200
+            message_corp: Le KLF200 ne répond toujours pas après rechargement, redémarrage et 3 coupures de la prise. Intervention manuelle nécessaire.
+            message_id: klf200_reparation
+    else:
+      - action: script.turn_on
+        target:
+          entity_id:
+            - script.notification_ha
+        data:
+          variables:
+            message_type: KLF200
+            message_corp: Le KLF200 a été réparé automatiquement par coupure et remise sous tension de la prise.
+            message_id: klf200_reparation
+    note: 'Bilan : échec → notification HA + téléphone, puis arrêt ; succès → notification HA'
+mode: single
+max_exceeded: silent

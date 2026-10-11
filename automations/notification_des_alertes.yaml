@@ -1,45 +1,23 @@
 alias: Notification des Alertes
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
-  - Changement de température ou luminosité dans l'armoire de brassage et le
-  grenier
-
+  - Changement de température ou luminosité dans l'armoire de brassage et le grenier
   - Changement d'état des détecteurs d'eau (SdB, Cuisine, Cellier)
-
-  - Changement d'état des serveurs réseau (slm-disk3, slm-disk4, ZappitiNAS,
-  Livebox)
-
+  - Changement d'état des serveurs réseau (slm-disk3, slm-disk4, ZappitiNAS, Livebox)
   - Brouillage réseau RF détecté
-
-  - Changement d'état des détecteurs de fumée (Séjour, Cellier, Étage) — montée
-  et descente
-
+  - Changement d'état des détecteurs de fumée (Séjour, Cellier, Étage) — montée et descente
 
   **Fonctionnement :**
-
-  1. Chaque déclencheur identifié par son ID compose un message d'alerte
-  spécifique et met à jour un `input_boolean` garde-fou anti-doublon.
-
-  2. En cas de fuite d'eau → ferme automatiquement la vanne d'arrivée d'eau ; en
-  cas de retour à la normale → rouvre la vanne.
-
-  3. Si un message a été composé → envoie simultanément : notification vocale,
-  mail et SMS.
-
+  1. Chaque déclencheur identifié par son ID compose un message d'alerte spécifique et met à jour un `input_boolean` garde-fou anti-doublon.
+  2. En cas de fuite d'eau → ferme automatiquement la vanne d'arrivée d'eau ; en cas de retour à la normale → rouvre la vanne.
+  3. Si un message a été composé → envoie simultanément : notification vocale, mail et SMS.
 
   **Entités principales :**
-
   - `valve.vanne_d_arrivee_d_eau_nodeid_25_switch` : coupure automatique eau
-
-  - `input_boolean.fuite_*` / `input_boolean.temperature_armoire` / etc. :
-  garde-fous anti-doublon
-
+  - `input_boolean.fuite_*` / `input_boolean.temperature_armoire` / etc. : garde-fous anti-doublon
   - `binary_sensor.*_water_alarm` / `binary_sensor.*_fumee` : capteurs d'alerte
 triggers:
   - entity_id:
@@ -95,7 +73,7 @@ triggers:
     trigger: state
   - entity_id:
       - binary_sensor.jamming_0_detector
-    to: "on"
+    to: 'on'
     id: RF_Player
     trigger: state
   - entity_id:
@@ -103,8 +81,8 @@ triggers:
       - binary_sensor.cellier_fumee
       - binary_sensor.etage_fumee
     to:
-      - "on"
-      - "off"
+      - 'on'
+      - 'off'
     id: Fumée
     trigger: state
 conditions: []
@@ -117,14 +95,13 @@ actions:
         sequence:
           - if:
               - condition: numeric_state
-                entity_id: >-
-                  sensor.temperature_de_l_armoire_de_brassage_nodeid_26_temperature_air
+                entity_id: sensor.temperature_de_l_armoire_de_brassage_nodeid_26_temperature_air
                 above: 40.5
             then:
               - if:
                   - condition: state
                     entity_id: input_boolean.temperature_armoire
-                    state: "on"
+                    state: 'on'
                 then:
                   - stop: Fin normale
                 else:
@@ -139,7 +116,7 @@ actions:
               - if:
                   - condition: state
                     entity_id: input_boolean.temperature_armoire
-                    state: "off"
+                    state: 'off'
                 then:
                   - stop: Fin normale
                 else:
@@ -150,9 +127,7 @@ actions:
                       entity_id: input_boolean.temperature_armoire
               - variables:
                   message_alerte: Température normale dans l'armoire de brassage
-        note: >-
-          Température armoire de brassage → alerte si > 40.5°C (garde-fou
-          anti-doublon via input_boolean)
+        note: Température armoire de brassage → alerte si > 40.5°C (garde-fou anti-doublon via input_boolean)
       - conditions:
           - condition: trigger
             id:
@@ -160,14 +135,13 @@ actions:
         sequence:
           - if:
               - condition: numeric_state
-                entity_id: >-
-                  sensor.temperature_de_l_armoire_de_brassage_nodeid_26_illuminance
+                entity_id: sensor.temperature_de_l_armoire_de_brassage_nodeid_26_illuminance
                 above: 10
             then:
               - if:
                   - condition: state
                     entity_id: input_boolean.luminosite_armoire
-                    state: "on"
+                    state: 'on'
                 then:
                   - stop: Fin normale
                 else:
@@ -183,7 +157,7 @@ actions:
               - if:
                   - condition: state
                     entity_id: input_boolean.luminosite_armoire
-                    state: "off"
+                    state: 'off'
                 then:
                   - stop: Fin normale
                 else:
@@ -209,7 +183,7 @@ actions:
               - if:
                   - condition: state
                     entity_id: input_boolean.luminosite_grenier
-                    state: "on"
+                    state: 'on'
                 then:
                   - stop: Fin normale
                 else:
@@ -225,7 +199,7 @@ actions:
               - if:
                   - condition: state
                     entity_id: input_boolean.luminosite_grenier
-                    state: "off"
+                    state: 'off'
                 then:
                   - stop: Fin normale
                 else:
@@ -253,14 +227,13 @@ actions:
                 sequence:
                   - if:
                       - condition: state
-                        entity_id: >-
-                          binary_sensor.detecteur_de_la_salle_de_bain_nodeid_28_water_alarm
-                        state: "on"
+                        entity_id: binary_sensor.detecteur_de_la_salle_de_bain_nodeid_28_water_alarm
+                        state: 'on'
                     then:
                       - if:
                           - condition: state
                             entity_id: input_boolean.fuite_sdb
-                            state: "on"
+                            state: 'on'
                         then:
                           - stop: Fin normale
                         else:
@@ -276,7 +249,7 @@ actions:
                       - if:
                           - condition: state
                             entity_id: input_boolean.fuite_sdb
-                            state: "off"
+                            state: 'off'
                         then:
                           - stop: Fin normale
                         else:
@@ -294,14 +267,13 @@ actions:
                 sequence:
                   - if:
                       - condition: state
-                        entity_id: >-
-                          binary_sensor.detecteur_de_la_cuisine_nodeid_30_water_alarm
-                        state: "on"
+                        entity_id: binary_sensor.detecteur_de_la_cuisine_nodeid_30_water_alarm
+                        state: 'on'
                     then:
                       - if:
                           - condition: state
                             entity_id: input_boolean.fuite_cuisine
-                            state: "on"
+                            state: 'on'
                         then:
                           - stop: Fin normale
                         else:
@@ -317,7 +289,7 @@ actions:
                       - if:
                           - condition: state
                             entity_id: input_boolean.fuite_cuisine
-                            state: "off"
+                            state: 'off'
                         then:
                           - stop: Fin normale
                         else:
@@ -335,14 +307,13 @@ actions:
                 sequence:
                   - if:
                       - condition: state
-                        entity_id: >-
-                          binary_sensor.detecteur_du_cellier_nodeid_29_water_alarm
-                        state: "on"
+                        entity_id: binary_sensor.detecteur_du_cellier_nodeid_29_water_alarm
+                        state: 'on'
                     then:
                       - if:
                           - condition: state
                             entity_id: input_boolean.fuite_cellier
-                            state: "on"
+                            state: 'on'
                         then:
                           - stop: Fin normale
                         else:
@@ -357,7 +328,7 @@ actions:
                       - if:
                           - condition: state
                             entity_id: input_boolean.fuite_cellier
-                            state: "off"
+                            state: 'off'
                         then:
                           - stop: Fin normale
                         else:
@@ -372,21 +343,19 @@ actions:
               - condition: or
                 conditions:
                   - condition: state
-                    entity_id: >-
-                      binary_sensor.detecteur_de_la_salle_de_bain_nodeid_28_water_alarm
-                    state: "on"
+                    entity_id: binary_sensor.detecteur_de_la_salle_de_bain_nodeid_28_water_alarm
+                    state: 'on'
                   - condition: state
-                    entity_id: >-
-                      binary_sensor.detecteur_de_la_cuisine_nodeid_30_water_alarm
-                    state: "on"
+                    entity_id: binary_sensor.detecteur_de_la_cuisine_nodeid_30_water_alarm
+                    state: 'on'
                   - condition: state
                     entity_id: binary_sensor.detecteur_du_cellier_nodeid_29_water_alarm
-                    state: "on"
+                    state: 'on'
             then:
               - if:
                   - condition: state
                     entity_id: valve.vanne_d_arrivee_d_eau_nodeid_25_switch
-                    state: "on"
+                    state: 'on'
                 then:
                   - action: valve.close_valve
                     metadata: {}
@@ -397,16 +366,14 @@ actions:
               - if:
                   - condition: state
                     entity_id: valve.vanne_d_arrivee_d_eau_nodeid_25_switch
-                    state: "off"
+                    state: 'off'
                 then:
                   - action: valve.open_valve
                     metadata: {}
                     data: {}
                     target:
                       entity_id: valve.vanne_d_arrivee_d_eau_nodeid_25_switch
-        note: >-
-          Fuite d'eau → compose message SdB/Cuisine/Cellier + ferme
-          automatiquement la vanne d'arrivée d'eau ; la rouvre si plus de fuite
+        note: Fuite d'eau → compose message SdB/Cuisine/Cellier + ferme automatiquement la vanne d'arrivée d'eau ; la rouvre si plus de fuite
       - conditions:
           - condition: trigger
             id:
@@ -425,7 +392,7 @@ actions:
                       - condition: state
                         entity_id: binary_sensor.slm_disk3
                         state:
-                          - "off"
+                          - 'off'
                     then:
                       - variables:
                           message_alerte: Le serveur slm-disk3 ne répond plus
@@ -441,7 +408,7 @@ actions:
                       - condition: state
                         entity_id: binary_sensor.slm_disk4
                         state:
-                          - "off"
+                          - 'off'
                     then:
                       - variables:
                           message_alerte: Le serveur slm-disk4 ne répond plus
@@ -463,7 +430,7 @@ actions:
                           - condition: state
                             entity_id: input_boolean.etat_zapittinas
                             state:
-                              - "on"
+                              - 'on'
                         then:
                           - stop: Fin normale
                         else:
@@ -479,7 +446,7 @@ actions:
                           - condition: state
                             entity_id: input_boolean.etat_zapittinas
                             state:
-                              - "off"
+                              - 'off'
                         then:
                           - stop: Fin normale
                         else:
@@ -499,16 +466,14 @@ actions:
                       - condition: state
                         entity_id: binary_sensor.livebox_w7_wan_status
                         state:
-                          - "off"
+                          - 'off'
                     then:
                       - variables:
                           message_alerte: Internet ne répond plus.
                     else:
                       - variables:
                           message_alerte: Internet est de retour.
-        note: >-
-          Serveurs réseau → alerte si slm-disk3/4 hors ligne, ZappitiNAS absent
-          ou Livebox WAN down
+        note: Serveurs réseau → alerte si slm-disk3/4 hors ligne, ZappitiNAS absent ou Livebox WAN down
       - conditions:
           - condition: trigger
             id:
@@ -517,12 +482,12 @@ actions:
           - if:
               - condition: state
                 entity_id: binary_sensor.jamming_0_detector
-                state: "on"
+                state: 'on'
             then:
               - if:
                   - condition: state
                     entity_id: input_boolean.brouillage_reseau
-                    state: "on"
+                    state: 'on'
                 then:
                   - stop: Fin normale
                 else:
@@ -537,7 +502,7 @@ actions:
               - if:
                   - condition: state
                     entity_id: input_boolean.brouillage_reseau
-                    state: "off"
+                    state: 'off'
                 then:
                   - stop: Fin normale
                 else:
@@ -549,9 +514,7 @@ actions:
                         - input_boolean.brouillage_reseau
               - variables:
                   message_alerte: Fin du brouillage réseau.
-        note: >-
-          Brouillage RF → alerte jamming détecté via RFPlayer (garde-fou
-          anti-doublon)
+        note: Brouillage RF → alerte jamming détecté via RFPlayer (garde-fou anti-doublon)
       - conditions:
           - condition: trigger
             id:
@@ -562,15 +525,15 @@ actions:
                 conditions:
                   - condition: state
                     state:
-                      - "on"
+                      - 'on'
                     entity_id: binary_sensor.sejour_fumee
                   - condition: state
                     state:
-                      - "on"
+                      - 'on'
                     entity_id: binary_sensor.cellier_fumee
                   - condition: state
                     state:
-                      - "on"
+                      - 'on'
                     entity_id: binary_sensor.etage_fumee
             then:
               - if:
@@ -579,7 +542,7 @@ actions:
                       entity_id: input_boolean.detection_fumee
                     options:
                       behavior: any
-                      for: "00:00:00"
+                      for: 00:00:00
                 then:
                   - variables:
                       message_alerte: Detection de fumée
@@ -594,7 +557,7 @@ actions:
                       entity_id: input_boolean.detection_fumee
                     options:
                       behavior: any
-                      for: "00:00:00"
+                      for: 00:00:00
                 then:
                   - variables:
                       message_alerte: Fin de la detection de fumée
@@ -603,32 +566,20 @@ actions:
                       entity_id:
                         - input_boolean.detection_fumee
                     data: {}
-        note: >-
-          Détecteurs de fumée → alerte montée/descente des 3 capteurs (Séjour,
-          Cellier, Étage)
+        note: Détecteurs de fumée → alerte montée/descente des 3 capteurs (Séjour, Cellier, Étage)
   - if:
       - condition: template
-        value_template: "{{ message_alerte != null }}"
+        value_template: '{{ message_alerte != null }}'
     then:
       - action: script.turn_on
         target:
-          entity_id: script.notification_vocale
-        data:
-          variables:
-            message_vocal: "{{ message_alerte }}"
-      - action: script.turn_on
-        target:
-          entity_id: script.notification_mail
+          entity_id:
+            - script.notification_vocale
+            - script.notification_mail
+            - script.notification_sms
         data:
           variables:
             message_type: Alerte
-            message_mail: "{{ message_alerte }}"
-      - action: script.turn_on
-        target:
-          entity_id: script.notification_sms
-        data:
-          variables:
-            message_type: Alerte
-            message_sms: "{{ message_alerte }}"
+            message_corp: '{{ message_alerte }}'
 mode: queued
 max: 10

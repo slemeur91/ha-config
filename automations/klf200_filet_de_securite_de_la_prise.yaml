@@ -1,0 +1,58 @@
+alias: KLF200 - Filet de sécurité de la prise
+description: |-
+  **Statut :** Nouveau (créé le 11/10/2026, désactivé en attente de validation) — remplace `Sécurité KLF200 - Remise sous tension`
+  **Evolution :** Aucune
+
+  **Rôle :** garantit que la prise du KLF200 ne reste jamais éteinte, quelle qu'en soit la cause (coupure manuelle oubliée, échec de la remise sous tension dans `KLF200 - Surveillance et réparation graduée`, redémarrage de HA pendant une coupure). Totalement indépendante de l'automatisation de réparation : celle-ci ne coupe que 30 secondes, donc les deux n'entrent jamais en concurrence.
+
+  **Déclencheurs :**
+  - `switch.reseau_multiprise_de_l_informatique_2_klf_200` éteinte depuis 5 minutes — id: off_5min
+  - Démarrage de Home Assistant — id: start
+
+  **Fonctionnement :**
+  1. Démarrage HA → attend 5 minutes (le temps que la multiprise soit joignable).
+  2. Si la prise est éteinte → la rallume, attend 3 minutes, puis recharge l'intégration Velux.
+  3. Si elle est allumée → ne fait rien.
+
+  **Entités principales :**
+  - `switch.reseau_multiprise_de_l_informatique_2_klf_200` : alimentation de la passerelle KLF200
+  - Intégration Velux (entry_id `01K2GS1XM2TFEEMYCJBXSQQJHQ`)
+triggers:
+  - trigger: state
+    entity_id: switch.reseau_multiprise_de_l_informatique_2_klf_200
+    to: 'off'
+    for:
+      minutes: 5
+    id: off_5min
+    note: Prise éteinte depuis 5 minutes, quelle qu'en soit la cause
+  - trigger: homeassistant
+    event: start
+    id: start
+    note: Couvre le cas d'un redémarrage de HA pendant que la prise est éteinte
+conditions: []
+actions:
+  - if:
+      - condition: trigger
+        id: start
+    then:
+      - delay:
+          minutes: 5
+    note: Démarrage HA → laisse le temps à la multiprise d'être joignable
+  - condition: state
+    entity_id: switch.reseau_multiprise_de_l_informatique_2_klf_200
+    state: 'off'
+    note: N'agit que si la prise est réellement éteinte
+  - action: switch.turn_on
+    target:
+      entity_id: switch.reseau_multiprise_de_l_informatique_2_klf_200
+    note: Remise sous tension
+  - delay:
+      minutes: 3
+    note: Laisse la passerelle démarrer
+  - action: homeassistant.reload_config_entry
+    data:
+      entry_id: 01K2GS1XM2TFEEMYCJBXSQQJHQ
+    continue_on_error: true
+    note: Recharge l'intégration une fois la passerelle réalimentée
+mode: single
+max_exceeded: silent

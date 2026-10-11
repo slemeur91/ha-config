@@ -1,31 +1,19 @@
 alias: Gestion des Statistiques journalières de GAZPAR – Réécriture
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
-  - Changement de `sensor.gazpar_cheptainville_card` (nouvelles données reçues
-  via gazpar2mqtt)
-
+  - Changement de `sensor.gazpar_cheptainville_card` (nouvelles données reçues via gazpar2mqtt)
 
   **Conditions :**
-
   - Sensor non indisponible / inconnu
 
-
   **Fonctionnement :**
-
-  1. Lance le script pyscript `gazpar_update` pour réécrire les dernières
-  données de consommation gaz dans les statistiques long-terme de HA.
-
+  1. Lance le script pyscript `gazpar_update` pour réécrire les dernières données de consommation gaz dans les statistiques long-terme de HA.
 
   **Entités principales :**
-
   - `sensor.gazpar_cheptainville_card` : données brutes GAZPAR
-
   - `pyscript.gazpar_update` : réécriture des statistiques
 triggers:
   - trigger: state
@@ -42,7 +30,7 @@ actions:
   - action: pyscript.gazpar_import_all
     data: {}
     enabled: false
-    note: "Désactivé : import complet, ne sert qu'en cas de reprise d'historique"
+    note: 'Désactivé : import complet, ne sert qu''en cas de reprise d''historique'
   - action: pyscript.gazpar_update
     data: {}
 mode: single

@@ -38,10 +38,13 @@
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Supprime toutes les entités orphelines du registre HA (service fourni par l'intégration Spook).
+**Rôle :** Nettoie le registre des entités en supprimant toutes les entités orphelines (sans intégration active).
 
 **Fonctionnement :**
-1. Appelle `homeassistant.delete_all_orphaned_entities`.
+1. Appelle homeassistant.delete_all_orphaned_entities.
+
+**Entités principales :**
+- homeassistant.delete_all_orphaned_entities : service de nettoyage appelé
 
 ---
 
@@ -53,7 +56,10 @@
 **Rôle :** Recharge l'intégration pyscript sans redémarrer HA.
 
 **Fonctionnement :**
-1. Appelle `pyscript.reload`.
+1. Appelle pyscript.reload pour recharger tous les scripts Python.
+
+**Entités principales :**
+- pyscript.reload : service appelé
 
 ---
 
@@ -64,14 +70,17 @@
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Déclenche le réveil musical et envoie un mail de confirmation.
+**Rôle :** Déclenche le réveil musical SONOS et envoie un mail de confirmation.
 
 **Fonctionnement :**
-1. Si `input_select.sonos_action` est déjà en REVEIL → déclenche directement l'automation SONOS.
-2. Sinon → positionne l'action sur REVEIL (déclenchement par trigger d'état).
-3. Envoie mail "Réveil".
+1. Si input_select.sonos_action est déjà en REVEIL → déclenche directement l'automation SONOS.
+2. Sinon → positionne l'action sur REVEIL (ce qui déclenchera l'automation via trigger).
+3. Envoie un mail d'information "Réveil".
 
-**Entités utilisées :** `input_select.sonos_action`
+**Entités principales :**
+- input_select.sonos_action : sélecteur d'action SONOS
+- automation.gestion_des_sonos : automatisation déclenchée
+- script.notification_mail : envoi du mail
 
 ---
 
@@ -82,34 +91,44 @@
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Allume ou éteint l'amplificateur ROTEL et sélectionne son entrée vidéo, en pilotant les boutons IR/réseau et en vérifiant l'état via la présence réseau (`device_tracker`) et un ping réseau (`binary_sensor`). Appelé par "Gestion de la HiFi" via `script.turn_on` (fire-and-forget).
+**Rôle :** Allume ou éteint l'amplificateur ROTEL et sélectionne son entrée vidéo, en pilotant les boutons de l'ampli et en vérifiant l'état atteint via sa présence réseau (device_tracker ou ping). Appelé par 'Gestion de la HiFi' (branche extinction avec action: 'off', branche SOURCE avec action: 'on') via script.turn_on (fire-and-forget).
 
 **Paramètres :**
-- `action` : `"on"` ou `"off"`
+- action : 'on' ou 'off'
 
 **Fonctionnement :**
-1. `action: "off"` → répète (presse 3× `button.rotel_off` avec délai 3s entre chaque, puis 20s, puis force update de `binary_sensor.192_168_51_55`, puis 10s) jusqu'à ce que `device_tracker.slm_rotel_slm_rotel` passe à "not_home" OU `binary_sensor.192_168_51_55` passe à "off" (ampli éteint).
-2. `action: "on"` → répète (sélectionne 3× l'entrée selon `input_select.hifi_source` : Zappiti→video1, BluRay→video2, slm-media4→video3 avec délai 3s entre chaque, puis 20s, puis force update de `binary_sensor.192_168_51_55`, puis 10s) jusqu'à ce que `device_tracker.slm_rotel_slm_rotel` passe à "home" OU `binary_sensor.192_168_51_55` passe à "on" (ampli allumé).
+1. action 'off' → répète le cycle suivant jusqu'à ce que l'ampli ne soit plus détecté sur le réseau (device_tracker.slm_rotel_slm_rotel à 'not_home' OU binary_sensor.192_168_51_55 à 'off') : 3 appuis sur button.rotel_off espacés de 3s, attente de 20s, rafraîchissement forcé du ping (homeassistant.update_entity), attente de 10s.
+2. action 'on' → même cycle, avec 3 appuis sur l'entrée vidéo correspondant à input_select.hifi_source ('Zappiti' → button.rotel_video1, 'BluRay' → button.rotel_video2, 'slm-media4' → button.rotel_video3), jusqu'à ce que l'ampli soit détecté (device_tracker à 'home' OU ping à 'on').
+3. continue_on_error : une erreur sur une étape n'interrompt pas le script.
 
-**Entités utilisées :** `button.rotel_off`, `button.rotel_video1/2/3`, `device_tracker.slm_rotel_slm_rotel`, `binary_sensor.192_168_51_55`, `input_select.hifi_source`
+**Limite :** chaque boucle s'arrête au plus tard après 5 cycles (environ 3 min 30). Si l'état réseau attendu n'est toujours pas atteint, une entrée est écrite dans le journal (logbook) au nom de l'ampli, au lieu de boucler indéfiniment.
+
+**Entités principales :**
+- button.rotel_off, button.rotel_video1/2/3 : commandes de l'ampli (extinction / sélection d'entrée)
+- device_tracker.slm_rotel_slm_rotel, binary_sensor.192_168_51_55 (ping) : présence réseau de l'ampli, utilisée pour vérifier l'état atteint
+- input_select.hifi_source : source sélectionnée, détermine l'entrée vidéo activée
 
 ---
 
 ### `script.allumer_eteindre_apple_tv_salon` — Allumer/Éteindre Apple TV du Salon
 > [📄 Voir le YAML](../scripts/allumer_eteindre_apple_tv_salon.yaml)
 
-**Statut :** Finalisé | **Evolution :** Aucune
+**Statut :** Finalisé — plus appelé par 'Gestion de la HiFi' | **Evolution :** Aucune
 
-**Rôle :** Allume ou éteint l'Apple TV du salon, appelé par "Gestion de la HiFi" (branche extinction, `action: "off"`, et branche allumage/SOURCE, `action: "on"`) via `script.turn_on` (fire-and-forget).
+**Rôle :** Allume ou éteint l'Apple TV du Salon en fiabilisant la commande (rechargement de l'intégration puis vérification de l'état atteint). Dans 'Gestion de la HiFi', l'appel à ce script est actuellement désactivé au profit d'un `media_player.turn_on` / `turn_off` direct ; le script reste disponible pour un appel manuel.
 
 **Paramètres :**
-- `action` : `"on"` ou `"off"`
+- action : 'on' ou 'off'
 
 **Fonctionnement :**
-1. `action: "off"` → si l'appareil semble disponible (media_player ni off/standby/unavailable, ET media_player.is_on, ET remote.is_on depuis au moins 5 s), rafraîchit l'état des entités (`homeassistant.update_entity`) puis envoie la commande `suspend` via `remote.send_command`. Cette garde réduit, sans l'éliminer totalement, les échecs dus à un état HA obsolète par rapport à la connexion réelle (protocole Companion de pyatv) ; erreur résiduelle ignorée (`continue_on_error`) pour ne jamais bloquer l'automatisation appelante.
-2. `action: "on"` → recharge l'intégration (`homeassistant.reload_config_entry` sur `remote.apple_tv_du_salon`), attend 8 s, puis appelle `media_player.turn_on` (avec une branche de repli désactivée par défaut qui réessaie 6 fois avec un délai de 5 s entre chaque tentative).
+1. Recharge l'intégration Apple TV, puis attend (jusqu'à 20s) que remote.apple_tv_du_salon repasse à 'on' (= connexion pyatv rétablie) au lieu d'un délai fixe.
+2. action 'off' → envoie 'suspend' via remote.send_command (contourne le garde power_state de media_player.turn_off), puis attend jusqu'à 15s que media_player passe à 'off'.
+3. action 'on' → appelle media_player.turn_on, puis attend jusqu'à 20s que media_player quitte l'état 'off'.
+4. Si l'état attendu n'est pas atteint, une entrée logbook est créée pour rendre l'échec visible (au lieu d'un échec totalement silencieux).
 
-**Entités utilisées :** `media_player.apple_tv_du_salon`, `remote.apple_tv_du_salon`
+**Entités principales :**
+- media_player.apple_tv_du_salon : état vérifié, cible de l'allumage
+- remote.apple_tv_du_salon : cible du rechargement et de la commande d'extinction
 
 ---
 
@@ -118,14 +137,15 @@
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Lance la radio sur la Suite parentale avec sélection horaire et repli.
+**Rôle :** Lance la radio sur la suite parentale avec sélection automatique selon l'heure et repli.
 
 **Fonctionnement :**
-1. Entre 4h et 20h30 → Voltage ; sinon → Évasion FM Essonne (radio de nuit).
+1. Entre 4h et 20h30 → lance Voltage ; sinon → lance Évasion FM Essonne (radio de nuit).
 2. Attend 5 secondes.
-3. Si pas de lecture → repli sur flux Évasion FM Essonne via Radio Browser.
+3. Si la lecture n'a pas démarré → repli sur le flux direct Évasion FM Essonne via Radio Browser.
 
-**Entités utilisées :** `media_player.suite_parentale`
+**Entités principales :**
+- media_player.suite_parentale : enceinte SONOS ciblée
 
 ---
 
@@ -134,14 +154,15 @@
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Lance Voltage sur le Garage avec repli automatique.
+**Rôle :** Lance la radio Voltage sur l'enceinte du garage avec repli automatique.
 
 **Fonctionnement :**
-1. Lance Voltage via favoris Sonos.
+1. Lance Voltage via les favoris Sonos.
 2. Attend 5 secondes.
-3. Si pas de lecture → repli sur flux Radio Browser direct.
+3. Si la lecture n'a pas démarré → repli sur le flux direct Radio Browser.
 
-**Entités utilisées :** `media_player.garage`
+**Entités principales :**
+- media_player.garage : enceinte SONOS ciblée
 
 ---
 
@@ -150,14 +171,15 @@
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Lance Voltage sur le Salon avec repli automatique.
+**Rôle :** Lance la radio Voltage sur l'enceinte du salon avec repli automatique.
 
 **Fonctionnement :**
-1. Lance Voltage via favoris Sonos (FV:2/37).
+1. Lance Voltage via les favoris Sonos.
 2. Attend 5 secondes.
-3. Si pas de lecture → repli sur flux Radio Browser direct.
+3. Si la lecture n'a pas démarré → repli sur le flux direct Radio Browser.
 
-**Entités utilisées :** `media_player.salon`
+**Entités principales :**
+- media_player.salon : enceinte SONOS ciblée
 
 ---
 
@@ -168,10 +190,13 @@
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Arme l'alarme en mode absent.
+**Rôle :** Action rapide iOS pour armer l'alarme en mode absent.
 
 **Fonctionnement :**
-1. Appelle `alarm_control_panel.alarm_arm_away` sur `alarm_control_panel.alarme`.
+1. Appelle alarm_control_panel.alarm_arm_away sur alarm_control_panel.alarme.
+
+**Entités principales :**
+- alarm_control_panel.alarme : panneau d'alarme piloté
 
 ---
 
@@ -180,10 +205,13 @@
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Désarme l'alarme.
+**Rôle :** Action rapide iOS pour désarmer l'alarme.
 
 **Fonctionnement :**
-1. Appelle `alarm_control_panel.alarm_disarm` sur `alarm_control_panel.alarme`.
+1. Appelle alarm_control_panel.alarm_disarm sur alarm_control_panel.alarme.
+
+**Entités principales :**
+- alarm_control_panel.alarme : panneau d'alarme piloté
 
 ---
 
@@ -192,10 +220,13 @@
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Toggle de la porte du garage (Somfy RTS via RFPlayer).
+**Rôle :** Action rapide iOS pour ouvrir ou fermer la porte du garage.
 
 **Fonctionnement :**
-1. Appelle `cover.toggle` sur `cover.rts_4_portal`.
+1. Déclenche cover.toggle sur cover.rts_4_portal (Somfy RTS).
+
+**Entités principales :**
+- cover.rts_4_portal : porte de garage pilotée
 
 ---
 
@@ -204,10 +235,13 @@
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Déverrouille la serrure Nuki de l'entrée.
+**Rôle :** Action rapide iOS pour déverrouiller la serrure Nuki de l'entrée.
 
 **Fonctionnement :**
-1. Appelle `lock.unlock` sur `lock.serrure_de_l_entree`.
+1. Appelle lock.unlock sur lock.serrure_de_l_entree.
+
+**Entités principales :**
+- lock.serrure_de_l_entree : serrure pilotée
 
 ---
 
@@ -216,10 +250,13 @@
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Verrouille la serrure Nuki de l'entrée.
+**Rôle :** Action rapide iOS pour verrouiller la serrure Nuki de l'entrée.
 
 **Fonctionnement :**
-1. Appelle `lock.lock` sur `lock.serrure_de_l_entree`.
+1. Appelle lock.lock sur lock.serrure_de_l_entree.
+
+**Entités principales :**
+- lock.serrure_de_l_entree : serrure pilotée
 
 ---
 
@@ -228,10 +265,13 @@
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Déverrouille la serrure Nuki du garage.
+**Rôle :** Action rapide iOS pour déverrouiller la serrure Nuki du garage.
 
 **Fonctionnement :**
-1. Appelle `lock.unlock` sur `lock.serrure_du_garage`.
+1. Appelle lock.unlock sur lock.serrure_du_garage.
+
+**Entités principales :**
+- lock.serrure_du_garage : serrure pilotée
 
 ---
 
@@ -260,16 +300,17 @@
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Envoi d'un mail de notification.
+**Rôle :** Envoie un mail de notification.
 
 **Paramètres :**
-- `message_type` : type (Information, Alerte, Chauffage Etage, Chauffage RDC…)
-- `message_corp` : corps du message
+- message_type : type du message (Information, Alerte, Chauffage, etc.)
+- message_corp : corps du message
 
 **Fonctionnement :**
-1. Appelle `smtp.send_message` ciblant `notify.email_slemeur_slm_srv_dscloud_me` avec le type en objet (`[HA] {{ message_type }}`) et le message en corps.
+1. Envoie un mail via l'action smtp.send_message sur notify.email_slemeur_slm_srv_dscloud_me, avec '[HA] ' suivi du type en objet et le message en corps.
 
-**Mode :** queued, max 10
+**Entités principales :**
+- notify.email_slemeur_slm_srv_dscloud_me : entité de notification SMTP utilisée (action smtp.send_message)
 
 ---
 
@@ -278,14 +319,17 @@
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Envoi d'un message via Telegram.
+**Rôle :** Envoie un message Telegram (SMS).
 
 **Paramètres :**
-- `message_type` : type du message
-- `message_sms` : corps du message
+- message_type : type du message
+- message_corp : corps du message
 
 **Fonctionnement :**
-1. Appelle `telegram_bot.send_message` avec le type en titre et le message en corps.
+1. Envoie un message via telegram_bot.send_message avec le type en titre et le message en corps.
+
+**Entités principales :**
+- telegram_bot.send_message : service utilisé pour l'envoi
 
 ---
 
@@ -314,19 +358,19 @@
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Capture un snapshot du portier et l'envoie par mail avec le message et le type fournis en paramètres.
+**Rôle :** Capture un snapshot du portier et l'envoie par mail avec le message et le type fournis en paramètres. Appelé par 'Notification du Portier' via script.turn_on.
 
 **Paramètres :**
-- `message_type` : type du message (ex : "Portier")
-- `message_mail` : corps du message (ex : "Appuis sur la sonnette")
+- message_type : type du message (ex : 'Portier')
+- message_corp : corps du message (ex : 'Appuis sur la sonnette')
 
 **Fonctionnement :**
-1. Capture une image de `camera.exterieur_slm_portier` dans `/media/Snapshots/portier.jpg`.
-2. Envoie un mail `[HA] {{ message_type }}` via `smtp.send_message` (`notify.email_slemeur_slm_srv_dscloud_me`) avec l'image en pièce jointe (`media_source`) et le message en corps.
+1. Capture une image du flux haute résolution du portier (camera.exterieur_slm_portier_high_resolution_channel) dans /media/Snapshots/portier.jpg.
+2. Envoie un mail '[HA] ' suivi du type, avec l'image en pièce jointe et le message en corps (via smtp.send_message).
 
-**Note :** L'ancienne capture vers `/config/www/`, l'ancien envoi via `notify.email` et la notification push iPhone sont conservés dans la séquence mais désactivés (`enabled: false`).
-
-**Entités utilisées :** `camera.exterieur_slm_portier`, `notify.email_slemeur_slm_srv_dscloud_me`
+**Entités principales :**
+- camera.exterieur_slm_portier_high_resolution_channel : flux capturé
+- notify.email_slemeur_slm_srv_dscloud_me (smtp.send_message) : envoi du mail
 
 ---
 
@@ -335,41 +379,48 @@
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Capture les images des 7 caméras et du portier, et les envoie par mail en cas d'alerte.
+**Rôle :** Capture les images des 7 caméras et du portier, et les envoie par mail en cas d'alerte. Appelé par 'Alarme Déclenchement' et 'Alarme Sabotage' via script.turn_on.
 
 **Fonctionnement :**
-1. Capture en parallèle les caméras `slm_camera1` à `slm_camera7` et `slm_portier` (8 snapshots, dans `/media/Snapshots/`).
-2. Envoie un mail `[HA] Alerte` via `smtp.send_message` avec toutes les images en pièces jointes (`media_source`).
+1. Capture en parallèle les caméras slm_camera1 à slm_camera7 et le portier (8 snapshots, dans /media/Snapshots/).
+2. Envoie un mail '[HA] Alerte' avec les 8 images en pièces jointes (smtp.send_message, médias locaux Snapshots/).
 
-**Entités utilisées :** `camera.slm_camera1` à `camera.slm_camera7`, `camera.exterieur_slm_portier`, `notify.email_slemeur_slm_srv_dscloud_me`
+**Entités principales :**
+- camera.slm_camera1 à camera.slm_camera7, camera.exterieur_slm_portier : caméras capturées
+- notify.email_slemeur_slm_srv_dscloud_me (smtp.send_message) : envoi du mail
 
 ---
 
 ### `script.notification_vocale` — Notification Vocale
 > [📄 Voir le YAML](../scripts/notification_vocale.yaml)
 
-**Statut :** Finalisé
+**Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Diffusion d'un message TTS en overlay (announce) sur les enceintes SONOS actives, sans interrompre une lecture en cours.
+**Rôle :** Diffuse un message TTS en overlay (announce) sur les enceintes SONOS actives selon le mode en cours, sans interrompre une lecture en cours.
 
 **Paramètres :**
-- `message_vocal` : texte à synthétiser
+- message_corp : texte à synthétiser
 
 **Fonctionnement :**
 1. Selon le mode SONOS actif :
-   - COUCHE → diffuse sur tous les membres du groupe Suite parentale (`group_members`), volume d'annonce 40.
-   - REVEIL / autre → diffuse sur tous les membres du groupe Salon, volume d'annonce 60, + Garage si TéléTravail (volume 40).
-2. Chaque diffusion utilise `media_player.play_media` avec `announce: true` et `media_content_id: media-source://tts/tts.google_translate_fr_fr?message=...`.
-3. Sonos gère nativement la baisse du volume en cours et sa restauration après l'annonce.
+   - COUCHE → diffuse sur tous les membres du groupe Suite parentale (group_members), volume d'annonce 40.
+   - REVEIL / autre → diffuse sur tous les membres du groupe Salon (group_members), volume d'annonce 60, + Garage (volume d'annonce 40) uniquement si le calendrier est en TéléTravail ET que les SONOS sont en mode ON.
+2. Chaque diffusion utilise media_player.play_media avec announce: true et media_content_id: media-source://tts/tts.google_translate_fr_fr?message=...&language=fr&cache=true.
+3. Sonos gère nativement la baisse du volume en cours, la lecture de l'annonce, puis la restauration — aucune action de restauration explicite n'est nécessaire.
 
-**Entités utilisées :**
-- `input_select.sonos` / `input_select.calendrier`
-- `media_player.salon` / `media_player.suite_parentale` / `media_player.garage`
-- `tts.google_translate_fr_fr`
+**Entités principales :**
+- media_player.suite_parentale, media_player.salon, media_player.garage : enceintes SONOS ciblées
+- input_select.sonos, input_select.calendrier : sélecteurs de mode
 
 ---
 
 ## Scripts Pyscript
 
-> Les scripts pyscript sont dans `/config/pyscript/` et chargés par l'intégration **pyscript** (HACS). Ce ne sont pas des entités `script.*` : ils ne sont pas comptés dans les 20 scripts ci-dessus.
-> Sources : [`pyscripts/gazpar_energy.py`](../pyscripts/gazpar_energy.py) | [`pyscripts/surveillance_station_recording.py`](../pyscripts/surveillance_station_recording.py)
+> Les scripts pyscript sont dans `/config/pyscript/` et chargés par l'intégration **pyscript** (HACS). Ce ne sont pas des entités `script.*` : ils ne sont pas comptés dans les 21 scripts ci-dessus. 3 fichiers exposent 4 services.
+
+| Service | Rôle | Appelé par | Source |
+|---|---|---|---|
+| `pyscript.gazpar_import_all` | Import complet des statistiques GAZPAR (journalier, hebdomadaire, mensuel, annuel). À lancer une seule fois, à la main. | Manuel | [`pyscripts/gazpar_energy.py`](../pyscripts/gazpar_energy.py) |
+| `pyscript.gazpar_update` | Réimporte les derniers jours de GAZPAR : données réelles, et valeurs à 0 pour les jours pas encore remontés. | `Gestion des Statistiques journalières de GAZPAR – Réécriture` | [`pyscripts/gazpar_energy.py`](../pyscripts/gazpar_energy.py) |
+| `pyscript.linky_update` | Relit les 7 derniers jours du capteur Linky et réimporte, à la date exacte de consommation, les statistiques long terme de `base_consumption` (kWh) et `base_consumption_cost` (EUR). Idempotent : corrige les points à 0 et les valeurs Enedis publiées en retard. | `Gestion des Statistiques journalières du Linky – Réécriture` | [`pyscripts/linky_energy.py`](../pyscripts/linky_energy.py) |
+| `pyscript.surveillance_station_recording` | Démarre ou arrête l'enregistrement des caméras dans Synology Surveillance Station. | `Gestion de l'Alarme`, `Alarme Déclenchement`, `Alarme Sabotage` | [`pyscripts/surveillance_station_recording.py`](../pyscripts/surveillance_station_recording.py) |

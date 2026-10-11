@@ -1,36 +1,20 @@
 alias: Notification des Automatisations et Scripts en Défaut
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
   - Erreur d'exécution loggée par le composant `automation`
-
   - Erreur d'exécution loggée par le composant `script`
 
-
   **Conditions :**
-
-  - L'événement concerne une erreur (`level == 'ERROR'`) provenant du composant
-  `automation` ou `script`
-
+  - L'événement concerne une erreur (`level == 'ERROR'`) provenant du composant `automation` ou `script`
 
   **Fonctionnement :**
-
-  1. Détecte chaque erreur loggée (événement `system_log_event`, niveau `ERROR`)
-  provenant des composants `automation` ou `script`.
-
-  2. Envoie une notification HA (`script.notification_ha`) avec le type
-  (Automatisation/Script) et le message d'erreur, avec un `message_id`
-  stable basé sur le contenu du message pour éviter les doublons en cas de
-  répétition rapide de la même erreur.
-
+  1. Détecte chaque erreur loggée (événement `system_log_event`, niveau `ERROR`) provenant des composants `automation` ou `script`.
+  2. Envoie une notification HA (`script.notification_ha`) avec le type (Automatisation/Script) et le message d'erreur, avec un `message_id` stable basé sur le contenu du message pour éviter les doublons en cas de répétition rapide de la même erreur.
 
   **Entités principales :**
-
   - `script.notification_ha` : création des notifications
 triggers:
   - trigger: event
@@ -38,32 +22,17 @@ triggers:
     id: log_error
 conditions:
   - condition: template
-    value_template: >-
-      {{ trigger.event is defined and trigger.event.data.level == 'ERROR' and
-      (trigger.event.data.name.startswith('homeassistant.components.automation')
-      or trigger.event.data.name.startswith('homeassistant.components.script'))
-      }}
+    value_template: '{{ trigger.event is defined and trigger.event.data.level == ''ERROR'' and (trigger.event.data.name.startswith(''homeassistant.components.automation'') or trigger.event.data.name.startswith(''homeassistant.components.script'')) }}'
 actions:
   - variables:
-      log_message: >-
-        {% if trigger.event is defined %}{{ trigger.event.data.message | join('
-        ') if trigger.event.data.message is iterable and
-        trigger.event.data.message is not string else trigger.event.data.message
-        }}{% else %}Test manuel (pas de message de log){% endif %}
-      log_type: >-
-        {% if trigger.event is defined %}{{ 'Automatisation' if 'automation' in
-        trigger.event.data.name else 'Script' }}{% else %}Test{% endif %}
-    note: >-
-      Construit le type (Automatisation/Script) et le message à partir de
-      l'événement de log ; valeurs de repli si lancé manuellement ("Exécuter les
-      actions") sans événement réel
+      log_message: '{% if trigger.event is defined %}{{ trigger.event.data.message | join('' '') if trigger.event.data.message is iterable and trigger.event.data.message is not string else trigger.event.data.message }}{% else %}Test manuel (pas de message de log){% endif %}'
+      log_type: '{% if trigger.event is defined %}{{ ''Automatisation'' if ''automation'' in trigger.event.data.name else ''Script'' }}{% else %}Test{% endif %}'
+    note: Construit le type (Automatisation/Script) et le message à partir de l'événement de log ; valeurs de repli si lancé manuellement ("Exécuter les actions") sans événement réel
   - action: script.notification_ha
     data:
-      message_type: "{{ log_type }} en défaut"
-      message_corp: "{{ log_message }}"
+      message_type: '{{ log_type }} en défaut'
+      message_corp: '{{ log_message }}'
       message_id: automation_script_error-{{ (log_type ~ log_message) | md5 }}
-    note: >-
-      Notifie via Notification HA, avec un message_id stable basé sur le
-      contenu pour éviter les doublons si la même erreur se répète rapidement
+    note: Notifie via Notification HA, avec un message_id stable basé sur le contenu pour éviter les doublons si la même erreur se répète rapidement
 mode: queued
 max: 10

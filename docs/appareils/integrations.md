@@ -1,6 +1,6 @@
 # Intégrations (WiFi, Ethernet RJ45 & Autres) — 151 appareils
 
-[← Retour Appareils](../appareils.md)
+[← Retour README](../../README.md)
 
 ---
 
@@ -69,7 +69,7 @@
 
 ## Électroménager — WashData (3 appareils)
 
-> 🔧 **HACS Communauté** — Intégration : **WashData** — [GitHub](https://github.com/3dg1luk43/ha_washdata)
+> 🔧 **HACS** — Intégration : **WashData** — [GitHub](https://github.com/3dg1luk43/ha_washdata)
 > Suivi des cycles de lavage par analyse de consommation électrique (via prises connectées).
 
 | Nb | Appareil | Nom HA |
@@ -106,7 +106,7 @@
 
 ## Énergie — EcoFlow (2 appareils cloud)
 
-> 🔧 **HACS Communauté** — Intégration : **EcoFlow Cloud**
+> 🔧 **HACS** — Intégration : **EcoFlow Cloud**
 > ☁️ Cloud
 
 | Nb | Modèle | Description | Localisation |
@@ -122,7 +122,7 @@
 
 | Nb | Fabricant | Modèle | Intégration | Mode |
 |---|---|---|---|---|
-| 1 | Enedis | Linky | 📦 Add-on [Linky](https://github.com/bokub/linky) | ☁️ Cloud |
+| 1 | Enedis | Linky | 📦 Add-on [MyElectricalData](https://github.com/MyElectricalData/myelectricaldata_import) | ☁️ Cloud |
 | 1 | GrDF | GAZPAR | 📦 Add-on [Gazpar2MQTT](https://github.com/ssenart/gazpar2mqtt) | ☁️ Cloud |
 
 ### GCE EcoDevices RT2 (22 appareils de mesure)

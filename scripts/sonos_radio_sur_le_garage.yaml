@@ -1,21 +1,17 @@
 alias: SONOS Radio sur le Garage
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
-  **Rôle :** Lance la radio Voltage sur l'enceinte du garage avec repli
-  automatique.
-
+  **Rôle :** Lance la radio Voltage sur l'enceinte du garage avec repli automatique.
 
   **Fonctionnement :**
-
   1. Lance Voltage via les favoris Sonos.
-
   2. Attend 5 secondes.
-
   3. Si la lecture n'a pas démarré → repli sur le flux direct Radio Browser.
+
+  **Entités principales :**
+  - media_player.garage : enceinte SONOS ciblée
 sequence:
   - sequence:
       - action: media_player.play_media
@@ -29,14 +25,13 @@ sequence:
             media_content_type: favorite_item_id
             metadata:
               title: VOLTAGE
-              thumbnail: >-
-                https://sali.sonos.superhi.fi/image?w=60&image=https://cdn-profiles.tunein.com/s25257/images/logog.png%3Ft%3D1&partnerId=tunein
+              thumbnail: https://sali.sonos.superhi.fi/image?w=60&image=https://cdn-profiles.tunein.com/s25257/images/logog.png%3Ft%3D1&partnerId=tunein
               media_class: genre
               children_media_class: null
               navigateIds:
                 - {}
                 - media_content_type: favorites
-                  media_content_id: ""
+                  media_content_id: ''
                 - media_content_type: favorites_folder
                   media_content_id: object.item.audioItem.audioBroadcast
       - delay:
@@ -53,19 +48,16 @@ sequence:
                 state: playing
         then:
           - action: media_player.play_media
-            continue_on_error: true
             target:
               entity_id:
                 - media_player.garage
             data:
               media:
-                media_content_id: >-
-                  media-source://radio_browser/96150311-0601-11e8-ae97-52543be04c81
+                media_content_id: media-source://radio_browser/96150311-0601-11e8-ae97-52543be04c81
                 media_content_type: audio/mpeg
                 metadata:
                   title: Voltage
-                  thumbnail: >-
-                    https://bocir-prod-bucket.s3.eu-west-1.amazonaws.com/radios/voltage/images/favicon.ico
+                  thumbnail: https://bocir-prod-bucket.s3.eu-west-1.amazonaws.com/radios/voltage/images/favicon.ico
                   media_class: music
                   children_media_class: null
                   navigateIds:
@@ -74,4 +66,5 @@ sequence:
                       media_content_id: media-source://radio_browser
                     - media_content_type: music
                       media_content_id: media-source://radio_browser/country/FR
+            continue_on_error: true
 mode: restart

@@ -1,40 +1,26 @@
 alias: Gestion de la charge batterie de l'iPad
-description: >-
-  **Statut :** En cours
-
-  **Evolution :** Prise en compte du capteur batterie (en fonction de
-  l'application kiosk) pour affiner le pilotage de la charge
-
+description: |-
+  **Statut :** En cours — inopérante en l'état
+  **Evolution :** Prise en compte du capteur batterie (en fonction de l'application kiosk) pour affiner le pilotage de la charge. Les actions d'extinction et d'allumage de la prise sont à (re)saisir : les blocs `if`/`then` des deux branches sont actuellement vides.
 
   **Déclencheurs :**
+  - Tous les jours à 1h00 (restreint au 1er du mois par une condition template) — id: monthly
+  - `sensor.ipad_battery_level` passe sous 20% — id: low
 
-  - Le 1er de chaque mois à 1h00
+  **Fonctionnement prévu :**
+  1. Le 1er du mois à 1h00 → éteindre la prise de l'iPad (si elle est allumée), pour forcer un cycle de décharge/recharge mensuel.
+  2. Batterie < 20% → allumer la prise de l'iPad (si elle n'est pas déjà allumée).
 
-  - `sensor.ipad_battery_level` passe sous 20%
-
-
-  **Fonctionnement :**
-
-  1. Le 1er du mois à 1h00 → éteint la prise de l'iPad (si elle est allumée),
-  pour forcer un cycle de décharge/recharge mensuel.
-
-  2. Batterie < 20% → allume la prise de l'iPad (si elle n'est pas déjà
-  allumée).
-
+  **État réel :** les deux branches ne contiennent aucune condition ni aucune action ; l'automatisation se déclenche mais ne pilote pas la prise.
 
   **Entités principales :**
-
-  - `switch.prise_de_l_ipad` : alimentation de l'iPad
-
+  - `switch.prise_de_l_ipad` : alimentation de l'iPad (non référencée dans les actions actuelles)
   - `sensor.ipad_battery_level` : niveau de batterie de l'iPad
 triggers:
   - trigger: time
-    at: "01:00:00"
+    at: 01:00:00
     id: monthly
-    note: >-
-      Se déclenche tous les jours à 1h00 ; la condition template ci-dessous
-      restreint l'action au 1er du mois (pas d'alternative native pour un
-      déclenchement mensuel par date)
+    note: Se déclenche tous les jours à 1h00 ; la condition template ci-dessous restreint l'action au 1er du mois (pas d'alternative native pour un déclenchement mensuel par date)
   - trigger: numeric_state
     entity_id: sensor.ipad_battery_level
     below: 20
@@ -46,36 +32,19 @@ actions:
           - condition: trigger
             id: monthly
           - condition: template
-            value_template: "{{ now().day == 1 }}"
+            value_template: '{{ now().day == 1 }}'
             note: Restreint le déclenchement quotidien de 1h00 au seul 1er du mois
         sequence:
-          - note: >-
-              Coupure mensuelle : n'éteint que si la prise est actuellement
-              allumée
-            if:
-              - condition: state
-                entity_id: switch.prise_de_l_ipad
-                state: "on"
-            then:
-              - action: switch.turn_off
-                target:
-                  entity_id:
-                    - switch.prise_de_l_ipad
-                data: {}
+          - note: 'Coupure mensuelle : n''éteint que si la prise est actuellement allumée'
+            if: []
+            then: []
       - conditions:
           - condition: trigger
             id: low
         sequence:
           - if:
               - condition: not
-                conditions:
-                  - condition: state
-                    entity_id: switch.prise_de_l_ipad
-                    state: "on"
-            then:
-              - action: switch.turn_on
-                target:
-                  entity_id: switch.prise_de_l_ipad
-                data: {}
+                conditions: []
+            then: []
             note: N'allume que si la prise n'est pas déjà allumée
 mode: single

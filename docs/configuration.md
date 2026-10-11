@@ -23,7 +23,7 @@ logger:
 
 ## 🚨 Événements de log — System Log
 
-Nécessaire pour que l'automatisation [Surveillance - Automatisations et Scripts en Défaut](automations/alertes_notifications.md) puisse détecter les erreurs : par défaut, `fire_event` est à `false` et l'événement `system_log_event` n'est jamais émis sur le bus, donc aucun trigger basé sur cet événement ne se déclenche (testé et confirmé le 19/06/2026).
+Nécessaire pour que l'automatisation [Surveillance - Automatisations et Scripts en Défaut](automations/surveillance_ha.md) puisse détecter les erreurs : par défaut, `fire_event` est à `false` et l'événement `system_log_event` n'est jamais émis sur le bus, donc aucun trigger basé sur cet événement ne se déclenche (testé et confirmé le 19/06/2026).
 
 ```yaml
 system_log:

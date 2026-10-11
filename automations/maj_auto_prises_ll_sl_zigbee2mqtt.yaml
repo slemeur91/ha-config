@@ -1,0 +1,78 @@
+alias: MAJ Auto Prises LL/SL (Zigbee2MQTT)
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
+
+  **Déclencheurs :**
+  - `sensor.etat_lave_linge` en Veille depuis 30 s — id: LL veille
+  - `sensor.etat_seche_linge` en Veille depuis 30 s — id: SL veille
+  - Toutes les 5 minutes
+  - Déclenchement manuel par `Gestion emplacement Sylvain Domicile/Absent` au départ du domicile
+
+  **Fonctionnement :**
+  1. Force une relecture MQTT (équivalent du bouton 'MAJ' de l'interface Zigbee2MQTT) des 4 canaux de puissance (`power_1` à `power_4`) de la Multiprise de la Salle de bain et de la Multiprise du Séjour, en parallèle sur les deux multiprises.
+  2. Contourne le bug Zigbee2MQTT qui empêche parfois la puissance de redescendre à 0 W toute seule (ce qui fausse la détection de fin de cycle du lave-linge et du sèche-linge).
+
+  **Entités principales :**
+  - `sensor.etat_lave_linge` / `sensor.etat_seche_linge` : états des appareils
+  - Topics MQTT `zigbee2mqtt/Multiprise de la Salle de bain/get` et `zigbee2mqtt/Multiprise du Séjour/get`
+triggers:
+  - entity_id: sensor.etat_lave_linge
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 30
+    id: LL veille
+    to: Veille
+    trigger: state
+  - entity_id: sensor.etat_seche_linge
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 30
+    id: SL veille
+    to: Veille
+    trigger: state
+  - trigger: time_pattern
+    minutes: /5
+    note: Relecture périodique toutes les 5 minutes, indépendamment de l'état des appareils
+conditions: []
+actions:
+  - parallel:
+      - sequence:
+          - action: mqtt.publish
+            data:
+              payload: '{"power_1": ""}'
+              topic: zigbee2mqtt/Multiprise de la Salle de bain/get
+          - action: mqtt.publish
+            data:
+              payload: '{"power_2": ""}'
+              topic: zigbee2mqtt/Multiprise de la Salle de bain/get
+          - action: mqtt.publish
+            data:
+              payload: '{"power_3": ""}'
+              topic: zigbee2mqtt/Multiprise de la Salle de bain/get
+          - action: mqtt.publish
+            data:
+              payload: '{"power_4": ""}'
+              topic: zigbee2mqtt/Multiprise de la Salle de bain/get
+      - sequence:
+          - action: mqtt.publish
+            data:
+              payload: '{"power_1": ""}'
+              topic: zigbee2mqtt/Multiprise du Séjour/get
+          - action: mqtt.publish
+            data:
+              payload: '{"power_2": ""}'
+              topic: zigbee2mqtt/Multiprise du Séjour/get
+          - action: mqtt.publish
+            data:
+              payload: '{"power_3": ""}'
+              topic: zigbee2mqtt/Multiprise du Séjour/get
+          - action: mqtt.publish
+            data:
+              payload: '{"power_4": ""}'
+              topic: zigbee2mqtt/Multiprise du Séjour/get
+    note: Relecture forcée des 4 canaux de puissance des deux multiprises (Salle de bain et Séjour)
+mode: queued
+max: 10

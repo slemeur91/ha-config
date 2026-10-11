@@ -5,7 +5,7 @@ description: |-
 
   **Déclencheurs :**
   - `sensor.etat_seche_linge` passe de Éteint/Veille à En marche (anti-rebond 20s) → début de cycle
-  - `sensor.etat_seche_linge` passe de En marche à Éteint/Veille (anti-rebond 20s) → fin de cycle
+  - `sensor.etat_seche_linge` passe de En marche ou Anti-froissage à Éteint/Veille (anti-rebond 20s) → fin de cycle
   - `sensor.multiprise_de_la_salle_de_bain_power_2` repasse sous 3 W pendant 30s (désactivé) → détection alternative de fin de cycle par consommation
   - `input_boolean.cycle_seche_linge_en_cours` resté à "on" 4h → filet de sécurité (cycle trop long / fin non détectée)
 
@@ -40,6 +40,7 @@ triggers:
       - sensor.etat_seche_linge
     from:
       - En marche
+      - Anti-froissage
     to:
       - Éteint
       - Veille
@@ -48,7 +49,7 @@ triggers:
       minutes: 0
       seconds: 20
     id: Fin
-    note: Anti-rebond 20s ; fin détectée via l'état rapporté par l'appareil.
+    note: Anti-rebond 20s ; fin détectée via l'état rapporté par l'appareil (depuis En marche ou Anti-froissage).
   - trigger: power.crossed_threshold
     target:
       entity_id:
@@ -72,13 +73,13 @@ triggers:
     entity_id:
       - input_boolean.cycle_seche_linge_en_cours
     to:
-      - "on"
+      - 'on'
     for:
       hours: 4
       minutes: 0
       seconds: 0
     id: Trop Long
-    note: Filet de sécurité : évite que le marqueur "en cours" reste bloqué si la fin de cycle n'est jamais détectée.
+    note: 'Filet de sécurité : évite que le marqueur "en cours" reste bloqué si la fin de cycle n''est jamais détectée.'
 conditions: []
 actions:
   - choose:
@@ -93,7 +94,7 @@ actions:
                   entity_id: input_boolean.cycle_seche_linge_en_cours
                 options:
                   behavior: any
-                  for: "00:00:00"
+                  for: 00:00:00
             then:
               - action: input_boolean.turn_on
                 metadata: {}
@@ -104,13 +105,13 @@ actions:
                 target:
                   entity_id: input_number.dernier_cycle_seche_linge_conso_au_debut
                 data:
-                  value: "{{ states('sensor.multiprise_de_la_salle_de_bain_energy_2') | float }}"
+                  value: '{{ states(''sensor.multiprise_de_la_salle_de_bain_energy_2'') | float }}'
               - action: input_datetime.set_datetime
                 metadata: {}
                 target:
                   entity_id: input_datetime.dernier_cycle_seche_linge_debut
                 data:
-                  datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+                  datetime: '{{ now().strftime(''%Y-%m-%d %H:%M:%S'') }}'
             note: N'active que si pas déjà en cours (évite d'écraser l'horodatage de départ sur un redéclenchement).
         note: Début de cycle détecté
       - conditions:
@@ -124,20 +125,20 @@ actions:
                   entity_id: input_boolean.cycle_seche_linge_en_cours
                 options:
                   behavior: any
-                  for: "00:00:00"
+                  for: 00:00:00
             then:
               - action: input_datetime.set_datetime
                 metadata: {}
                 target:
                   entity_id: input_datetime.dernier_cycle_seche_linge_fin
                 data:
-                  datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+                  datetime: '{{ now().strftime(''%Y-%m-%d %H:%M:%S'') }}'
               - action: input_number.set_value
                 target:
                   entity_id:
                     - input_number.dernier_cycle_seche_linge_conso_a_la_ffin
                 data:
-                  value: "{{ states('sensor.multiprise_de_la_salle_de_bain_energy_2') | float }}"
+                  value: '{{ states(''sensor.multiprise_de_la_salle_de_bain_energy_2'') | float }}'
               - action: input_boolean.turn_off
                 metadata: {}
                 target:
@@ -151,6 +152,7 @@ actions:
               - Trop Long
         sequence:
           - action: input_boolean.turn_off
+            metadata: {}
             target:
               entity_id: input_boolean.cycle_seche_linge_en_cours
             data: {}

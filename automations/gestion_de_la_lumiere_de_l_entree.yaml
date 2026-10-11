@@ -1,50 +1,48 @@
 alias: Gestion de la Lumière de l'Entrée
-description: >-
-  **Statut :** Finalisé | **Evolution :** Aucune
-
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
 
   **Déclencheurs :**
-
   - Sonnette du portier (`binary_sensor.exterieur_slm_portier_visiteur` → on)
-
-  - Présence devant le portier (`binary_sensor.exterieur_slm_portier_personne` →
-  on)
-
+  - Présence devant le portier (`binary_sensor.exterieur_slm_portier_personne` → on)
+  - Ouverture de la porte d'entrée (`binary_sensor.do_porte_entree`)
 
   **Fonctionnement :**
-
-  1. Si période sombre (30 min après coucher / 30 min avant lever du soleil) →
-  allume `light.lumiere_de_lexterieur`, attend 5 s.
-
+  1. Si période sombre (de 30 min avant le coucher du soleil à 30 min après le lever) → allume `light.lumiere_de_lexterieur`, attend 5 s.
   2. Si la lumière est allumée → attend 5 min puis éteint automatiquement.
 
+  **Note :** mode `restart` : une nouvelle détection pendant le délai de 5 min relance l'extinction à zéro.
 
-  > Mode `restart` : une nouvelle détection pendant le délai de 5 min relance
-  l'extinction à zéro.
-
-
-  **Entités utilisées :** `binary_sensor.exterieur_slm_portier_visiteur`,
-  `binary_sensor.exterieur_slm_portier_personne`, `light.lumiere_de_lexterieur`
+  **Entités principales :**
+  - `binary_sensor.exterieur_slm_portier_visiteur`, `binary_sensor.exterieur_slm_portier_personne`, `binary_sensor.do_porte_entree`
+  - `light.lumiere_de_lexterieur`
 triggers:
   - trigger: state
     entity_id:
       - binary_sensor.exterieur_slm_portier_visiteur
     to:
-      - "on"
+      - 'on'
   - trigger: state
     entity_id:
       - binary_sensor.exterieur_slm_portier_personne
     to:
-      - "on"
+      - 'on'
     enabled: true
+  - trigger: door.opened
+    target:
+      entity_id: binary_sensor.do_porte_entree
+    options:
+      behavior: each
+      for: 00:00:00
 conditions: []
 actions:
   - if:
       - condition: sun
         before: sunrise
-        before_offset: "1800"
+        before_offset: '1800'
         after: sunset
-        after_offset: "-1800"
+        after_offset: '-1800'
     then:
       - action: light.turn_on
         target:
@@ -56,6 +54,7 @@ actions:
           minutes: 0
           seconds: 5
           milliseconds: 0
+    note: Période sombre (de 30 min avant le coucher à 30 min après le lever) → allume la lumière extérieure
   - if:
       - condition: light.is_on
         target:
@@ -63,7 +62,7 @@ actions:
             - light.lumiere_de_lexterieur
         options:
           behavior: any
-          for: "00:00:00"
+          for: 00:00:00
     then:
       - delay:
           hours: 0
@@ -75,4 +74,5 @@ actions:
           entity_id:
             - light.lumiere_de_lexterieur
         data: {}
+    note: 'Lumière allumée → attend 5 min puis éteint (mode restart : une nouvelle détection relance le délai à zéro)'
 mode: restart

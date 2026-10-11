@@ -1,45 +1,26 @@
 alias: Gestion du Poêle et de la Climatisation
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
-  - Changement de `sensor.poele_status` (avec ou sans délai 30 min)
-
-  - Changement de `sensor.poele_smoke_temperature` (< 78°C)
-
-  - Changement d'état des climatisations (avec délai 5 min)
-
+  - `sensor.poele_status` stable depuis 30 min (tout état)
+  - `sensor.poele_status` passe à OFF (immédiat)
+  - `sensor.poele_smoke_temperature` passe sous 78°C
+  - Changement d'état d'une des 4 climatisations, stable depuis 5 min
   - Changement de `input_boolean.alarme`
 
-
   **Fonctionnement :**
-
-  1. Gère le flag `input_boolean.poele` : allume si le poêle s'allume, éteint en
-  Stand-by si nécessaire, désactive si status = OFF.
-
-  2. Gère le flag `input_boolean.climatisation` : active si une climatisation
-  tourne, désactive si toutes sont éteintes.
-
-  3. Si alarme armée-absent → éteint toutes les climatisations une par une.
-
+  1. Gère le flag `input_boolean.poele` : l'active quand le poêle passe en Ignition ; une fois actif, éteint `climate.poele` si le poêle est en Stand-by et pas encore éteint, puis désactive le flag quand le status vaut OFF.
+  2. Gère le flag `input_boolean.climatisation` : active si une climatisation tourne, désactive si toutes sont éteintes.
+  3. Si le flag climatisation est actif, qu'une climatisation tourne encore et que l'alarme est armée (absent) → éteint les climatisations une par une.
   4. Si alarme désarmée → rallume le contacteur de la climatisation.
-
-  5. Si tout est éteint (poêle OFF + clim OFF + alarme armed_away) → coupe le
-  contacteur de la climatisation.
-
+  5. Si tout est éteint (poêle OFF + clim OFF + alarme armed_away) → coupe le contacteur de la climatisation.
 
   **Entités principales :**
-
   - `sensor.poele_status` : état du poêle à granulés
-
   - `climate.climatisation_*` : 4 unités de climatisation
-
   - `switch.contacteur_de_la_climatisation` : alimentation physique de la clim
-
   - `input_boolean.poele` / `input_boolean.climatisation` : flags d'état
 triggers:
   - entity_id:
@@ -53,7 +34,7 @@ triggers:
   - entity_id:
       - sensor.poele_status
     to:
-      - "OFF"
+      - 'OFF'
     trigger: state
   - entity_id:
       - climate.climatisation_de_la_chambre
@@ -81,7 +62,7 @@ actions:
           - condition: state
             entity_id: input_boolean.poele
             state:
-              - "off"
+              - 'off'
         then:
           - if:
               - condition: state
@@ -108,13 +89,13 @@ actions:
                           - condition: state
                             entity_id: climate.poele
                             state:
-                              - "off"
+                              - 'off'
                     then:
                       - device_id: 4ae3ac3b2a6d31d7d3576e5a4e10f889
                         domain: climate
                         entity_id: eff7a24b63971bbbc6e6479194828ecf
                         type: set_hvac_mode
-                        hvac_mode: "off"
+                        hvac_mode: 'off'
                         enabled: false
                       - action: climate.turn_off
                         target:
@@ -124,7 +105,7 @@ actions:
                   - condition: state
                     entity_id: sensor.poele_status
                     state:
-                      - "OFF"
+                      - 'OFF'
                 sequence:
                   - action: input_boolean.turn_off
                     metadata: {}
@@ -136,7 +117,7 @@ actions:
           - condition: state
             entity_id: input_boolean.climatisation
             state:
-              - "off"
+              - 'off'
         then:
           - if:
               - condition: or
@@ -146,25 +127,25 @@ actions:
                       - condition: state
                         entity_id: climate.climatisation_de_la_chambre
                         state:
-                          - "off"
+                          - 'off'
                   - condition: not
                     conditions:
                       - condition: state
                         entity_id: climate.climatisation_de_la_suite_parentale
                         state:
-                          - "off"
+                          - 'off'
                   - condition: not
                     conditions:
                       - condition: state
                         entity_id: climate.climatisation_du_bureau
                         state:
-                          - "off"
+                          - 'off'
                   - condition: not
                     conditions:
                       - condition: state
                         entity_id: climate.climatisation_du_sejour
                         state:
-                          - "off"
+                          - 'off'
             then:
               - action: input_boolean.turn_on
                 metadata: {}
@@ -181,28 +162,28 @@ actions:
                       - condition: state
                         entity_id: climate.climatisation_de_la_chambre
                         state:
-                          - "off"
+                          - 'off'
                           - unavailable
                   - condition: not
                     conditions:
                       - condition: state
                         entity_id: climate.climatisation_de_la_suite_parentale
                         state:
-                          - "off"
+                          - 'off'
                           - unavailable
                   - condition: not
                     conditions:
                       - condition: state
                         entity_id: climate.climatisation_du_bureau
                         state:
-                          - "off"
+                          - 'off'
                           - unavailable
                   - condition: not
                     conditions:
                       - condition: state
                         entity_id: climate.climatisation_du_sejour
                         state:
-                          - "off"
+                          - 'off'
                           - unavailable
             then:
               - if:
@@ -217,7 +198,7 @@ actions:
                           - condition: state
                             entity_id: climate.climatisation_de_la_chambre
                             state:
-                              - "off"
+                              - 'off'
                     then:
                       - action: climate.turn_off
                         target:
@@ -229,7 +210,7 @@ actions:
                           - condition: state
                             entity_id: climate.climatisation_de_la_suite_parentale
                             state:
-                              - "off"
+                              - 'off'
                     then:
                       - action: climate.turn_off
                         target:
@@ -241,7 +222,7 @@ actions:
                           - condition: state
                             entity_id: climate.climatisation_du_bureau
                             state:
-                              - "off"
+                              - 'off'
                     then:
                       - action: climate.turn_off
                         target:
@@ -253,7 +234,7 @@ actions:
                           - condition: state
                             entity_id: climate.climatisation_du_sejour
                             state:
-                              - "off"
+                              - 'off'
                     then:
                       - action: climate.turn_off
                         target:
@@ -265,10 +246,7 @@ actions:
                 target:
                   entity_id: input_boolean.climatisation
                 data: {}
-    note: >-
-      Exécute en parallèle : (1) gestion flag poêle selon son status ; (2)
-      gestion flag climatisation + extinction si alarme absent ; (3) contrôle
-      contacteur clim (ON si désarmé, OFF si tout éteint+absent)
+    note: 'Exécute en parallèle : (1) gestion du flag poêle selon son status ; (2) gestion du flag climatisation + extinction des clims si alarme armée (absent)'
   - choose:
       - conditions:
           - condition: state
@@ -280,7 +258,7 @@ actions:
               - condition: state
                 entity_id: switch.contacteur_de_la_climatisation
                 state:
-                  - "off"
+                  - 'off'
             then:
               - action: switch.turn_on
                 continue_on_error: true
@@ -293,31 +271,31 @@ actions:
               - condition: state
                 entity_id: sensor.poele_status
                 state:
-                  - "OFF"
+                  - 'OFF'
               - condition: state
                 entity_id: input_boolean.poele
                 state:
-                  - "off"
+                  - 'off'
               - condition: state
                 entity_id: climate.climatisation_de_la_chambre
                 state:
-                  - "off"
+                  - 'off'
               - condition: state
                 entity_id: climate.climatisation_de_la_suite_parentale
                 state:
-                  - "off"
+                  - 'off'
               - condition: state
                 entity_id: climate.climatisation_du_bureau
                 state:
-                  - "off"
+                  - 'off'
               - condition: state
                 entity_id: climate.climatisation_du_sejour
                 state:
-                  - "off"
+                  - 'off'
               - condition: state
                 entity_id: input_boolean.climatisation
                 state:
-                  - "off"
+                  - 'off'
               - condition: state
                 entity_id: alarm_control_panel.alarme
                 state:
@@ -327,12 +305,13 @@ actions:
               - condition: state
                 entity_id: switch.contacteur_de_la_climatisation
                 state:
-                  - "on"
+                  - 'on'
             then:
               - action: switch.turn_off
                 continue_on_error: true
                 data: {}
                 target:
                   entity_id: switch.contacteur_de_la_climatisation
+    note: 'Contacteur de la climatisation : ON si alarme désarmée ; OFF si poêle et clims éteints et alarme armée (absent)'
 mode: queued
 max: 10

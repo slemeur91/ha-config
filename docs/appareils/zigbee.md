@@ -1,6 +1,6 @@
 # Zigbee (22 appareils)
 
-[← Retour Appareils](../appareils.md)
+[← Retour README](../../README.md)
 
 > 📦 **Add-on Apps** — Zigbee2MQTT → Mosquitto MQTT → HA
 

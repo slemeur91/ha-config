@@ -4,7 +4,7 @@
 
 ---
 
-## Intégrations (23)
+## Intégrations (37)
 
 ### Alexa Media Player
 > [GitHub](https://github.com/alandtse/alexa_media_player) — `domain: alexa_media`
@@ -29,6 +29,35 @@ Qualité de l'air pour les villes françaises depuis Atmo France.
 Suivi des types et dates de remplacement des batteries.
 
 **Utilisation :** Automations `battery_low_notification`, `daily_battery_low_check`, `battery_increased_notification`.
+
+---
+
+### Cork Dork
+> [GitHub](https://github.com/BaconWappedBitcoin/ha-wine-cellar) — `domain: wine_cellar`
+
+Suivi de la cave à vin par lecture de codes-barres, avec représentation des étagères.
+
+**Entités :** `sensor.cork_dork_total_bottles`, `sensor.cork_dork_capacity`, un capteur par étagère (1 à 6) et `sensor.cork_dork_refrigerateur`. Carte associée : `custom:wine-cellar-card`.
+
+---
+
+### CoverAutomatic
+> [GitHub](https://github.com/slemeur91/CoverAutomatic) — `domain: cover_automatic`
+
+Pilotage automatique des volets, velux et store selon la position du soleil, l'heure, la température et un scénario (`vacation` / `summer` / `winter`). Remplace les anciennes automatisations de gestion des volets et des velux.
+
+**Configuration :** 13 ouvrants (9 volets, 3 velux, store de la pergola) et 10 façades. Le scénario est sélectionné par l'automatisation [`Scénario coverAutomatic`](automations/volets.md). Carte associée : `custom:cover-automatic-card`.
+
+> ⚠️ Dépôt personnel à ajouter manuellement dans HACS.
+
+---
+
+### DomoLink-Mistral IA
+> [GitHub](https://github.com/SocrateMobile/DomoLink-Mistral) — `domain: domolink_mistral`
+
+Diagnostic de Home Assistant, agent conversationnel Assist et analyse des journaux par Mistral AI.
+
+**Entités :** `sensor.domolink_mistral_ia_problemes_detectes`, `button.domolink_mistral_ia_analyser_les_logs`, `conversation.domolink_mistral_ia_mistral_ai`.
 
 ---
 
@@ -163,6 +192,15 @@ Intégration cloud pour les appareils EcoFlow (batterie DELTA Max + PowerStream)
 
 ---
 
+### Frigate
+> [GitHub](https://github.com/blakeblackshear/frigate-hass-integration) — `domain: frigate`
+
+Intégration du NVR Frigate (détection d'objets locale). Connectée à une instance Frigate externe.
+
+**Appareils :** caméra `SLM-Camera6` et zone de détection `Personne` (`binary_sensor.personne_person_occupancy`).
+
+---
+
 ### HACS
 > [GitHub](https://github.com/hacs/integration) — `domain: hacs`
 
@@ -170,10 +208,44 @@ Home Assistant Community Store — gestionnaire de contenu communautaire.
 
 ---
 
+### HAGHS
+> [GitHub](https://github.com/HA-Pulse/home-assistant-global-health-score) — `domain: haghs`
+
+Score global de santé de l'instance Home Assistant (matériel et applicatif), avec recommandations.
+
+**Entité :** `sensor.system_ha_global_health_score`.
+
+---
+
+### Heating & Cooling Degree Days
+> [GitHub](https://github.com/alepee/hass-heating_cooling_degree_days) — `domain: heating_cooling_degree_days`
+
+Calcul des degrés-jours de chauffage (DJC) et de refroidissement (DJR) à partir de la température extérieure, base 18 °C.
+
+**Entités :** `sensor.reseau_exterieur_18_djc_*` et `sensor.reseau_exterieur_18_djr_*` (journalier, hebdomadaire, mensuel).
+
+---
+
+### Home Architect
+> [GitHub](https://github.com/SocrateMobile/home-architect) — `domain: home_architect`
+
+Éditeur de plan de la maison (CAO) et tableau de bord d'automatisation.
+
+---
+
 ### Hue Sync Box
 > [GitHub](https://github.com/mvdwetering/huesyncbox) — `domain: huesyncbox`
 
 Intégration du Philips Hue Play HDMI Sync Box (synchronisation lumières/vidéo).
+
+---
+
+### L'eau d'Ile-de-France
+> [GitHub](https://github.com/TimoPtr/ha_eauidf) — `domain: eauidf`
+
+Récupération de la consommation d'eau depuis l'espace client Eau d'Île-de-France.
+
+> ℹ️ Installée dans HACS mais non configurée.
 
 ---
 
@@ -212,8 +284,6 @@ Contrôle des poêles à granulés connectés via la plateforme Agua IOT.
 
 Suivi de l'inventaire de la cave à vin (bouteilles, millésimes, emplacements).
 
-> ⚠️ Mise à jour disponible (v7.1.6).
-
 ---
 
 ### My EcoWatt by RTE
@@ -230,13 +300,32 @@ Supervision de la Livebox Orange (état WAN, appareils connectés).
 
 ---
 
+### PDF Scrape
+> [GitHub](https://github.com/iluvdata/pdf_scrape) — `domain: pdf_scrape`
+
+Création de capteurs à partir du contenu de fichiers PDF accessibles en HTTP(S).
+
+> ℹ️ Installée dans HACS mais non configurée.
+
+---
+
+### Powercalc
+> [GitHub](https://github.com/bramstroker/homeassistant-powercalc) — `domain: powercalc`
+
+Estimation de la consommation électrique des lumières et appareils sans mesure de puissance.
+
+**Configuration :** 16 capteurs virtuels de puissance pour les lumières (pièces du RDC et de l'étage, armoires de toilette, plafonniers, bandeau HUE de la télé).
+
+---
+
 ### pyscript
 > [GitHub](https://github.com/custom-components/pyscript) — `domain: pyscript`
 
 Scripts Python avancés dans Home Assistant.
 
 **Scripts utilisés :**
-- `gazpar_update` : injection des statistiques GAZPAR
+- `gazpar_update` / `gazpar_import_all` : injection des statistiques GAZPAR
+- `linky_update` : réimport des statistiques Linky à la date exacte de consommation
 - `surveillance_station_recording` : contrôle de l'enregistrement des caméras Synology
 
 ---
@@ -254,6 +343,15 @@ Liaison entre deux instances Home Assistant.
 > remote_homeassistant:
 >   instances:
 > ```
+
+---
+
+### Restart Guard
+> [GitHub](https://github.com/igraph100/ha-restart-guard) — `domain: restart_guard`
+
+Avertit dans la boîte de dialogue de redémarrage de HA lorsqu'une automatisation planifiée est en cours ou sur le point de s'exécuter.
+
+**Entité :** `sensor.restart_guard`.
 
 ---
 
@@ -286,6 +384,22 @@ Boîte à outils avancée pour Home Assistant (services supplémentaires, détec
 
 ---
 
+### Streaming Top FR
+> [GitHub](https://github.com/PourLePlaisir-HA/Streaming-Top-FR) — `domain: streaming_top_fr`
+
+Classement des meilleurs films et séries disponibles sur les plateformes de streaming françaises. Cartes associées : `custom:streaming-top-fr-card`, `custom:streaming-top-fr-catalog-card`.
+
+---
+
+### Suivi Stock Pellet
+> [GitHub](https://github.com/cyclope205/suivi-stock-pellet) — `domain: suivi_stock_pellet`
+
+Suivi du stock, de la consommation et des achats de granulés de bois pour le poêle.
+
+**Entités :** `sensor.granules_stock`, `sensor.granules_consomme`, `sensor.granules_energie_consommee`, `sensor.granules_achete`, `sensor.granules_depense`, `sensor.granules_jours_d_utilisation`. Carte associée : `custom:suivi-stock-pellet-card`.
+
+---
+
 ### Vacances Scolaires
 > [GitHub](https://github.com/Master13011/vacances-scolaire-HA) — `domain: vacances_scolaires`
 
@@ -293,6 +407,15 @@ Calendrier des vacances scolaires françaises.
 
 **Configuration :**
 - Zone : C (Île-de-France)
+
+---
+
+### Vigilance Météo France
+> [GitHub](https://github.com/Pulpyyyy/meteo_france_vigilance) — `domain: meteo_france_vigilance`
+
+Carte de vigilance Météo-France : capteurs par département et vignette nationale.
+
+**Configuration :** département de l'Essonne (`sensor.vigilance_essonne_aujourd_hui`). Carte associée : `custom:meteo-france-vigilance-card`.
 
 ---
 
@@ -339,7 +462,7 @@ Intégration native HA de l'IA Claude (Anthropic). Permet l'assistant conversati
 
 ---
 
-## Cartes Lovelace (13)
+## Cartes Lovelace (21)
 
 ### apexcharts-card
 > [GitHub](https://github.com/RomRider/apexcharts-card)
@@ -452,6 +575,13 @@ Carte template permettant de définir des configurations réutilisables pour ré
 
 ---
 
+### button-card
+> [GitHub](https://github.com/custom-cards/button-card)
+
+Bouton entièrement personnalisable. Utilisé pour afficher l'état animé du lave-vaisselle, du lave-linge et du sèche-linge.
+
+---
+
 ### card-mod
 > [GitHub](https://github.com/thomasloven/lovelace-card-mod)
 
@@ -516,6 +646,27 @@ Templates et couleurs d'icônes personnalisés dans l'interface HA.
 
 Carte extensible/rétractable pour organiser les dashboards.
 
+### HA Appliance Card
+> [GitHub](https://github.com/ADNPolymerase/ha-appliance-card)
+
+Carte dédiée aux appareils électroménagers. Utilisée pour le lave-vaisselle, le lave-linge, le sèche-linge et le réfrigérateur.
+
+---
+
+### HA Printer Card
+> [GitHub](https://github.com/ADNPolymerase/ha-printer-card)
+
+Carte d'imprimante : état, animation d'impression et niveaux de toner. Utilisée pour la Canon MF650C.
+
+---
+
+### Helios
+> [GitHub](https://github.com/ReikanYsora/Helios)
+
+Visualisation 2.5D de la maison, de son environnement et de la course du soleil.
+
+---
+
 ### ha-floorplan
 > [GitHub](https://github.com/ExperienceLovelace/ha-floorplan)
 
@@ -542,10 +693,24 @@ showYearlyCostHistoryChart: false
 
 ![GrDF Gazpar card](../images/grdf-gazpar-card.png)
 
+### Linky Content Card
+> [GitHub](https://github.com/MyElectricalData/content-card-linky)
+
+Affichage de la consommation Linky (historique, coût, puissance maximale) avec les signaux EcoWatt et Tempo.
+
+---
+
 ### Kiosk Mode
 > [GitHub](https://github.com/NemesisRE/kiosk-mode)
 
 Masque l'en-tête et/ou la barre latérale Home Assistant pour un affichage en mode kiosque (tablette murale, écran dédié).
+
+---
+
+### Mushroom
+> [GitHub](https://github.com/piitaya/lovelace-mushroom)
+
+Collection de cartes épurées. Utilisée pour les informations de cycle (début, fin, durée, consommation, coût) des appareils de lavage.
 
 ---
 
@@ -650,6 +815,13 @@ title: Somfy Protexial — Contrôle
 
 ![Somfy Protexial Card](../images/somfy-protexial-card.png)
 
+### Stack In Card
+> [GitHub](https://github.com/custom-cards/stack-in-card)
+
+Regroupe plusieurs cartes en une seule, sans bordures. Installée, pas encore utilisée dans un tableau de bord.
+
+---
+
 ### Travel Time Card
 > [GitHub](https://github.com/ljmerza/travel-time-card)
 
@@ -674,6 +846,13 @@ entities:
 ```
 
 ![Travel Time card](../images/travel-time-card.png)
+
+---
+
+### WallPanel
+> [GitHub](https://github.com/j-a-n/lovelace-wallpanel)
+
+Mode panneau mural et économiseur d'écran photo pour les tableaux de bord.
 
 ---
 

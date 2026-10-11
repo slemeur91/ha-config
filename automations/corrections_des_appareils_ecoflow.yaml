@@ -1,45 +1,31 @@
 alias: Corrections des Appareils EcoFlow
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
-  - `sensor.powerstream_6231_status` ou `sensor.ecoflow_status` passe à
-  "assume_offline"
-
+  - `sensor.powerstream_6231_status` ou `sensor.ecoflow_status` passe à "assume_offline"
   - Lever du soleil
 
-
   **Fonctionnement :**
-
   1. Attend 5 secondes.
-
-  2. Si le PowerStream est offline ET que le soleil est levé → désactive puis
-  réactive l'intégration (cycle 15 secondes).
-
-  3. Si l'EcoFlow Delta Max est offline → désactive puis réactive l'intégration
-  (cycle 15 secondes).
-
+  2. Si le PowerStream est offline ET que le soleil est levé → désactive puis réactive l'intégration (cycle 15 secondes).
+  3. Si l'EcoFlow Delta Max est offline → désactive puis réactive l'intégration (cycle 15 secondes).
 
   **Entités principales :**
-
-  - `sensor.powerstream_6231_status` / `sensor.ecoflow_status` : état des
-  appareils EcoFlow
+  - `sensor.powerstream_6231_status` / `sensor.ecoflow_status` : état des appareils EcoFlow
 triggers:
   - entity_id:
       - sensor.powerstream_6231_status
     to: assume_offline
-    trigger: state
+    platform: state
   - entity_id:
       - sensor.ecoflow_status
     to: assume_offline
-    trigger: state
+    platform: state
   - event: sunrise
     offset: 0
-    trigger: sun
+    platform: sun
 conditions: []
 actions:
   - delay:
@@ -71,9 +57,7 @@ actions:
             data:
               device_id:
                 - aa808cc2fd0ee20d570da17614c83006
-        note: >-
-          PowerStream offline ET soleil levé → cycle désactivation/réactivation
-          de l'intégration (15s)
+        note: PowerStream offline ET soleil levé → cycle désactivation/réactivation de l'intégration (15s)
       - if:
           - condition: state
             entity_id: sensor.ecoflow_status
@@ -92,8 +76,6 @@ actions:
             data:
               device_id:
                 - 375e224e3dd5fe962a0cacefccab586b
-        note: >-
-          EcoFlow Delta Max offline → cycle désactivation/réactivation de
-          l'intégration (15s)
+        note: EcoFlow Delta Max offline → cycle désactivation/réactivation de l'intégration (15s)
 mode: queued
 max: 10

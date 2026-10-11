@@ -18,7 +18,7 @@ description: |-
   **Fonctionnement :**
 
   1. Quel que soit le déclencheur → vérifie les 5 capteurs et crée une
-  notification pour chacun actuellement à off. Le `notification_id` évite les
+  notification pour chacun actuellement à off. Le `message_id` évite les
   doublons dans l'interface.
 
 
@@ -33,14 +33,13 @@ triggers:
     entity_id:
       - binary_sensor.chauffage_du_bureau_nodeid_2_temperature_sensor
       - binary_sensor.chauffage_de_la_chambre_nodeid_6_temperature_sensor
-      - >-
-        binary_sensor.chauffage_de_la_suite_parentale_nodeid_3_temperature_sensor
+      - binary_sensor.chauffage_de_la_suite_parentale_nodeid_3_temperature_sensor
       - binary_sensor.chauffage_de_la_salle_d_eau_nodeid_4_temperature_sensor
       - binary_sensor.chauffage_de_la_salle_de_bain_nodeid_5_temperature_sensor
-    to: "off"
+    to: 'off'
     id: capteur_off
   - trigger: time
-    at: "08:00:00"
+    at: 08:00:00
     id: vendredi
     weekday:
       - fri
@@ -50,22 +49,18 @@ actions:
       for_each:
         - binary_sensor.chauffage_du_bureau_nodeid_2_temperature_sensor
         - binary_sensor.chauffage_de_la_chambre_nodeid_6_temperature_sensor
-        - >-
-          binary_sensor.chauffage_de_la_suite_parentale_nodeid_3_temperature_sensor
+        - binary_sensor.chauffage_de_la_suite_parentale_nodeid_3_temperature_sensor
         - binary_sensor.chauffage_de_la_salle_d_eau_nodeid_4_temperature_sensor
-        - >-
-          binary_sensor.chauffage_de_la_salle_de_bain_nodeid_5_temperature_sensor
+        - binary_sensor.chauffage_de_la_salle_de_bain_nodeid_5_temperature_sensor
       sequence:
         - if:
             - condition: template
-              value_template: "{{ is_state(repeat.item, 'off') }}"
+              value_template: '{{ is_state(repeat.item, ''off'') }}'
           then:
             - action: script.notification_ha
               data:
                 message_type: Chauffage
-                message_ha: >-
-                  Le capteur déporté {{ state_attr(repeat.item, 'friendly_name')
-                  | default(repeat.item) }} est désactivé (Non Détecté).
-                notification_id: capteur_chauffage_desactive-{{ repeat.item }}
+                message_corp: Le capteur déporté {{ state_attr(repeat.item, 'friendly_name') | default(repeat.item) }} est désactivé (Non Détecté).
+                message_id: capteur_chauffage_desactive-{{ repeat.item }}
 mode: queued
 max: 5

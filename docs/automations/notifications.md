@@ -2,7 +2,6 @@
 
 [← Retour README](../../README.md)
 
-
 ---
 
 ## `automation.notification_appareils_en_batterie_faible` — Notification Batterie Faible
@@ -42,10 +41,16 @@
 **Statut :** Finalisé | **Evolution :** Aucune
 
 **Déclencheurs :**
-- Hebdomadaire (selon configuration)
+- Chaque vendredi à 19h00
 
 **Fonctionnement :**
-1. Envoie un mail récapitulatif des appareils dont la batterie est sous le seuil d'alerte.
+1. Parcourt les capteurs de l'intégration Battery Notes et retient ceux dont l'attribut `battery_low` est vrai (nom de l'appareil, niveau, type et quantité de piles).
+2. S'arrête sans rien envoyer si aucun appareil n'est en batterie faible.
+3. Sinon, compose la liste et envoie un mail récapitulatif (type 'Batteries') via `script.notification_mail`.
+
+**Entités principales :**
+- Intégration `battery_notes` : source des niveaux de batterie
+- `script.notification_mail` : envoi du mail récapitulatif
 
 **Entrées utilisées :** Aucune entrée helper.
 
@@ -70,22 +75,30 @@
 ## `automation.notification_de_capteur_deporte_du_chauffage_desactive` — Notification de capteur déporté du chauffage désactivé
 > [📄 Voir le YAML](../../automations/notification_du_capteur_deporte_du_chauffage_desactive.yaml)
 
-**Statut :** Finalisé | **Evolution :** Aucune
+**Statut :** Finalisé
+
+**Evolution :** Aucune
 
 **Déclencheurs :**
-- L'un des 5 capteurs sonde de température des chauffages de l'étage passe à « Non Détecté » (off)
+
+- L'un des 5 capteurs de sonde de température des chauffages de l'étage passe
+à « Non Détecté » (off)
+
 - Planification hebdomadaire tous les vendredis à 08h00
+
 - Déclenchement manuel
 
 **Fonctionnement :**
-1. Quel que soit le déclencheur → vérifie les 5 capteurs et crée une notification pour chacun actuellement à off. Le `message_id` évite les doublons dans l'interface.
+
+1. Quel que soit le déclencheur → vérifie les 5 capteurs et crée une
+notification pour chacun actuellement à off. Le `message_id` évite les
+doublons dans l'interface.
 
 **Entités principales :**
-- `binary_sensor.chauffage_du_bureau_nodeid_2_temperature_sensor`
-- `binary_sensor.chauffage_de_la_chambre_nodeid_6_temperature_sensor`
-- `binary_sensor.chauffage_de_la_suite_parentale_nodeid_3_temperature_sensor`
-- `binary_sensor.chauffage_de_la_salle_d_eau_nodeid_4_temperature_sensor`
-- `binary_sensor.chauffage_de_la_salle_de_bain_nodeid_5_temperature_sensor`
+
+- 5 `binary_sensor.*_temperature_sensor` : sondes des chauffages Bureau,
+Chambre, Suite parentale, Salle d'eau, Salle de bain
+
 - `script.notification_ha` : création de la notification persistante
 
 ---
@@ -198,20 +211,23 @@
 ## `automation.notification_de_la_boite_aux_lettres` — Notification de la Boîte aux Lettres
 > [📄 Voir le YAML](../../automations/notification_de_la_boite_aux_lettres.yaml)
 
-**Statut :** En test | **Evolution :** Corrections
+**Statut :** En test | **Evolution :** Correction du 11/10/2026 — l'envoi dépendait d'un test sur la variable `message_courrier`, jamais définie ; l'envoi est désormais fait directement dans chaque branche.
+
+**Convention des capteurs :** les deux contacts sont à `on` au repos (fermé) et passent brièvement à `off` à l'ouverture.
 
 **Déclencheurs :**
-- Fermeture de la porte principale (`binary_sensor.porte_boite_aux_lettres` → off) — cas colis
-- Fermeture de la trappe à lettres (`binary_sensor.trappe_boite_aux_lettres` → off), uniquement si la porte est déjà fermée — cas lettre
+- Ouverture de la porte principale de la boîte aux lettres (`binary_sensor.porte_boite_aux_lettres` → off) — id: Porte, cas colis
+- Ouverture de la trappe à lettres (`binary_sensor.trappe_boite_aux_lettres` → off) — id: Trappe, cas lettre
 
 **Fonctionnement :**
-1. Porte principale refermée → compose "colis".
-2. Trappe refermée (porte déjà fermée) → compose "lettre".
-3. Envoie mail + SMS (notification vocale désactivée).
+1. Porte principale ouverte → envoie mail + SMS 'La boîte aux lettres a été ouverte : colis'.
+2. Trappe à lettres ouverte, uniquement si la porte principale est fermée (`on`) → envoie mail + SMS 'La trappe de la boîte aux lettres a été ouverte : lettre'. Si la porte est ouverte au même moment (relevé du courrier), rien n'est envoyé pour la trappe.
+3. Pas de notification vocale.
 
 **Entités principales :**
-- `binary_sensor.porte_boite_aux_lettres`, `binary_sensor.trappe_boite_aux_lettres`
-- `script.notification_mail`, `script.notification_sms`
+- `binary_sensor.porte_boite_aux_lettres` : porte principale (colis)
+- `binary_sensor.trappe_boite_aux_lettres` : trappe à lettres
+- `script.notification_mail` / `script.notification_sms` : envoi des alertes
 
 ---
 
@@ -240,22 +256,24 @@
 ## `automation.notification_des_alertes_de_defaut_des_onduleurs_ups` — Notification des Alertes de défaut des Onduleurs - UPS
 > [📄 Voir le YAML](../../automations/notification_des_alertes_de_defaut_des_onduleurs_ups.yaml)
 
-**Statut :** Finalisé | **Evolution :** Aucune
+**Statut :** Finalisé | **Evolution :** Correction du 11/10/2026 — la branche de l'onduleur réseau Ups notifiait 'Replace battery!' à chaque changement de son code d'état ; elle est désormais filtrée sur les flags anormaux, comme la branche Eaton_Usb.
 
 **Déclencheurs :**
-- `sensor.reseau_ups_alarmes` passe à "Replace battery!" (onduleur réseau Ups)
-- Changement de `sensor.eaton_usb_code_d_etat` (onduleur Eaton_Usb, code NUT ups.status)
+- Changement d'état de `sensor.ups_code_d_etat` (onduleur réseau Ups, code d'état NUT ups.status) — id: ups_reseau
+- Changement d'état de `sensor.eaton_usb_code_d_etat` (onduleur Eaton_Usb, code d'état NUT ups.status) — id: ups_eaton_usb
 
-**Conditions :**
-- Pour Eaton_Usb : le code d'état contient un flag anormal (hors OL/OB/CHRG/DISCHRG : RB, LB, BYPASS, OFF, OVER, TRIM, BOOST, FSD, CAL)
+**Conditions (par branche) :**
+- Le code d'état doit contenir au moins un flag hors OL/OB/CHRG/DISCHRG, donc un flag anormal : RB, LB, BYPASS, OFF, OVER, TRIM, BOOST, FSD, CAL.
+- Les états `unavailable` / `unknown` sont ignorés pour les deux onduleurs (l'indisponibilité d'Eaton_Usb est traitée par `Correction de l'Onduleur`).
 
 **Fonctionnement :**
-1. Onduleur Ups (réseau) : "Replace battery!" détecté → notifie qu'un remplacement de batterie est nécessaire.
-2. Onduleur Eaton_Usb : code NUT anormal → traduit chaque flag (RB, LB, BYPASS…) en description lisible et notifie.
-3. Deux branches avec `message_id` distinct pour éviter les doublons.
+1. Onduleur Ups (réseau) → si un flag anormal est présent, traduit chaque code en description lisible (RB = remplacement de la batterie nécessaire, LB = batterie faible, etc.) et notifie.
+2. Onduleur Eaton_Usb (USB) → même logique.
+3. Les deux branches utilisent `script.notification_ha` avec un `message_id` distinct par onduleur (`ups_reseau_defaut`, `eaton_usb_defaut`) : une nouvelle alerte remplace la précédente au lieu de s'empiler.
+4. Un simple passage sur batterie (OB DISCHRG) ne notifie pas : la coupure secteur est couverte par `Notification de coupure de courant EDF`.
 
 **Entités principales :**
-- `sensor.reseau_ups_alarmes` : alarme texte de l'onduleur réseau
+- `sensor.ups_code_d_etat` : code d'état NUT de l'onduleur réseau Ups
 - `sensor.eaton_usb_code_d_etat` : code d'état NUT de l'onduleur Eaton_Usb
 - `script.notification_ha` : envoi des notifications
 
@@ -264,26 +282,28 @@
 ## `automation.notification_d_ouverture_ou_fermeture_des_fenetres` — Notification d'Ouverture ou Fermeture des fenêtres
 > [📄 Voir le YAML](../../automations/notification_d_ouverture_ou_fermeture_des_fenetres.yaml)
 
-**Statut :** Finalisé | **Evolution :** Aucune
+**Statut :** Finalisé | **Evolution :** Correction — les détecteurs `binary_sensor.do_*` (Somfy Protexial) ont un état principal (on/off) qui ne reflète pas fiablement l'ouverture réelle de la fenêtre (il peut rester bloqué sur "on" alors que l'attribut `Door open` bascule correctement entre `open`/`closed` en continu, cas observé sur `binary_sensor.do_suite_parental`). Toutes les vérifications d'ouverture/fermeture testent désormais l'attribut `Door open` plutôt que l'état principal du binary_sensor.
 
 **Déclencheurs :**
-- Changement des températures intérieures/extérieure, prévision Météo-France, consignes volet (chaud/froid/pluie), mode été/hiver, indicateurs de pluie (prévision + pluviomètre)
+- Changement des températures intérieures/extérieure, de la prévision Météo-France, des consignes volet (chaud/froid/pluie), du mode été/hiver, ou des indicateurs de pluie (prévision + pluviomètre)
 - Changement de `input_select.domicile`
 
 **Conditions :**
 - `input_select.domicile` = "Présent"
 
 **Fonctionnement :**
-1. Calcule pour chaque pièce (Bureau, Suite parentale, Cellier, Rez-de-chaussée) si une annonce fermeture/ouverture est justifiée : comparaison intérieur/extérieur avec hystérésis à deux seuils, détection d'ouverture via l'attribut `Door open` (`open`/`closed`) des `binary_sensor.do_*` (et non leur état principal, qui peut rester bloqué), garde anti-pluie pour l'ouverture (prévision + pluviomètre), vérification que le volet n'est pas fermé.
-2. Regroupe les pièces en deux annonces vocales max (une fermeture, une ouverture), accord singulier/pluriel automatique.
-3. Anti-répétition par pièce et par sens : bloqué 15 minutes via horodatage dans des helpers `input_datetime` dédiés.
+1. Calcule pour chaque pièce (Bureau, Suite parentale, Cellier, Rez de chaussée = Cuisine+Salon+Séjour) si une annonce de fermeture ou d'ouverture de fenêtre est justifiée : détection d'ouverture via l'attribut `Door open` (`open`/`closed`) des `binary_sensor.do_*`, comparaison intérieur/extérieur avec hystérésis à deux seuils et mémoire de la dernière annonce ; pour l'ouverture, ajoute une garde anti-pluie (prévision + pas de pluie actuelle) et vérifie que le volet correspondant n'est pas fermé.
+2. Regroupe les pièces concernées en deux annonces vocales au maximum par déclenchement (une pour les fermetures, une pour les ouvertures), avec accord singulier/pluriel automatique (ex : "C'est le moment de fermer les fenêtres du Bureau, de la Suite parentale et du Rez de chaussée").
+3. Anti-répétition : chaque sens (fermer/ouvrir) est bloqué par pièce si la même annonce a déjà été faite il y a moins de 15 minutes (horodatage par pièce et par sens dans des helpers `input_datetime` dédiés, mis à jour uniquement pour les pièces citées).
+4. Choix assumé : l'annonce de fermeture est toujours prononcée, quel que soit `input_boolean.annonces_volets` (protection contre la chaleur ou le froid), alors que l'annonce d'ouverture n'est prononcée que si `input_boolean.annonces_volets` est à on. Dans les deux cas l'horodatage anti-répétition est mis à jour.
 
 **Entités principales :**
+- `input_boolean.annonces_volets` : autorise l'annonce d'ouverture
 - `sensor.netatmo_*_temperature`, `sensor.detecteur_du_cellier_nodeid_29_temperature_air` : températures
-- `binary_sensor.do_*` : détecteurs d'ouverture
+- `binary_sensor.do_*` (attribut `Door open`) : détecteurs d'ouverture
 - `input_number.volet_consigne_*` : seuils de déclenchement
 - `input_datetime.annonce_fenetre_*` : anti-répétition par pièce/sens
-- `script.notification_vocale` : annonce vocale
+- `script.notification_vocale` : annonce
 
 ---
 

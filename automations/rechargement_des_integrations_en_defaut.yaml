@@ -1,43 +1,24 @@
 alias: Rechargement des intégrations en défaut
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
   - 12 minutes après le démarrage de Home Assistant
-
-  - Détection d'un nouveau problème dans Repairs (`event.repair`, event_type =
-  create)
-
+  - Détection d'un nouveau problème dans Repairs (`event.repair`, event_type = create)
   - Vérification périodique toutes les 15 minutes
 
-
   **Fonctionnement :**
-
-  1. Recherche les entrées de configuration via les entités existantes
-  (`config_entry_id`).
-
+  1. Recherche les entrées de configuration via les entités existantes (`config_entry_id`).
   2. Détecte deux types de panne :
      - Erreur officielle : état setup_error, setup_retry, failed_unload ou migration_error.
-     - Panne silencieuse : intégration déclarée "loaded" mais dont 100% des entités sont "unavailable" depuis plus de 10 minutes (ex : Netatmo dont toutes les sondes tombent indisponibles sans que l'intégration ne passe en erreur). Les intégrations média/TV (dlna_dmr, cast, braviatv, apple_tv, androidtv, samsungtv, roku, webostv, kodi, lg_netcast, philips_js, firetv) sont exclues car elles s'éteignent normalement.
-  3. Recharge chaque entrée en erreur ou en panne silencieuse via
-  `homeassistant.reload_config_entry`.
-
-  4. Envoie une notification HA (`script.notification_ha`) pour chaque panne
-  silencieuse détectée, avec un `message_id` stable par intégration (pas de
-  doublon si le problème persiste).
-
+     - Panne silencieuse : intégration déclarée "loaded" mais dont 100% des entités sont "unavailable" depuis plus de 10 minutes (ex : Netatmo dont toutes les sondes tombent indisponibles sans que l'intégration ne passe en erreur). Les intégrations média/TV (dlna_dmr, cast, braviatv, apple_tv, androidtv, samsungtv, roku, webostv, kodi, lg_netcast, philips_js, firetv) sont exclues car elles s'éteignent normalement. Certaines entrées sont aussi exclues individuellement via `exclusions_entries` (ex : template GAZPAR Cheptainville Énergie, dont la source Gazpar2MQTT n'est rafraîchie que toutes les 8 h).
+  3. Recharge chaque entrée en erreur ou en panne silencieuse via `homeassistant.reload_config_entry`.
+  4. Envoie une notification HA (`script.notification_ha`) pour chaque panne silencieuse détectée, avec un `message_id` stable par intégration (pas de doublon si le problème persiste).
 
   **Entités principales :**
-
   - `event.repair` : déclencheur sur détection d'un problème Repairs
-
-  - Liste des intégrations en erreur/panne calculée dynamiquement (aucune entité
-  fixe ciblée)
-
+  - Liste des intégrations en erreur/panne calculée dynamiquement (aucune entité fixe ciblée)
   - `script.notification_ha` : notification des pannes silencieuses
 triggers:
   - trigger: homeassistant
@@ -60,13 +41,7 @@ actions:
         sequence:
           - delay:
               minutes: 12
-    note: >-
-      Si déclenché par le démarrage de HA : patiente 12 minutes avant de
-      vérifier les intégrations (laisse le temps au réseau/aux services de
-      redémarrer ET dépasse le seuil de 10 min de panne silencieuse, sinon une
-      intégration qui plante systématiquement au boot — ex : LocalTuya — n'est
-      jamais détectée par ce déclencheur et attend le prochain passage
-      périodique, jusqu'à 15 min plus tard)
+    note: 'Si déclenché par le démarrage de HA : patiente 12 minutes avant de vérifier les intégrations (laisse le temps au réseau/aux services de redémarrer ET dépasse le seuil de 10 min de panne silencieuse, sinon une intégration qui plante systématiquement au boot — ex : LocalTuya — n''est jamais détectée par ce déclencheur et attend le prochain passage périodique, jusqu''à 15 min plus tard)'
   - variables:
       error_entries: |-
         {% set ns = namespace(rows=[]) %}
@@ -83,26 +58,20 @@ actions:
           {% endif %}
         {% endfor %}
         {{ ns2.items }}
-      silent_entries: >-
-        {% set exclusions_domains = ['dlna_dmr', 'cast', 'braviatv', 'apple_tv',
-        'androidtv', 'samsungtv', 'roku', 'webostv', 'kodi', 'lg_netcast',
-        'philips_js', 'firetv'] %}
-
+      silent_entries: |-
+        {% set exclusions_domains = ['dlna_dmr', 'cast', 'braviatv', 'apple_tv', 'androidtv', 'samsungtv', 'roku', 'webostv', 'kodi', 'lg_netcast', 'philips_js', 'firetv'] %}
+        {% set exclusions_entries = ['01KQHNMA3X9CHVGZ0VA1N64NKY'] %}
         {% set ns = namespace(rows=[]) %}
-
         {% for s in states %}
           {% set eid = config_entry_id(s.entity_id) %}
           {% if eid is not none %}
             {% set ns.rows = ns.rows + [{'entry_id': eid, 'state': s.state, 'last_changed': s.last_changed}] %}
           {% endif %}
         {% endfor %}
-
         {% set grouped = ns.rows | groupby('entry_id') %}
-
         {% set ns2 = namespace(items=[]) %}
-
         {% for entry_id, items in grouped %}
-          {% if config_entry_attr(entry_id, 'state') == 'loaded' and config_entry_attr(entry_id, 'domain') not in exclusions_domains %}
+          {% if config_entry_attr(entry_id, 'state') == 'loaded' and config_entry_attr(entry_id, 'domain') not in exclusions_domains and entry_id not in exclusions_entries %}
             {% set unavailable_count = items | selectattr('state', 'eq', 'unavailable') | list | length %}
             {% if items | length > 0 and unavailable_count == items | length %}
               {% set most_recent = items | map(attribute='last_changed') | list | max %}
@@ -112,27 +81,20 @@ actions:
             {% endif %}
           {% endif %}
         {% endfor %}
-
         {{ ns2.items }}
-      failed_entries: "{{ (error_entries + silent_entries) | unique | list }}"
-    note: >-
-      Calcule la liste des intégrations en erreur officielle
-      (setup_error/setup_retry/failed_unload/migration_error) ET celles en panne
-      silencieuse (loaded mais 100% des entités indisponibles depuis plus de 10
-      min), hors intégrations média/TV qui s'éteignent normalement
+      failed_entries: '{{ (error_entries + silent_entries) | unique | list }}'
+    note: 'Calcule la liste des intégrations en erreur officielle (setup_error/setup_retry/failed_unload/migration_error) ET celles en panne silencieuse (loaded mais 100% des entités indisponibles depuis plus de 10 min), hors intégrations média/TV qui s''éteignent normalement, et hors entrées exclues explicitement (exclusions_entries : GAZPAR Cheptainville Énergie, dont la source n''est mise à jour que toutes les 8 h)'
   - repeat:
-      for_each: "{{ failed_entries }}"
+      for_each: '{{ failed_entries }}'
       sequence:
         - action: homeassistant.reload_config_entry
           data:
-            entry_id: "{{ repeat.item }}"
+            entry_id: '{{ repeat.item }}'
           continue_on_error: true
     note: Recharge chaque intégration en erreur ou en panne silencieuse, une par une
-  - note: >-
-      Notifie (Notification HA) chaque intégration détectée en panne
-      silencieuse, hors intégrations média/TV
+  - note: Notifie (Notification HA) chaque intégration détectée en panne silencieuse, hors intégrations média/TV
     repeat:
-      for_each: "{{ silent_entries }}"
+      for_each: '{{ silent_entries }}'
       sequence:
         - action: script.turn_on
           target:
@@ -140,14 +102,8 @@ actions:
               - script.notification_ha
           data:
             variables:
-              message_type: >-
-                Intégration en panne silencieuse — {{
-                config_entry_attr(repeat.item, 'title') }}
-              message_corp: >-
-                L'intégration {{ config_entry_attr(repeat.item, 'domain') }} ({{
-                config_entry_attr(repeat.item, 'title') }}) a toutes ses entités
-                indisponibles depuis plus de 10 minutes alors qu'elle est
-                déclarée chargée. Un rechargement automatique a été tenté.
+              message_type: Intégration en panne silencieuse — {{ config_entry_attr(repeat.item, 'title') }}
+              message_corp: L'intégration {{ config_entry_attr(repeat.item, 'domain') }} ({{ config_entry_attr(repeat.item, 'title') }}) a toutes ses entités indisponibles depuis plus de 10 minutes alors qu'elle est déclarée chargée. Un rechargement automatique a été tenté.
               message_id: integration_silent_failure-{{ repeat.item }}
 mode: queued
 max: 10

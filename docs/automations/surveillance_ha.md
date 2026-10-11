@@ -2,7 +2,6 @@
 
 [← Retour README](../../README.md)
 
-
 ---
 
 ## `automation.notification_des_automatisations_desactivees` — Notification des Automatisations désactivées
@@ -78,10 +77,18 @@ system_log:
 
 **Fonctionnement :**
 1. Recherche les entrées de configuration via les entités existantes (`config_entry_id`).
-2. Détecte deux types de panne : erreur officielle (état `setup_error`, `setup_retry`, `failed_unload` ou `migration_error`) ou panne silencieuse (intégration déclarée « loaded » mais dont 100% des entités sont « unavailable » depuis plus de 10 minutes — ex : Netatmo dont toutes les sondes tombent indisponibles sans que l'intégration ne passe en erreur). Les intégrations média/TV (dlna_dmr, cast, braviatv, apple_tv, androidtv, samsungtv, roku, webostv, kodi, lg_netcast, philips_js, firetv) sont exclues car elles s'éteignent normalement.
+2. Détecte deux types de panne :
+   - Erreur officielle : état setup_error, setup_retry, failed_unload ou migration_error.
+   - Panne silencieuse : intégration déclarée "loaded" mais dont 100% des entités sont "unavailable" depuis plus de 10 minutes (ex : Netatmo dont toutes les sondes tombent indisponibles sans que l'intégration ne passe en erreur). Les intégrations média/TV (dlna_dmr, cast, braviatv, apple_tv, androidtv, samsungtv, roku, webostv, kodi, lg_netcast, philips_js, firetv) sont exclues car elles s'éteignent normalement. Certaines entrées sont aussi exclues individuellement via `exclusions_entries` (ex : template GAZPAR Cheptainville Énergie, dont la source Gazpar2MQTT n'est rafraîchie que toutes les 8 h).
 3. Recharge chaque entrée en erreur ou en panne silencieuse via `homeassistant.reload_config_entry`.
 4. Envoie une notification HA (`script.notification_ha`) pour chaque panne silencieuse détectée, avec un `message_id` stable par intégration (pas de doublon si le problème persiste).
 
-**Note (LocalTuya) :** LocalTuya plante systématiquement au démarrage de HA (bug connu de l'intégration — thread-safety violation dans `custom_components/localtuya/common.py`, voir https://github.com/rospogrigio/localtuya/issues), ce qui rend toutes ses entités `unavailable` dès le boot. Le délai de démarrage a été porté de 5 à 12 minutes (>10 min, le seuil de panne silencieuse) pour que cette détection puisse avoir lieu dès le déclencheur de démarrage, au lieu d'attendre jusqu'à 15 minutes supplémentaires pour le prochain passage périodique. Le rechargement automatique (`reload_config_entry`) reste néanmoins sans effet sur ce bug précis, qui est interne au code de l'intégration et non lié à la connectivité — seule une mise à jour de LocalTuya ou un correctif amont peut le résoudre durablement.
+**Entités principales :**
+- `event.repair` : déclencheur sur détection d'un problème Repairs
+- Liste des intégrations en erreur/panne calculée dynamiquement (aucune entité fixe ciblée)
+- `script.notification_ha` : notification des pannes silencieuses
 
 **Entrées utilisées :** Aucune entrée helper.
+
+---
+

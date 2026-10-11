@@ -1,6 +1,6 @@
 # Z-Wave (25 appareils)
 
-[← Retour Appareils](../appareils.md)
+[← Retour README](../../README.md)
 
 > 🏠 **Natif HA** via add-on Z-Wave JS UI — [Documentation](https://www.home-assistant.io/integrations/zwave_js/)
 > Flux : Z-Wave JS UI (zwavejs2mqtt) → Mosquitto MQTT → HA

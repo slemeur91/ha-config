@@ -7,7 +7,7 @@ description: |-
 
   **Paramètres :**
   - message_type : type du message
-  - message_sms : corps du message
+  - message_corp : corps du message
 
   **Fonctionnement :**
   1. Envoie un message via telegram_bot.send_message avec le type en titre et le message en corps.
@@ -21,7 +21,7 @@ fields:
     required: true
     selector:
       text: null
-  message_sms:
+  message_corp:
     description: Corps du message
     example: Message
     required: true
@@ -31,7 +31,7 @@ sequence:
   - action: telegram_bot.send_message
     data:
       config_entry_id: 01JZXD726MRMA3EMYH1G0SYRW5
-      message: "{{ message_sms }}"
-      title: "[HA] {{ message_type }}"
+      message: '{{ message_corp }}'
+      title: '[HA] {{ message_type }}'
 mode: queued
 max: 10

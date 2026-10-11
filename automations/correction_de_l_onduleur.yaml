@@ -4,17 +4,20 @@ description: |-
   **Evolution :** Aucune.
 
   **Déclencheurs :**
-  - Démarrage de Home Assistant (`homeassistant start`), avec un délai de 4 minutes avant vérification (le temps que l'intégration NUT tente de se reconnecter à l'onduleur).
+  - Démarrage de Home Assistant (`homeassistant start`) — id: Démarrage
+  - `sensor.eaton_usb_etat` reste `unavailable`/`unknown` pendant 2 minutes
+  - `sensor.eaton_usb_code_d_etat` reste `unavailable`/`unknown` pendant 2 minutes
 
   **Fonctionnement :**
-  1. 4 minutes après le démarrage de HA, vérifie l'état de l'onduleur Eaton_Usb (`sensor.eaton_usb_etat` et `sensor.eaton_usb_code_d_etat`).
-  2. Si l'un des deux est `unavailable`/`unknown` (intégration NUT en défaut), redémarre l'add-on "Network UPS Tools" (`a0d7b954_nut`).
-  3. Sinon, ne fait rien.
+  1. Si le déclencheur est le démarrage de HA, attend 4 minutes (le temps que l'intégration NUT tente de se reconnecter à l'onduleur).
+  2. Vérifie l'état de l'onduleur Eaton_Usb (`sensor.eaton_usb_etat` et `sensor.eaton_usb_code_d_etat`).
+  3. Si l'un des deux est `unavailable`/`unknown` (intégration NUT en défaut), redémarre l'app 'Network UPS Tools' (`a0d7b954_nut`).
+  4. Sinon, ne fait rien.
 
   **Entités principales :**
   - `sensor.eaton_usb_etat` : état de l'onduleur Eaton_Usb
   - `sensor.eaton_usb_code_d_etat` : code d'état NUT de l'onduleur Eaton_Usb
-  - Add-on `Network UPS Tools` (`a0d7b954_nut`) : redémarré en cas de défaut
+  - App `Network UPS Tools` (`a0d7b954_nut`) : redémarrée en cas de défaut
 triggers:
   - trigger: homeassistant
     event: start
@@ -69,4 +72,5 @@ actions:
         data:
           addon: a0d7b954_nut
     else: []
+    note: Onduleur toujours indisponible → redémarre l'app Network UPS Tools
 mode: single

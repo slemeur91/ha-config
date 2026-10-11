@@ -1,6 +1,6 @@
 # 📦 Modules complémentaires (Add-ons)
 
-17 add-ons installés. [← Retour README](../README.md)
+19 add-ons installés. [← Retour README](../README.md)
 
 ---
 
@@ -233,20 +233,20 @@ mqtt:
   base_topic: gazpar2mqtt
 ```
 
-### Linky
-> Dépôt : `cf6b56a3` — [GitHub](https://github.com/bokub/linky)
+### MyElectricalData
+> Dépôt : `db21ed7f` — [GitHub](https://github.com/MyElectricalData/myelectricaldata_import)
 
-Synchronise les données du compteur Linky avec le tableau de bord Énergie de HA.
+Récupère les données du compteur Linky via l'API Enedis (MyElectricalData) et les publie vers le broker MQTT. Remplace l'add-on Linky.
 
-```yaml
-meters:
-  - prm: "<prm_linky>"
-    token: <token_linky>
-    name: Consommation Linky
-    action: sync
-    production: false
-costs: []
-```
+### Network UPS Tools
+> Dépôt : `a0d7b954` — [GitHub](https://github.com/hassio-addons/addon-nut)
+
+Serveur NUT de supervision des onduleurs. Utilisé par l'intégration native **NUT** (2 onduleurs : Eaton Ellipse PRO 1200 et Ellipse ECO 800) et redémarré par l'automatisation `Correction de l'Onduleur` en cas d'indisponibilité.
+
+### Frigate (Full Access)
+> Dépôt : `ccab4aaf` — [GitHub](https://github.com/blakeblackshear/frigate-hass-addons)
+
+NVR avec détection d'objets locale en temps réel pour caméras IP. Installé mais arrêté : l'intégration Frigate pointe vers une instance externe.
 
 ### Get HACS
 > Dépôt : `cb646a50`

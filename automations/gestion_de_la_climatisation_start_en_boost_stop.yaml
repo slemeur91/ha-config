@@ -1,32 +1,18 @@
 alias: Gestion de la Climatisation - Start en Boost / Stop
-description: >-
+description: |-
   **Statut :** Finalisé
-
   **Evolution :** Aucune
 
-
   **Déclencheurs :**
-
   - Appui sur `input_button.climatisation_boost_start`
-
   - Appui sur `input_button.climatisation_stop`
 
-
   **Fonctionnement :**
-
-  1. Boost : pour chacune des 4 clim (Chambre, Suite parentale, Bureau, Séjour),
-  l'allume si elle est éteinte puis (re)lance systématiquement le préréglage
-  "boost" (même si déjà en boost), en parallèle sur les 4.
-
+  1. Boost : pour chacune des 4 clim (Chambre, Suite parentale, Bureau, Séjour), l'allume si elle est éteinte puis (re)lance systématiquement le préréglage "boost" (même si déjà en boost), en parallèle sur les 4.
   2. Stop : éteint chaque clim encore allumée parmi les 4, en parallèle.
 
-
   **Entités principales :**
-
-  - `climate.climatisation_de_la_chambre`,
-  `climate.climatisation_de_la_suite_parentale`,
-  `climate.climatisation_du_bureau`, `climate.climatisation_du_sejour`
-
+  - `climate.climatisation_de_la_chambre`, `climate.climatisation_de_la_suite_parentale`, `climate.climatisation_du_bureau`, `climate.climatisation_du_sejour`
   - `input_button.climatisation_boost_start`, `input_button.climatisation_stop`
 triggers:
   - trigger: state
@@ -47,7 +33,7 @@ actions:
                   - if:
                       - condition: state
                         entity_id: climate.climatisation_de_la_chambre
-                        state: "off"
+                        state: 'off'
                     then:
                       - action: climate.turn_on
                         target:
@@ -65,7 +51,7 @@ actions:
                   - if:
                       - condition: state
                         entity_id: climate.climatisation_de_la_suite_parentale
-                        state: "off"
+                        state: 'off'
                     then:
                       - action: climate.turn_on
                         target:
@@ -81,7 +67,7 @@ actions:
                   - if:
                       - condition: state
                         entity_id: climate.climatisation_du_bureau
-                        state: "off"
+                        state: 'off'
                     then:
                       - action: climate.turn_on
                         target:
@@ -97,7 +83,7 @@ actions:
                   - if:
                       - condition: state
                         entity_id: climate.climatisation_du_sejour
-                        state: "off"
+                        state: 'off'
                     then:
                       - action: climate.turn_on
                         target:
@@ -120,7 +106,7 @@ actions:
                         conditions:
                           - condition: state
                             entity_id: climate.climatisation_de_la_chambre
-                            state: "off"
+                            state: 'off'
                     then:
                       - action: climate.turn_off
                         target:
@@ -132,7 +118,7 @@ actions:
                         conditions:
                           - condition: state
                             entity_id: climate.climatisation_de_la_suite_parentale
-                            state: "off"
+                            state: 'off'
                     then:
                       - action: climate.turn_off
                         target:
@@ -143,7 +129,7 @@ actions:
                         conditions:
                           - condition: state
                             entity_id: climate.climatisation_du_bureau
-                            state: "off"
+                            state: 'off'
                     then:
                       - action: climate.turn_off
                         target:
@@ -154,7 +140,7 @@ actions:
                         conditions:
                           - condition: state
                             entity_id: climate.climatisation_du_sejour
-                            state: "off"
+                            state: 'off'
                     then:
                       - action: climate.turn_off
                         target:

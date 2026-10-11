@@ -1,63 +1,43 @@
 alias: Notification des Alertes de défaut des Onduleurs - UPS
-description: >-
+description: |-
   **Statut :** Finalisé
-
-  **Evolution :** Aucune
-
+  **Evolution :** Correction du 11/10/2026 — la branche de l'onduleur réseau Ups notifiait 'Replace battery!' à chaque changement de son code d'état ; elle est désormais filtrée sur les flags anormaux, comme la branche Eaton_Usb.
 
   **Déclencheurs :**
+  - Changement d'état de `sensor.ups_code_d_etat` (onduleur réseau Ups, code d'état NUT ups.status) — id: ups_reseau
+  - Changement d'état de `sensor.eaton_usb_code_d_etat` (onduleur Eaton_Usb, code d'état NUT ups.status) — id: ups_eaton_usb
 
-  - `sensor.reseau_ups_alarmes` passe à "Replace battery!" (onduleur réseau Ups)
-
-  - Changement d'état de `sensor.eaton_usb_code_d_etat` (onduleur Eaton_Usb,
-  code d'état NUT ups.status)
-
-
-  **Conditions :**
-
-  - Pour Eaton_Usb : le code d'état ne doit contenir aucun flag hors
-  OL/OB/CHRG/DISCHRG (donc un flag anormal : RB, LB, BYPASS, OFF, OVER, TRIM,
-  BOOST, FSD, CAL)
-
+  **Conditions (par branche) :**
+  - Le code d'état doit contenir au moins un flag hors OL/OB/CHRG/DISCHRG, donc un flag anormal : RB, LB, BYPASS, OFF, OVER, TRIM, BOOST, FSD, CAL.
+  - Les états `unavailable` / `unknown` sont ignorés pour les deux onduleurs (l'indisponibilité d'Eaton_Usb est traitée par `Correction de l'Onduleur`).
 
   **Fonctionnement :**
-
-  1. Onduleur Ups (réseau, dispose d'un capteur d'alarmes texte) → si "Replace
-  battery!" détecté, notifie qu'un remplacement de batterie est nécessaire.
-
-  2. Onduleur Eaton_Usb (USB, pas de capteur d'alarmes natif) → surveille son
-  code d'état `ups.status` ; si un flag anormal est présent, traduit chaque code
-  (RB, LB, BYPASS, OFF, OVER, TRIM, BOOST, FSD, CAL) en description lisible et
-  notifie.
-
-  3. Les deux branches utilisent `script.notification_ha` avec un
-  `message_id` distinct pour éviter les doublons.
-
+  1. Onduleur Ups (réseau) → si un flag anormal est présent, traduit chaque code en description lisible (RB = remplacement de la batterie nécessaire, LB = batterie faible, etc.) et notifie.
+  2. Onduleur Eaton_Usb (USB) → même logique.
+  3. Les deux branches utilisent `script.notification_ha` avec un `message_id` distinct par onduleur (`ups_reseau_defaut`, `eaton_usb_defaut`) : une nouvelle alerte remplace la précédente au lieu de s'empiler.
+  4. Un simple passage sur batterie (OB DISCHRG) ne notifie pas : la coupure secteur est couverte par `Notification de coupure de courant EDF`.
 
   **Entités principales :**
-
-  - `sensor.reseau_ups_alarmes` : alarme texte de l'onduleur réseau Ups
-
+  - `sensor.ups_code_d_etat` : code d'état NUT de l'onduleur réseau Ups
   - `sensor.eaton_usb_code_d_etat` : code d'état NUT de l'onduleur Eaton_Usb
-
   - `script.notification_ha` : envoi des notifications
 triggers:
   - trigger: state
-    entity_id: sensor.reseau_ups_alarmes
-    to: Replace battery!
+    entity_id: sensor.ups_code_d_etat
     id: ups_reseau
+    note: 'ups.status NUT : chaîne de flags séparés par espace (ex: ''OL'', ''OL RB'', ''OB LB''...).'
   - trigger: state
     entity_id: sensor.eaton_usb_code_d_etat
     id: ups_eaton_usb
-    note: >-
-      ups.status NUT : chaîne de flags séparés par espace (ex: 'OL', 'OL RB',
-      'OB LB'...).
+    note: 'ups.status NUT : chaîne de flags séparés par espace (ex: ''OL'', ''OL RB'', ''OB LB''...).'
 conditions: []
 actions:
   - choose:
       - conditions:
           - condition: trigger
             id: ups_reseau
+          - condition: template
+            value_template: '{% set ignore = [''OL'',''OB'',''CHRG'',''DISCHRG'',''unavailable'',''unknown''] %}{{ trigger.to_state.state.split() | reject(''in'', ignore) | list | count > 0 }}'
         sequence:
           - action: script.turn_on
             target:
@@ -65,18 +45,14 @@ actions:
             data:
               variables:
                 message_type: UPS
-                message_corp: >-
-                  L'onduleur Ups signale "Replace battery!" : la batterie doit
-                  être remplacée.
+                message_corp: '{% set desc = {''RB'': ''remplacement de la batterie nécessaire'', ''LB'': ''batterie faible'', ''BYPASS'': ''fonctionnement en bypass (protection non assurée)'', ''OFF'': ''onduleur éteint'', ''OVER'': ''surcharge'', ''TRIM'': ''correction de tension (baisse)'', ''BOOST'': ''correction de tension (hausse)'', ''FSD'': ''arrêt forcé imminent'', ''CAL'': ''calibration en cours''} %}{% set ignore = [''OL'',''OB'',''CHRG'',''DISCHRG'',''unavailable'',''unknown''] %}{% set codes = trigger.to_state.state.split() | reject(''in'', ignore) | list %}L''onduleur Ups signale : {% for c in codes %}{{ desc.get(c, c) }}{% if not loop.last %}, {% endif %}{% endfor %} (code brut : {{ trigger.to_state.state }}).'
                 message_id: ups_reseau_defaut
+        note: Onduleur réseau Ups → notifie seulement si un flag anormal est présent (RB = batterie à remplacer, LB, BYPASS...), avec traduction des codes ; indisponibilité ignorée
       - conditions:
           - condition: trigger
             id: ups_eaton_usb
           - condition: template
-            value_template: >-
-              {% set normal = ['OL','OB','CHRG','DISCHRG'] %}{{
-              trigger.to_state.state.split() | reject('in', normal) | list |
-              count > 0 }}
+            value_template: '{% set ignore = [''OL'',''OB'',''CHRG'',''DISCHRG'',''unavailable'',''unknown''] %}{{ trigger.to_state.state.split() | reject(''in'', ignore) | list | count > 0 }}'
         sequence:
           - action: script.turn_on
             target:
@@ -84,17 +60,7 @@ actions:
             data:
               variables:
                 message_type: UPS
-                message_corp: >-
-                  {% set desc = {'RB': 'remplacement de la batterie nécessaire',
-                  'LB': 'batterie faible', 'BYPASS': 'fonctionnement en bypass
-                  (protection non assurée)', 'OFF': 'onduleur éteint', 'OVER':
-                  'surcharge', 'TRIM': 'correction de tension (baisse)',
-                  'BOOST': 'correction de tension (hausse)', 'FSD': 'arrêt forcé
-                  imminent', 'CAL': 'calibration en cours'} %}{% set normal =
-                  ['OL','OB','CHRG','DISCHRG'] %}{% set codes =
-                  trigger.to_state.state.split() | reject('in', normal) | list
-                  %}L'onduleur Eaton_Usb signale : {% for c in codes %}{{
-                  desc.get(c, c) }}{% if not loop.last %}, {% endif %}{% endfor
-                  %} (code brut : {{ trigger.to_state.state }}).
+                message_corp: '{% set desc = {''RB'': ''remplacement de la batterie nécessaire'', ''LB'': ''batterie faible'', ''BYPASS'': ''fonctionnement en bypass (protection non assurée)'', ''OFF'': ''onduleur éteint'', ''OVER'': ''surcharge'', ''TRIM'': ''correction de tension (baisse)'', ''BOOST'': ''correction de tension (hausse)'', ''FSD'': ''arrêt forcé imminent'', ''CAL'': ''calibration en cours''} %}{% set normal = [''OL'',''OB'',''CHRG'',''DISCHRG''] %}{% set codes = trigger.to_state.state.split() | reject(''in'', normal) | list %}L''onduleur Eaton_Usb signale : {% for c in codes %}{{ desc.get(c, c) }}{% if not loop.last %}, {% endif %}{% endfor %} (code brut : {{ trigger.to_state.state }}).'
                 message_id: eaton_usb_defaut
+        note: Onduleur Eaton_Usb → notifie seulement si un flag anormal est présent, avec traduction des codes ; indisponibilité ignorée
 mode: single
