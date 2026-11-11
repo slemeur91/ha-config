@@ -4,19 +4,20 @@ import requests
 # Parametres
 # actionRecord : start / stop recording
 # CamerasnUM
-# ID 1 => Camera 1
-# ID 2 => Camera 2
-# ID 3 => Camera 3
-# ID 4 => Camera 4
-# ID 5 => Camera 5
-# ID 6 => Portier
-# ID 7 => Camera 6
-# ID 8 => Camera 7
+# ID 1  => Camera 1
+# ID 2  => Camera 2
+# ID 3  => Camera 3
+# ID 4  => Camera 4
+# ID 5  => Camera 5
+# ID 6  => PortierOLD
+# ID 7  => Camera 6
+# ID 8  => Camera 7
+# ID 10 => Portier
 
 # Paramètres de configuration
-serveur_surveillance_station = "http://votre-synology-ip:5000"  # Remplacez par votre serveur
-log_surveillance_station = "votre-utilisateur"  # Remplacez par votre log
-mdp_surveillance_station = "[MOT_DE_PASSE]"  # Mot de passe pour l'API
+serveur_surveillance_station = "http://192.168.53.33:5000"  # Remplacez par votre serveur
+log_surveillance_station = "jeedom"  # Remplacez par votre log
+mdp_surveillance_station = "1234_s31269LM-"  # Mot de passe pour l'API
 
 # API VERSIONS
 # SYNO.API.Auth

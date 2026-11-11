@@ -1,116 +1,6 @@
-# Automatisation (20)
+# Automatisation (14)
 
 [← Retour README](../../README.md)
-
----
-
-## `automation.gestion_des_statistiques_journalieres_du_linky_reecriture` — LINKY – Gestion des statistiques journalières (Réécriture)
-> [📄 Voir le YAML](../../automations/gestion_des_statistiques_journalieres_du_linky_reecriture.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :**
-- Changement de `sensor.linky_22217944914302_consumption` (nouvelles données reçues)
-
-**Conditions :** Sensor non indisponible / inconnu
-
-**Fonctionnement :**
-1. Lance `pyscript.linky_update` pour réimporter les statistiques long-terme (base_consumption / base_consumption_cost) avec les vraies dates Enedis (correction du décalage J-1).
-
-**Entités principales :**
-- `sensor.linky_22217944914302_consumption`, `pyscript.linky_update`
-
----
-
-## `automation.gestion_du_cycle_du_lave_linge` — Gestion du Cycle du Lave Linge
-> [📄 Voir le YAML](../../automations/gestion_du_cycle_du_lave_linge.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :**
-- `sensor.etat_lave_linge` passe de Éteint/Veille à En marche (anti-rebond 20s) → début de cycle
-- `sensor.etat_lave_linge` passe de En marche à Éteint/Veille (anti-rebond 20s) → fin de cycle
-- `sensor.multiprise_de_la_salle_de_bain_power_1` repasse sous 5 W pendant 5 min (désactivé) → détection alternative de fin de cycle par consommation
-- `input_boolean.cycle_lave_linge_en_cours` resté à "on" 4h → filet de sécurité (cycle trop long / fin non détectée)
-
-**Fonctionnement :**
-1. Début : si le cycle n'est pas déjà marqué en cours, l'active, enregistre l'index d'énergie de départ et l'horodatage de début.
-2. Fin : si le cycle est marqué en cours, enregistre l'horodatage et l'index d'énergie de fin, puis désactive le marqueur "en cours".
-3. Trop Long : désactive le marqueur "en cours" sans enregistrer de fin (filet de sécurité si la fin n'a pas été détectée dans les 4h).
-
-**Entités principales :**
-- `sensor.etat_lave_linge` : état de l'appareil
-- `sensor.multiprise_de_la_salle_de_bain_power_1` / `_energy_1` : puissance / énergie
-- `input_boolean.cycle_lave_linge_en_cours` : marqueur de cycle en cours
-- `input_datetime.dernier_cycle_lave_linge_debut` / `_fin` : horodatages du dernier cycle
-- `input_number.dernier_cycle_lave_linge_conso_au_debut` / `_a_la_ffin` : index d'énergie au début/fin du dernier cycle
-
----
-
-## `automation.gestion_du_cycle_du_lave_vaisselle` — Gestion du Cycle du Lave Vaisselle
-> [📄 Voir le YAML](../../automations/gestion_du_cycle_du_lave_vaisselle.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :**
-- `sensor.etat_lave_vaisselle` passe de Éteint/Veille à En marche (anti-rebond 20s) → début de cycle
-- `sensor.etat_lave_vaisselle` passe de En marche à Éteint/Veille (anti-rebond 20s) → fin de cycle
-- `sensor.prise_du_lave_vaisselle_power` repasse sous 3 W pendant 5 min (désactivé) → détection alternative de fin de cycle par consommation
-- `input_boolean.cycle_lave_vaisselle_en_cours` resté à "on" 4h → filet de sécurité (cycle trop long / fin non détectée)
-
-**Fonctionnement :**
-1. Début : si le cycle n'est pas déjà marqué en cours, l'active, enregistre l'index d'énergie de départ et l'horodatage de début.
-2. Fin : si le cycle est marqué en cours, enregistre l'horodatage et l'index d'énergie de fin, puis désactive le marqueur "en cours".
-3. Trop Long : désactive le marqueur "en cours" sans enregistrer de fin (filet de sécurité si la fin n'a pas été détectée dans les 4h).
-
-**Entités principales :**
-- `sensor.etat_lave_vaisselle` : état de l'appareil
-- `sensor.prise_du_lave_vaisselle_power` / `_energy` : puissance / énergie
-- `input_boolean.cycle_lave_vaisselle_en_cours` : marqueur de cycle en cours
-- `input_datetime.dernier_cycle_lave_vaisselle_debut` / `_fin` : horodatages du dernier cycle
-- `input_number.dernier_cycle_lave_vaisselle_conso_au_debut` / `_a_la_ffin` : index d'énergie au début/fin du dernier cycle
-
----
-
-## `automation.gestion_du_cycle_du_seche_linge` — Gestion du Cycle du Sèche Linge
-> [📄 Voir le YAML](../../automations/gestion_du_cycle_du_seche_linge.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :**
-- `sensor.etat_seche_linge` passe de Éteint/Veille à En marche (anti-rebond 20s) → début de cycle
-- `sensor.etat_seche_linge` passe de En marche ou Anti-froissage à Éteint/Veille (anti-rebond 20s) → fin de cycle
-- `sensor.multiprise_de_la_salle_de_bain_power_2` repasse sous 3 W pendant 30s (désactivé) → détection alternative de fin de cycle par consommation
-- `input_boolean.cycle_seche_linge_en_cours` resté à "on" 4h → filet de sécurité (cycle trop long / fin non détectée)
-
-**Fonctionnement :**
-1. Début : si le cycle n'est pas déjà marqué en cours, l'active, enregistre l'index d'énergie de départ et l'horodatage de début.
-2. Fin : si le cycle est marqué en cours, enregistre l'horodatage et l'index d'énergie de fin, puis désactive le marqueur "en cours".
-3. Trop Long : désactive le marqueur "en cours" sans enregistrer de fin (filet de sécurité si la fin n'a pas été détectée dans les 4h).
-
-**Entités principales :**
-- `sensor.etat_seche_linge` : état de l'appareil
-- `sensor.multiprise_de_la_salle_de_bain_power_2` / `_energy_2` : puissance / énergie
-- `input_boolean.cycle_seche_linge_en_cours` : marqueur de cycle en cours
-- `input_datetime.dernier_cycle_seche_linge_debut` / `_fin` : horodatages du dernier cycle
-- `input_number.dernier_cycle_seche_linge_conso_au_debut` / `_a_la_ffin` : index d'énergie au début/fin du dernier cycle
-
----
-
-## `automation.gestion_des_statistiques_journalieres_de_gazpar_reecriture` — GAZPAR – Gestion des statistiques journalières (Réécriture)
-> [📄 Voir le YAML](../../automations/gestion_des_statistiques_journalieres_de_gazpar_reecriture.yaml) | [📄 Script pyscript](../../pyscripts/gazpar_energy.py)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :**
-- Changement de `sensor.gazpar_cheptainville_card` (nouvelles données via Gazpar2MQTT)
-
-**Conditions :** Sensor non indisponible / inconnu
-
-**Fonctionnement :**
-1. Lance `pyscript.gazpar_update` pour injecter les données de consommation gaz dans les statistiques long-terme de HA.
-
-**Entrées utilisées :** Aucune entrée helper.
 
 ---
 
@@ -159,40 +49,21 @@
 ## `automation.gestion_de_la_charge_batterie_de_l_ipad` — Gestion de la Charge Batterie de l'iPad
 > [📄 Voir le YAML](../../automations/gestion_de_la_charge_batterie_de_l_ipad.yaml)
 
-**Statut :** En cours — inopérante en l'état | **Evolution :** Prise en compte du capteur batterie (en fonction de l'application kiosk) pour affiner le pilotage de la charge. Les actions d'extinction et d'allumage de la prise sont à (re)saisir : les blocs `if`/`then` des deux branches sont actuellement vides.
+**Statut :** En cours — inopérante en l'état, en attente d'une nouvelle prise pilotée pour l'iPad | **Evolution :** Prise en compte du capteur batterie (en fonction de l'application kiosk) pour affiner le pilotage de la charge. Les actions d'extinction et d'allumage de la prise sont à saisir à l'arrivée de la nouvelle prise : les blocs `if`/`then` des deux branches sont actuellement vides.
 
 **Déclencheurs :**
-- Tous les jours à 1h00 (restreint au 1er du mois par une condition template) — id: monthly
+- Le 1er de chaque mois à 1h00 (déclencheur template, aucun déclenchement les autres jours) — id: monthly
 - `sensor.ipad_battery_level` passe sous 20% — id: low
 
 **Fonctionnement prévu :**
 1. Le 1er du mois à 1h00 → éteindre la prise de l'iPad (si elle est allumée), pour forcer un cycle de décharge/recharge mensuel.
 2. Batterie < 20% → allumer la prise de l'iPad (si elle n'est pas déjà allumée).
 
-**État réel :** les deux branches ne contiennent aucune condition ni aucune action ; l'automatisation se déclenche mais ne pilote pas la prise.
+**État réel :** les deux branches ne contiennent aucune condition ni aucune action ; l'automatisation se déclenche mais ne pilote aucune prise.
 
 **Entités principales :**
-- `switch.prise_de_l_ipad` : alimentation de l'iPad (non référencée dans les actions actuelles)
+- Prise de l'iPad : à définir (nouvelle prise en attente)
 - `sensor.ipad_battery_level` : niveau de batterie de l'iPad
-
----
-
-## `automation.gestion_de_la_climatisation_start_en_boost_stop` — Gestion de la Climatisation — Start en Boost / Stop
-> [📄 Voir le YAML](../../automations/gestion_de_la_climatisation_start_en_boost_stop.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :**
-- Appui sur `input_button.climatisation_boost_start`
-- Appui sur `input_button.climatisation_stop`
-
-**Fonctionnement :**
-1. Boost : pour chacune des 4 clim (Chambre, Suite parentale, Bureau, Séjour), l'allume si éteinte puis (re)lance le préréglage "boost" (même si déjà en boost), en parallèle.
-2. Stop : éteint chaque clim encore allumée parmi les 4, en parallèle.
-
-**Entités principales :**
-- `climate.climatisation_de_la_chambre`, `climate.climatisation_de_la_suite_parentale`, `climate.climatisation_du_bureau`, `climate.climatisation_du_sejour`
-- `input_button.climatisation_boost_start`, `input_button.climatisation_stop`
 
 ---
 
@@ -265,79 +136,38 @@
 
 ---
 
-## `automation.gestion_du_chauffage_de_l_etage` — Chauffage de l'Étage
-> [📄 Voir le YAML](../../automations/gestion_du_chauffage_de_l_etage.yaml)
+## `automation.gestion_des_statistiques_journalieres_de_gazpar_reecriture` — GAZPAR – Gestion des statistiques journalières (Réécriture)
+> [📄 Voir le YAML](../../automations/gestion_des_statistiques_journalieres_de_gazpar_reecriture.yaml) | [📄 Script pyscript](../../pyscripts/gazpar_energy.py)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
 **Déclencheurs :**
-- `input_boolean.chauffage_horsgel`, `input_select.chauffage_mode_etage`, `input_select.chauffage_action`
-- Fin de `timer.chauffage_timer_etage`
-- Température courante des 5 thermostats Z-Wave
-- Changement velux ou portes (délai 5 min)
+- Changement de `sensor.gazpar_cheptainville_card` (nouvelles données via Gazpar2MQTT)
+
+**Conditions :** Sensor non indisponible / inconnu
 
 **Fonctionnement :**
-1. Calcule `horsgel_etage` (HorsGel global, portes via attribut `Door open`/velux ouverts, mode Absent).
-2. Ajuste consignes (Bureau, Chambre, Suite parentale, SdE, SdB) selon mode (Confort/Réduit/TéléTravail).
-3. Met à jour `input_boolean.chauffage_horsgel_etage` et envoie mail si changement.
-4. Applique consignes aux 5 thermostats Z-Wave, lance timer si mise à jour.
-5. Calcul hystérésis → pilote switch chaudière.
+1. Lance `pyscript.gazpar_update` pour injecter les données de consommation gaz dans les statistiques long-terme de HA.
 
-> **Note :** `binary_sensor.do_bureau` et `binary_sensor.do_suite_parental` (Somfy Protexial) sont détectés via l'attribut `Door open` (`open`/`closed`) et non leur état principal, car celui-ci peut rester bloqué sur une valeur incorrecte.
-
-**Entrées utilisées :**
-
-| Entrée | Type | Config |
-|---|---|---|
-| `input_select.chauffage_mode_etage` | input_select | Confort, Réduit, HorsGel |
-| `input_select.chauffage_action` | input_select | WE, TéléTravail, Travail, Absent, Repos |
-| `input_boolean.chauffage_horsgel` | input_boolean | on/off |
-| `input_boolean.chauffage_horsgel_etage` | input_boolean | on/off |
-| `timer.chauffage_timer_etage` | timer | — |
-| `counter.chauffage_compteur_etage` | counter | — |
-| `counter.chauffage_compteur_etage_action` | counter | — |
-| `input_number.chauffage_consigne_horsgel_etage` | input_number | min:0, max:30, step:0.5, unit:°C |
-| `input_number.chauffage_consigne_confort_etage` | input_number | min:0, max:30, step:0.5, unit:°C |
-| `input_number.chauffage_consigne_confort_chambre_etage` | input_number | min:0, max:30, step:0.5, unit:°C |
-| `input_number.chauffage_consigne_reduit_etage` | input_number | min:0, max:30, step:0.5, unit:°C |
-| `input_number.chauffage_consigne_reduit_chambre_etage` | input_number | min:0, max:30, step:0.5, unit:°C |
-| `input_number.chauffage_consigne_sdb_etage` | input_number | min:0, max:30, step:0.5, unit:°C |
-| `input_number.chauffage_bureau` | input_number | min:0, max:30, step:0.5, unit:°C |
-| `input_number.chauffage_chambre` | input_number | min:0, max:30, step:0.5, unit:°C |
-| `input_number.chauffage_suiteparentale` | input_number | min:0, max:30, step:0.5, unit:°C |
-| `input_number.chauffage_sdb` | input_number | min:0, max:30, step:0.5, unit:°C |
-| `input_number.chauffage_sde` | input_number | min:0, max:30, step:0.5, unit:°C |
+**Entrées utilisées :** Aucune entrée helper.
 
 ---
 
-## `automation.gestion_du_chauffage_du_rdc` — Chauffage du RDC
-> [📄 Voir le YAML](../../automations/gestion_du_chauffage_du_rdc.yaml)
+## `automation.gestion_des_statistiques_journalieres_du_linky_reecriture` — LINKY – Gestion des statistiques journalières (Réécriture)
+> [📄 Voir le YAML](../../automations/gestion_des_statistiques_journalieres_du_linky_reecriture.yaml)
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
 **Déclencheurs :**
-- `input_boolean.chauffage_horsgel`, `input_select.chauffage_mode_rdc`, `input_select.chauffage_action`
-- Capteurs portes RDC (délai 5 min)
+- Changement de `sensor.linky_22217944914302_consumption` (nouvelles données reçues)
+
+**Conditions :** Sensor non indisponible / inconnu
 
 **Fonctionnement :**
-1. Calcule `horsgel_rdc` (HorsGel global, portes RDC via attribut `Door open` des `binary_sensor.do_*`, mode Absent).
-2. Ajuste consigne RDC selon mode (Confort+/Confort/Réduit).
-3. Met à jour `input_boolean.chauffage_horsgel_rdc`, envoie mail.
-4. Applique consigne au thermostat du cellier (RDC).
+1. Lance `pyscript.linky_update` pour réimporter les statistiques long-terme (base_consumption / base_consumption_cost) avec les vraies dates Enedis (correction du décalage J-1).
 
-**Entrées utilisées :**
-
-| Entrée | Type | Config |
-|---|---|---|
-| `input_select.chauffage_mode_rdc` | input_select | Confort+, Confort, Réduit, HorsGel |
-| `input_select.chauffage_action` | input_select | WE, TéléTravail, Travail, Absent, Repos |
-| `input_boolean.chauffage_horsgel` | input_boolean | on/off |
-| `input_boolean.chauffage_horsgel_rdc` | input_boolean | on/off |
-| `input_number.chauffage_consigne_horsgel_rdc` | input_number | min:0, max:30, step:0.5, unit:°C |
-| `input_number.chauffage_consigne_confort_rdc` | input_number | min:0, max:30, step:0.5, unit:°C |
-| `input_number.chauffage_consigne_confort_rdc_2` | input_number | min:0, max:30, step:0.5, unit:°C |
-| `input_number.chauffage_consigne_reduit_rdc` | input_number | min:0, max:30, step:0.5, unit:°C |
-| `input_number.chauffage_rdc` | input_number | min:0, max:30, step:0.5, unit:°C |
+**Entités principales :**
+- `sensor.linky_22217944914302_consumption`, `pyscript.linky_update`
 
 ---
 
@@ -414,6 +244,23 @@
 
 ---
 
+## `automation.gestion_du_poste_de_teletravail` — Gestion du poste de télétravail
+> [📄 Voir le YAML](../../automations/gestion_du_poste_de_teletravail.yaml)
+
+**Statut :** En test
+
+**Remplace :** l'événement « Moniteur ON/OFF » (7h40–21h) de l'agenda TéléTravail, neutralisé.
+
+- **Début** : première présence dans le bureau (FP2), en TéléTravail, entre 6h et 20h, si la session du jour n'a pas démarré → écran allumé, Garage sur le favori Sonos VOLTAGE (volume base -0.04), session = on.
+- **Fin** : l'écran consomme moins de 10 W pendant 10 min (ordi éteint ou débranché, écran en veille), session en cours → écran coupé, Garage arrêté. La session reste à on : pas de relance automatique le soir.
+- **Minuit** : garde-fou, si la session est on → écran coupé, Garage arrêté ; puis session = off pour le lendemain.
+
+**Indisponibilité :** aucune opération si l'écran (LocalTuya) ou le Garage est indisponible ; la fin ignore un passage sous 10 W qui vient d'un état indisponible/inconnu (redémarrage HA, coupure LocalTuya).
+
+**Entités :** `binary_sensor.presence_sensor_fp2_b226_presence_sensor_1`, `switch.bureau_multiprise_du_bureau_4_moniteur`, `sensor.prise_du_bureau_power`, `media_player.garage`, `input_boolean.session_de_teletravail`, `input_select.calendrier`, `input_number.volume_sonos_base`
+
+---
+
 ## `automation.gestion_du_soleil` — Gestion du Soleil
 > [📄 Voir le YAML](../../automations/gestion_du_soleil.yaml)
 
@@ -461,27 +308,6 @@
 
 ---
 
-## `automation.maj_auto_prises_ll_sl_zigbee2mqtt` — MAJ Auto Prises LL/SL (Zigbee2MQTT)
-> [📄 Voir le YAML](../../automations/maj_auto_prises_ll_sl_zigbee2mqtt.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :**
-- `sensor.etat_lave_linge` en Veille depuis 30 s — id: LL veille
-- `sensor.etat_seche_linge` en Veille depuis 30 s — id: SL veille
-- Toutes les 5 minutes
-- Déclenchement manuel par `Gestion emplacement Sylvain Domicile/Absent` au départ du domicile
-
-**Fonctionnement :**
-1. Force une relecture MQTT (équivalent du bouton 'MAJ' de l'interface Zigbee2MQTT) des 4 canaux de puissance (`power_1` à `power_4`) de la Multiprise de la Salle de bain et de la Multiprise du Séjour, en parallèle sur les deux multiprises.
-2. Contourne le bug Zigbee2MQTT qui empêche parfois la puissance de redescendre à 0 W toute seule (ce qui fausse la détection de fin de cycle du lave-linge et du sèche-linge).
-
-**Entités principales :**
-- `sensor.etat_lave_linge` / `sensor.etat_seche_linge` : états des appareils
-- Topics MQTT `zigbee2mqtt/Multiprise de la Salle de bain/get` et `zigbee2mqtt/Multiprise du Séjour/get`
-
----
-
 ## `automation.planification_de_l_agenda` — Planification de l'Agenda
 > [📄 Voir le YAML](../../automations/planification_de_l_agenda.yaml)
 
@@ -520,6 +346,3 @@
 | `input_boolean.chauffage_horsgel` | input_boolean | on/off |
 | `input_boolean.alarme` | input_boolean | on/off |
 | `input_button.planification_agenda` | input_button | — |
-
----
-

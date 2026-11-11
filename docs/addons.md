@@ -1,6 +1,6 @@
 # 📦 Modules complémentaires (Add-ons)
 
-19 add-ons installés. [← Retour README](../README.md)
+18 add-ons installés. [← Retour README](../README.md)
 
 ---
 
@@ -183,6 +183,7 @@ type            = 0x0F
 > Dépôt : `0656e7b8` — [GitHub](https://github.com/homebridge/homebridge)
 
 Support HomeKit pour les appareils non supportés nativement.
+- Plugin **[Homebridge Alexa Smart Home](https://github.com/joeyhage/homebridge-alexa-smarthome)** : donne à HA l'accès au module EMO Life du plancher chauffant, piloté par Alexa (marche/arrêt et température). Voir [Chauffage](automations/chauffage.md#-principe-du-chauffage).
 
 ### Zigbee2MQTT
 > Dépôt : `45df7312` — [GitHub](https://github.com/zigbee2mqtt/hassio-zigbee2mqtt)
@@ -243,16 +244,6 @@ Récupère les données du compteur Linky via l'API Enedis (MyElectricalData) et
 
 Serveur NUT de supervision des onduleurs. Utilisé par l'intégration native **NUT** (2 onduleurs : Eaton Ellipse PRO 1200 et Ellipse ECO 800) et redémarré par l'automatisation `Correction de l'Onduleur` en cas d'indisponibilité.
 
-### Frigate (Full Access)
-> Dépôt : `ccab4aaf` — [GitHub](https://github.com/blakeblackshear/frigate-hass-addons)
-
-NVR avec détection d'objets locale en temps réel pour caméras IP. Installé mais arrêté : l'intégration Frigate pointe vers une instance externe.
-
-### Get HACS
-> Dépôt : `cb646a50`
-
-Installateur HACS. Non actif en production.
-
 ### Home Assistant MCP Server
 > Dépôt : `81f33d0f` — [GitHub](https://github.com/voska/hass-mcp)
 
@@ -272,3 +263,8 @@ auto_backup_retain_per_entity: 100
 verify_ssl: true
 secret_path: /private_<secret>
 ```
+
+### Music Assistant
+> Dépôt : `d5369777` — [GitHub](https://github.com/music-assistant/home-assistant-addon)
+
+Serveur Music Assistant : bibliothèque musicale et radios, diffusion sur les enceintes connectées (Sonos, TV, Apple TV). Utilisé par l'intégration native **Music Assistant** et l'automatisation `Gestion des enceintes`.

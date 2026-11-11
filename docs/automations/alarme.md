@@ -105,6 +105,3 @@
 | `input_button.alarme_activee` | input_button | — |
 | `input_button.alarme_desactivee` | input_button | — |
 | `input_button.volets_reactivation` | input_button | — |
-
----
-

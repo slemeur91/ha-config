@@ -11,11 +11,14 @@ description: |-
   - Les capteurs de température et le device_tracker ne doivent pas être à unknown/unavailable
 
   **Fonctionnement :**
-  1. Si la température du frigo est hors plage [2-4°C], OU le congélateur hors plage [-20 à -18°C], OU l'interface réseau du frigo n'est plus détectée → envoie un SMS d'alerte.
+  1. Si la température du frigo est hors plage [2-4°C] OU le congélateur hors plage [-20 à -18°C] et que l'entrée Défaut température réfrigérateur est à off → l'entrée passe à on et un SMS d'alerte est envoyé.
+  2. Quand les deux températures reviennent dans la plage et que l'entrée est à on → l'entrée repasse à off et un SMS de retour à la normale est envoyé.
+  3. Si l'interface réseau du frigo n'est plus détectée → SMS d'alerte.
 
   **Entités principales :**
   - `sensor.refrigerateur_temperature_du_frigo` / `sensor.refrigerateur_temperature_du_congelateur` : températures
   - `device_tracker.samsung_refrigerator` : supervision réseau du frigo
+  - `input_boolean.defaut_temperature_refrigerateur` : mémorisation du défaut de température
 triggers:
   - trigger: state
     entity_id:
@@ -66,28 +69,54 @@ actions:
           - if:
               - condition: or
                 conditions:
-                  - condition: not
-                    conditions:
-                      - condition: numeric_state
-                        entity_id: sensor.refrigerateur_temperature_du_frigo
-                        above: 2
-                        below: 4
-                  - condition: not
-                    conditions:
-                      - condition: numeric_state
-                        entity_id: sensor.refrigerateur_temperature_du_congelateur
-                        above: -20
-                        below: -18
+                  - condition: numeric_state
+                    entity_id: sensor.refrigerateur_temperature_du_frigo
+                    below: 2
+                  - condition: numeric_state
+                    entity_id: sensor.refrigerateur_temperature_du_frigo
+                    above: 4
+                  - condition: numeric_state
+                    entity_id: sensor.refrigerateur_temperature_du_congelateur
+                    below: -20
+                  - condition: numeric_state
+                    entity_id: sensor.refrigerateur_temperature_du_congelateur
+                    above: -18
             then:
-              - action: script.turn_on
-                target:
-                  entity_id:
-                    - script.notification_sms
-                data:
-                  variables:
-                    message_type: Alerte
-                    message_corp: Problème de température dans le réfrigérateur
-        note: Température hors plage frigo [2-4°C] ou congélateur [-20 à -18°C] → SMS d'alerte
+              - if:
+                  - condition: state
+                    entity_id: input_boolean.defaut_temperature_refrigerateur
+                    state: 'off'
+                then:
+                  - action: script.turn_on
+                    target:
+                      entity_id:
+                        - script.notification_sms
+                    data:
+                      variables:
+                        message_type: Alerte
+                        message_corp: Problème de température dans le réfrigérateur
+                  - action: input_boolean.turn_on
+                    target:
+                      entity_id: input_boolean.defaut_temperature_refrigerateur
+                    data: {}
+            else:
+              - if:
+                  - condition: state
+                    entity_id: input_boolean.defaut_temperature_refrigerateur
+                    state: 'on'
+                then:
+                  - action: script.turn_on
+                    target:
+                      entity_id:
+                        - script.notification_sms
+                    data:
+                      variables:
+                        message_type: Information
+                        message_corp: Température du réfrigérateur revenue à la normale
+                  - action: input_boolean.turn_off
+                    target:
+                      entity_id: input_boolean.defaut_temperature_refrigerateur
+        note: 'Bornes inclusives frigo [2-4°C] / congélateur [-20 à -18°C]. L''entrée Défaut température réfrigérateur mémorise le défaut : un seul SMS au passage en défaut, un seul au retour à la normale.'
       - conditions:
           - condition: trigger
             id:
@@ -110,4 +139,5 @@ actions:
                     message_type: Alerte
                     message_corp: Problème de connexion/alimentation du réfrigérateur
         note: Interface réseau du frigo plus détectée (not_home) → SMS d'alerte connexion/alimentation
-mode: single
+mode: queued
+max: 10

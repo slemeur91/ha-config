@@ -70,33 +70,23 @@
 
 ---
 
-## `automation.gestion_des_sonos` — Gestion des SONOS
-> [📄 Voir le YAML](../../automations/gestion_des_sonos.yaml)
+## `automation.gestion_des_enceintes` — Gestion des enceintes
+> [📄 Voir le YAML](../../automations/gestion_des_enceintes.yaml)
 
-**Statut :** Finalisé | **Evolution :** Aucune
+**Statut :** En test | **Evolution :** Remplace « Gestion des SONOS » et les scripts « SONOS Radio sur … »
 
-**Déclencheurs :**
-- Changement de `input_select.sonos_action`
-- Fin de `timer.sonos_timer`
-- Appui sur `input_button.sonos`
+Un seul groupe Music Assistant à membres dynamiques, `media_player.enceintes`, rempli selon le mode. Au repos, il ne contient que le Salon.
+- ON → Salon, Voltage ; en TéléTravail, Garage sur le favori Sonos VOLTAGE
+- COUCHE → Suite parentale + Salle d'eau, Voltage entre 4h et 20h30, sinon Évasion FM, timer 90 min
+- REVEIL → Salon + Suite parentale + Salle d'eau, Voltage ; timer 80 min (TéléTravail) / 135 min. Le Garage n'est pas touché par le réveil
+- OFF → arrêt, le groupe revient au Salon seul
 
-**Fonctionnement :**
-1. Annule le timer si actif.
-2. Timer → bascule sur l'action différée si COUCHE ou REVEIL.
-3. ON → dégroupage, volumes, radio salon (+garage si TéléTravail), état=ON.
-4. OFF → arrêt musique selon contexte, état=OFF.
-5. Guard iPhone absent → bloque COUCHE et REVEIL si téléphone non détecté.
-6. COUCHE → volumes, jointure suite+sde, radio suite, timer 90 min.
-7. REVEIL → volumes, jointure salon+suite+sde, radio salon, timer variable.
+**Déclencheurs :** `input_select.sonos_action`, fin de `timer.sonos_timer`, `input_button.sonos`.
 
-**Entrées utilisées :**
+**Fonctionnement :** à chaque changement de mode : arrêt de la lecture, remise de TOUTES les enceintes à leur volume par défaut (base `input_number.volume_sonos_base` ; Garage -0.04 ; Salon et Suite parentale +0.01 ; Salle d'eau et Salle de bain = base) avec sourdine désactivée, composition du groupe (ajout des enceintes voulues, pause de 2 s, puis retrait des autres), lancement de la radio sur le groupe avec une nouvelle tentative après 5 s.
 
-| Entrée | Type | Config |
-|---|---|---|
-| `input_select.sonos` | input_select | ON, COUCHE, REVEIL, OFF |
-| `input_select.sonos_action` | input_select | ON, COUCHE, REVEIL, OFF |
-| `input_select.sonos_delay_action` | input_select | ON, OFF |
-| `input_select.calendrier` | input_select | Absent, TéléTravail, Travail, Repos |
-| `timer.sonos_timer` | timer | Durée variable |
-| `input_number.volume_sonos_base` | input_number | min:0, max:1, step:0.01 |
-| `input_button.sonos` | input_button | — |
+**Garage :** piloté hors Music Assistant par l'intégration Sonos native (`media_player.garage`), car il est en Wi-Fi sur un autre réseau où MA ne peut ni le grouper ni lui envoyer de flux. Il est arrêté à chaque changement de mode (sauf REVEIL, qui ne le touche pas) et ne fait jamais partie du groupe ; il n'est donc pas synchronisé avec les autres pièces.
+
+**Prérequis :** les enceintes ne doivent appartenir à aucun autre groupe Music Assistant, sinon le retrait (`media_player.unjoin`) est redirigé vers cet autre groupe.
+
+**Entités principales :** `media_player.enceintes`, `media_player.salon_3`, `media_player.garage` (Sonos natif), `media_player.suite_parentale_3`, `media_player.salle_d_eau_3`, `media_player.salle_de_bain_3`, `input_select.sonos`, `input_select.sonos_action`, `input_select.sonos_delay_action`, `input_select.calendrier`, `input_number.volume_sonos_base`, `timer.sonos_timer`, `device_tracker.iphone_de_sylvain_le_meur`

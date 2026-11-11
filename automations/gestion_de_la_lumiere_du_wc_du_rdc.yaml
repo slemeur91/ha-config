@@ -1,53 +1,71 @@
 alias: Gestion de la Lumière du WC du RDC
 description: |-
   **Statut :** Finalisé
-  **Evolution :** Aucune
+  **Evolution :** Durée minimale d'allumage de 30 s (2026-10-25)
 
   **Déclencheurs :**
-  - Changement de `binary_sensor.presence_dans_le_wc_du_rdc_presence` (on/off)
+  - Présence détectée / plus détectée sur `binary_sensor.presence_dans_le_wc_du_rdc_presence`
+  - `light.lumiere_du_wc_du_rdc` allumée depuis 30 s
 
   **Fonctionnement :**
   1. Présence détectée → allume `light.lumiere_du_wc_du_rdc`.
-  2. Absence détectée → éteint `light.lumiere_du_wc_du_rdc`.
+  2. Absence détectée → éteint la lumière seulement si elle est allumée depuis au moins 30 s.
+  3. Lumière allumée depuis 30 s → l'éteint si l'absence est déjà détectée (cas d'une fausse absence du capteur juste après l'allumage).
+
+  La lumière reste donc allumée au minimum 30 s, puis s'éteint dès la fin de détection.
 
   **Entités principales :**
   - `binary_sensor.presence_dans_le_wc_du_rdc_presence`
   - `light.lumiere_du_wc_du_rdc`
 triggers:
+  - trigger: occupancy.detected
+    target:
+      entity_id: binary_sensor.presence_dans_le_wc_du_rdc_presence
+    id: presence
+  - trigger: occupancy.cleared
+    target:
+      entity_id: binary_sensor.presence_dans_le_wc_du_rdc_presence
+    id: absence
   - trigger: state
-    entity_id:
-      - binary_sensor.presence_dans_le_wc_du_rdc_presence
-    to:
-      - 'on'
-      - 'off'
+    entity_id: light.lumiere_du_wc_du_rdc
+    to: 'on'
+    for: 00:00:30
+    id: allumee_30s
 conditions: []
 actions:
   - choose:
       - conditions:
-          - condition: occupancy.is_detected
-            target:
-              entity_id: binary_sensor.presence_dans_le_wc_du_rdc_presence
-            options:
-              behavior: any
-              for: 00:00:00
+          - condition: trigger
+            id: presence
         sequence:
           - action: light.turn_on
             target:
               entity_id: light.lumiere_du_wc_du_rdc
-            data: {}
         note: Présence détectée → allume la lumière
       - conditions:
+          - condition: trigger
+            id: absence
+          - condition: state
+            entity_id: light.lumiere_du_wc_du_rdc
+            state: 'on'
+            for: 00:00:30
+        sequence:
+          - action: light.turn_off
+            target:
+              entity_id: light.lumiere_du_wc_du_rdc
+        note: Absence détectée et lumière allumée depuis 30 s → éteint
+      - conditions:
+          - condition: trigger
+            id: allumee_30s
           - condition: occupancy.is_not_detected
             target:
               entity_id: binary_sensor.presence_dans_le_wc_du_rdc_presence
             options:
               behavior: any
-              for: 00:00:00
         sequence:
           - action: light.turn_off
             target:
-              entity_id:
-                - light.lumiere_du_wc_du_rdc
-            data: {}
-        note: Absence détectée → éteint la lumière
-mode: single
+              entity_id: light.lumiere_du_wc_du_rdc
+        note: Délai minimal de 30 s écoulé et plus personne → éteint
+mode: queued
+max: 10

@@ -6,7 +6,7 @@
 
 ## Intégrations (37)
 
-> 37 intégrations installées, dont 35 configurées (L'eau d'Ile-de-France et PDF Scrape ne le sont pas).
+> 37 intégrations installées, dont 36 configurées (PDF Scrape ne l'est pas).
 
 ### Alexa Media Player
 > [GitHub](https://github.com/alandtse/alexa_media_player) — `domain: alexa_media`
@@ -228,6 +228,13 @@ Calcul des degrés-jours de chauffage (DJC) et de refroidissement (DJR) à parti
 
 ---
 
+### Hestia Weather
+> [GitHub](https://github.com/hestiaFB/hestia-weather-integration) — `domain: hestia_weather`
+
+Météo enrichie à partir des prévisions et de la station météo : carte météo, panneau de contrôle Hestia, température ressentie, alertes, bulletin quotidien et tendances.
+
+---
+
 ### Home Architect
 > [GitHub](https://github.com/SocrateMobile/home-architect) — `domain: home_architect`
 
@@ -239,15 +246,6 @@ Calcul des degrés-jours de chauffage (DJC) et de refroidissement (DJR) à parti
 > [GitHub](https://github.com/mvdwetering/huesyncbox) — `domain: huesyncbox`
 
 Intégration du Philips Hue Play HDMI Sync Box (synchronisation lumières/vidéo).
-
----
-
-### L'eau d'Ile-de-France
-> [GitHub](https://github.com/TimoPtr/ha_eauidf) — `domain: eauidf`
-
-Récupération de la consommation d'eau depuis l'espace client Eau d'Île-de-France.
-
-> ℹ️ Installée dans HACS mais non configurée.
 
 ---
 
@@ -415,7 +413,7 @@ Calendrier des vacances scolaires françaises.
 ---
 
 ### Vigilance Météo France
-> [GitHub](https://github.com/Pulpyyyy/meteo_france_vigilance) — `domain: meteo_france_vigilance`
+> [GitHub](https://github.com/hacf-fr/meteo_france_vigilance) — `domain: meteo_france_vigilance`
 
 Carte de vigilance Météo-France : capteurs par département et vignette nationale.
 
@@ -466,9 +464,16 @@ Intégration native HA de l'IA Claude (Anthropic). Permet l'assistant conversati
 
 ---
 
+### Music Assistant
+> [Documentation HA](https://www.home-assistant.io/integrations/music_assistant/) — `domain: music_assistant`
+
+Intégration native reliée à l'add-on **Music Assistant**. Expose les lecteurs Music Assistant (enceintes Sonos, TV, Apple TV) et le groupe dynamique `media_player.enceintes`, piloté par l'automatisation `Gestion des enceintes`.
+
+---
+
 ## Cartes Lovelace (21)
 
-> 21 cartes installées, dont 14 utilisées dans les tableaux de bord. Non utilisées : Custom-ui, Decluttering Card, expander-card, ha-floorplan, Kiosk Mode, Stack In Card, WallPanel.
+> 21 cartes installées, dont 15 utilisées dans les [tableaux de bord](tableaux_de_bord.md). Non utilisées : Custom-ui, Decluttering Card, expander-card, ha-floorplan, Kiosk Mode, Stack In Card.
 
 ### apexcharts-card
 > [GitHub](https://github.com/RomRider/apexcharts-card)
@@ -858,7 +863,7 @@ entities:
 ### WallPanel
 > [GitHub](https://github.com/j-a-n/lovelace-wallpanel)
 
-Mode panneau mural et économiseur d'écran photo pour les tableaux de bord.
+Mode panneau mural et économiseur d'écran photo pour les tableaux de bord. Utilisé par le tableau de bord **iPad**.
 
 ---
 

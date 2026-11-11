@@ -1,71 +1,92 @@
 alias: Gestion de la Lumière du WC de l'Etage
 description: |-
   **Statut :** Finalisé
-  **Evolution :** Aucune
+  **Evolution :** Durée minimale d'allumage de 30 s (2026-10-25)
 
   **Déclencheurs :**
-  - Changement de `binary_sensor.presence_dans_le_wc_de_l_etage_presence` (on/off)
+  - Présence détectée / plus détectée sur `binary_sensor.presence_dans_le_wc_de_l_etage_presence`
+  - `light.lumiere_du_wc_de_letage` allumée depuis 30 s
 
   **Fonctionnement :**
-  1. Présence détectée → allume `light.lumiere_du_wc_de_letage` avec un pas de luminosité de +50% en période sombre (de 30 min avant le coucher du soleil à 30 min après le lever), +80% sinon.
-  2. Absence détectée → éteint `light.lumiere_du_wc_de_letage`.
+  1. Présence détectée → allume `light.lumiere_du_wc_de_letage` à 50% en période sombre (de 30 min avant le coucher du soleil à 30 min après le lever), 80% sinon.
+  2. Absence détectée → éteint la lumière seulement si elle est allumée depuis au moins 30 s.
+  3. Lumière allumée depuis 30 s → l'éteint si l'absence est déjà détectée (cas d'une fausse absence du capteur juste après l'allumage).
 
-  **Remarque :** l'action utilise `brightness_step_pct` (incrément relatif) et non `brightness_pct` (valeur absolue) ; partant d'une lumière éteinte le résultat est équivalent à 50% / 80%.
+  La lumière reste donc allumée au minimum 30 s, puis s'éteint dès la fin de détection.
 
   **Entités principales :**
   - `binary_sensor.presence_dans_le_wc_de_l_etage_presence`
   - `light.lumiere_du_wc_de_letage`
 triggers:
+  - trigger: occupancy.detected
+    target:
+      entity_id: binary_sensor.presence_dans_le_wc_de_l_etage_presence
+    id: presence
+  - trigger: occupancy.cleared
+    target:
+      entity_id: binary_sensor.presence_dans_le_wc_de_l_etage_presence
+    id: absence
   - trigger: state
-    entity_id:
-      - binary_sensor.presence_dans_le_wc_de_l_etage_presence
-    to:
-      - 'on'
-      - 'off'
-    enabled: true
+    entity_id: light.lumiere_du_wc_de_letage
+    to: 'on'
+    for: 00:00:30
+    id: allumee_30s
 conditions: []
 actions:
   - choose:
       - conditions:
-          - condition: occupancy.is_detected
-            target:
-              entity_id: binary_sensor.presence_dans_le_wc_de_l_etage_presence
-            options:
-              behavior: any
-              for: 00:00:00
+          - condition: trigger
+            id: presence
         sequence:
           - if:
-              - condition: sun
-                before: sunrise
-                before_offset: '1800'
-                after: sunset
-                after_offset: '-1800'
+              - condition: or
+                conditions:
+                  - condition: sun
+                    before: sunrise
+                    before_offset: '1800'
+                    after: sunset
+                    after_offset: '-1800'
+                  - condition: state
+                    entity_id: input_select.domicile
+                    state:
+                      - Nuit
             then:
               - action: light.turn_on
                 target:
                   entity_id: light.lumiere_du_wc_de_letage
                 data:
-                  brightness_step_pct: 50
-                enabled: true
+                  brightness_pct: 50
             else:
               - action: light.turn_on
                 target:
                   entity_id: light.lumiere_du_wc_de_letage
                 data:
-                  brightness_step_pct: 80
+                  brightness_pct: 80
         note: Présence détectée → allume à 50% en période sombre, 80% en période lumineuse
       - conditions:
+          - condition: trigger
+            id: absence
+          - condition: state
+            entity_id: light.lumiere_du_wc_de_letage
+            state: 'on'
+            for: 00:00:30
+        sequence:
+          - action: light.turn_off
+            target:
+              entity_id: light.lumiere_du_wc_de_letage
+        note: Absence détectée et lumière allumée depuis 30 s → éteint
+      - conditions:
+          - condition: trigger
+            id: allumee_30s
           - condition: occupancy.is_not_detected
             target:
               entity_id: binary_sensor.presence_dans_le_wc_de_l_etage_presence
             options:
               behavior: any
-              for: 00:00:00
         sequence:
           - action: light.turn_off
             target:
-              entity_id:
-                - light.lumiere_du_wc_de_letage
-            data: {}
-        note: Absence détectée → éteint la lumière
-mode: single
+              entity_id: light.lumiere_du_wc_de_letage
+        note: Délai minimal de 30 s écoulé et plus personne → éteint
+mode: queued
+max: 10

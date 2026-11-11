@@ -56,10 +56,15 @@ system_log:
 **Déclencheurs :**
 - Chaque jour à 9h00
 
-**Conditions :** Au moins une automatisation jamais déclenchée, ou non déclenchée depuis 7 jours (hors 20 exclusions dont l'alarme, la télécommande HiFi, la boîte aux lettres, les cycles électroménager, et diverses automatisations à déclenchement normalement irrégulier)
+**Conditions :**
+- Au moins une automatisation jamais déclenchée, ou non déclenchée depuis 7 jours (hors exclusions)
 
 **Fonctionnement :**
-1. Pour chaque automatisation jamais déclenchée ou inactive depuis 7 jours (hors exclusions), envoie une notification HA (`script.notification_ha`) avec un `message_id` stable par automatisation et la date du dernier déclenchement (ou "jamais déclenchée") dans le message. Les 20 exclusions sont : `alarme_declenchement`, `alarme_sabotage`, `gestion_de_la_telecommande_hifi`, `notification_de_la_boite_aux_lettres`, `gestion_de_la_charge_batterie_de_l_ipad`, `suspension_des_notifications_en_mode_invites`, `notification_des_alertes_de_defaut_des_onduleurs_ups`, `notification_de_batterie_remplacee`, `notification_du_portier`, `notification_de_defaut_du_refrigerateur`, `notification_de_coupure_de_courant_edf`, `notification_de_capteur_deporte_du_chauffage_desactive`, `gestion_de_l_activation_de_l_imprimante_canon_mf650c`, `gestion_de_la_lumiere_de_l_entree`, `notification_des_automatisations_desactivees`, `gestion_du_cycle_du_lave_linge`, `gestion_du_cycle_du_seche_linge`, `gestion_du_cycle_du_lave_vaisselle`, `correction_du_mi_air_purifier`, `maj_auto_prises_ll_sl_zigbee2mqtt`.
+1. Pour chaque automatisation jamais déclenchée ou non déclenchée depuis 7 jours (en excluant `automation.alarme_declenchement`, `automation.alarme_sabotage`, `automation.gestion_de_la_telecommande_hifi`, `automation.notification_de_la_boite_aux_lettres`, `automation.gestion_de_la_charge_batterie_de_l_ipad`, `automation.suspension_des_notifications_en_mode_invites`, `automation.notification_des_alertes_de_defaut_des_onduleurs_ups`, `automation.notification_de_batterie_remplacee`, `automation.notification_du_portier`, `automation.notification_de_defaut_du_refrigerateur`, `automation.notification_de_coupure_de_courant_edf`, `automation.notification_de_capteur_deporte_du_chauffage_desactive`, `automation.gestion_de_l_activation_de_l_imprimante_canon_mf650c`, `automation.gestion_de_la_lumiere_de_l_entree`, `automation.notification_des_automatisations_desactivees`, `automation.gestion_du_cycle_du_lave_linge`, `automation.gestion_du_cycle_du_seche_linge`, `automation.gestion_du_cycle_du_lave_vaisselle`, `automation.correction_du_mi_air_purifier`, `automation.maj_auto_prises_ll_sl_zigbee2mqtt`, `automation.notification_de_slm_camera5` et `automation.notification_de_slm_camera6` — déclenchements normalement irréguliers ou liés à des événements peu fréquents, peuvent rester longtemps sans déclenchement sans que ce soit anormal), appelle `script.notification_ha` avec un `message_id` stable par automatisation (mise à jour, pas de doublon si toujours sans déclenchement le lendemain) et la date du dernier déclenchement (ou mention "jamais déclenchée") dans le message.
+
+**Entités principales :**
+- `automation.*` : ensemble des automatisations surveillées (attribut last_triggered)
+- `script.notification_ha` : création des notifications
 
 **Entrées utilisées :** Aucune entrée helper.
 
@@ -89,6 +94,3 @@ system_log:
 - `script.notification_ha` : notification des pannes silencieuses
 
 **Entrées utilisées :** Aucune entrée helper.
-
----
-

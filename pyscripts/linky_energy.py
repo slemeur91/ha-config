@@ -101,7 +101,6 @@ def _build_metadata(statistic_id, name, unit, unit_class):
     except TypeError:
         return StatisticMetaData(**meta_kwargs)
 
-
 async def _get_recent_stats(statistic_id, number):
     """Récupère jusqu'à `number` des derniers points enregistrés, triés du plus ancien au plus récent.
 

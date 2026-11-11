@@ -9,14 +9,27 @@
 #  Sources fusionnées (priorité décroissante) :
 #    daily > weekly > monthly > yearly
 #
-#  Chaque point de statistique :
-#    start = end_date du period à 23:00 heure locale → UTC
-#    state = end_index_m3  (index absolu du compteur en m³)
-#    sum   = end_index_m3  (même valeur – cumul depuis l'installation)
+#  Trois statistiques sont écrites, une ligne par heure, du premier jour de
+#  données jusqu'à la dernière heure terminée :
+#    - TARGET_M3_ID   (m³)  : index du compteur
+#    - TARGET_KWH_ID  (kWh) : énergie cumulée (energy_kwh GRDF)
+#    - TARGET_COST_ID (EUR) : coût cumulé (kWh × prix), statistique externe
+#
+#  Pour chaque jour : valeur de la veille de 00:00 à 22:00, valeur du jour à
+#  23:00 ; les jours sans relevé (et aujourd'hui) gardent la dernière valeur
+#  connue → conso 0 en attendant la publication GRDF (J-2 / J-3).
+#
+#  m³ et kWh sont aussi compilés nativement par HA à partir des capteurs en
+#  direct. Pour que HA reparte sans écart après le script :
+#    - les valeurs sont ancrées sur l'état actuel du capteur en direct
+#      (la dernière ligne écrite a state = état du capteur) ;
+#    - sum = state + décalage, où le décalage est celui de la dernière ligne
+#      déjà enregistrée (sum − state), propre à chaque statistique.
 # ════════════════════════════════════════════════════════════════════════════
 
 import calendar
 from datetime import datetime, timedelta
+import inspect
 import logging
 
 log = logging.getLogger(__name__)
@@ -24,11 +37,23 @@ log = logging.getLogger(__name__)
 # ─────────────────────────────────────────────────
 #  CONFIGURATION
 # ─────────────────────────────────────────────────
-SOURCE_SENSOR = "sensor.gazpar_cheptainville_card"
-TARGET_ID     = "sensor.gazpar_cheptainville_energie"
-SENSOR_NAME   = "GAZPAR Cheptainville Énergie"
-UNIT          = "m³"
-UPDATE_DAYS   = 7   # nb de jours relus lors d'un update incrémental
+SOURCE_SENSOR  = "sensor.gazpar_cheptainville_card"
+
+TARGET_M3_ID   = "sensor.gazpar_cheptainville_energie"   # capteur modèle en m³
+M3_NAME        = "GAZPAR Cheptainville Énergie"
+
+TARGET_KWH_ID  = "sensor.gazpar_cheptainville_energy"    # capteur MQTT en kWh
+KWH_NAME       = "GAZPAR Cheptainville Énergie (kWh)"
+
+TARGET_COST_ID = "gazpar:cheptainville_cost"              # statistique externe
+COST_SOURCE    = "gazpar"                                 # = préfixe de TARGET_COST_ID
+COST_NAME      = "GAZPAR Cheptainville Coût"
+PRICE_ENTITY   = "input_number.prix_manuel_du_kwh_gaz"    # €/kWh
+COST_START_DATE = "2026-10-16"   # 1er jour valorisé (AAAA-MM-JJ) ; None = tout l'historique
+
+DEFAULT_FACTOR = 11.2   # kWh/m³ si le relevé n'a pas de coefficient de conversion
+UPDATE_DAYS    = 7      # nb de jours relus lors d'un update incrémental
+LOOKBACK_ROWS  = 400    # lignes horaires relues pour retrouver l'ancre du coût
 # ─────────────────────────────────────────────────
 
 FRENCH_MONTHS = {
@@ -50,14 +75,12 @@ def _parse_date(s):
 
 def _parse_weekly_end(time_period):
     """'Du DD/MM/YYYY au DD/MM/YYYY' → datetime de fin."""
-    # ex : "Du 27/04/2026 au 03/05/2026"
     parts = time_period.split(" au ")
     return datetime.strptime(parts[1].strip(), "%d/%m/%Y")
 
 
 def _parse_monthly_end(time_period):
     """'Mois YYYY' (français) → dernier jour du mois."""
-    # ex : "Avril 2026", "Décembre 2025"
     parts = time_period.strip().split(" ")
     month = FRENCH_MONTHS.get(parts[0])
     if month is None:
@@ -72,6 +95,13 @@ def _parse_yearly_end(time_period):
     return datetime(int(time_period.strip()), 12, 31)
 
 
+def _to_float(value, default=None):
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
 # ── Fusion de toutes les sources ──────────────────────────────────────────────
 
 def _collect_all_entries(attrs):
@@ -80,15 +110,9 @@ def _collect_all_entries(attrs):
     puis complète avec des entrées « filler » (conso = 0) pour chaque jour
     compris entre la dernière donnée réelle et hier inclus.
 
-    Règles :
-    - Une seule entrée par date (clé = date du jour de fin de période).
-    - En cas de conflit, la source la plus granulaire gagne (daily > weekly > …).
-    - Les périodes dont la date de fin est dans le futur sont ignorées.
-    - Les fillers ont priorité 5 (plus basse que yearly=4) :
-      si une vraie donnée arrive plus tard pour ce jour, elle écrase le filler.
-
     Retourne une liste de dicts triée par end_date croissant :
-      { end_date, end_index_m3, start_index_m3, granularity, source }
+      { end_date, end_index_m3, start_index_m3, energy_kwh, factor,
+        granularity, source }
     """
     now   = datetime.now()
     today = now.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -105,49 +129,30 @@ def _collect_all_entries(attrs):
                 "end_date":       end_date,
                 "end_index_m3":   float(entry["end_index_m3"]),
                 "start_index_m3": float(entry["start_index_m3"]),
+                "energy_kwh":     _to_float(entry.get("energy_kwh"), 0.0),
+                "factor":         _to_float(entry.get("converter_factor_kwh/m3")),
                 "granularity":    new_g,
                 "source":         source_key,
             }
 
-    # ── Daily ────────────────────────────────────────────────────────────────
-    for entry in attrs.get("daily", []):
-        try:
-            _add(_parse_date(entry["time_period"]), entry, "daily")
-        except Exception as e:
-            log.warning("GAZPAR daily parse error '%s': %s", entry.get("time_period"), e)
-
-    # ── Weekly ───────────────────────────────────────────────────────────────
-    for entry in attrs.get("weekly", []):
-        try:
-            _add(_parse_weekly_end(entry["time_period"]), entry, "weekly")
-        except Exception as e:
-            log.warning("GAZPAR weekly parse error '%s': %s", entry.get("time_period"), e)
-
-    # ── Monthly ──────────────────────────────────────────────────────────────
-    for entry in attrs.get("monthly", []):
-        try:
-            _add(_parse_monthly_end(entry["time_period"]), entry, "monthly")
-        except Exception as e:
-            log.warning("GAZPAR monthly parse error '%s': %s", entry.get("time_period"), e)
-
-    # ── Yearly ───────────────────────────────────────────────────────────────
-    for entry in attrs.get("yearly", []):
-        try:
-            _add(_parse_yearly_end(entry["time_period"]), entry, "yearly")
-        except Exception as e:
-            log.warning("GAZPAR yearly parse error '%s': %s", entry.get("time_period"), e)
+    parsers = [
+        ("daily",   _parse_date),
+        ("weekly",  _parse_weekly_end),
+        ("monthly", _parse_monthly_end),
+        ("yearly",  _parse_yearly_end),
+    ]
+    for source_key, parser in parsers:
+        for entry in attrs.get(source_key, []):
+            try:
+                _add(parser(entry["time_period"]), entry, source_key)
+            except Exception as e:
+                log.warning("GAZPAR %s parse error '%s': %s",
+                            source_key, entry.get("time_period"), e)
 
     # ── Fillers : jours sans relevé journalier entre le dernier daily et hier ──
-    #
-    # La référence est la dernière DATE DAILY (pas weekly/monthly).
-    # Ex : dernier daily = 30/04, weekly couvre jusqu'au 03/05, today = 04/05
-    #   → fillers pour 01/05, 02/05 et 03/05
-    #   (les weekly/monthly pour ces dates sont remplacés par les fillers,
-    #    plus granulaires ; les vrais daily ne sont jamais écrasés)
     if merged:
         yesterday = today - timedelta(days=1)
 
-        # Chercher la dernière date avec une vraie donnée daily
         daily_keys = [k for k, v in merged.items() if v["source"] == "daily"]
         last_daily = max(daily_keys) if daily_keys else max(merged.keys())
         last_index = merged[last_daily]["end_index_m3"]
@@ -156,13 +161,14 @@ def _collect_all_entries(attrs):
         cursor = last_daily + timedelta(days=1)
         while cursor <= yesterday.date():
             existing = merged.get(cursor)
-            # Écraser weekly/monthly/yearly mais pas une vraie donnée daily
             if existing is None or existing["source"] != "daily":
                 merged[cursor] = {
                     "end_date":       datetime(cursor.year, cursor.month, cursor.day),
                     "end_index_m3":   last_index,
                     "start_index_m3": last_index,
-                    "granularity":    1,     # même priorité que daily
+                    "energy_kwh":     0.0,
+                    "factor":         None,
+                    "granularity":    1,
                     "source":         "filler",
                 }
                 filler_count += 1
@@ -178,63 +184,92 @@ def _collect_all_entries(attrs):
     return sorted(merged.values(), key=lambda x: x["end_date"])
 
 
-# ── Construction des objets StatisticData ─────────────────────────────────────
+# ── Calcul de l'énergie d'une entrée ──────────────────────────────────────────
 
-def _build_stat_objects(entries, since=None):
+def _kwh_increment(entry, prev_index):
     """
-    Convertit la liste fusionnée en objets StatisticData.
+    kWh à attribuer au jour de fin de l'entrée.
+      - daily  : energy_kwh GRDF + rattrapage d'un éventuel trou d'index
+                 depuis l'entrée précédente (jours non couverts) ;
+      - weekly / monthly / yearly : écart d'index depuis l'entrée précédente
+        × coefficient de conversion (évite le double comptage quand une
+        période longue chevauche des périodes plus courtes déjà comptées) ;
+      - filler : 0.
+    """
+    if entry["source"] == "filler":
+        return 0.0
+    factor = entry["factor"] or DEFAULT_FACTOR
+    if entry["source"] == "daily":
+        gap = max(0.0, entry["start_index_m3"] - prev_index)
+        return entry["energy_kwh"] + gap * factor
+    return max(0.0, entry["end_index_m3"] - prev_index) * factor
 
-    state = end_index_m3   (index absolu du compteur → valeur toujours croissante)
-    sum   = end_index_m3   (même valeur, utilisée par HA pour calculer la conso)
 
-    Compatible TypedDict (HA 2024+, dict) et dataclass (HA ≤ 2023).
+# ── Frise horaire commune aux trois statistiques ──────────────────────────────
+
+def _build_timeline(entries):
+    """
+    Une ligne par heure, du premier jour de données jusqu'à la dernière heure
+    terminée : { start (UTC), day (datetime local naïf), m3, kwh }.
+      - jour avec relevé : valeur de la veille de 00:00 à 22:00,
+        valeur du jour à 23:00 ;
+      - jours sans relevé (et aujourd'hui) : dernière valeur connue.
+    `kwh` est un cumul relatif (0 au début de l'historique).
     """
     import homeassistant.util.dt as dt_util
 
+    if not entries:
+        return []
+
+    by_day = {}
+    for e in entries:
+        by_day[e["end_date"].date()] = e
+
+    one_h     = timedelta(hours=1)
+    last_hour = dt_util.utcnow().replace(minute=0, second=0, microsecond=0) - one_h
+    day       = min(by_day.keys())
+    index     = by_day[day]["start_index_m3"]
+    cum_kwh   = 0.0
+    timeline  = []
+
+    while True:
+        day_start = datetime(day.year, day.month, day.day)
+        t     = dt_util.as_utc(dt_util.as_local(day_start))
+        if t > last_hour:
+            break
+        t_end = dt_util.as_utc(dt_util.as_local(day_start + timedelta(days=1)))
+
+        start_index = index
+        start_kwh   = cum_kwh
+        entry = by_day.get(day)
+        if entry is not None:
+            cum_kwh += _kwh_increment(entry, index)
+            index    = entry["end_index_m3"]
+
+        # Bornes en UTC : gère les jours de 23 h / 25 h (changement d'heure)
+        while t < t_end and t <= last_hour:
+            is_last = t + one_h >= t_end
+            timeline.append({
+                "start": t,
+                "day":   day_start,
+                "m3":    index if is_last else start_index,
+                "kwh":   cum_kwh if is_last else start_kwh,
+            })
+            t += one_h
+
+        day += timedelta(days=1)
+
+    return timeline
+
+
+# ── Accès au recorder ─────────────────────────────────────────────────────────
+
+def _build_metadata(statistic_id, source, name, unit, unit_class):
     try:
-        from homeassistant.components.recorder.statistics import StatisticData  # HA >= 2023
+        from homeassistant.components.recorder.statistics import StatisticMetaData
     except ImportError:
-        from homeassistant.components.recorder.models import StatisticData      # HA 2022.x
-
-    results = []
-    for entry in entries:
-        end_date = entry["end_date"]
-        if since and end_date < since:
-            continue
-
-        local_dt = end_date.replace(hour=23, minute=0, second=0, microsecond=0)
-        utc_dt   = dt_util.as_utc(dt_util.as_local(local_dt))
-
-        meter_reading = entry["end_index_m3"]   # index absolu en m³
-
-        results.append(StatisticData(
-            start = utc_dt,
-            state = meter_reading,   # lecture instantanée du compteur
-            sum   = meter_reading,   # cumul depuis l'installation
-        ))
-
-    # HA 2024+ → TypedDict (dict) ; HA ≤ 2023 → dataclass
-    if results and isinstance(results[0], dict):
-        results.sort(key=lambda x: x["start"])
-    else:
-        results.sort(key=lambda x: x.start)
-
-    return results
-
-
-# ── Import vers HA Recorder ───────────────────────────────────────────────────
-
-async def _do_import(attrs, since=None, label=""):
-    """Fusionne toutes les sources et appelle async_import_statistics."""
-    try:
-        from homeassistant.components.recorder.statistics import (
-            async_import_statistics, StatisticMetaData,
-        )
-    except ImportError:
-        from homeassistant.components.recorder.statistics import async_import_statistics
         from homeassistant.components.recorder.models import StatisticMetaData
 
-    # mean_type requis depuis HA 2025.x, obligatoire en 2026.11
     extra_meta = {}
     try:
         from homeassistant.components.recorder.statistics import StatisticMeanType
@@ -242,85 +277,186 @@ async def _do_import(attrs, since=None, label=""):
     except ImportError:
         pass
 
-    # unit_class requis depuis HA 2025.x, obligatoire en 2026.11
-    # "volume" correspond à m³ dans la nomenclature HA
+    meta_kwargs = dict(
+        statistic_id=statistic_id, source=source, name=name,
+        unit_of_measurement=unit, has_mean=False, has_sum=True,
+        **extra_meta,
+    )
+    # unit_class obligatoire depuis HA 2026.11, y compris à None (ex. EUR)
     try:
-        metadata = StatisticMetaData(
-            statistic_id        = TARGET_ID,
-            source              = "recorder",
-            name                = SENSOR_NAME,
-            unit_of_measurement = UNIT,
-            has_mean            = False,
-            has_sum             = True,
-            unit_class          = "volume",
-            **extra_meta,
-        )
+        return StatisticMetaData(unit_class=unit_class, **meta_kwargs)
     except TypeError:
-        # HA plus ancien : unit_class non supporté
-        metadata = StatisticMetaData(
-            statistic_id        = TARGET_ID,
-            source              = "recorder",
-            name                = SENSOR_NAME,
-            unit_of_measurement = UNIT,
-            has_mean            = False,
-            has_sum             = True,
-            **extra_meta,
+        return StatisticMetaData(**meta_kwargs)
+
+
+def _to_utc_dt(value):
+    import homeassistant.util.dt as dt_util
+
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return dt_util.utc_from_timestamp(value)
+    if isinstance(value, str):
+        return dt_util.parse_datetime(value)
+    return value
+
+
+async def _get_recent_stats(statistic_id, number):
+    """Derniers points enregistrés {start, state, sum}, du plus ancien au plus récent."""
+    from homeassistant.components.recorder.statistics import get_last_statistics
+
+    if inspect.iscoroutinefunction(get_last_statistics):
+        result = await get_last_statistics(hass, number, statistic_id, True, {"sum", "state"})
+    else:
+        from homeassistant.components.recorder import get_instance
+
+        result = await get_instance(hass).async_add_executor_job(
+            get_last_statistics, hass, number, statistic_id, True, {"sum", "state"}
         )
 
-    # Fusion de toutes les sources
+    rows = result.get(statistic_id) or []
+    parsed = [
+        {"start": _to_utc_dt(r["start"]), "state": r.get("state"), "sum": r.get("sum")}
+        for r in rows
+    ]
+    parsed.sort(key=lambda r: r["start"])
+    return parsed
+
+
+def _live_value(entity_id):
+    entity = hass.states.get(entity_id)
+    if entity is None:
+        return None
+    return _to_float(entity.state)
+
+
+def _first_index_since(timeline, since):
+    if since is None:
+        return 0
+    for i in range(len(timeline)):
+        if timeline[i]["day"] >= since:
+            return i
+    return len(timeline)
+
+
+# ── Écriture des statistiques ─────────────────────────────────────────────────
+
+async def _write_native(statistic_id, name, unit, unit_class, timeline, key, since, label):
+    """
+    Statistique également compilée par HA (m³, kWh). Les valeurs sont ancrées
+    sur l'état actuel du capteur : la dernière ligne a state = état du capteur,
+    et sum garde le décalage (sum − state) de la dernière ligne enregistrée.
+    """
+    from homeassistant.components.recorder.statistics import async_import_statistics
+
+    live = _live_value(statistic_id)
+    if live is None:
+        log.warning("GAZPAR %s – %s indisponible, statistique non réécrite", label, statistic_id)
+        return 0
+
+    last_rows = await _get_recent_stats(statistic_id, 1)
+    offset = 0.0
+    if last_rows and last_rows[-1]["sum"] is not None and last_rows[-1]["state"] is not None:
+        offset = last_rows[-1]["sum"] - last_rows[-1]["state"]
+
+    final = timeline[-1][key]
+    stats = []
+    for p in timeline[_first_index_since(timeline, since):]:
+        value = round(live - (final - p[key]), 3)
+        stats.append({"start": p["start"], "state": value, "sum": round(value + offset, 3)})
+
+    if not stats:
+        return 0
+
+    metadata = _build_metadata(statistic_id, "recorder", name, unit, unit_class)
+    await async_import_statistics(hass, metadata, stats)
+    log.info(
+        "GAZPAR %s – %s : %d ligne(s) [%s → %s], dernière valeur %.3f %s (décalage sum %.3f)",
+        label, statistic_id, len(stats),
+        stats[0]["start"].isoformat(), stats[-1]["start"].isoformat(),
+        stats[-1]["state"], unit, offset,
+    )
+    return len(stats)
+
+
+async def _write_cost(timeline, since, label):
+    """
+    Coût cumulé (statistique externe, seul écrivain). En mise à jour, repart
+    du coût déjà enregistré juste avant la fenêtre, pour ne pas recalculer
+    l'historique avec le prix actuel. Rien n'est écrit avant COST_START_DATE :
+    les jours antérieurs n'ont pas de coût.
+    """
+    from homeassistant.components.recorder.statistics import async_add_external_statistics
+
+    price = _live_value(PRICE_ENTITY)
+    if price is None:
+        log.warning("GAZPAR %s – prix %s indisponible, coût non réécrit", label, PRICE_ENTITY)
+        return 0
+
+    cost_start_i = 0
+    if COST_START_DATE:
+        cost_start_i = _first_index_since(timeline, datetime.strptime(COST_START_DATE, "%Y-%m-%d"))
+
+    start_i = max(_first_index_since(timeline, since), cost_start_i)
+    anchor  = None
+    ref_kwh = 0.0
+
+    if start_i > cost_start_i:
+        prev = timeline[start_i - 1]
+        rows = await _get_recent_stats(TARGET_COST_ID, LOOKBACK_ROWS)
+        for r in rows:
+            if r["start"] is not None and r["start"].timestamp() == prev["start"].timestamp():
+                anchor  = r["sum"]
+                ref_kwh = prev["kwh"]
+
+    if anchor is None:
+        # Pas d'ancre (premier passage) : depuis COST_START_DATE, en partant de 0
+        start_i = cost_start_i
+        anchor  = 0.0
+        ref_kwh = timeline[start_i - 1]["kwh"] if start_i > 0 else 0.0
+
+    stats = []
+    for p in timeline[start_i:]:
+        value = round(anchor + (p["kwh"] - ref_kwh) * price, 3)
+        stats.append({"start": p["start"], "state": value, "sum": value})
+
+    if not stats:
+        return 0
+
+    metadata = _build_metadata(TARGET_COST_ID, COST_SOURCE, COST_NAME, "EUR", None)
+    await async_add_external_statistics(hass, metadata, stats)
+    log.info(
+        "GAZPAR %s – %s : %d ligne(s) [%s → %s], cumul %.3f EUR (prix %.4f €/kWh)",
+        label, TARGET_COST_ID, len(stats),
+        stats[0]["start"].isoformat(), stats[-1]["start"].isoformat(),
+        stats[-1]["sum"], price,
+    )
+    return len(stats)
+
+
+async def _do_import(attrs, since=None, label=""):
     all_entries = _collect_all_entries(attrs)
 
-    # Log récapitulatif par source (sur le jeu COMPLET avant filtre since)
     by_source = {}
     for e in all_entries:
         by_source.setdefault(e["source"], 0)
         by_source[e["source"]] += 1
     log.info("GAZPAR %s – sources disponibles : %s", label, by_source)
 
-    stats = _build_stat_objects(all_entries, since=since)
-
-    if not stats:
+    timeline = _build_timeline(all_entries)
+    if not timeline:
         log.info("GAZPAR: aucune entrée à importer %s", label)
         return 0
 
-    def _start(s):
-        return s["start"] if isinstance(s, dict) else s.start
+    n_m3   = await _write_native(TARGET_M3_ID, M3_NAME, "m³", "volume",
+                                 timeline, "m3", since, label)
+    n_kwh  = await _write_native(TARGET_KWH_ID, KWH_NAME, "kWh", "energy",
+                                 timeline, "kwh", since, label)
+    n_cost = await _write_cost(timeline, since, label)
 
-    # Table date_str → source pour le log détaillé
-    # (pyscript n'accepte pas les expressions génératrices, on utilise une boucle)
-    date_to_source = {}
-    for e in all_entries:
-        date_to_source[e["end_date"].strftime("%Y-%m-%d")] = e["source"]
-
-    # Log détaillé de chaque entrée (visible dans Journaux en filtrant "GAZPAR")
-    for stat in stats:
-        date_str  = _start(stat).strftime("%Y-%m-%d")
-        src_label = date_to_source.get(date_str, "?")
-        state_val = stat["state"] if isinstance(stat, dict) else stat.state
-        log.debug(
-            "  → %s  [%s]  idx=%.2f",
-            date_str, src_label, state_val,
-        )
-
-    await async_import_statistics(hass, metadata, stats)
-
-    # Décompte réelles vs fillers parmi les entrées effectivement importées
-    filler_count_imp = 0
-    real_count_imp   = 0
-    for stat in stats:
-        src = date_to_source.get(_start(stat).strftime("%Y-%m-%d"), "?")
-        if src == "filler":
-            filler_count_imp += 1
-        else:
-            real_count_imp += 1
-
-    log.info(
-        "GAZPAR %s – %d importée(s) : %d réelle(s) + %d filler(s)  [%s → %s]",
-        label, len(stats), real_count_imp, filler_count_imp,
-        _start(stats[0]).strftime("%Y-%m-%d"),
-        _start(stats[-1]).strftime("%Y-%m-%d"),
-    )
-    return len(stats)
+    log.info("GAZPAR %s – lignes écrites : m³=%d, kWh=%d, coût=%d",
+             label, n_m3, n_kwh, n_cost)
+    return n_m3
 
 
 # ── Services exposés à HA ─────────────────────────────────────────────────────
@@ -329,8 +465,8 @@ async def _do_import(attrs, since=None, label=""):
 async def gazpar_import_all():
     """
     Service : pyscript.gazpar_import_all
-    Import complet : daily + weekly + monthly + yearly.
-    À appeler une seule fois depuis Outils développeur → Services.
+    Import complet : daily + weekly + monthly + yearly, pour m³, kWh et coût.
+    À lancer une fois après une mise à jour du script ou une reprise d'historique.
     """
     entity = hass.states.get(SOURCE_SENSOR)
     if entity is None:
@@ -355,7 +491,7 @@ async def gazpar_import_all():
 
     persistent_notification.create(
         title           = "GAZPAR – Import historique terminé",
-        message         = f"{count} statistiques injectées dans {TARGET_ID}.",
+        message         = f"{count} heures réécrites (m³, kWh et coût).",
         notification_id = "gazpar_import_all",
     )
 
@@ -364,8 +500,8 @@ async def gazpar_import_all():
 async def gazpar_update():
     """
     Service : pyscript.gazpar_update
-    Réimporte les UPDATE_DAYS derniers jours : données réelles + fillers à 0
-    pour les jours non encore remontés par Gazpar.
+    Réimporte les UPDATE_DAYS derniers jours (m³, kWh et coût) jusqu'à la
+    dernière heure terminée.
     Appelé automatiquement par l'automation dès que le capteur source change.
     """
     entity = hass.states.get(SOURCE_SENSOR)
@@ -380,7 +516,7 @@ async def gazpar_update():
         - timedelta(days=UPDATE_DAYS)
     )
     log.info(
-        "GAZPAR update – fenêtre : %s → hier  (UPDATE_DAYS=%d)",
+        "GAZPAR update – fenêtre : %s → dernière heure terminée  (UPDATE_DAYS=%d)",
         since.date(), UPDATE_DAYS,
     )
-    await _do_import(attrs, since=since, label=f"(update {since.date()}→hier)")
+    await _do_import(attrs, since=since, label=f"(update {since.date()}→maintenant)")

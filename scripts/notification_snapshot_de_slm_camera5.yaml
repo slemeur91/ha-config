@@ -1,0 +1,91 @@
+alias: Notification Snapshot de slm-camera5
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
+
+  **Rôle :** Capture un snapshot et une vidéo de slm-camera5 et les envoie par mail avec le message et le type fournis en paramètres. Appelé par 'Notification de slm-camera5' via script.turn_on.
+
+  **Paramètres :**
+  - message_type : type du message (ex : 'slm-camera5')
+  - message_corp : corps du message (ex : 'Détection sur slm-camera5')
+
+  **Fonctionnement :**
+  1. En parallèle : capture une image du flux haute résolution (camera.exterieur_slm_camera5_high_resolution_channel) dans /media/Snapshots/camera5.jpg et enregistre 30s de vidéo (10s de lookback) du flux fluide (camera.slm_camera5_fluide) dans /media/Video/camera5.mp4.
+  2. Envoie un mail '[HA] ' suivi du type, avec l'image et la vidéo en pièces jointes et le message en corps (via smtp.send_message).
+
+  **Entités principales :**
+  - camera.exterieur_slm_camera5_high_resolution_channel : flux capturé en image
+  - camera.slm_camera5_fluide : flux enregistré en vidéo
+  - notify.email_slemeur_slm_srv_dscloud_me (smtp.send_message) : envoi du mail
+fields:
+  message_type:
+    description: 'Type du message (ex : "slm-camera5")'
+    example: slm-camera5
+    required: true
+    selector:
+      text: null
+  message_corp:
+    description: 'Corps du message (ex : "Détection sur slm-camera5")'
+    example: Détection sur slm-camera5
+    required: true
+    selector:
+      text: null
+sequence:
+  - parallel:
+      - action: camera.snapshot
+        target:
+          entity_id:
+            - camera.exterieur_slm_camera5_high_resolution_channel
+        data:
+          filename: /media/Snapshots/camera5.jpg
+        note: Capture du flux haute résolution de slm-camera5  dans /media/Snapshots/camera5.jpg
+      - action: camera.record
+        metadata: {}
+        target:
+          entity_id:
+            - camera.slm_camera5_3
+        data:
+          duration: 30
+          lookback: 10
+          filename: /media/Video/camera5.mp4
+        enabled: true
+        note: Vidéu du flux fluide de slm-camera5 dans /media/Video/camera5.jpg
+  - note: Envoie de la capture du portier en pièce jointe par mail [HA]
+    action: smtp.send_message
+    metadata: {}
+    target:
+      entity_id: notify.email_slemeur_slm_srv_dscloud_me
+    data:
+      title: '[HA] {{ message_type }}'
+      message: '{{ message_corp }}'
+      attachments:
+        - media_source:
+            media_content_id: media-source://media_source/local/Snapshots/camera5.jpg
+            media_content_type: image/jpeg
+            metadata:
+              title: camera5.jpg
+              thumbnail: null
+              media_class: image
+              children_media_class: null
+              navigateIds:
+                - {}
+                - media_content_type: app
+                  media_content_id: media-source://media_source
+                - media_content_type: ''
+                  media_content_id: media-source://media_source/local/Snapshots
+        - media_source:
+            media_content_id: media-source://media_source/local/Video/camera5.mp4
+            media_content_type: video/mp4
+            metadata:
+              title: camera5.mp4
+              thumbnail: null
+              media_class: video
+              children_media_class: null
+              navigateIds:
+                - {}
+                - media_content_type: app
+                  media_content_id: media-source://media_source
+                - media_content_type: ''
+                  media_content_id: media-source://media_source/local/Video
+mode: queued
+max: 10

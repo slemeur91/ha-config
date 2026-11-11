@@ -114,7 +114,7 @@ actions:
                       skip_condition: true
                     target:
                       entity_id:
-                        - automation.gestion_des_sonos
+                        - automation.gestion_des_enceintes
                 else:
                   - action: input_select.select_option
                     metadata: {}
@@ -198,7 +198,7 @@ actions:
                       skip_condition: true
                     target:
                       entity_id:
-                        - automation.gestion_des_sonos
+                        - automation.gestion_des_enceintes
                 else:
                   - action: input_select.select_option
                     metadata: {}

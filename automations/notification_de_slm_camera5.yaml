@@ -1,0 +1,62 @@
+alias: Notification de slm-camera5
+description: |-
+  **Statut :** Finalisé
+  **Evolution :** Aucune
+
+  **Déclencheurs :**
+  - Occupation détectée par `binary_sensor.personne_person_occupancy`
+
+  **Conditions :**
+  - iPhone de Sylvain hors de la zone domicile, ou alarme armée (absent ou nuit)
+
+  **Fonctionnement :**
+  1. Si l'occupation est toujours détectée → lance `script.notification_snapshot_de_slm_camera5` (capture image + vidéo de slm-camera5, envoi par mail) avec le type 'slm-camera5' et le message 'Détection sur slm-camera5'.
+
+  **Entités principales :**
+  - `binary_sensor.personne_person_occupancy` : détection d'occupation
+  - `device_tracker.iphone_de_sylvain_le_meur`, `alarm_control_panel.alarme` : conditions d'absence / alarme
+  - `script.notification_snapshot_de_slm_camera5` : capture et envoi du mail
+triggers:
+  - trigger: state
+    entity_id:
+      - binary_sensor.personne_person_occupancy
+    to:
+      - 'on'
+conditions:
+  - condition: or
+    conditions:
+      - condition: zone.not_in_zone
+        target:
+          entity_id: device_tracker.iphone_de_sylvain_le_meur
+        options:
+          behavior: any
+          for: 00:00:00
+          zone: zone.home
+      - condition: alarm_control_panel.is_armed_away
+        target:
+          entity_id: alarm_control_panel.alarme
+        options:
+          for: 00:00:00
+      - condition: alarm_control_panel.is_armed_night
+        target:
+          entity_id: alarm_control_panel.alarme
+        options:
+          for: 00:00:00
+actions:
+  - if:
+      - condition: occupancy.is_detected
+        target:
+          entity_id: binary_sensor.personne_person_occupancy
+        options:
+          behavior: any
+          for: 00:00:00
+    then:
+      - action: script.turn_on
+        target:
+          entity_id:
+            - script.notification_snapshot_de_slm_camera5
+        data:
+          variables:
+            message_type: slm-camera5
+            message_corp: Détection sur slm-camera5
+mode: single

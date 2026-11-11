@@ -1,0 +1,51 @@
+alias: Gestion de l'intégration Daikin selon le Contacteur de la Climatisation
+description: |-
+  **Déclencheurs :**
+  - `switch.contacteur_de_la_climatisation` passe à OFF
+  - `switch.contacteur_de_la_climatisation` passe à ON
+  - Démarrage de Home Assistant (resynchronisation)
+
+  **Fonctionnement :**
+  - Contacteur OFF → désactive toutes les entrées de l'intégration Daikin (les unités ne sont plus alimentées, évite les erreurs de connexion).
+  - Contacteur ON → réactive toutes les entrées de l'intégration Daikin.
+
+  **Entités principales :**
+  - `switch.contacteur_de_la_climatisation` : alimentation physique de la clim
+  - Intégration `daikin` (4 unités)
+triggers:
+  - trigger: state
+    entity_id: switch.contacteur_de_la_climatisation
+    to: 'off'
+    id: contacteur_off
+  - trigger: state
+    entity_id: switch.contacteur_de_la_climatisation
+    to: 'on'
+    id: contacteur_on
+  - trigger: homeassistant
+    event: start
+    id: demarrage
+    note: Resynchronise l'état de l'intégration si le contacteur a changé pendant que HA était arrêté.
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: switch.contacteur_de_la_climatisation
+            state: 'off'
+        sequence:
+          - action: homeassistant.disable_config_entry
+            data:
+              domain:
+                - daikin
+      - conditions:
+          - condition: state
+            entity_id: switch.contacteur_de_la_climatisation
+            state: 'on'
+        sequence:
+          - action: homeassistant.enable_config_entry
+            data:
+              domain:
+                - daikin
+    note: 'Basé sur l''état réel du contacteur (et non sur le déclencheur) : rien n''est fait si le contacteur est unavailable/unknown.'
+mode: queued
+max: 5

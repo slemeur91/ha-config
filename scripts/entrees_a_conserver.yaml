@@ -1,0 +1,39 @@
+alias: Entrées à conserver
+description: |-
+  **Rôle :** script de référencement uniquement. Il ne fait rien : la première action arrête la séquence.
+
+  Les actions suivantes ne servent qu'à référencer les entrées (helpers) à conserver, afin qu'elles n'apparaissent pas comme inutilisées alors qu'elles sont utilisées en dehors des automatisations et scripts.
+
+  **Entrées référencées :**
+  - Tarifs manuels de consommation, utilisés par le panneau Énergie : `input_number.prix_manuel_du_kwh_elec`, `input_number.prix_manuel_du_kwh_gaz`, `input_number.prix_manuel_du_m3_eau` (valeurs relevées à la création du script)
+  - Entrées de volets, utilisées par l'intégration CoverAutomatic : `input_boolean.seul_a_la_maison`, `input_boolean.invites`,
+sequence:
+  - stop: 'Script de référencement uniquement : aucune action exécutée.'
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.prix_manuel_du_kwh_elec
+    data:
+      valeur: 0.09649
+    alias: 'Panneau Énergie : prix manuel du kWh Elec'
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.prix_manuel_du_kwh_gaz
+    data:
+      valeur: 0.1364
+    alias: 'Panneau Énergie : prix manuel du kWh Gaz'
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.prix_manuel_du_m3_eau
+    data:
+      valeur: 5.48
+    alias: 'Panneau Énergie : prix manuel du m3 Eau'
+  - action: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.seul_a_la_maison
+    alias: 'CoverAutomatic : Seul à la Maison'
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.invites
+    alias: 'CoverAutomatic : Invités'
+mode: single
+icon: mdi:bookmark-check

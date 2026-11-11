@@ -18,37 +18,37 @@ sequence:
       - action: camera.snapshot
         target:
           entity_id:
-            - camera.slm_camera1
+            - camera.sejour_slm_camera1_high_resolution_channel
         data:
           filename: /media/Snapshots/camera1.jpg
       - action: camera.snapshot
         target:
           entity_id:
-            - camera.slm_camera2
+            - camera.salon_slm_camera2_high_resolution_channel
         data:
           filename: /media/Snapshots/camera2.jpg
       - action: camera.snapshot
         target:
           entity_id:
-            - camera.slm_camera3
+            - camera.cellier_slm_camera3_high_resolution_channel
         data:
           filename: /media/Snapshots/camera3.jpg
       - action: camera.snapshot
         target:
           entity_id:
-            - camera.slm_camera4
+            - camera.palier_slm_camera4_high_resolution_channel
         data:
           filename: /media/Snapshots/camera4.jpg
       - action: camera.snapshot
         target:
           entity_id:
-            - camera.slm_camera5
+            - camera.exterieur_slm_camera5_high_resolution_channel
         data:
           filename: /media/Snapshots/camera5.jpg
       - action: camera.snapshot
         target:
           entity_id:
-            - camera.slm_camera6
+            - camera.exterieur_slm_camera6_high_resolution_channel
         data:
           filename: /media/Snapshots/camera6.jpg
       - action: camera.snapshot
@@ -60,7 +60,7 @@ sequence:
       - action: camera.snapshot
         target:
           entity_id:
-            - camera.exterieur_slm_portier
+            - camera.exterieur_slm_portier_high_resolution_channel
         data:
           filename: /media/Snapshots/portier.jpg
   - note: Envoie toutes les captures en pièces jointes par mail [HA] Alerte

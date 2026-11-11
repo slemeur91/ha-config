@@ -12,7 +12,7 @@ description: |-
 
   **Entités principales :**
   - input_select.sonos_action : sélecteur d'action SONOS
-  - automation.gestion_des_sonos : automatisation déclenchée
+  - automation.gestion_des_enceintes : automatisation déclenchée
   - script.notification_mail : envoi du mail
 sequence:
   - if:
@@ -27,7 +27,7 @@ sequence:
           skip_condition: true
         target:
           entity_id:
-            - automation.gestion_des_sonos
+            - automation.gestion_des_enceintes
     else:
       - action: input_select.select_option
         metadata: {}

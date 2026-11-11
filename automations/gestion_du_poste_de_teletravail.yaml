@@ -1,0 +1,163 @@
+alias: Gestion du poste de télétravail
+description: |-
+  **Statut :** En test
+  **Remplace :** l'événement « Moniteur ON/OFF » (7h40–21h) de l'agenda TéléTravail, neutralisé.
+
+  - **Début** : première présence dans le bureau (FP2), en TéléTravail, entre 6h et 20h, si la session du jour n'a pas démarré → écran allumé, Garage sur le favori Sonos VOLTAGE (volume base -0.04), session = on.
+  - **Fin** : l'écran consomme moins de 10 W pendant 10 min (ordi éteint ou débranché, écran en veille), session en cours → écran coupé, Garage arrêté. La session reste à on : pas de relance automatique le soir.
+  - **Minuit** : garde-fou, si la session est on → écran coupé, Garage arrêté ; puis session = off pour le lendemain.
+
+  **Indisponibilité :** aucune opération si l'écran (LocalTuya) ou le Garage est indisponible ; la fin ignore un passage sous 10 W qui vient d'un état indisponible/inconnu (redémarrage HA, coupure LocalTuya).
+
+  **Entités :** `binary_sensor.presence_sensor_fp2_b226_presence_sensor_1`, `switch.bureau_multiprise_du_bureau_4_moniteur`, `sensor.prise_du_bureau_power`, `media_player.garage`, `input_boolean.session_de_teletravail`, `input_select.calendrier`, `input_number.volume_sonos_base`
+triggers:
+  - trigger: occupancy.detected
+    target:
+      entity_id: binary_sensor.presence_sensor_fp2_b226_presence_sensor_1
+    id: debut
+  - trigger: numeric_state
+    entity_id: sensor.prise_du_bureau_power
+    below: 10
+    for:
+      minutes: 10
+    id: fin
+  - trigger: time
+    at: 00:00:00
+    id: minuit
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: debut
+          - condition: state
+            entity_id: input_select.calendrier
+            state: TéléTravail
+          - condition: state
+            entity_id: input_boolean.session_de_teletravail
+            state: 'off'
+          - condition: time
+            after: 06:00:00
+            before: '20:00:00'
+          - condition: state
+            entity_id: switch.bureau_multiprise_du_bureau_4_moniteur
+            state:
+              - 'on'
+              - 'off'
+        sequence:
+          - action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.session_de_teletravail
+          - action: switch.turn_on
+            target:
+              entity_id: switch.bureau_multiprise_du_bureau_4_moniteur
+          - if:
+              - condition: not
+                conditions:
+                  - condition: state
+                    entity_id: media_player.garage
+                    state:
+                      - playing
+                      - unavailable
+                      - unknown
+            then:
+              - action: media_player.volume_set
+                continue_on_error: true
+                target:
+                  entity_id: media_player.garage
+                data:
+                  volume_level: '{{ states(''input_number.volume_sonos_base'') | float(0.09) - 0.04 }}'
+              - action: media_player.volume_mute
+                continue_on_error: true
+                target:
+                  entity_id: media_player.garage
+                data:
+                  is_volume_muted: false
+              - action: media_player.select_source
+                continue_on_error: true
+                target:
+                  entity_id: media_player.garage
+                data:
+                  source: VOLTAGE
+              - delay:
+                  seconds: 10
+              - if:
+                  - condition: not
+                    conditions:
+                      - condition: state
+                        entity_id: media_player.garage
+                        state:
+                          - playing
+                          - unavailable
+                          - unknown
+                then:
+                  - action: media_player.select_source
+                    continue_on_error: true
+                    target:
+                      entity_id: media_player.garage
+                    data:
+                      source: VOLTAGE
+                note: Nouvelle tentative après 10 s
+            note: 'Garage : favori Sonos VOLTAGE en Sonos natif, s''il ne joue pas déjà et s''il est disponible'
+        note: 'Début de session : première présence du jour dans le bureau en TéléTravail, écran disponible'
+      - conditions:
+          - condition: trigger
+            id: fin
+          - condition: template
+            value_template: '{{ trigger.platform == ''numeric_state'' and trigger.from_state is not none and is_number(trigger.from_state.state) }}'
+          - condition: state
+            entity_id: input_boolean.session_de_teletravail
+            state: 'on'
+          - condition: state
+            entity_id: switch.bureau_multiprise_du_bureau_4_moniteur
+            state: 'on'
+        sequence:
+          - action: switch.turn_off
+            target:
+              entity_id: switch.bureau_multiprise_du_bureau_4_moniteur
+          - if:
+              - condition: state
+                entity_id: media_player.garage
+                state:
+                  - playing
+                  - paused
+                  - buffering
+            then:
+              - action: media_player.media_stop
+                continue_on_error: true
+                target:
+                  entity_id: media_player.garage
+        note: 'Fin de session : écran en veille (< 10 W pendant 10 min), passage venant d''une vraie mesure (pas d''un état indisponible)'
+      - conditions:
+          - condition: trigger
+            id: minuit
+          - condition: state
+            entity_id: input_boolean.session_de_teletravail
+            state: 'on'
+        sequence:
+          - if:
+              - condition: state
+                entity_id: switch.bureau_multiprise_du_bureau_4_moniteur
+                state: 'on'
+            then:
+              - action: switch.turn_off
+                target:
+                  entity_id: switch.bureau_multiprise_du_bureau_4_moniteur
+          - if:
+              - condition: state
+                entity_id: media_player.garage
+                state:
+                  - playing
+                  - paused
+                  - buffering
+            then:
+              - action: media_player.media_stop
+                continue_on_error: true
+                target:
+                  entity_id: media_player.garage
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.session_de_teletravail
+        note: 'Garde-fou de minuit : tout couper si la session est encore active, puis remise à zéro pour le lendemain'
+mode: queued
+max: 5

@@ -19,7 +19,7 @@ description: |-
   - `sensor.multiprise_de_la_salle_de_bain_power_1` / `_energy_1` : puissance / énergie
   - `input_boolean.cycle_lave_linge_en_cours` : marqueur de cycle en cours
   - `input_datetime.dernier_cycle_lave_linge_debut` / `_fin` : horodatages du dernier cycle
-  - `input_number.dernier_cycle_lave_linge_conso_au_debut` / `_a_la_ffin` : index d'énergie au début/fin du dernier cycle
+  - `input_number.dernier_cycle_lave_linge_conso_au_debut` / `_a_la_fin` : index d'énergie au début/fin du dernier cycle
 triggers:
   - trigger: state
     entity_id:
@@ -135,7 +135,7 @@ actions:
               - action: input_number.set_value
                 target:
                   entity_id:
-                    - input_number.dernier_cycle_lave_linge_conso_a_la_ffin
+                    - input_number.dernier_cycle_lave_linge_conso_a_la_fin
                 data:
                   value: '{{ states(''sensor.multiprise_de_la_salle_de_bain_energy_1'') | float }}'
               - action: input_boolean.turn_off

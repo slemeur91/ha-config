@@ -1,0 +1,490 @@
+alias: Gestion des enceintes
+description: |-
+  **Statut :** En test
+  **Evolution :** Remplace « Gestion des SONOS » et les scripts « SONOS Radio sur … »
+
+  Un seul groupe Music Assistant à membres dynamiques, `media_player.enceintes`, rempli selon le mode. Au repos, il ne contient que le Salon.
+  - ON → Salon, Voltage ; en TéléTravail, Garage sur le favori Sonos VOLTAGE
+  - COUCHE → Suite parentale + Salle d'eau, Voltage entre 4h et 20h30, sinon Évasion FM, timer 90 min
+  - REVEIL → Salon + Suite parentale + Salle d'eau, Voltage ; timer 80 min (TéléTravail) / 135 min. Le Garage n'est pas touché par le réveil
+  - OFF → arrêt, le groupe revient au Salon seul
+
+  **Déclencheurs :** `input_select.sonos_action`, fin de `timer.sonos_timer`, `input_button.sonos`.
+
+  **Fonctionnement :** à chaque changement de mode : arrêt de la lecture, remise de TOUTES les enceintes à leur volume par défaut (base `input_number.volume_sonos_base` ; Garage -0.04 ; Salon et Suite parentale +0.01 ; Salle d'eau et Salle de bain = base) avec sourdine désactivée, composition du groupe (ajout des enceintes voulues, pause de 2 s, puis retrait des autres), lancement de la radio sur le groupe avec une nouvelle tentative après 5 s.
+
+  **Garage :** piloté hors Music Assistant par l'intégration Sonos native (`media_player.garage`), car il est en Wi-Fi sur un autre réseau où MA ne peut ni le grouper ni lui envoyer de flux. Il est arrêté à chaque changement de mode (sauf REVEIL, qui ne le touche pas) et ne fait jamais partie du groupe ; il n'est donc pas synchronisé avec les autres pièces.
+
+  **Prérequis :** les enceintes ne doivent appartenir à aucun autre groupe Music Assistant, sinon le retrait (`media_player.unjoin`) est redirigé vers cet autre groupe.
+
+  **Entités principales :** `media_player.enceintes`, `media_player.salon_3`, `media_player.garage` (Sonos natif), `media_player.suite_parentale_3`, `media_player.salle_d_eau_3`, `media_player.salle_de_bain_3`, `input_select.sonos`, `input_select.sonos_action`, `input_select.sonos_delay_action`, `input_select.calendrier`, `input_number.volume_sonos_base`, `timer.sonos_timer`, `device_tracker.iphone_de_sylvain_le_meur`
+triggers:
+  - trigger: state
+    entity_id:
+      - input_select.sonos_action
+  - trigger: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.sonos_timer
+    id: Sonos_Timer
+  - trigger: state
+    entity_id:
+      - input_button.sonos
+conditions: []
+actions:
+  - if:
+      - condition: state
+        entity_id: timer.sonos_timer
+        state: active
+    then:
+      - action: timer.cancel
+        target:
+          entity_id: timer.sonos_timer
+        data: {}
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - Sonos_Timer
+        sequence:
+          - if:
+              - condition: state
+                entity_id: input_select.sonos
+                state:
+                  - COUCHE
+                  - REVEIL
+            then:
+              - action: input_select.select_option
+                target:
+                  entity_id: input_select.sonos_action
+                data:
+                  option: '{{ states(''input_select.sonos_delay_action'') }}'
+        note: Timer terminé → bascule sur l'action différée si état COUCHE ou REVEIL
+      - conditions:
+          - condition: state
+            entity_id: input_select.sonos_action
+            state: 'ON'
+        sequence:
+          - action: media_player.media_stop
+            continue_on_error: true
+            target:
+              entity_id: media_player.enceintes
+            data: {}
+          - action: media_player.media_stop
+            continue_on_error: true
+            target:
+              entity_id: media_player.garage
+            data: {}
+            note: Arrêt du Garage (Sonos natif)
+          - sequence:
+              - action: media_player.volume_set
+                target:
+                  entity_id: media_player.garage
+                data:
+                  volume_level: '{{ states(''input_number.volume_sonos_base'') | float - 0.04 }}'
+              - action: media_player.volume_set
+                target:
+                  entity_id:
+                    - media_player.salle_d_eau_3
+                    - media_player.salle_de_bain_3
+                data:
+                  volume_level: '{{ states(''input_number.volume_sonos_base'') | float }}'
+              - action: media_player.volume_set
+                target:
+                  entity_id:
+                    - media_player.salon_3
+                    - media_player.suite_parentale_3
+                data:
+                  volume_level: '{{ states(''input_number.volume_sonos_base'') | float + 0.01 }}'
+              - action: media_player.volume_mute
+                continue_on_error: true
+                target:
+                  entity_id:
+                    - media_player.salon_3
+                    - media_player.garage
+                    - media_player.suite_parentale_3
+                    - media_player.salle_d_eau_3
+                    - media_player.salle_de_bain_3
+                data:
+                  is_volume_muted: false
+            note: 'Toutes les enceintes : volume par défaut (base ; Garage -0.04 ; Salon et Suite +0.01) et sourdine désactivée, pour retrouver ces réglages en utilisation manuelle'
+          - action: media_player.join
+            target:
+              entity_id: media_player.enceintes
+            data:
+              group_members:
+                - media_player.salon_3
+          - delay:
+              seconds: 2
+            note: Laisse Music Assistant appliquer l'ajout avant le retrait
+          - action: media_player.unjoin
+            continue_on_error: true
+            target:
+              entity_id:
+                - media_player.suite_parentale_3
+                - media_player.salle_d_eau_3
+                - media_player.salle_de_bain_3
+            data: {}
+          - variables:
+              radio: library://radio/3
+          - action: music_assistant.play_media
+            target:
+              entity_id: media_player.enceintes
+            data:
+              media_id: '{{ radio }}'
+              media_type: radio
+              enqueue: replace
+          - if:
+              - condition: state
+                entity_id: input_select.calendrier
+                state: TéléTravail
+            then:
+              - action: media_player.select_source
+                continue_on_error: true
+                target:
+                  entity_id: media_player.garage
+                data:
+                  source: VOLTAGE
+            note: 'Garage en TéléTravail : favori Sonos VOLTAGE en Sonos natif (hors Music Assistant, réseau Wi-Fi séparé), non synchronisé avec le groupe'
+          - delay:
+              seconds: 5
+          - if:
+              - condition: not
+                conditions:
+                  - condition: state
+                    entity_id: media_player.enceintes
+                    state: playing
+            then:
+              - action: music_assistant.play_media
+                target:
+                  entity_id: media_player.enceintes
+                data:
+                  media_id: '{{ radio }}'
+                  media_type: radio
+                  enqueue: replace
+            note: Nouvelle tentative après 5 s
+          - if:
+              - condition: and
+                conditions:
+                  - condition: state
+                    entity_id: input_select.calendrier
+                    state: TéléTravail
+                  - condition: not
+                    conditions:
+                      - condition: state
+                        entity_id: media_player.garage
+                        state:
+                          - playing
+            then:
+              - action: media_player.select_source
+                continue_on_error: true
+                target:
+                  entity_id: media_player.garage
+                data:
+                  source: VOLTAGE
+            note: 'Garage en TéléTravail : favori Sonos VOLTAGE en Sonos natif (hors Music Assistant, réseau Wi-Fi séparé), non synchronisé avec le groupe'
+          - action: input_select.select_option
+            target:
+              entity_id: input_select.sonos
+            data:
+              option: 'ON'
+        note: Action ON → Salon (+ Garage en TéléTravail via favori Sonos), Voltage, état = ON
+      - conditions:
+          - condition: state
+            entity_id: input_select.sonos_action
+            state: 'OFF'
+        sequence:
+          - action: media_player.media_stop
+            continue_on_error: true
+            target:
+              entity_id: media_player.enceintes
+            data: {}
+          - action: media_player.media_stop
+            continue_on_error: true
+            target:
+              entity_id: media_player.garage
+            data: {}
+            note: Arrêt du Garage (Sonos natif)
+          - sequence:
+              - action: media_player.volume_set
+                target:
+                  entity_id: media_player.garage
+                data:
+                  volume_level: '{{ states(''input_number.volume_sonos_base'') | float - 0.04 }}'
+              - action: media_player.volume_set
+                target:
+                  entity_id:
+                    - media_player.salle_d_eau_3
+                    - media_player.salle_de_bain_3
+                data:
+                  volume_level: '{{ states(''input_number.volume_sonos_base'') | float }}'
+              - action: media_player.volume_set
+                target:
+                  entity_id:
+                    - media_player.salon_3
+                    - media_player.suite_parentale_3
+                data:
+                  volume_level: '{{ states(''input_number.volume_sonos_base'') | float + 0.01 }}'
+              - action: media_player.volume_mute
+                continue_on_error: true
+                target:
+                  entity_id:
+                    - media_player.salon_3
+                    - media_player.garage
+                    - media_player.suite_parentale_3
+                    - media_player.salle_d_eau_3
+                    - media_player.salle_de_bain_3
+                data:
+                  is_volume_muted: false
+            note: 'Toutes les enceintes : volume par défaut (base ; Garage -0.04 ; Salon et Suite +0.01) et sourdine désactivée, pour retrouver ces réglages en utilisation manuelle'
+          - action: media_player.join
+            target:
+              entity_id: media_player.enceintes
+            data:
+              group_members:
+                - media_player.salon_3
+          - delay:
+              seconds: 2
+            note: Laisse Music Assistant appliquer l'ajout avant le retrait
+          - action: media_player.unjoin
+            continue_on_error: true
+            target:
+              entity_id:
+                - media_player.suite_parentale_3
+                - media_player.salle_d_eau_3
+                - media_player.salle_de_bain_3
+            data: {}
+          - action: input_select.select_option
+            target:
+              entity_id: input_select.sonos
+            data:
+              option: 'OFF'
+        note: Action OFF → arrêt, le groupe revient au Salon seul, démute tout, état = OFF
+      - conditions:
+          - condition: state
+            entity_id: device_tracker.iphone_de_sylvain_le_meur
+            state: not_home
+        sequence: []
+        note: Guard iPhone absent → court-circuite COUCHE et REVEIL si le téléphone n'est pas à la maison
+      - conditions:
+          - condition: state
+            entity_id: input_select.sonos_action
+            state: COUCHE
+        sequence:
+          - action: media_player.media_stop
+            continue_on_error: true
+            target:
+              entity_id: media_player.enceintes
+            data: {}
+          - action: media_player.media_stop
+            continue_on_error: true
+            target:
+              entity_id: media_player.garage
+            data: {}
+            note: Arrêt du Garage (Sonos natif)
+          - sequence:
+              - action: media_player.volume_set
+                target:
+                  entity_id: media_player.garage
+                data:
+                  volume_level: '{{ states(''input_number.volume_sonos_base'') | float - 0.04 }}'
+              - action: media_player.volume_set
+                target:
+                  entity_id:
+                    - media_player.salle_d_eau_3
+                    - media_player.salle_de_bain_3
+                data:
+                  volume_level: '{{ states(''input_number.volume_sonos_base'') | float }}'
+              - action: media_player.volume_set
+                target:
+                  entity_id:
+                    - media_player.salon_3
+                    - media_player.suite_parentale_3
+                data:
+                  volume_level: '{{ states(''input_number.volume_sonos_base'') | float + 0.01 }}'
+              - action: media_player.volume_mute
+                continue_on_error: true
+                target:
+                  entity_id:
+                    - media_player.salon_3
+                    - media_player.garage
+                    - media_player.suite_parentale_3
+                    - media_player.salle_d_eau_3
+                    - media_player.salle_de_bain_3
+                data:
+                  is_volume_muted: false
+            note: 'Toutes les enceintes : volume par défaut (base ; Garage -0.04 ; Salon et Suite +0.01) et sourdine désactivée, pour retrouver ces réglages en utilisation manuelle'
+          - action: media_player.join
+            target:
+              entity_id: media_player.enceintes
+            data:
+              group_members:
+                - media_player.suite_parentale_3
+                - media_player.salle_d_eau_3
+          - delay:
+              seconds: 2
+            note: Laisse Music Assistant appliquer l'ajout avant le retrait
+          - action: media_player.unjoin
+            continue_on_error: true
+            target:
+              entity_id:
+                - media_player.salon_3
+                - media_player.salle_de_bain_3
+            data: {}
+          - variables:
+              radio: '{{ ''library://radio/3'' if today_at(''04:00'') <= now() < today_at(''20:30'') else ''library://radio/4'' }}'
+            note: Entre 4h et 20h30 → Voltage ; sinon → Évasion FM
+          - action: music_assistant.play_media
+            target:
+              entity_id: media_player.enceintes
+            data:
+              media_id: '{{ radio }}'
+              media_type: radio
+              enqueue: replace
+          - delay:
+              seconds: 5
+          - if:
+              - condition: not
+                conditions:
+                  - condition: state
+                    entity_id: media_player.enceintes
+                    state: playing
+            then:
+              - action: music_assistant.play_media
+                target:
+                  entity_id: media_player.enceintes
+                data:
+                  media_id: '{{ radio }}'
+                  media_type: radio
+                  enqueue: replace
+            note: Nouvelle tentative après 5 s
+          - action: input_select.select_option
+            target:
+              entity_id: input_select.sonos
+            data:
+              option: COUCHE
+          - action: input_select.select_option
+            target:
+              entity_id: input_select.sonos_delay_action
+            data:
+              option: 'OFF'
+          - action: timer.start
+            target:
+              entity_id: timer.sonos_timer
+            data:
+              duration: '5400'
+        note: Action COUCHE → Suite parentale + Salle d'eau, Voltage ou Évasion FM selon l'heure, timer 90 min
+      - conditions:
+          - condition: state
+            entity_id: input_select.sonos_action
+            state: REVEIL
+        sequence:
+          - if:
+              - condition: not
+                conditions:
+                  - condition: state
+                    entity_id: input_select.sonos
+                    state: REVEIL
+            then:
+              - action: media_player.media_stop
+                continue_on_error: true
+                target:
+                  entity_id: media_player.enceintes
+                data: {}
+              - sequence:
+                  - action: media_player.volume_set
+                    target:
+                      entity_id:
+                        - media_player.salle_d_eau_3
+                        - media_player.salle_de_bain_3
+                    data:
+                      volume_level: '{{ states(''input_number.volume_sonos_base'') | float }}'
+                  - action: media_player.volume_set
+                    target:
+                      entity_id:
+                        - media_player.salon_3
+                        - media_player.suite_parentale_3
+                    data:
+                      volume_level: '{{ states(''input_number.volume_sonos_base'') | float + 0.01 }}'
+                  - action: media_player.volume_mute
+                    continue_on_error: true
+                    target:
+                      entity_id:
+                        - media_player.salon_3
+                        - media_player.suite_parentale_3
+                        - media_player.salle_d_eau_3
+                        - media_player.salle_de_bain_3
+                    data:
+                      is_volume_muted: false
+                note: 'Enceintes du réveil (hors Garage) : volume par défaut (base ; Salon et Suite +0.01) et sourdine désactivée'
+              - action: media_player.join
+                target:
+                  entity_id: media_player.enceintes
+                data:
+                  group_members:
+                    - media_player.salon_3
+                    - media_player.suite_parentale_3
+                    - media_player.salle_d_eau_3
+              - delay:
+                  seconds: 2
+                note: Laisse Music Assistant appliquer l'ajout avant le retrait
+              - action: media_player.unjoin
+                continue_on_error: true
+                target:
+                  entity_id: media_player.salle_de_bain_3
+                data: {}
+              - variables:
+                  radio: library://radio/3
+              - action: music_assistant.play_media
+                target:
+                  entity_id: media_player.enceintes
+                data:
+                  media_id: '{{ radio }}'
+                  media_type: radio
+                  enqueue: replace
+              - delay:
+                  seconds: 5
+              - if:
+                  - condition: not
+                    conditions:
+                      - condition: state
+                        entity_id: media_player.enceintes
+                        state: playing
+                then:
+                  - action: music_assistant.play_media
+                    target:
+                      entity_id: media_player.enceintes
+                    data:
+                      media_id: '{{ radio }}'
+                      media_type: radio
+                      enqueue: replace
+                note: Nouvelle tentative après 5 s
+          - action: input_select.select_option
+            target:
+              entity_id: input_select.sonos
+            data:
+              option: REVEIL
+          - action: input_select.select_option
+            target:
+              entity_id: input_select.sonos_delay_action
+            data:
+              option: 'ON'
+          - if:
+              - condition: state
+                entity_id: input_select.calendrier
+                state: TéléTravail
+            then:
+              - action: timer.start
+                target:
+                  entity_id: timer.sonos_timer
+                data:
+                  duration: '4800'
+            else:
+              - action: timer.start
+                target:
+                  entity_id: timer.sonos_timer
+                data:
+                  duration: '8100'
+        note: 'Action REVEIL → Salon + Suite + Salle d''eau, Voltage, timer 80 min (TéléTravail) / 135 min. Le Garage n''est plus touché : en TéléTravail, il est lancé par « Gestion du poste de télétravail »'
+mode: queued
+max: 10

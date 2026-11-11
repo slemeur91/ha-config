@@ -12,7 +12,7 @@ description: |-
 
   **Fonctionnement :**
   1. Si le déclencheur est le démarrage de HA, attend 4 minutes (laisse le temps aux apps/intégrations de se stabiliser).
-  2. Si le CPU global dépasse 30% → redémarre l'app OpenThread Border Router (connue pour parfois rester bloquée à haute consommation CPU) puis envoie une notification persistante.
+  2. Si le CPU global dépasse 35% → redémarre l'app OpenThread Border Router (connue pour parfois rester bloquée à haute consommation CPU) puis envoie une notification persistante.
 
   **Remarque :** le texte de la notification mentionne '4 minutes après le démarrage de HA' même lorsque le déclencheur est le dépassement CPU en cours de fonctionnement.
 
@@ -27,7 +27,7 @@ triggers:
   - trigger: numeric_state
     entity_id:
       - sensor.system_monitor_utilisation_du_processeur
-    above: 30
+    above: 35
     for:
       hours: 0
       minutes: 2
@@ -45,10 +45,10 @@ actions:
           minutes: 4
           seconds: 0
         note: Laisse le temps aux add-ons et intégrations de se stabiliser après le démarrage
-  - note: Ne redémarre OTBR que si le CPU global dépasse 30%
+  - note: Ne redémarre OTBR que si le CPU global dépasse 35%
     condition: numeric_state
     entity_id: sensor.system_monitor_utilisation_du_processeur
-    above: 30
+    above: 35
   - action: hassio.addon_restart
     data:
       addon: core_openthread_border_router
@@ -57,5 +57,5 @@ actions:
     action: persistent_notification.create
     data:
       title: OTBR redémarré automatiquement
-      message: Le CPU dépassait 30% 4 minutes après le démarrage de HA. L'add-on OpenThread Border Router a été redémarré automatiquement.
+      message: Le CPU dépassait 35% 4 minutes après le démarrage de HA. L'add-on OpenThread Border Router a été redémarré automatiquement.
 mode: single

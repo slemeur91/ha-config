@@ -4,6 +4,28 @@
 
 ---
 
+## `automation.gestion_de_la_lumiere_de_l_entree` — Gestion de la Lumière de l'Entrée
+> [📄 Voir le YAML](../../automations/gestion_de_la_lumiere_de_l_entree.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- Sonnette du portier (`binary_sensor.exterieur_slm_portier_visiteur` → on)
+- Présence devant le portier (`binary_sensor.exterieur_slm_portier_personne` → on)
+- Ouverture de la porte d'entrée (`binary_sensor.do_porte_entree`)
+
+**Fonctionnement :**
+1. Si période sombre (de 30 min avant le coucher du soleil à 30 min après le lever) → allume `light.lumiere_de_lexterieur`, attend 5 s.
+2. Si la lumière est allumée → attend 5 min puis éteint automatiquement.
+
+**Note :** mode `restart` : une nouvelle détection pendant le délai de 5 min relance l'extinction à zéro.
+
+**Entités principales :**
+- `binary_sensor.exterieur_slm_portier_visiteur`, `binary_sensor.exterieur_slm_portier_personne`, `binary_sensor.do_porte_entree`
+- `light.lumiere_de_lexterieur`
+
+---
+
 ## `automation.gestion_de_la_lumiere_du_garage` — Lumière du Garage
 > [📄 Voir le YAML](../../automations/gestion_de_la_lumiere_du_garage.yaml)
 
@@ -22,6 +44,50 @@
 - `alarm_control_panel.alarme` : condition de sécurité
 
 **Entrées utilisées :** Aucune entrée helper.
+
+---
+
+## `automation.gestion_de_la_lumiere_du_wc_de_l_etage` — Gestion de la Lumière du WC de l'Étage
+> [📄 Voir le YAML](../../automations/gestion_de_la_lumiere_du_wc_de_l_etage.yaml)
+
+**Statut :** Finalisé | **Evolution :** Durée minimale d'allumage de 30 s (2026-10-25)
+
+**Déclencheurs :**
+- Présence détectée / plus détectée sur `binary_sensor.presence_dans_le_wc_de_l_etage_presence`
+- `light.lumiere_du_wc_de_letage` allumée depuis 30 s
+
+**Fonctionnement :**
+1. Présence détectée → allume `light.lumiere_du_wc_de_letage` à 50% en période sombre (de 30 min avant le coucher du soleil à 30 min après le lever), 80% sinon.
+2. Absence détectée → éteint la lumière seulement si elle est allumée depuis au moins 30 s.
+3. Lumière allumée depuis 30 s → l'éteint si l'absence est déjà détectée (cas d'une fausse absence du capteur juste après l'allumage).
+
+La lumière reste donc allumée au minimum 30 s, puis s'éteint dès la fin de détection.
+
+**Entités principales :**
+- `binary_sensor.presence_dans_le_wc_de_l_etage_presence`
+- `light.lumiere_du_wc_de_letage`
+
+---
+
+## `automation.gestion_de_la_lumiere_du_wc_du_rdc` — Gestion de la Lumière du WC du RDC
+> [📄 Voir le YAML](../../automations/gestion_de_la_lumiere_du_wc_du_rdc.yaml)
+
+**Statut :** Finalisé | **Evolution :** Durée minimale d'allumage de 30 s (2026-10-25)
+
+**Déclencheurs :**
+- Présence détectée / plus détectée sur `binary_sensor.presence_dans_le_wc_du_rdc_presence`
+- `light.lumiere_du_wc_du_rdc` allumée depuis 30 s
+
+**Fonctionnement :**
+1. Présence détectée → allume `light.lumiere_du_wc_du_rdc`.
+2. Absence détectée → éteint la lumière seulement si elle est allumée depuis au moins 30 s.
+3. Lumière allumée depuis 30 s → l'éteint si l'absence est déjà détectée (cas d'une fausse absence du capteur juste après l'allumage).
+
+La lumière reste donc allumée au minimum 30 s, puis s'éteint dès la fin de détection.
+
+**Entités principales :**
+- `binary_sensor.presence_dans_le_wc_du_rdc_presence`
+- `light.lumiere_du_wc_du_rdc`
 
 ---
 
@@ -114,66 +180,3 @@ Les appuis courts et longs sont détectés mais aucune action n'est encore affec
 - `event.tap_dial_de_letage_bouton_*` : événements boutons Hue
 
 **Entrées utilisées :** Aucune.
-
----
-
-## `automation.gestion_de_la_lumiere_de_l_entree` — Gestion de la Lumière de l'Entrée
-> [📄 Voir le YAML](../../automations/gestion_de_la_lumiere_de_l_entree.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :**
-- Sonnette du portier (`binary_sensor.exterieur_slm_portier_visiteur` → on)
-- Présence devant le portier (`binary_sensor.exterieur_slm_portier_personne` → on)
-- Ouverture de la porte d'entrée (`binary_sensor.do_porte_entree`)
-
-**Fonctionnement :**
-1. Si période sombre (de 30 min avant le coucher du soleil à 30 min après le lever) → allume `light.lumiere_de_lexterieur`, attend 5 s.
-2. Si la lumière est allumée → attend 5 min puis éteint automatiquement.
-
-**Note :** mode `restart` : une nouvelle détection pendant le délai de 5 min relance l'extinction à zéro.
-
-**Entités principales :**
-- `binary_sensor.exterieur_slm_portier_visiteur`, `binary_sensor.exterieur_slm_portier_personne`, `binary_sensor.do_porte_entree`
-- `light.lumiere_de_lexterieur`
-
----
-
-## `automation.gestion_de_la_lumiere_du_wc_de_l_etage` — Gestion de la Lumière du WC de l'Étage
-> [📄 Voir le YAML](../../automations/gestion_de_la_lumiere_du_wc_de_l_etage.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :**
-- Changement de `binary_sensor.presence_dans_le_wc_de_l_etage_presence` (on/off)
-
-**Fonctionnement :**
-1. Présence détectée → allume `light.lumiere_du_wc_de_letage` avec un pas de luminosité de +50% en période sombre (de 30 min avant le coucher du soleil à 30 min après le lever), +80% sinon.
-2. Absence détectée → éteint `light.lumiere_du_wc_de_letage`.
-
-**Remarque :** l'action utilise `brightness_step_pct` (incrément relatif) et non `brightness_pct` (valeur absolue) ; partant d'une lumière éteinte le résultat est équivalent à 50% / 80%.
-
-**Entités principales :**
-- `binary_sensor.presence_dans_le_wc_de_l_etage_presence`
-- `light.lumiere_du_wc_de_letage`
-
----
-
-## `automation.gestion_de_la_lumiere_du_wc_du_rdc` — Gestion de la Lumière du WC du RDC
-> [📄 Voir le YAML](../../automations/gestion_de_la_lumiere_du_wc_du_rdc.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :**
-- Changement de `binary_sensor.presence_dans_le_wc_du_rdc_presence` (on/off)
-
-**Fonctionnement :**
-1. Présence détectée → allume `light.lumiere_du_wc_du_rdc`.
-2. Absence détectée → éteint `light.lumiere_du_wc_du_rdc`.
-
-**Entités principales :**
-- `binary_sensor.presence_dans_le_wc_du_rdc_presence`
-- `light.lumiere_du_wc_du_rdc`
-
----
-

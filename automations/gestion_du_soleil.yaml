@@ -33,7 +33,7 @@ triggers:
     trigger: numeric_state
   - entity_id:
       - sensor.netatmo_exterieur_temperature
-    above: 20
+    above: 23
     trigger: numeric_state
   - entity_id:
       - sensor.cheptainville_daily_original_condition

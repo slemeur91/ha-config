@@ -144,7 +144,7 @@ actions:
                               skip_condition: true
                             target:
                               entity_id:
-                                - automation.gestion_des_sonos
+                                - automation.gestion_des_enceintes
                         else:
                           - action: input_select.select_option
                             metadata: {}
@@ -173,7 +173,7 @@ actions:
                               skip_condition: true
                             target:
                               entity_id:
-                                - automation.gestion_des_sonos
+                                - automation.gestion_des_enceintes
                         else:
                           - action: input_select.select_option
                             metadata: {}
@@ -286,7 +286,7 @@ actions:
                       skip_condition: true
                     target:
                       entity_id:
-                        - automation.gestion_des_sonos
+                        - automation.gestion_des_enceintes
                 else:
                   - action: input_select.select_option
                     metadata: {}
@@ -319,13 +319,16 @@ actions:
                     sequence:
                       - if:
                           - condition: state
-                            entity_id: device_tracker.slm_disk4
-                            state: not_home
+                            entity_id: binary_sensor.salon_slm_media4
+                            state:
+                              - 'off'
                         then:
-                          - device_id: c4f5da7a25a696aded68a29ffb5b8006
-                            domain: button
-                            entity_id: b48a534b28e5acce4f156e482734427e
-                            type: press
+                          - action: button.press
+                            metadata: {}
+                            data: {}
+                            target:
+                              entity_id:
+                                - button.wake_on_lan_00_e0_4c_68_89_94
               - action: button.press
                 metadata: {}
                 data: {}

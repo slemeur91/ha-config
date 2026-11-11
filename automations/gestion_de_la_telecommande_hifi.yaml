@@ -20,19 +20,19 @@ triggers:
   - entity_id:
       - sensor.telecommande_du_salon_nodeid_21_scene_state_scene_001
     id: Bouton 1
-    platform: state
+    trigger: state
   - entity_id:
       - sensor.telecommande_du_salon_nodeid_21_scene_state_scene_002
     id: Bouton 2
-    platform: state
+    trigger: state
   - entity_id:
       - sensor.telecommande_du_salon_nodeid_21_scene_state_scene_003
     id: Bouton 3
-    platform: state
+    trigger: state
   - entity_id:
       - sensor.telecommande_du_salon_nodeid_21_scene_state_scene_004
     id: Bouton 4
-    platform: state
+    trigger: state
 conditions: []
 actions:
   - choose:
@@ -45,8 +45,8 @@ actions:
               - conditions:
                   - condition: state
                     entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_001
-                    state: 0
-                    attribute: value
+                    state:
+                      - '0'
                 sequence:
                   - action: input_select.select_option
                     metadata: {}
@@ -76,20 +76,20 @@ actions:
               - conditions:
                   - condition: state
                     entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_001
-                    state: 1
-                    attribute: value
+                    state:
+                      - '1'
                 sequence: []
               - conditions:
                   - condition: state
                     entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_001
-                    state: 2
-                    attribute: value
+                    state:
+                      - '2'
                 sequence: []
               - conditions:
                   - condition: state
                     entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_001
-                    state: 3
-                    attribute: value
+                    state:
+                      - '3'
                 sequence: []
         note: 'Bouton 1 → appui court: source BluRay + HiFi SOURCE'
       - conditions:
@@ -101,8 +101,8 @@ actions:
               - conditions:
                   - condition: state
                     entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_002
-                    state: 0
-                    attribute: value
+                    state:
+                      - '0'
                 sequence:
                   - if:
                       - condition: state
@@ -115,7 +115,7 @@ actions:
                           skip_condition: true
                         target:
                           entity_id:
-                            - automation.gestion_des_sonos
+                            - automation.gestion_des_enceintes
                     else:
                       - action: input_select.select_option
                         metadata: {}
@@ -126,20 +126,20 @@ actions:
               - conditions:
                   - condition: state
                     entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_002
-                    state: 1
-                    attribute: value
+                    state:
+                      - '1'
                 sequence: []
               - conditions:
                   - condition: state
                     entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_002
-                    state: 2
-                    attribute: value
+                    state:
+                      - '2'
                 sequence: []
               - conditions:
                   - condition: state
                     entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_002
-                    state: 3
-                    attribute: value
+                    state:
+                      - '3'
                 sequence: []
         note: 'Bouton 2 → appui court: lance SONOS en mode ON'
       - conditions:
@@ -151,8 +151,8 @@ actions:
               - conditions:
                   - condition: state
                     entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_003
-                    state: 0
-                    attribute: value
+                    state:
+                      - '0'
                 sequence:
                   - if:
                       - condition: state
@@ -177,20 +177,20 @@ actions:
               - conditions:
                   - condition: state
                     entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_003
-                    state: 1
-                    attribute: value
+                    state:
+                      - '1'
                 sequence: []
               - conditions:
                   - condition: state
                     entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_003
-                    state: 2
-                    attribute: value
+                    state:
+                      - '2'
                 sequence: []
               - conditions:
                   - condition: state
                     entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_003
-                    state: 3
-                    attribute: value
+                    state:
+                      - '3'
                 sequence: []
         note: 'Bouton 3 → appui court: éteint la HiFi (action OFF)'
       - conditions:
@@ -202,8 +202,8 @@ actions:
               - conditions:
                   - condition: state
                     entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_004
-                    state: 0
-                    attribute: value
+                    state:
+                      - '0'
                 sequence:
                   - if:
                       - condition: state
@@ -216,7 +216,7 @@ actions:
                           skip_condition: true
                         target:
                           entity_id:
-                            - automation.gestion_des_sonos
+                            - automation.gestion_des_enceintes
                     else:
                       - action: input_select.select_option
                         metadata: {}
@@ -227,20 +227,20 @@ actions:
               - conditions:
                   - condition: state
                     entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_004
-                    state: 1
-                    attribute: value
+                    state:
+                      - '1'
                 sequence: []
               - conditions:
                   - condition: state
                     entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_004
-                    state: 2
-                    attribute: value
+                    state:
+                      - '2'
                 sequence: []
               - conditions:
                   - condition: state
                     entity_id: sensor.telecommande_du_salon_nodeid_21_scene_state_scene_004
-                    state: 3
-                    attribute: value
+                    state:
+                      - '3'
                 sequence: []
         note: 'Bouton 4 → appui court: éteint les SONOS (action OFF)'
 mode: restart

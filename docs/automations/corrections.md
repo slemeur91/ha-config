@@ -1,6 +1,50 @@
-# Corrections (10)
+# Corrections (11)
 
 [← Retour README](../../README.md)
+
+---
+
+## `automation.correction_de_l_onduleur` — Correction de l'Onduleur
+> [📄 Voir le YAML](../../automations/correction_de_l_onduleur.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune.
+
+**Déclencheurs :**
+- Démarrage de Home Assistant (`homeassistant start`) — id: Démarrage
+- `sensor.eaton_usb_etat` reste `unavailable`/`unknown` pendant 2 minutes
+- `sensor.eaton_usb_code_d_etat` reste `unavailable`/`unknown` pendant 2 minutes
+
+**Fonctionnement :**
+1. Si le déclencheur est le démarrage de HA, attend 4 minutes (le temps que l'intégration NUT tente de se reconnecter à l'onduleur).
+2. Vérifie l'état de l'onduleur Eaton_Usb (`sensor.eaton_usb_etat` et `sensor.eaton_usb_code_d_etat`).
+3. Si l'un des deux est `unavailable`/`unknown` (intégration NUT en défaut), redémarre l'app 'Network UPS Tools' (`a0d7b954_nut`).
+4. Sinon, ne fait rien.
+
+**Entités principales :**
+- `sensor.eaton_usb_etat` : état de l'onduleur Eaton_Usb
+- `sensor.eaton_usb_code_d_etat` : code d'état NUT de l'onduleur Eaton_Usb
+- App `Network UPS Tools` (`a0d7b954_nut`) : redémarrée en cas de défaut
+
+---
+
+## `automation.correction_du_mi_air_purifier` — Correction du Mi Air Purifier
+> [📄 Voir le YAML](../../automations/correction_du_mi_air_purifier.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheur :**
+- `fan.zhimi_m1_6186_air_purifier` reste indisponible pendant 30 secondes (le purificateur ne répond plus)
+
+**Condition :** le purificateur est toujours indisponible au moment de l'exécution.
+
+**Fonctionnement :**
+1. Vérifie l'état de `switch.multiprise_du_salon_droite_2_purificateur` (Prise 2 - Purificateur).
+2. Si elle est allumée : l'éteint, attend 1 minute, la rallume, réactive l'appareil dans Home Assistant (`homeassistant.enable_device`), puis attend encore 1 minute (temporisation qui, en mode `single`, bloque tout nouveau cycle pendant ce temps).
+3. Si elle est déjà éteinte : ne fait rien.
+
+**Entités principales :**
+- `fan.zhimi_m1_6186_air_purifier` : signal de bon fonctionnement du purificateur
+- `switch.multiprise_du_salon_droite_2_purificateur` : alimentation du purificateur (Prise 2 de la multiprise du salon droite)
 
 ---
 
@@ -67,7 +111,7 @@
 ## `automation.klf200_surveillance_et_reparation_graduee` — KLF200 - Surveillance et réparation graduée
 > [📄 Voir le YAML](../../automations/klf200_surveillance_et_reparation_graduee.yaml)
 
-**Statut :** Nouveau (créé le 11/10/2026, désactivé en attente de validation) — remplace `Correction de l'intégration du KLF200` et `KLF200 - Surveillance et réparation automatique` | **Evolution :** À l'activation, exclure l'intégration Velux de `Rechargement des intégrations en défaut` pour qu'une seule automatisation s'en occupe.
+**Statut :** Actif — remplace `Correction de l'intégration du KLF200` et `KLF200 - Surveillance et réparation automatique` | **Evolution :** 11/11/2026 — suppression de l'étape « redémarrage par le bouton de la passerelle » (toujours sautée, le bouton étant indisponible avec les volets) ; attente au démarrage ramenée de 10 à 5 minutes ; après chaque remise sous tension, jusqu'à 3 rechargements espacés de 3 minutes au lieu d'un seul rechargement suivi d'une longue attente (constat du 11/11 : l'intégration ne réessaie pas seule après un rechargement raté). Version précédente conservée, désactivée, dans `KLF200 - Surveillance et réparation graduée 2`.
 
 **Principe :** détection patiente (5 min), réparation du plus doux au plus fort, nombre d'essais limité. Les anciennes versions coupaient la prise avant que la passerelle ait fini de se reconnecter (environ 3 min après remise sous tension), ce qui entretenait des cycles de coupure.
 
@@ -79,21 +123,67 @@
 **Défaut avéré :** ping perdu OU les 7 volets/Velux tous indisponibles. Ce test est refait avant chaque étape ; dès qu'il est faux, l'automatisation s'arrête.
 
 **Fonctionnement :**
-1. Démarrage HA → attend 10 minutes avant tout contrôle (en mode `single`, les signaux de défaut reçus pendant ce délai sont ignorés).
+1. Démarrage HA → attend 5 minutes avant tout contrôle (en mode `single`, les signaux de défaut reçus pendant ce délai sont ignorés).
 2. Étape 1, si le ping répond → recharge l'intégration Velux, attend 5 minutes.
-3. Étape 2, si le ping répond et que le bouton est disponible → redémarre la passerelle par `button.klf_200_gateway_redemarrer`, attend 5 minutes.
-4. Étape 3, jusqu'à 3 fois tant que le défaut persiste → coupe la prise 30 secondes, la rallume, attend 2 minutes, recharge l'intégration, puis attend 5, 10 puis 15 minutes selon l'essai.
-5. Bilan → si le défaut persiste : notification HA + téléphone et arrêt (pas de nouvel essai tant qu'un nouveau signal de défaut n'apparaît pas) ; sinon : notification HA de réparation réussie.
+3. Étape 2, jusqu'à 3 fois tant que le défaut persiste → coupe la prise 30 secondes, la rallume, attend 3 minutes, puis recharge l'intégration jusqu'à 3 fois à 3 minutes d'intervalle tant que le défaut persiste. Exemple après un démarrage : 1re coupure à 10 min, 2e à 22 min 30, 3e à 35 min, bilan à 47 min 30.
+4. Bilan → si le défaut persiste : notification HA + téléphone et arrêt (pas de nouvel essai tant qu'un nouveau signal de défaut n'apparaît pas) ; sinon : notification HA de réparation réussie.
 
-**Mode `single` (max_exceeded silencieux) :** un seul cycle à la fois, d'une durée maximale d'environ 1 heure.
+**Mode `single` (max_exceeded silencieux) :** un seul cycle à la fois, d'une durée maximale d'environ 50 minutes.
 
 **Entités principales :**
 - `switch.reseau_multiprise_de_l_informatique_2_klf_200` : alimentation de la passerelle KLF200
 - `binary_sensor.192_168_52_67` : ping réseau du KLF200
-- `button.klf_200_gateway_redemarrer` : redémarrage logiciel de la passerelle
 - 7 `cover.*` (Velux/volets/pergola) : signal de bon fonctionnement de l'intégration
 - Intégration Velux (entry_id `01K2GS1XM2TFEEMYCJBXSQQJHQ`)
 - `script.notification_ha` / `script.notification_telephone` : bilan
+
+---
+
+## `automation.maintien_des_prises_et_appareils_allumes` — Maintien des Prises et Appareils allumés
+> [📄 Voir le YAML](../../automations/maintien_des_prises_et_appareils_allumes.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- Prises critiques éteintes depuis 30 secondes (réfrigérateur, multimédia, informatique, cellier)
+- Changement d'état stable 30 secondes des prises routeur 4G et ZappitiNAS ; changement immédiat de la prise du ventilateur de l'informatique
+- Changement d'état stable 30 secondes de la prise du purificateur (id: Purificateur) ou du ventilateur du salon (id: Ventilateur)
+- Changement du device tracker ZappitiNAS
+
+**Fonctionnement :**
+1. Après 5 secondes de délai, vérifie en parallèle chaque appareil.
+2. Rallume automatiquement tout switch critique qui serait éteint (protection coupures accidentelles).
+3. Si ZappitiNAS ne répond plus depuis 2 min alors que le switch est allumé → force le Wake-on-LAN via `switch.zappitinas`.
+4. Sur déclencheur Purificateur : active/désactive l'appareil purificateur (Mi Air) dans HA selon l'état de sa prise.
+5. Sur déclencheur Ventilateur : active/désactive l'intégration du ventilateur (Dyson) selon l'état de sa prise.
+
+**Entités principales :**
+- `switch.prise_du_refrigerateur_switch` / `prise_du_multimedia_switch` / `prise_de_l_informatique` : prises critiques
+- `switch.zappitinas` : Wake-on-LAN NAS
+- `device_tracker.zappitinas_zappitinas` : supervision réseau NAS
+
+**Entrées utilisées :** Aucune entrée helper.
+
+---
+
+## `automation.maj_auto_prises_ll_sl_zigbee2mqtt` — MAJ Auto Prises LL/SL (Zigbee2MQTT)
+> [📄 Voir le YAML](../../automations/maj_auto_prises_ll_sl_zigbee2mqtt.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Déclencheurs :**
+- `sensor.etat_lave_linge` en Veille depuis 30 s — id: LL veille
+- `sensor.etat_seche_linge` en Veille depuis 30 s — id: SL veille
+- Toutes les 5 minutes
+- Déclenchement manuel par `Gestion emplacement Sylvain Domicile/Absent` au départ du domicile
+
+**Fonctionnement :**
+1. Force une relecture MQTT (équivalent du bouton 'MAJ' de l'interface Zigbee2MQTT) des 4 canaux de puissance (`power_1` à `power_4`) de la Multiprise de la Salle de bain et de la Multiprise du Séjour, en parallèle sur les deux multiprises.
+2. Contourne le bug Zigbee2MQTT qui empêche parfois la puissance de redescendre à 0 W toute seule (ce qui fausse la détection de fin de cycle du lave-linge et du sèche-linge).
+
+**Entités principales :**
+- `sensor.etat_lave_linge` / `sensor.etat_seche_linge` : états des appareils
+- Topics MQTT `zigbee2mqtt/Multiprise de la Salle de bain/get` et `zigbee2mqtt/Multiprise du Séjour/get`
 
 ---
 
@@ -150,84 +240,10 @@
 
 **Fonctionnement :**
 1. Si le déclencheur est le démarrage de HA, attend 4 minutes (laisse le temps aux apps/intégrations de se stabiliser).
-2. Si le CPU global dépasse 30% → redémarre l'app OpenThread Border Router (connue pour parfois rester bloquée à haute consommation CPU) puis envoie une notification persistante.
+2. Si le CPU global dépasse 35% → redémarre l'app OpenThread Border Router (connue pour parfois rester bloquée à haute consommation CPU) puis envoie une notification persistante.
 
 **Remarque :** le texte de la notification mentionne '4 minutes après le démarrage de HA' même lorsque le déclencheur est le dépassement CPU en cours de fonctionnement.
 
 **Entités principales :**
 - `sensor.system_monitor_utilisation_du_processeur`
 - App `core_openthread_border_router`
-
----
-
-## `automation.correction_du_mi_air_purifier` — Correction du Mi Air Purifier
-> [📄 Voir le YAML](../../automations/correction_du_mi_air_purifier.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheur :**
-- `fan.zhimi_m1_6186_air_purifier` reste indisponible pendant 30 secondes (le purificateur ne répond plus)
-
-**Condition :** le purificateur est toujours indisponible au moment de l'exécution.
-
-**Fonctionnement :**
-1. Vérifie l'état de `switch.multiprise_du_salon_droite_2_purificateur` (Prise 2 - Purificateur).
-2. Si elle est allumée : l'éteint, attend 1 minute, la rallume, réactive l'appareil dans Home Assistant (`homeassistant.enable_device`), puis attend encore 1 minute (temporisation qui, en mode `single`, bloque tout nouveau cycle pendant ce temps).
-3. Si elle est déjà éteinte : ne fait rien.
-
-**Entités principales :**
-- `fan.zhimi_m1_6186_air_purifier` : signal de bon fonctionnement du purificateur
-- `switch.multiprise_du_salon_droite_2_purificateur` : alimentation du purificateur (Prise 2 de la multiprise du salon droite)
-
----
-
-## `automation.correction_de_l_onduleur` — Correction de l'Onduleur
-> [📄 Voir le YAML](../../automations/correction_de_l_onduleur.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune.
-
-**Déclencheurs :**
-- Démarrage de Home Assistant (`homeassistant start`) — id: Démarrage
-- `sensor.eaton_usb_etat` reste `unavailable`/`unknown` pendant 2 minutes
-- `sensor.eaton_usb_code_d_etat` reste `unavailable`/`unknown` pendant 2 minutes
-
-**Fonctionnement :**
-1. Si le déclencheur est le démarrage de HA, attend 4 minutes (le temps que l'intégration NUT tente de se reconnecter à l'onduleur).
-2. Vérifie l'état de l'onduleur Eaton_Usb (`sensor.eaton_usb_etat` et `sensor.eaton_usb_code_d_etat`).
-3. Si l'un des deux est `unavailable`/`unknown` (intégration NUT en défaut), redémarre l'app 'Network UPS Tools' (`a0d7b954_nut`).
-4. Sinon, ne fait rien.
-
-**Entités principales :**
-- `sensor.eaton_usb_etat` : état de l'onduleur Eaton_Usb
-- `sensor.eaton_usb_code_d_etat` : code d'état NUT de l'onduleur Eaton_Usb
-- App `Network UPS Tools` (`a0d7b954_nut`) : redémarrée en cas de défaut
-
----
-
-## `automation.maintien_des_prises_et_appareils_allumes` — Maintien des Prises et Appareils allumés
-> [📄 Voir le YAML](../../automations/maintien_des_prises_et_appareils_allumes.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Déclencheurs :**
-- Prises critiques éteintes depuis 30 secondes (réfrigérateur, multimédia, informatique, cellier)
-- Changement d'état stable 30 secondes des prises routeur 4G et ZappitiNAS ; changement immédiat de la prise du ventilateur de l'informatique
-- Changement d'état stable 30 secondes de la prise du purificateur (id: Purificateur) ou du ventilateur du salon (id: Ventilateur)
-- Changement du device tracker ZappitiNAS
-
-**Fonctionnement :**
-1. Après 5 secondes de délai, vérifie en parallèle chaque appareil.
-2. Rallume automatiquement tout switch critique qui serait éteint (protection coupures accidentelles).
-3. Si ZappitiNAS ne répond plus depuis 2 min alors que le switch est allumé → force le Wake-on-LAN via `switch.zappitinas`.
-4. Sur déclencheur Purificateur : active/désactive l'appareil purificateur (Mi Air) dans HA selon l'état de sa prise.
-5. Sur déclencheur Ventilateur : active/désactive l'intégration du ventilateur (Dyson) selon l'état de sa prise.
-
-**Entités principales :**
-- `switch.prise_du_refrigerateur_switch` / `prise_du_multimedia_switch` / `prise_de_l_informatique` : prises critiques
-- `switch.zappitinas` : Wake-on-LAN NAS
-- `device_tracker.zappitinas_zappitinas` : supervision réseau NAS
-
-**Entrées utilisées :** Aucune entrée helper.
-
----
-

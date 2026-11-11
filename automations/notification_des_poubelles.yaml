@@ -17,7 +17,13 @@ triggers:
   - target:
       entity_id: input_select.poubelles
     trigger: select.selection_changed
-conditions: []
+conditions:
+  - condition: not
+    conditions:
+      - condition: state
+        entity_id: input_select.domicile
+        state:
+          - Vacances
 actions:
   - choose:
       - conditions:

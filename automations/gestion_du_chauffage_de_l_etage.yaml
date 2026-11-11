@@ -1,13 +1,15 @@
 alias: Gestion du Chauffage de l'Etage
 description: |-
   **Statut :** Finalisé
-  **Evolution :** Correction — `binary_sensor.do_bureau` et `binary_sensor.do_suite_parental` (Somfy Protexial) ont un état principal (on/off) qui ne reflète pas fiablement l'ouverture réelle (il peut rester bloqué sur une valeur alors que l'attribut `Door open` bascule correctement entre `open`/`closed`, cas déjà observé sur `binary_sensor.do_suite_parental`). Leur vérification "porte ouverte" teste désormais l'attribut `Door open` plutôt que l'état principal du binary_sensor. Les 3 velux (`cover.velux_*`) n'ont pas cet attribut et gardent donc leur vérification d'état classique (`open`/`closed`).
+  **Evolution :** Robustesse — la commande du switch chaudière est envoyée dès que son état n'est pas déjà celui voulu (« différent de on » / « différent de off ») au lieu d'exiger exactement off / on : un état `unknown` (après redémarrage de HA ou de la passerelle EnOcean) ne bloque plus la commande. Ajout d'un déclencheur au retour du switch chaudière (passage de `unavailable`/`unknown` à `on`/`off` stable 15 s) pour recalculer et renvoyer la commande perdue pendant une coupure de la passerelle EnOcean ou un redémarrage.
+  Précédente : Correction — `binary_sensor.do_bureau` et `binary_sensor.do_suite_parental` (Somfy Protexial) ont un état principal (on/off) qui ne reflète pas fiablement l'ouverture réelle (il peut rester bloqué sur une valeur alors que l'attribut `Door open` bascule correctement entre `open`/`closed`, cas déjà observé sur `binary_sensor.do_suite_parental`). Leur vérification "porte ouverte" teste désormais l'attribut `Door open` plutôt que l'état principal du binary_sensor. Les 3 velux (`cover.velux_*`) n'ont pas cet attribut et gardent donc leur vérification d'état classique (`open`/`closed`).
 
   **Déclencheurs :**
   - Changement de `input_boolean.chauffage_horsgel`, `input_select.chauffage_mode_etage`, `input_select.chauffage_action`
   - Fin de `timer.chauffage_timer_etage`
   - Changement de température courante d'un des 5 thermostats Z-Wave de l'étage
   - Changement d'état des velux ou des détecteurs de portes (avec délai 5 min)
+  - Retour du switch chaudière après indisponibilité (`unavailable`/`unknown` → `on`/`off` depuis 15 s)
 
   **Fonctionnement :**
   1. Calcule en parallèle la variable `horsgel_etage` (vrai si mode HorsGel global, portes (attribut `Door open`)/velux ouverts, ou mode Absent) et ajuste les consignes de chaque pièce selon le mode (Confort / Réduit / TéléTravail).
@@ -58,6 +60,20 @@ triggers:
       minutes: 5
       seconds: 0
     trigger: state
+  - trigger: state
+    entity_id:
+      - switch.switch_de_la_chaudiere_switch
+    from:
+      - unavailable
+      - unknown
+    not_to:
+      - unavailable
+      - unknown
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 15
+    id: Chaudiere disponible
 conditions: []
 actions:
   - parallel:
@@ -265,7 +281,6 @@ actions:
           - action: script.turn_on
             target:
               entity_id:
-                - script.notification_vocale
                 - script.notification_mail
             data:
               variables:
@@ -633,9 +648,11 @@ actions:
                     above: 1
             sequence:
               - if:
-                  - condition: state
-                    entity_id: switch.switch_de_la_chaudiere_switch
-                    state: 'off'
+                  - condition: not
+                    conditions:
+                      - condition: state
+                        entity_id: switch.switch_de_la_chaudiere_switch
+                        state: 'on'
                 then:
                   - action: switch.turn_on
                     metadata: {}
@@ -648,9 +665,11 @@ actions:
                 below: 1
             sequence:
               - if:
-                  - condition: state
-                    entity_id: switch.switch_de_la_chaudiere_switch
-                    state: 'on'
+                  - condition: not
+                    conditions:
+                      - condition: state
+                        entity_id: switch.switch_de_la_chaudiere_switch
+                        state: 'off'
                 then:
                   - action: switch.turn_off
                     metadata: {}

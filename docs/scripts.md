@@ -1,4 +1,4 @@
-# 📜 Scripts (21)
+# 📜 Scripts (22)
 
 [← Retour README](../README.md)
 
@@ -63,6 +63,19 @@
 
 ---
 
+### `script.entrees_a_conserver` — Entrées à conserver
+> [📄 Voir le YAML](../scripts/entrees_a_conserver.yaml)
+
+**Rôle :** script de référencement uniquement. Il ne fait rien : la première action arrête la séquence.
+
+Les actions suivantes ne servent qu'à référencer les entrées (helpers) à conserver, afin qu'elles n'apparaissent pas comme inutilisées alors qu'elles sont utilisées en dehors des automatisations et scripts.
+
+**Entrées référencées :**
+- Tarifs manuels de consommation, utilisés par le panneau Énergie : `input_number.prix_manuel_du_kwh_elec`, `input_number.prix_manuel_du_kwh_gaz`, `input_number.prix_manuel_du_m3_eau` (valeurs relevées à la création du script)
+- Entrées de volets, utilisées par l'intégration CoverAutomatic : `input_boolean.seul_a_la_maison`, `input_boolean.invites`,
+
+---
+
 ## Automatisation
 
 ### `script.gestion_du_reveil` — Gestion du Réveil
@@ -79,7 +92,7 @@
 
 **Entités principales :**
 - input_select.sonos_action : sélecteur d'action SONOS
-- automation.gestion_des_sonos : automatisation déclenchée
+- automation.gestion_des_enceintes : automatisation déclenchée
 - script.notification_mail : envoi du mail
 
 ---
@@ -132,23 +145,6 @@
 
 ---
 
-### `script.sonos_radio_sur_la_suite_parentale` — SONOS Radio sur la Suite parentale
-> [📄 Voir le YAML](../scripts/sonos_radio_sur_la_suite_parentale.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Rôle :** Lance la radio sur la suite parentale avec sélection automatique selon l'heure et repli.
-
-**Fonctionnement :**
-1. Entre 4h et 20h30 → lance Voltage ; sinon → lance Évasion FM Essonne (radio de nuit).
-2. Attend 5 secondes.
-3. Si la lecture n'a pas démarré → repli sur le flux direct Évasion FM Essonne via Radio Browser.
-
-**Entités principales :**
-- media_player.suite_parentale : enceinte SONOS ciblée
-
----
-
 ### `script.sonos_radio_sur_le_garage` — SONOS Radio sur le Garage
 > [📄 Voir le YAML](../scripts/sonos_radio_sur_le_garage.yaml)
 
@@ -163,23 +159,6 @@
 
 **Entités principales :**
 - media_player.garage : enceinte SONOS ciblée
-
----
-
-### `script.sonos_radio_sur_le_salon` — SONOS Radio sur le Salon
-> [📄 Voir le YAML](../scripts/sonos_radio_sur_le_salon.yaml)
-
-**Statut :** Finalisé | **Evolution :** Aucune
-
-**Rôle :** Lance la radio Voltage sur l'enceinte du salon avec repli automatique.
-
-**Fonctionnement :**
-1. Lance Voltage via les favoris Sonos.
-2. Attend 5 secondes.
-3. Si la lecture n'a pas démarré → repli sur le flux direct Radio Browser.
-
-**Entités principales :**
-- media_player.salon : enceinte SONOS ciblée
 
 ---
 
@@ -353,6 +332,50 @@
 
 ---
 
+### `script.notification_snapshot_de_slm_camera5` — Notification Snapshot de slm-camera5
+> [📄 Voir le YAML](../scripts/notification_snapshot_de_slm_camera5.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Capture un snapshot et une vidéo de slm-camera5 et les envoie par mail avec le message et le type fournis en paramètres. Appelé par 'Notification de slm-camera5' via script.turn_on.
+
+**Paramètres :**
+- message_type : type du message (ex : 'slm-camera5')
+- message_corp : corps du message (ex : 'Détection sur slm-camera5')
+
+**Fonctionnement :**
+1. En parallèle : capture une image du flux haute résolution (camera.exterieur_slm_camera5_high_resolution_channel) dans /media/Snapshots/camera5.jpg et enregistre 30s de vidéo (10s de lookback) du flux fluide (camera.slm_camera5_fluide) dans /media/Video/camera5.mp4.
+2. Envoie un mail '[HA] ' suivi du type, avec l'image et la vidéo en pièces jointes et le message en corps (via smtp.send_message).
+
+**Entités principales :**
+- camera.exterieur_slm_camera5_high_resolution_channel : flux capturé en image
+- camera.slm_camera5_fluide : flux enregistré en vidéo
+- notify.email_slemeur_slm_srv_dscloud_me (smtp.send_message) : envoi du mail
+
+---
+
+### `script.notification_snapshot_de_slm_camera6` — Notification Snapshot de slm-camera6
+> [📄 Voir le YAML](../scripts/notification_snapshot_de_slm_camera6.yaml)
+
+**Statut :** Finalisé | **Evolution :** Aucune
+
+**Rôle :** Capture un snapshot et une vidéo de slm-camera6 et les envoie par mail avec le message et le type fournis en paramètres. Appelé par 'Notification de slm-camera6' via script.turn_on.
+
+**Paramètres :**
+- message_type : type du message (ex : 'slm-camera6')
+- message_corp : corps du message (ex : 'Détection sur slm-camera6')
+
+**Fonctionnement :**
+1. En parallèle : capture une image du flux haute résolution (camera.exterieur_slm_camera6_high_resolution_channel) dans /media/Snapshots/camera6.jpg et enregistre 30s de vidéo (10s de lookback) du flux fluide (camera.slm_camera6_fluide) dans /media/Video/camera6.mp4.
+2. Envoie un mail '[HA] ' suivi du type, avec l'image et la vidéo en pièces jointes et le message en corps (via smtp.send_message).
+
+**Entités principales :**
+- camera.exterieur_slm_camera6_high_resolution_channel : flux capturé en image
+- camera.slm_camera6_fluide : flux enregistré en vidéo
+- notify.email_slemeur_slm_srv_dscloud_me (smtp.send_message) : envoi du mail
+
+---
+
 ### `script.notification_snapshot_du_portier` — Notification Snapshot du Portier
 > [📄 Voir le YAML](../scripts/notification_snapshot_du_portier.yaml)
 
@@ -396,27 +419,28 @@
 
 **Statut :** Finalisé | **Evolution :** Aucune
 
-**Rôle :** Diffuse un message TTS en overlay (announce) sur les enceintes SONOS actives selon le mode en cours, sans interrompre une lecture en cours.
+**Rôle :** Diffuse un message TTS en overlay (announce) via Music Assistant sur le groupe `media_player.enceintes`, sans interrompre la lecture.
 
 **Paramètres :**
 - message_corp : texte à synthétiser
 
 **Fonctionnement :**
-1. Selon le mode SONOS actif :
-   - COUCHE → diffuse sur tous les membres du groupe Suite parentale (group_members), volume d'annonce 40.
-   - REVEIL / autre → diffuse sur tous les membres du groupe Salon (group_members), volume d'annonce 60, + Garage (volume d'annonce 40) uniquement si le calendrier est en TéléTravail ET que les SONOS sont en mode ON.
-2. Chaque diffusion utilise media_player.play_media avec announce: true et media_content_id: media-source://tts/tts.google_translate_fr_fr?message=...&language=fr&cache=true.
-3. Sonos gère nativement la baisse du volume en cours, la lecture de l'annonce, puis la restauration — aucune action de restauration explicite n'est nécessaire.
+- Cible principale : `media_player.enceintes`, dont les membres sont gérés par l'automatisation « Gestion des enceintes » (Salon seul au repos).
+- Volume d'annonce : 40 en mode COUCHE (`input_select.sonos`), 60 sinon.
+- En parallèle, si le Garage (`media_player.garage`, Sonos natif hors Music Assistant) est en lecture, il reçoit la même annonce, volume 40. Il n'est pas synchronisé avec le groupe.
+
+Music Assistant joue l'annonce de façon synchronisée sur les enceintes du groupe, puis restaure le volume et la lecture.
 
 **Entités principales :**
-- media_player.suite_parentale, media_player.salon, media_player.garage : enceintes SONOS ciblées
-- input_select.sonos, input_select.calendrier : sélecteurs de mode
+- media_player.enceintes
+- media_player.garage : Sonos natif (réseau Wi-Fi séparé)
+- input_select.sonos : mode en cours (volume réduit en COUCHE)
 
 ---
 
 ## Scripts Pyscript
 
-> Les scripts pyscript sont dans `/config/pyscript/` et chargés par l'intégration **pyscript** (HACS). Ce ne sont pas des entités `script.*` : ils ne sont pas comptés dans les 21 scripts ci-dessus. 3 fichiers exposent 4 services.
+> Les scripts pyscript sont dans `/config/pyscript/` et chargés par l'intégration **pyscript** (HACS). Ce ne sont pas des entités `script.*` : ils ne sont pas comptés dans les 22 scripts ci-dessus. 3 fichiers exposent 4 services.
 
 | Service | Rôle | Appelé par | Source |
 |---|---|---|---|

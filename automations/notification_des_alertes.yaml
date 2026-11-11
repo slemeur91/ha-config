@@ -355,7 +355,8 @@ actions:
               - if:
                   - condition: state
                     entity_id: valve.vanne_d_arrivee_d_eau_nodeid_25_switch
-                    state: 'on'
+                    state:
+                      - open
                 then:
                   - action: valve.close_valve
                     metadata: {}
@@ -366,7 +367,8 @@ actions:
               - if:
                   - condition: state
                     entity_id: valve.vanne_d_arrivee_d_eau_nodeid_25_switch
-                    state: 'off'
+                    state:
+                      - closed
                 then:
                   - action: valve.open_valve
                     metadata: {}

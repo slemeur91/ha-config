@@ -51,7 +51,7 @@ actions:
                       skip_condition: true
                     target:
                       entity_id:
-                        - automation.gestion_des_sonos
+                        - automation.gestion_des_enceintes
                 else:
                   - action: input_select.select_option
                     metadata: {}
@@ -185,14 +185,11 @@ actions:
               entity_id: input_select.presence_action
         note: Mode Arrivée → déverrouille serrure garage, allume entrée si sombre, active purificateur, bascule vers Présent
       - conditions:
-          - condition: or
-            conditions:
-              - condition: state
-                entity_id: input_select.presence_action
-                state: Extinction
-              - condition: state
-                entity_id: input_select.presence_action
-                state: Couché
+          - condition: state
+            entity_id: input_select.presence_action
+            state:
+              - Extinction
+              - Couché
         sequence:
           - if:
               - condition: state
@@ -439,7 +436,7 @@ actions:
                       skip_condition: true
                     target:
                       entity_id:
-                        - automation.gestion_des_sonos
+                        - automation.gestion_des_enceintes
                 else:
                   - action: input_select.select_option
                     metadata: {}
@@ -457,7 +454,7 @@ actions:
                   volume_level: '{{ states(''input_number.volume_sonos_base'') | float + 0.05 }}'
                 target:
                   entity_id:
-                    - media_player.salle_d_eau
-                    - media_player.suite_parentale
+                    - media_player.salle_d_eau_3
+                    - media_player.suite_parentale_3
         note: 'Mode Extinction/Couché → éteint HiFi, verrouille les deux serrures, éteint lumières/prises non essentielles ; alarme armée : store pergola ouvert ; Couché : veilleuses + SONOS COUCHE'
 mode: restart
