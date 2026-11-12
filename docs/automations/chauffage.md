@@ -29,6 +29,63 @@ Home Assistant → EnOcean MQTT → contacteur EnOcean → chaudière (radiateur
 
 **Planification :** les deux automatisations ci-dessous gèrent l'ensemble. Les calendriers de l'intégration **[Local Agenda](../hacs.md)** modifient les modes de chauffage (travail, télétravail, week-end, absence…), auxquels les automatisations réagissent pour appliquer les consignes.
 
+### 🔧 Correctifs du plugin Homebridge Alexa Smart Home
+
+Ces correctifs se font dans le **terminal de Homebridge** (interface Homebridge → Terminal). Ils modifient des fichiers installés avec le plugin : à refaire après chaque mise à jour du plugin.
+
+> ✅ Les deux correctifs sont appliqués et vérifiés sur l'installation actuelle. Les procédures ci-dessous servent à les refaire après une mise à jour du plugin, ou à revenir en arrière (section **Pour annuler** de chaque correctif).
+
+#### Correctif 1 — Connexion au compte Amazon (récupération du cookie)
+
+Lors de la connexion au compte Amazon, le proxy de la bibliothèque `alexa-cookie2` renvoie les en-têtes `Content-Security-Policy` d'Amazon, ce qui peut bloquer la page de connexion et empêcher la récupération du cookie. Le correctif supprime ces en-têtes au tout début de la fonction `onProxyRes` du fichier `proxy.js` (vers la ligne 377), avant les `return` qui la font sortir plus tôt.
+
+1. Appliquer la modification :
+
+   ```bash
+   f=/homebridge/node_modules/homebridge-alexa-smarthome/node_modules/alexa-cookie2/lib/proxy.js; cp "$f" "$f.orig" && sed -i '/^    function onProxyRes(proxyRes, req, res) {$/a\        delete proxyRes.headers["content-security-policy"]; delete proxyRes.headers["content-security-policy-report-only"];' "$f" && sed -n '376,380p' "$f"
+   ```
+
+   La commande sauvegarde d'abord le fichier en `proxy.js.orig`, puis ajoute une seule ligne. Résultat attendu :
+
+   ```
+       function onProxyRes(proxyRes, req, res) {
+           delete proxyRes.headers["content-security-policy"]; delete proxyRes.headers["content-security-policy-report-only"];
+           const url = req.originalUrl || req.url;
+   ```
+
+   > ⚠️ Ne lancer la commande qu'une fois : relancée, elle ajoute la ligne en double (sans danger, mais inutile).
+
+2. Redémarrer Homebridge : bouton de redémarrage de l'interface Homebridge, ou dans HA **Paramètres → Apps → Homebridge → Redémarrer**.
+3. Se reconnecter au compte Amazon en navigation privée (Firefox, Safari, ou Brave avec les Shields désactivés) sur `http://<IP_Homebridge>:9000/`. Utiliser bien `http` et l'adresse IP, pas le reverse proxy. Un message de succès du type « cookie successfully retrieved » s'affiche à la fin.
+4. Vérifier que `climate.cellier` se met de nouveau à jour dans Home Assistant.
+
+**Pour annuler :**
+
+```bash
+f=/homebridge/node_modules/homebridge-alexa-smarthome/node_modules/alexa-cookie2/lib/proxy.js; cp "$f.orig" "$f"
+```
+
+#### Correctif 2 — Consigne de température envoyée sous forme de texte
+
+Dans `thermostat-accessory.js` (ligne 246), le plugin envoie la consigne simple (mode chauffage) à Alexa sous forme de texte (`newTemp.toString(10)`) au lieu d'un nombre. Le correctif ne modifie que cette ligne, comme la correction officielle. Les lignes 290 à 342, qui concernent le mode double consigne chaud/froid, ne servent pas pour la chaudière et restent inchangées.
+
+1. Appliquer la modification :
+
+   ```bash
+   f=/homebridge/node_modules/homebridge-alexa-smarthome/dist/accessory/thermostat-accessory.js; cp "$f" "$f.orig" && sed -i '246s/value: newTemp\.toString(10),/value: newTemp,/' "$f" && sed -n '243,248p' "$f"
+   ```
+
+   La commande sauvegarde d'abord le fichier en `thermostat-accessory.js.orig`. La ligne 246 doit ensuite afficher `value: newTemp,`. Si elle contient encore `toString(10)`, la ligne n'est pas celle attendue (version du plugin différente) : ne pas aller plus loin.
+
+2. Redémarrer Homebridge.
+3. Tester depuis Home Assistant : régler une consigne sur `climate.cellier` (par exemple 20,5 °C) et vérifier qu'elle tient plus de 2 minutes.
+
+**Pour annuler :**
+
+```bash
+f=/homebridge/node_modules/homebridge-alexa-smarthome/dist/accessory/thermostat-accessory.js; cp "$f.orig" "$f"
+```
+
 ---
 
 ## `automation.gestion_de_l_integration_daikin_selon_le_contacteur_de_la_climatisation` — Gestion de l'intégration Daikin selon le Contacteur de la Climatisation
